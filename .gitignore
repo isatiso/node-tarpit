@@ -1,0 +1,15 @@
+**/node_modules/
+**/out
+**/build
+**/dist
+**/lib
+
+**/src/test.*
+
+test.*
+
+.DS_Store
+package-lock.json
+
+**/.yarn
+**/.yarnrc.yml
