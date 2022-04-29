@@ -1,0 +1,39 @@
+{
+    "name": "@tarpit/transformer",
+    "version": "0.0.2",
+    "description": "> TODO: description",
+    "author": "Plankroot <sieglive@gmail.com>",
+    "homepage": "https://github.com/isatiso/node-tarpit#readme",
+    "license": "MIT",
+    "main": "./lib/index.js",
+    "types": "./lib/index.d.ts",
+    "module": "./lib/index.esm.js",
+    "files": [
+        "lib"
+    ],
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/isatiso/node-tarpit.git"
+    },
+    "bugs": {
+        "url": "https://github.com/isatiso/node-tarpit/issues"
+    },
+    "scripts": {
+        "build": "rollup -c",
+        "test": "echo \"Error: run tests from root\" && exit 1"
+    },
+    "dependencies": {
+        "js-yaml": "^4.1.0",
+        "micromatch": "^4.0.4",
+        "ttypescript": "^1.5.12"
+    },
+    "devDependencies": {
+        "@types/js-yaml": "^4.0.5",
+        "@types/micromatch": "^4.0.2",
+        "@tarpit/abraham": "^0.0.2"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "extends": "./assets/common-tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "./",
+        "outDir": "./out"
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}
