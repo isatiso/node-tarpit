@@ -9,6 +9,9 @@
             ],
             "@tarpit/config": [
                 "../config/src"
+            ],
+            "@tarpit/http": [
+                "../http/src"
             ]
         }
     },

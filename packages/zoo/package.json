@@ -1,5 +1,5 @@
 {
-    "name": "@tarpit/http",
+    "name": "@tarpit/zoo",
     "version": "0.0.4",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
@@ -27,16 +27,9 @@
         "test": "echo \"Error: run tests from root\" && exit 1"
     },
     "dependencies": {
-        "co-body": "^6.1.0",
-        "koa": "^2.13.4"
-    },
-    "devDependencies": {
         "@tarpit/core": "^0.0.4",
+        "@tarpit/config": "^0.0.4",
         "@tarpit/judge": "^0.0.4",
-        "@types/koa": "^2.13.4"
-    },
-    "peerDependencies": {
-        "@tarpit/core": "^0.0.4",
-        "@tarpit/judge": "^0.0.4"
+        "@tarpit/http": "^0.0.4"
     }
 }

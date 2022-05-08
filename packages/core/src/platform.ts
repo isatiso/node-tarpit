@@ -6,12 +6,14 @@
  */
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
+import { MetaTools } from './__tools__/meta-tools'
 
 import { Constructor, ProviderDef } from './__types__'
-import { TpComponentCollector, TpModuleLikeCollector } from './__tools__/component-types'
+import { TpComponentCollector, TpComponentMeta, TpModuleLikeCollector } from './__tools__/component-types'
 import { TpPluginConstructor } from './__tools__/plugin-types'
 import { TokenTools } from './__tools__/token-tools'
 import { Timestamp, UUID } from './builtin'
+import { PluginSet } from './builtin/plugin-set'
 import { Injector } from './injector'
 import { ClassProvider, def2Provider, ValueProvider } from './provider'
 import { Stranger } from './provider/stranger'
@@ -44,7 +46,7 @@ export class Platform {
      * @private
      * 收集需要启动和销毁的插件。
      */
-    private _plugins = new Set<TpPluginConstructor<any>>()
+    private _plugin_set = new PluginSet()
 
     /**
      * 加载配置文件，读文件方式。
@@ -71,6 +73,7 @@ export class Platform {
 
         // 设置默认的内置 Provider，如果没有另外设置 Provider 时，查找结果为 null，而不会查找到 NullInjector。
         this.root_injector.set_provider(Stranger, new ValueProvider('Stranger', new Stranger()))
+        this.root_injector.set_provider(PluginSet, new ValueProvider('PluginSet', this._plugin_set))
 
         // 设置默认的内置工具。
         this.root_injector.set_provider(UUID, new ClassProvider(UUID, this.root_injector))
@@ -80,13 +83,20 @@ export class Platform {
     /**
      * 添加系统插件，如 HTTPServer Schedule AMQP 等。
      */
-    plug<K extends keyof TpComponentCollector>(plugin: TpPluginConstructor<K> & TpComponentCollector[K]) {
+    plug<K extends keyof TpComponentCollector>(plugin: TpPluginConstructor<K>) {
         // TODO: 检查 ConfigData
-        if (!this._plugins.has(plugin)) {
-            this._plugins.add(plugin)
-            this.root_injector.set_provider(plugin.loader, new ValueProvider(plugin.type, plugin))
+        if (!this._plugin_set.plugins.has(plugin)) {
+            const meta = MetaTools.PluginMeta(plugin.prototype).value
+            if (!meta) {
+                throw new Error(`Plugin "${plugin.name ?? plugin.toString()}" has no PluginMeta.`)
+            }
+            this._plugin_set.plugins.add(plugin)
+            this.root_injector.set_provider(meta.loader, new ValueProvider(meta.type, plugin))
             this.root_injector.set_provider(plugin, new ClassProvider(plugin, this.root_injector))
+        } else {
+            console.warn(`Plugin "${plugin.name ?? plugin.toString()}" exists, maybe its a mistake.`)
         }
+        return this
     }
 
     /**
@@ -118,17 +128,15 @@ export class Platform {
      */
     bootstrap(module: Constructor<any>) {
 
-        const meta = TokenTools.ComponentMeta(module.prototype).value
+        const meta: TpComponentMeta | undefined = TokenTools.ComponentMeta(module.prototype).value
         if (!meta) {
             throw new Error(`Unknown module "${module.name}".`)
         }
 
-        const sub_injector = Injector.create(this.root_injector)
-        if (!meta.on_load) {
-            throw Error('not allowed.')
+        if (meta.on_load) {
+            const sub_injector = Injector.create(this.root_injector)
+            meta.on_load(meta as any, sub_injector)
         }
-
-        meta.on_load(meta, sub_injector)
 
         return this
     }
@@ -157,7 +165,7 @@ export class Platform {
     start() {
         console.log(`tp server start at ${new Date().toISOString()}`)
 
-        Promise.all(Array.from(this._plugins).map(plugin => {
+        Promise.all(Array.from(this._plugin_set.plugins).map(plugin => {
             const instance = this.root_injector.get(plugin)?.create()
             if (instance) {
                 return instance.start()
@@ -176,7 +184,7 @@ export class Platform {
     async destroy(): Promise<void> {
         this.root_injector.emit('tp-destroy')
         await this.root_injector.get(Stranger)?.create()?.wait_all_quit()
-        for (const plugin of Array.from(this._plugins)) {
+        for (const plugin of Array.from(this._plugin_set.plugins)) {
             const instance = this.root_injector.get(plugin)?.create()
             if (instance) {
                 await instance.destroy()

@@ -6,11 +6,15 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { Injector, TpPlugin } from '@tarpit/core'
+import { Injector, TpPlugin, TpPluginConstructor, TpPluginType, ValueProvider } from '@tarpit/core'
 import { Server } from 'http'
 import Koa from 'koa'
 import { Socket } from 'net'
 import { TLSSocket } from 'tls'
+import { Authenticator } from './__services__/authenticator'
+import { CacheProxy } from './__services__/cache-proxy'
+import { LifeCycle } from './__services__/life-cycle'
+import { ResultWrapper } from './__services__/result-wrapper'
 
 import { ApiMethod, ApiPath, HandlerReturnType, HttpHandlerDescriptor, KoaResponseType, LiteContext, TpRouterMeta } from './__types__'
 import { BodyParser } from './body-parser'
@@ -23,10 +27,14 @@ declare module 'koa' {
     }
 }
 
+export interface TpServer extends TpPluginConstructor<'TpRouter'> {
+}
+
 /**
  * @private
  * Koa adaptor.
  */
+@TpPluginType({ type: 'TpRouter', loader: '∑∫πœ-TpRouter', option_key: 'routers' })
 export class TpServer implements TpPlugin<'TpRouter'> {
 
     private _koa = new Koa()
@@ -43,6 +51,11 @@ export class TpServer implements TpPlugin<'TpRouter'> {
         this._koa.use(this.cors)
         this._koa.use(this.body_parser)
         this._koa.use(async (ctx: LiteContext, next) => this._http_handler.handle(ctx, next))
+
+        this.injector.set_provider(Authenticator, new ValueProvider('Authenticator', null))
+        this.injector.set_provider(CacheProxy, new ValueProvider('CacheProxy', null))
+        this.injector.set_provider(LifeCycle, new ValueProvider('LifeCycle', null))
+        this.injector.set_provider(ResultWrapper, new ValueProvider('ResultWrapper', null))
     }
 
     load(meta: TpRouterMeta, injector: Injector): void {

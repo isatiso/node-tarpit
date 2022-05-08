@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { ClassMeta, Constructor, PropertyMeta } from '../__types__'
+import { ClassMeta, Constructor, PluginMeta, PropertyMeta } from '../__types__'
 import { MetaWrapper } from './meta'
 import { DI_TOKEN } from './token'
 
@@ -15,7 +15,7 @@ export namespace MetaTools {
      * 自定义数据。
      * @category Basic Meta
      */
-    export const ClassMeta = MetaWrapper<ClassMeta>(DI_TOKEN.class_meta, 'prototype_only', () => ({ parameter_injection: [] }))
+    export const ClassMeta = MetaWrapper<ClassMeta>(DI_TOKEN.class_meta, 'prototype_only', () => ({ parameter_injection: [], loader: '', type: '' }))
 
     /**
      * 自定义数据。
@@ -28,6 +28,12 @@ export namespace MetaTools {
      * @category Basic Meta
      */
     export const CustomData = MetaWrapper<{ [prop: string]: any }>(DI_TOKEN.custom_data, 'prototype_only', () => ({}))
+
+    /**
+     * 自定义数据。
+     * @category Basic Meta
+     */
+    export const PluginMeta = MetaWrapper<PluginMeta>(DI_TOKEN.class_meta, 'prototype_only', () => ({ loader: '', type: '', option_key: '' }))
 
     /**
      * 获取指定类或函数的参数列表。

@@ -15,3 +15,9 @@ export interface PropertyMeta {
     worker?: { channel: string }
     parameter_injection: any[]
 }
+
+export interface PluginMeta {
+    type: string
+    loader: string
+    option_key: string
+}

@@ -34,19 +34,22 @@ export interface BasePropertyFunction<T extends (...args: any) => any> {
 }
 
 export interface TpServiceMeta extends BaseTpComponentMeta<'TpService'> {
-    type: 'TpService'
 }
 
 export interface TpModuleMeta extends BaseTpModuleMeta<'TpModule'> {
-    type: 'TpModule'
 }
 
 export interface TpModuleLikeCollector {
     TpModule: TpModuleMeta
+    TpRoot: TpRootMeta
 }
 
 export interface TpComponentCollector extends TpModuleLikeCollector {
     TpService: TpServiceMeta
+}
+
+export interface TpRootMeta extends BaseTpModuleMeta<'TpRoot'> {
+    on_load: (meta: TpRootMeta, injector: Injector) => void
 }
 
 export type TpModuleLikeMeta = TpModuleLikeCollector[keyof TpModuleLikeCollector]
@@ -62,4 +65,8 @@ export interface TpModuleOptions extends ImportsAndProviders {
 
 export interface TpServiceOptions {
     echo_dependencies?: boolean
+}
+
+export interface TpRootOptions extends ImportsAndProviders {
+
 }

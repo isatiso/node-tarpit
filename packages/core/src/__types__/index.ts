@@ -6,7 +6,7 @@
  */
 
 export { Constructor, AbstractConstructor, PureJSON, KeyOfFilterType } from './base'
-export { PropertyMeta, ClassMeta } from './meta'
+export { PropertyMeta, ClassMeta, PluginMeta } from './meta'
 export { ClassProviderDef, FactoryProviderDef, ValueProviderDef, ProviderTreeNode, ProviderDef, Provider } from './provider'
 export {
     DecoratorClass,
