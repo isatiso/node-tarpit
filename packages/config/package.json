@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/config",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -27,6 +27,6 @@
         "test": "echo \"Error: run tests from root\" && exit 1"
     },
     "dependencies": {
-        "@tarpit/judge": "^0.0.4"
+        "@tarpit/judge": "^0.0.5"
     }
 }

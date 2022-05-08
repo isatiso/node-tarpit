@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/http",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -31,8 +31,8 @@
         "koa": "^2.13.4"
     },
     "devDependencies": {
-        "@tarpit/core": "^0.0.4",
-        "@tarpit/judge": "^0.0.4",
+        "@tarpit/core": "^0.0.5",
+        "@tarpit/judge": "^0.0.5",
         "@types/koa": "^2.13.4"
     },
     "peerDependencies": {
