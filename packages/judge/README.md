@@ -1,11 +1,11 @@
-# `core`
+# `judge`
 
 > TODO: description
 
 ## Usage
 
 ```
-const core = require('core');
+const judge = require('judge');
 
 // TODO: DEMONSTRATE API
 ```

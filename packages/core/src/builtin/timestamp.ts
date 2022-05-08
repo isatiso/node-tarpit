@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { TpService } from '../core'
+
+import { TpService } from '../annotations'
 
 /**
  * 内置的时间戳服务。

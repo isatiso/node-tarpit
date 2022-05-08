@@ -1,11 +1,11 @@
-# `core`
+# `dora`
 
 > TODO: description
 
 ## Usage
 
 ```
-const core = require('core');
+const dora = require('dora');
 
 // TODO: DEMONSTRATE API
 ```

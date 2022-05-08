@@ -1,11 +1,11 @@
-# `core`
+# `http`
 
 > TODO: description
 
 ## Usage
 
 ```
-const core = require('core');
+const http = require('http');
 
 // TODO: DEMONSTRATE API
 ```

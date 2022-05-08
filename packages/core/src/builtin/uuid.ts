@@ -6,7 +6,7 @@
  */
 
 import crypto from 'crypto'
-import { TpService } from '../core'
+import { TpService } from '../annotations'
 
 /**
  * 内置的 UUID（通用唯一识别码）服务，版本为 Version 1 (date-time and MAC address)。

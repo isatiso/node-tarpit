@@ -1,11 +1,11 @@
-# `core`
+# `config`
 
 > TODO: description
 
 ## Usage
 
 ```
-const core = require('core');
+const config = require('config');
 
 // TODO: DEMONSTRATE API
 ```

@@ -7,10 +7,21 @@
       <sourceFolder url="file://$MODULE_DIR$/packages/core/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/abraham/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/transformer/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/common/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/config/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/dora/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/http/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/judge/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/tora/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/packages/cli/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/core/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/abraham/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/transformer/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/tora/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/judge/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dora/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/config/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/core/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/http/lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
