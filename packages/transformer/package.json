@@ -32,7 +32,6 @@
         "ttypescript": "^1.5.13"
     },
     "devDependencies": {
-        "@tarpit/abraham": "^0.0.8",
         "@types/js-yaml": "^4.0.5",
         "@types/micromatch": "^4.0.2"
     }

@@ -5,6 +5,7 @@
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
+    "private": true,
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
     "module": "./lib/index.esm.js",
