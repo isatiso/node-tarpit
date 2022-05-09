@@ -13,6 +13,7 @@
       <sourceFolder url="file://$MODULE_DIR$/packages/http/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/judge/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/tora/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/schedule/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/zoo/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/packages/cli/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/abraham/lib" />
@@ -24,6 +25,7 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/core/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/http/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/zoo/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/schedule/lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

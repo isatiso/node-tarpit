@@ -8,7 +8,7 @@
 import { Constructor, Provider, ProviderDef, ProviderTreeNode } from '../__types__'
 import { Injector } from '../injector'
 import { ClassProvider, def2Provider } from '../provider'
-import { BasePropertyFunction, ImportsAndProviders, TpModuleLikeCollector, TpModuleLikeMeta } from './component-types'
+import { BasePropertyFunction, ImportsAndProviders, TpModuleLikeMeta } from './component-types'
 import { MetaTools } from './meta-tools'
 import { TokenTools } from './token-tools'
 
@@ -47,14 +47,6 @@ export function load_component(constructor: Constructor<any>, injector: Injector
     if (!injector.has(constructor)) {
         const provider_tree: ProviderTreeNode = meta.provider_collector?.(injector)
 
-        // TODO
-        // if (loader === 'œœ-TpRouter') {
-        //     injector.get(Authenticator)?.set_used()
-        //     injector.get(LifeCycle)?.set_used()
-        //     injector.get(CacheProxy)?.set_used()
-        //     injector.get(ResultWrapper)?.set_used()
-        // }
-
         injector.set_provider(constructor, new ClassProvider(constructor, injector))
         meta.provider = injector.get(constructor)!
         TokenTools.Instance(constructor).set(meta.provider.create())
@@ -64,11 +56,15 @@ export function load_component(constructor: Constructor<any>, injector: Injector
             injector.get<any>(token)?.create().load(meta, injector)
         }
 
-        provider_tree?.children.filter(def => !_find_usage(def))
-            .forEach(def => {
-                console.log(`Warning: ${constructor.name} -> ${def?.name} not used.`)
-            })
+        return provider_tree
     }
+}
+
+export function check_used(provider_tree: ProviderTreeNode | undefined, constructor: Constructor<any>) {
+    provider_tree?.children.filter(def => !_find_usage(def))
+        .forEach(def => {
+            console.log(`Warning: ${constructor.name} -> ${def?.name} not used.`)
+        })
 }
 
 export function set_touched(constructor: Constructor<any>) {
@@ -81,10 +77,13 @@ export function set_touched(constructor: Constructor<any>) {
         }))
 }
 
-export function make_provider_collector(constructor: Constructor<any>, type: keyof TpModuleLikeCollector, options?: ImportsAndProviders): (injector: Injector) => ProviderTreeNode {
+export function make_provider_collector(constructor: Constructor<any>, options?: ImportsAndProviders): (injector: Injector) => ProviderTreeNode {
     return function(injector: Injector) {
         const children = options?.imports?.map(md => {
-            const module_meta = TokenTools.ensure_component_is(md, type).value
+            const module_meta = TokenTools.ensure_component(md).value
+            if (!module_meta.is_module_like) {
+                throw new Error(`${module_meta.name} is "${module_meta.type}" which should be a "TpModuleLike".`)
+            }
             return module_meta.provider_collector(injector)
         }) ?? []
 

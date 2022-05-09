@@ -31,6 +31,7 @@
         "@tarpit/config": "^0.0.5",
         "@tarpit/core": "^0.0.5",
         "@tarpit/http": "^0.0.5",
-        "@tarpit/judge": "^0.0.5"
+        "@tarpit/judge": "^0.0.5",
+        "@tarpit/schedule": "^0.0.5"
     }
 }

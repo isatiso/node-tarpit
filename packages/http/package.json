@@ -32,11 +32,10 @@
     },
     "devDependencies": {
         "@tarpit/core": "^0.0.5",
-        "@tarpit/judge": "^0.0.5",
         "@types/koa": "^2.13.4"
     },
     "peerDependencies": {
-        "@tarpit/core": "^0.0.4",
-        "@tarpit/judge": "^0.0.4"
+        "@tarpit/core": "^0.0.5",
+        "@tarpit/judge": "^0.0.5"
     }
 }

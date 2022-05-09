@@ -28,8 +28,8 @@
     },
     "dependencies": {
         "js-yaml": "^4.1.0",
-        "micromatch": "^4.0.4",
-        "ttypescript": "^1.5.12"
+        "micromatch": "^4.0.5",
+        "ttypescript": "^1.5.13"
     },
     "devDependencies": {
         "@tarpit/abraham": "^0.0.5",

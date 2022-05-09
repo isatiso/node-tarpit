@@ -9,8 +9,9 @@
         "packages/*"
     ],
     "devDependencies": {
-        "@tarpit/cli": "^0.0.2",
+        "@tarpit/abraham": "^0.0.5",
         "@types/node": "^17.0.31",
-        "lerna": "^4.0.0"
+        "lerna": "^4.0.0",
+        "npm-check-updates": "^12.5.11"
     }
 }

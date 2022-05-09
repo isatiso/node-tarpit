@@ -35,7 +35,7 @@ export interface TpServer extends TpPluginConstructor<'TpRouter'> {
  * Koa adaptor.
  */
 @TpPluginType({ type: 'TpRouter', loader: '∑∫πœ-TpRouter', option_key: 'routers' })
-export class TpServer implements TpPlugin<'TpRouter'> {
+export class TpHttpServer implements TpPlugin<'TpRouter'> {
 
     private _koa = new Koa()
     private _server?: Server
@@ -44,9 +44,7 @@ export class TpServer implements TpPlugin<'TpRouter'> {
     private _terminating: Promise<void> | undefined
     private _sockets = new Set<Socket | TLSSocket>()
 
-    constructor(
-        private injector: Injector,
-        private config_data: ConfigData) {
+    constructor(private injector: Injector, private config_data: ConfigData) {
 
         this._koa.use(this.cors)
         this._koa.use(this.body_parser)

@@ -3,17 +3,6 @@
     "compilerOptions": {
         "baseUrl": "./",
         "outDir": "./lib",
-        "paths": {
-            "@tarpit/core": [
-                "../core/src"
-            ],
-            "@tarpit/config": [
-                "../config/src"
-            ],
-            "@tarpit/http": [
-                "../http/src"
-            ]
-        }
     },
     "include": [
         "src/**/*.ts"

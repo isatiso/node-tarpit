@@ -1,5 +1,5 @@
 {
-    "name": "@tarpit/core",
+    "name": "@tarpit/schedule",
     "version": "0.0.5",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
@@ -27,18 +27,12 @@
         "test": "echo \"Error: run tests from root\" && exit 1"
     },
     "dependencies": {
-        "amqplib": "^0.8.0",
-        "co-body": "^6.1.0",
-        "koa": "^2.13.4",
-        "reflect-metadata": "^0.1.13"
+        "@tarpit/dora": "^0.0.5"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.0.5",
-        "@types/amqplib": "^0.8.2",
-        "@types/co-body": "^6.1.0",
-        "@types/koa": "^2.13.4"
+        "@tarpit/core": "^0.0.5"
     },
     "peerDependencies": {
-        "@tarpit/config": "^0.0.5"
+        "@tarpit/core": "^0.0.5"
     }
 }

@@ -23,8 +23,9 @@ export function TpService(options?: TpServiceOptions): DecoratorClass {
             })
             .set({
                 type: 'TpService',
-                name: constructor.name,
                 loader: '∑∫πœ-TpService',
+                is_module_like: false,
+                name: constructor.name,
             })
     }
 }

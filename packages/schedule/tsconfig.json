@@ -1,0 +1,21 @@
+{
+    "extends": "@tarpit/abraham/assets/common-tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "./",
+        "outDir": "./lib",
+        "paths": {
+            "@tarpit/core": [
+                "../core/src"
+            ],
+            "@tarpit/config": [
+                "../config/src"
+            ],
+            "@tarpit/dora": [
+                "../dora/src"
+            ],
+        }
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}

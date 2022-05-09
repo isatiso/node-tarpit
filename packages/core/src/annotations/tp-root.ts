@@ -30,8 +30,9 @@ export function TpRoot(options?: TpRootOptions): DecoratorClass {
             ...options,
             type: 'TpRoot',
             loader: '∑∫πœ-TpRoot',
+            is_module_like: true,
             name: constructor.name,
-            provider_collector: make_provider_collector(constructor, 'TpRoot', options),
+            provider_collector: make_provider_collector(constructor, options),
             on_load: (meta, injector) => {
 
                 if (!injector.has(constructor)) {

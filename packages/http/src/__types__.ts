@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { BasePropertyFunction, BaseTpModuleMeta, Constructor, ImportsAndProviders, Injector } from '@tarpit/core'
+import { BasePropertyFunction, BaseTpModuleMeta, ImportsAndProviders, Injector } from '@tarpit/core'
 import { ExtendableContext } from 'koa'
 import { Stream } from 'stream'
 
@@ -64,30 +64,4 @@ export interface RouterFunction<T extends (...args: any) => any> extends BasePro
     wrap_result: boolean
     cache_prefix?: string
     cache_expires?: number
-}
-
-declare module '@tarpit/core' {
-
-    export interface TpRootOptions {
-        routers: Constructor<any>[]
-    }
-
-    export interface TpModuleLikeCollector {
-        TpRouter: TpRouterMeta
-    }
-}
-
-declare module '@tarpit/config' {
-
-    export interface TpConfigSchema {
-        http: {
-            port: number
-            keepalive_timeout?: number
-            cors?: {
-                allow_origin: string
-                allow_headers: string
-                allow_methods: string
-            }
-        }
-    }
 }

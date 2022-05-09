@@ -16,9 +16,11 @@ export interface BaseTpComponentMeta<Type extends ComponentType> {
     provider?: Provider<any>
     loader: `∑∫πœ-${Type}`
     on_load?: (meta: any, injector: Injector) => void
+    is_module_like: boolean
 }
 
 export interface BaseTpModuleMeta<Type extends ComponentType> extends BaseTpComponentMeta<Type> {
+    is_module_like: true
     provider_collector: (injector: Injector) => ProviderTreeNode
 }
 
@@ -34,6 +36,7 @@ export interface BasePropertyFunction<T extends (...args: any) => any> {
 }
 
 export interface TpServiceMeta extends BaseTpComponentMeta<'TpService'> {
+    is_module_like: false
 }
 
 export interface TpModuleMeta extends BaseTpModuleMeta<'TpModule'> {
