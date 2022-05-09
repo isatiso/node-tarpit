@@ -8,7 +8,7 @@
 import { Constructor, Provider, ProviderDef, ProviderTreeNode } from '../__types__'
 import { Injector } from '../injector'
 import { ClassProvider, def2Provider } from '../provider'
-import { BasePropertyFunction, ImportsAndProviders, TpModuleLikeMeta } from './component-types'
+import { BasePropertyFunction, ImportsAndProviders, TpComponentMeta } from './component-types'
 import { MetaTools } from './meta-tools'
 import { TokenTools } from './token-tools'
 
@@ -42,10 +42,10 @@ export function get_providers(desc: BasePropertyFunction<any>, injector: Injecto
     }) ?? []
 }
 
-export function load_component(constructor: Constructor<any>, injector: Injector, meta: TpModuleLikeMeta) {
+export function load_component(constructor: Constructor<any>, injector: Injector, meta: TpComponentMeta): ProviderTreeNode | undefined {
 
     if (!injector.has(constructor)) {
-        const provider_tree: ProviderTreeNode = meta.provider_collector?.(injector)
+        const provider_tree: ProviderTreeNode | undefined = meta.category === 'module' ? meta.provider_collector?.(injector) : undefined
 
         injector.set_provider(constructor, new ClassProvider(constructor, injector))
         meta.provider = injector.get(constructor)!
@@ -81,7 +81,7 @@ export function make_provider_collector(constructor: Constructor<any>, options?:
     return function(injector: Injector) {
         const children = options?.imports?.map(md => {
             const module_meta = TokenTools.ensure_component(md).value
-            if (!module_meta.is_module_like) {
+            if (module_meta.category !== 'module') {
                 throw new Error(`${module_meta.name} is "${module_meta.type}" which should be a "TpModuleLike".`)
             }
             return module_meta.provider_collector(injector)

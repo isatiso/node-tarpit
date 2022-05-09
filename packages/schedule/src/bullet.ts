@@ -6,7 +6,7 @@
  */
 
 import { Dora } from '@tarpit/dora'
-import { ScheduleFunction } from './__type__'
+import { ScheduleFunction } from './__types__'
 import { Crontab } from './crontab'
 
 export class Bullet {

@@ -16,12 +16,16 @@ export interface BaseTpComponentMeta<Type extends ComponentType> {
     provider?: Provider<any>
     loader: `∑∫πœ-${Type}`
     on_load?: (meta: any, injector: Injector) => void
-    is_module_like: boolean
+    category: string
 }
 
 export interface BaseTpModuleMeta<Type extends ComponentType> extends BaseTpComponentMeta<Type> {
-    is_module_like: true
+    category: 'module'
     provider_collector: (injector: Injector) => ProviderTreeNode
+}
+
+export interface BaseTpServiceMeta<Type extends ComponentType> extends BaseTpComponentMeta<Type> {
+    category: 'service'
 }
 
 export interface BasePropertyFunction<T extends (...args: any) => any> {
@@ -35,8 +39,7 @@ export interface BasePropertyFunction<T extends (...args: any) => any> {
     meta?: PropertyMeta
 }
 
-export interface TpServiceMeta extends BaseTpComponentMeta<'TpService'> {
-    is_module_like: false
+export interface TpServiceMeta extends BaseTpServiceMeta<'TpService'> {
 }
 
 export interface TpModuleMeta extends BaseTpModuleMeta<'TpModule'> {
@@ -47,8 +50,11 @@ export interface TpModuleLikeCollector {
     TpRoot: TpRootMeta
 }
 
-export interface TpComponentCollector extends TpModuleLikeCollector {
+export interface TpServiceLikeCollector {
     TpService: TpServiceMeta
+}
+
+export interface TpComponentCollector extends TpModuleLikeCollector, TpServiceLikeCollector {
 }
 
 export interface TpRootMeta extends BaseTpModuleMeta<'TpRoot'> {
@@ -56,6 +62,7 @@ export interface TpRootMeta extends BaseTpModuleMeta<'TpRoot'> {
 }
 
 export type TpModuleLikeMeta = TpModuleLikeCollector[keyof TpModuleLikeCollector]
+export type TpServiceLikeMeta = TpServiceLikeCollector[keyof TpServiceLikeCollector]
 export type TpComponentMeta = TpComponentCollector[keyof TpComponentCollector]
 
 export interface ImportsAndProviders {

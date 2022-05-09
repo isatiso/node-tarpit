@@ -1,5 +1,5 @@
 {
-    "name": "@tarpit/http",
+    "name": "@tarpit/rabbitmq",
     "version": "0.0.6",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
@@ -35,6 +35,7 @@
         "@types/koa": "^2.13.4"
     },
     "peerDependencies": {
-        "@tarpit/core": "^0.0.6"
+        "@tarpit/core": "^0.0.6",
+        "@tarpit/judge": "^0.0.6"
     }
 }

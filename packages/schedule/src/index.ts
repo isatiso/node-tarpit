@@ -6,7 +6,7 @@
  */
 
 import { Constructor } from '@tarpit/core'
-import { TpScheduleMeta } from './__type__'
+import { TpScheduleMeta } from './__types__'
 
 declare module '@tarpit/core' {
 
@@ -19,7 +19,7 @@ declare module '@tarpit/core' {
     }
 }
 
-export * from './__type__'
+export * from './__types__'
 export * from './__annotations__'
 
 export * from './__services__/task-life-cycle'

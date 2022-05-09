@@ -25,7 +25,7 @@ export function TpModule(options?: TpModuleOptions): DecoratorClass {
         }
         meta.set({
             type: 'TpModule',
-            is_module_like: true,
+            category: 'module',
             name: constructor.name,
             provider_collector: make_provider_collector(constructor, options),
             loader: '∑∫πœ-TpModule'

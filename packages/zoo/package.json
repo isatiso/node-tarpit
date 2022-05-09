@@ -32,6 +32,7 @@
         "@tarpit/core": "^0.0.6",
         "@tarpit/http": "^0.0.6",
         "@tarpit/judge": "^0.0.6",
+        "@tarpit/rabbitmq": "^0.0.6",
         "@tarpit/schedule": "^0.0.6"
     }
 }

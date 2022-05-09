@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { FieldType } from '../__type__'
+import { FieldType } from '../__types__'
 
 const VALUE_RANGE = {
     month: { min: 1, max: 12 },

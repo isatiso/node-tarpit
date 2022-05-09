@@ -1,5 +1,5 @@
 import { DI_TOKEN, MetaTools, MetaWrapper, TokenTools } from '@tarpit/core'
-import { ScheduleFunction } from '../__type__'
+import { ScheduleFunction } from '../__types__'
 
 export const get_schedule_function = MetaWrapper<ScheduleFunction<any>>(
     DI_TOKEN.property_function,

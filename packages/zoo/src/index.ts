@@ -1,6 +1,6 @@
 import { TpConfigSchema } from '@tarpit/config'
 import { Platform, TpRoot } from '@tarpit/core'
-import { Get, TpRouter, TpHttpServer } from '@tarpit/http'
+import { Get, TpHttpServer, TpRouter } from '@tarpit/http'
 import { Task, TpSchedule, TpTrigger } from '@tarpit/schedule'
 
 @TpRouter('/')
@@ -40,7 +40,7 @@ const config_data: TpConfigSchema = {
             allow_methods: 'GET,POST,PUT,DELETE,OPTIONS',
             allow_origin: '*'
         }
-    }
+    },
 }
 
 new Platform(config_data)

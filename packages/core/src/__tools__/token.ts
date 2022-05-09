@@ -17,6 +17,7 @@ export enum DI_TOKEN {
     custom_data = 'œœ:custom_data',
 
     // inner metadata
+    plugin_meta = 'œœ:plugin_meta',
     class_meta = 'œœ:class_meta',
     property_meta = 'œœ:property_meta',
     property_function = 'œœ:property_function',

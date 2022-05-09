@@ -54,28 +54,37 @@ export function def2Provider(defs: (ProviderDef<any> | Constructor<any>)[], inje
 
         } else if (isClassProvider(def)) {
             const meta = TokenTools.ensure_component(def.useClass).value
-            if (meta.type !== 'TpService') {
-                throw new Error(`${def.useClass.name} is not TpService.`)
+            if (meta.category !== 'service') {
+                throw new Error(`${def.useClass.name} is not TpServiceLike.`)
             }
             if (injector.local_has(def.provide)) {
                 return injector.get(def.provide)
             } else {
-                const provider = new ClassProvider<any>(def.useClass, injector, def.multi)
-                injector.set_provider(def.provide, provider)
-                return provider
+                if (meta.on_load) {
+                    meta.on_load?.(meta, injector)
+                } else {
+                    meta.provider = new ClassProvider(def.useClass, injector)
+                    injector.set_provider(def, meta.provider)
+                }
+                return meta.provider
             }
 
         } else {
             const meta = TokenTools.ensure_component(def).value
-            if (meta.type !== 'TpService') {
-                throw new Error(`${def.name} is not TpService.`)
+            if (meta.category !== 'service') {
+                throw new Error(`${def.name} is not TpServiceLike.`)
             }
+
             if (injector.local_has(def)) {
                 return injector.get(def)
             } else {
-                const provider = new ClassProvider(def, injector)
-                injector.set_provider(def, provider)
-                return provider
+                if (meta.on_load) {
+                    meta.on_load?.(meta, injector)
+                } else {
+                    meta.provider = new ClassProvider(def, injector)
+                    injector.set_provider(def, meta.provider)
+                }
+                return meta.provider
             }
         }
     })

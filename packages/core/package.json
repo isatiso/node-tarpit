@@ -39,6 +39,6 @@
         "@types/koa": "^2.13.4"
     },
     "peerDependencies": {
-        "@tarpit/config": "^0.0.5"
+        "@tarpit/config": "^0.0.6"
     }
 }

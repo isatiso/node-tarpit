@@ -8,7 +8,7 @@
 
 import { DecoratorInstanceMethod } from '@tarpit/core'
 import { get_schedule_function } from '../__tools__'
-import { TaskOptions } from '../__type__'
+import { TaskOptions } from '../__types__'
 
 /**
  * 将 Tora.TpSchedule 中的一个方法标记为一个任务。

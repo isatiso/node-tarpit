@@ -8,9 +8,10 @@
 import { ConfigData } from '@tarpit/config'
 import { get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
+
 import { TaskLifeCycle } from './__services__/task-life-cycle'
 import { TaskLock } from './__services__/task-lock'
-import { ScheduleFunction, TaskDesc, TpScheduleMeta } from './__type__'
+import { ScheduleFunction, TaskDesc, TpScheduleMeta } from './__types__'
 import { Bullet } from './bullet'
 import { TaskContext } from './task-context'
 

@@ -33,7 +33,7 @@ export namespace MetaTools {
      * 自定义数据。
      * @category Basic Meta
      */
-    export const PluginMeta = MetaWrapper<PluginMeta>(DI_TOKEN.class_meta, 'prototype_only', () => ({ loader: '', type: '', option_key: '' }))
+    export const PluginMeta = MetaWrapper<PluginMeta>(DI_TOKEN.plugin_meta, 'prototype_only', () => ({ loader: '', type: '', option_key: '' }))
 
     /**
      * 获取指定类或函数的参数列表。

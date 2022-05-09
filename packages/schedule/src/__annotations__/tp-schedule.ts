@@ -6,7 +6,7 @@
  */
 
 import { check_used, DecoratorClass, load_component, make_provider_collector, Meta, set_touched, TokenTools } from '@tarpit/core'
-import { ScheduleFunction, TpScheduleMeta, TpScheduleOptions } from '../__type__'
+import { ScheduleFunction, TpScheduleMeta, TpScheduleOptions } from '../__types__'
 
 /**
  * 把一个类标记为 Tp.TpSchedule，并配置元数据。
@@ -25,7 +25,7 @@ export function TpSchedule(options?: TpScheduleOptions): DecoratorClass {
         meta.set({
             type: 'TpSchedule',
             loader: '∑∫πœ-TpSchedule',
-            is_module_like: true,
+            category: 'module',
             name: constructor.name,
             schedule_options: options,
             provider_collector: make_provider_collector(constructor, options),

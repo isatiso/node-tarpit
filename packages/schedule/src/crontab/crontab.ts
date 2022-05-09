@@ -7,7 +7,7 @@
 
 import { Dora } from '@tarpit/dora'
 
-import { FieldType, InnerOptions, TaskOptions } from '../__type__'
+import { FieldType, InnerOptions, TaskOptions } from '../__types__'
 import { parse_field } from './cron-item-parser'
 import { CronMonth } from './cron-month'
 import { ParsedFields } from './parsed-fields'

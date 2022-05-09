@@ -27,7 +27,7 @@ export function TpRouter(path: `/${string}`, options?: TpRouterOptions): Decorat
         meta.set({
             type: 'TpRouter',
             loader: '∑∫πœ-TpRouter',
-            is_module_like: true,
+            category: 'module',
             name: constructor.name,
             router_path: path,
             router_options: options,
