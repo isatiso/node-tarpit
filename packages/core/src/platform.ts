@@ -91,7 +91,7 @@ export class Platform {
                 throw new Error(`Plugin "${plugin.name ?? plugin.toString()}" has no PluginMeta.`)
             }
             this._plugin_set.plugins.add(plugin)
-            this.root_injector.set_provider(meta.loader, new ValueProvider(meta.type, plugin))
+            meta.loader_list.forEach(loader => this.root_injector.set_provider(loader, new ValueProvider(meta.type, plugin)))
             this.root_injector.set_provider(plugin, new ClassProvider(plugin, this.root_injector))
         } else {
             console.warn(`Plugin "${plugin.name ?? plugin.toString()}" exists, maybe its a mistake.`)

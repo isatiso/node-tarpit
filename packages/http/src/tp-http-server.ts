@@ -34,7 +34,7 @@ export interface TpServer extends TpPluginConstructor<'TpRouter'> {
  * @private
  * Koa adaptor.
  */
-@TpPluginType({ type: 'TpRouter', loader: '∑∫πœ-TpRouter', option_key: 'routers' })
+@TpPluginType({ type: 'TpRouter', loader_list: ['∑∫πœ-TpRouter'], option_key: 'routers' })
 export class TpHttpServer implements TpPlugin<'TpRouter'> {
 
     private _koa = new Koa()

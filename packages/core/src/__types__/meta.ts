@@ -18,6 +18,6 @@ export interface PropertyMeta {
 
 export interface PluginMeta {
     type: string
-    loader: string
+    loader_list: string[]
     option_key: string
 }

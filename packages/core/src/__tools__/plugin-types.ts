@@ -26,13 +26,13 @@ export interface TpPlugin<K extends keyof TpComponentCollector> {
 
 export function TpPluginType<K extends keyof TpComponentCollector>(options: {
     type: TpComponentCollector[K]['type']
-    loader: TpComponentCollector[K]['loader']
+    loader_list: TpComponentCollector[K]['loader'][]
     option_key: K extends `Tp${infer M}` ? `${Lowercase<M>}s` : never
 }): (constructor: Constructor<TpPlugin<K>>) => void {
     return constructor => {
         MetaTools.PluginMeta(constructor.prototype).ensure_default().do(origin_meta => {
             origin_meta.type = options.type
-            origin_meta.loader = options.loader
+            origin_meta.loader_list = options.loader_list
             origin_meta.option_key = options.option_key
         })
     }

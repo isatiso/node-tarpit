@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { get_providers, Injector, TpPlugin, TpPluginType } from '@tarpit/core'
+import { ConfigData } from '@tarpit/config'
+import { get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
 import { connect, Connection, ConsumeMessage, Options } from 'amqplib'
 import EventEmitter from 'events'
 import { ConsumerFunction, ProduceOptions, ProducerFunction, TpConsumerMeta, TpProducerMeta } from './__types__'
@@ -13,8 +14,8 @@ import { ChannelWrapper } from './channel-wrapper'
 import { Ack, Dead, Requeue } from './error'
 import { Letter, PURE_LETTER } from './letter'
 
-@TpPluginType({ type: 'TpConsumer', loader: '∑∫πœ-TpConsumer', option_key: 'consumers' })
-export class TpRabbitMQ implements TpPlugin<'TpConsumer'> {
+@TpPluginType({ type: 'TpConsumer', loader_list: ['∑∫πœ-TpConsumer', '∑∫πœ-TpProducer'], option_key: 'consumers' })
+export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
 
     public connection?: Connection
     public readonly emitter = new EventEmitter()
@@ -29,8 +30,16 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer'> {
     private loading = false
     private destroyed = false
 
-    constructor() {
+    constructor(
+        private injector: Injector,
+        private config_data: ConfigData
+    ) {
         this.emitter.setMaxListeners(1000)
+        this.injector.set_provider('∑∫πœ-TpProducer', new ValueProvider('MessageQueue', TpRabbitMQ))
+        const amqp = this.config_data.get('rabbitmq')
+        if (amqp) {
+            this.set_config(amqp.url, amqp.prefetch, amqp.socket_options)
+        }
     }
 
     set_config(url: string | Options.Connect, prefetch?: number, socket_options?: any) {
