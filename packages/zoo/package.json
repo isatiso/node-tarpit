@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/zoo",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -29,12 +29,12 @@
         "test": "echo \"Error: run tests from root\" && exit 1"
     },
     "dependencies": {
-        "@tarpit/config": "^0.0.7",
-        "@tarpit/core": "^0.0.7",
-        "@tarpit/http": "^0.0.7",
-        "@tarpit/judge": "^0.0.7",
-        "@tarpit/rabbitmq": "^0.0.7",
-        "@tarpit/schedule": "^0.0.7",
+        "@tarpit/config": "^0.0.8",
+        "@tarpit/core": "^0.0.8",
+        "@tarpit/http": "^0.0.8",
+        "@tarpit/judge": "^0.0.8",
+        "@tarpit/rabbitmq": "^0.0.8",
+        "@tarpit/schedule": "^0.0.8",
         "typescript-json-schema": "^0.53.0"
     }
 }
