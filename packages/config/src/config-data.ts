@@ -98,10 +98,11 @@ export function load_config(data: () => TpConfigSchema): ConfigData
 export function load_config(data?: string | TpConfigSchema | (() => TpConfigSchema)): ConfigData
 export function load_config(data?: string | TpConfigSchema | (() => TpConfigSchema)): ConfigData {
     if (!data) {
-        if (!fs.existsSync(path.resolve('config/default.json'))) {
-            throw new Error('No specified configuration file, and "config/default.json" not exist.')
+
+        if (!fs.existsSync(path.resolve('tarpit.json'))) {
+            throw new Error('No specified configuration file, and "tarpit.json" not exist.')
         }
-        return new ConfigData(try_read_json('config/default.json'))
+        return new ConfigData(try_read_json('tarpit.json'))
     } else if (typeof data === 'string') {
         if (!fs.existsSync(path.resolve(path.resolve(data)))) {
             throw new Error(`Specified configuration file "${data}" not exists.`)

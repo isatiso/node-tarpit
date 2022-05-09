@@ -25,6 +25,7 @@
     },
     "scripts": {
         "build": "rollup -c",
+        "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json",
         "test": "echo \"Error: run tests from root\" && exit 1"
     },
     "dependencies": {
@@ -33,6 +34,7 @@
         "@tarpit/http": "^0.0.6",
         "@tarpit/judge": "^0.0.6",
         "@tarpit/rabbitmq": "^0.0.6",
-        "@tarpit/schedule": "^0.0.6"
+        "@tarpit/schedule": "^0.0.6",
+        "typescript-json-schema": "^0.53.0"
     }
 }

@@ -1,6 +1,6 @@
-import { TpConfigSchema } from '@tarpit/config'
 import { Platform, TpRoot } from '@tarpit/core'
 import { Get, TpHttpServer, TpRouter } from '@tarpit/http'
+import { TpRabbitMQ } from '@tarpit/rabbitmq'
 import { Task, TpSchedule, TpTrigger } from '@tarpit/schedule'
 
 @TpRouter('/')
@@ -32,19 +32,9 @@ class TestSchedule {
 class TestRoot {
 }
 
-const config_data: TpConfigSchema = {
-    http: {
-        port: 3000,
-        cors: {
-            allow_headers: 'Access-Control-Allow-Origin,origin,Content-Type,Accept,Authorization',
-            allow_methods: 'GET,POST,PUT,DELETE,OPTIONS',
-            allow_origin: '*'
-        }
-    },
-}
-
-new Platform(config_data)
+new Platform('../tarpit.json')
     .plug(TpHttpServer)
     .plug(TpTrigger)
+    .plug(TpRabbitMQ)
     .bootstrap(TestRoot)
     .start()
