@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { check_used, DecoratorClass, load_component, make_provider_collector, Meta, set_touched, TokenTools } from '@tarpit/core'
+import { collect_function, collect_provider, DecoratorClass, load_component, Meta, TokenTools } from '@tarpit/core'
 import { ScheduleFunction, TpScheduleMeta, TpScheduleOptions } from '../__types__'
 
 /**
@@ -24,20 +24,13 @@ export function TpSchedule(options?: TpScheduleOptions): DecoratorClass {
         }
         meta.set({
             type: 'TpSchedule',
-            loader: '∑∫πœ-TpSchedule',
+            loader: 'œœ-TpSchedule',
             category: 'module',
             name: constructor.name,
             schedule_options: options,
-            provider_collector: make_provider_collector(constructor, options),
-            on_load: (meta, injector) => {
-                const provider_tree = load_component(constructor, injector, meta)
-                check_used(provider_tree, constructor)
-            },
-            function_collector: () => {
-                const touched = set_touched(constructor).value
-                return Object.values(touched)
-                    .filter((item): item is ScheduleFunction<any> => item.type === 'TpScheduleFunction')
-            },
+            provider_collector: collect_provider(constructor, options),
+            function_collector: () => collect_function<ScheduleFunction<any>>(constructor, 'TpScheduleFunction'),
+            on_load: (meta, injector) => load_component(constructor, injector, meta),
         })
     }
 }

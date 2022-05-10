@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { DecoratorClass, load_component, make_provider_collector, Meta, set_touched, TokenTools } from '@tarpit/core'
+import { DecoratorClass, load_component, collect_provider, Meta, collect_function, TokenTools } from '@tarpit/core'
 import { ConsumerFunction, TpConsumerMeta, TpConsumerOptions } from '../__types__'
 
 export function TpConsumer(options?: TpConsumerOptions): DecoratorClass {
@@ -18,17 +18,13 @@ export function TpConsumer(options?: TpConsumerOptions): DecoratorClass {
 
         meta.set({
             type: 'TpConsumer',
-            name: constructor.name,
+            loader: 'œœ-TpConsumer',
             category: 'module',
-            loader: '∑∫πœ-TpConsumer',
+            name: constructor.name,
             consumer_options: options,
-            provider_collector: make_provider_collector(constructor, options),
+            provider_collector: collect_provider(constructor, options),
+            function_collector: () => collect_function<ConsumerFunction<any>>(constructor, 'TpConsumerFunction'),
             on_load: (meta, injector) => load_component(constructor, injector, meta),
-            function_collector: () => {
-                const touched = set_touched(constructor).value
-                return Object.values(touched)
-                    .filter((item): item is ConsumerFunction<any> => item.type === 'TpConsumerFunction')
-            }
         })
     }
 }

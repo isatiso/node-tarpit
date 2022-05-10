@@ -34,58 +34,32 @@ function isClassProvider<T extends object>(def: ProviderDef<T> | Constructor<any
  */
 export function def2Provider(defs: (ProviderDef<any> | Constructor<any>)[], injector: Injector): (Provider<unknown> | undefined)[] | undefined {
     return defs?.map(def => {
+
+        const token = (def as any).provide ?? def
+        if (injector.local_has(token)) {
+            return injector.get(token)
+        }
+
         if (isValueProvider(def)) {
-            if (injector.local_has(def.provide)) {
-                return injector.get(def.provide)
-            } else {
-                const provider = new ValueProvider('valueProvider', def.useValue)
-                injector.set_provider(def.provide, provider)
-                return provider
-            }
+            return injector.set_provider(def.provide, new ValueProvider('valueProvider', def.useValue))
 
         } else if (isFactoryProvider(def)) {
-            if (injector.local_has(def.provide)) {
-                return injector.get(def.provide)
-            } else {
-                const provider = new FactoryProvider('FactoryProvider', def.useFactory as any, def.deps)
-                injector.set_provider(def.provide, provider)
-                return provider
-            }
+            return injector.set_provider(def.provide, new FactoryProvider('FactoryProvider', def.useFactory as any, def.deps))
 
         } else if (isClassProvider(def)) {
             const meta = TokenTools.ensure_component(def.useClass).value
             if (meta.category !== 'service') {
                 throw new Error(`${def.useClass.name} is not TpServiceLike.`)
             }
-            if (injector.local_has(def.provide)) {
-                return injector.get(def.provide)
-            } else {
-                if (meta.on_load) {
-                    meta.on_load?.(meta, injector)
-                } else {
-                    meta.provider = new ClassProvider(def.useClass, injector)
-                    injector.set_provider(def, meta.provider)
-                }
-                return meta.provider
-            }
+            return meta.provider = injector.set_provider(def, new ClassProvider(def.useClass, injector))
 
         } else {
             const meta = TokenTools.ensure_component(def).value
             if (meta.category !== 'service') {
                 throw new Error(`${def.name} is not TpServiceLike.`)
             }
-
-            if (injector.local_has(def)) {
-                return injector.get(def)
-            } else {
-                if (meta.on_load) {
-                    meta.on_load?.(meta, injector)
-                } else {
-                    meta.provider = new ClassProvider(def, injector)
-                    injector.set_provider(def, meta.provider)
-                }
-                return meta.provider
-            }
+            meta.on_load?.(meta, injector)
+            return meta.provider
         }
     })
 }

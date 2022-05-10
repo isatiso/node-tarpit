@@ -56,6 +56,7 @@ export class Injector {
      */
     set_provider(token: any, provider: Provider<any>) {
         this.providers.set(token, provider)
+        return provider
     }
 
     /**

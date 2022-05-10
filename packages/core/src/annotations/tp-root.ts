@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { _find_usage, make_provider_collector } from '../__tools__/collector'
+import { check_used, collect_provider } from '../__tools__/collector'
 import { TpRootMeta, TpRootOptions } from '../__tools__/component-types'
 import { Meta } from '../__tools__/meta'
 import { MetaTools } from '../__tools__/meta-tools'
@@ -29,10 +29,10 @@ export function TpRoot(options?: TpRootOptions): DecoratorClass {
         meta.set({
             ...options,
             type: 'TpRoot',
-            loader: '∑∫πœ-TpRoot',
+            loader: 'œœ-TpRoot',
             category: 'module',
             name: constructor.name,
-            provider_collector: make_provider_collector(constructor, options),
+            provider_collector: collect_provider(constructor, options),
             on_load: (meta, injector) => {
 
                 if (!injector.has(constructor)) {
@@ -58,10 +58,7 @@ export function TpRoot(options?: TpRootOptions): DecoratorClass {
                         }
                     })
 
-                    provider_tree?.children.filter(def => !_find_usage(def))
-                        .forEach(def => {
-                            console.log(`Warning: ${meta.name} -> ${def?.name} not used.`)
-                        })
+                    check_used(provider_tree, meta.name)
                 }
             }
         })

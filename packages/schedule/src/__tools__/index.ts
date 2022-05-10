@@ -18,7 +18,7 @@ export const get_schedule_function = MetaWrapper<ScheduleFunction<any>>(
             crontab_str: '',
             name: 'unset'
         }
-        TokenTools.Touched(prototype).ensure_default().do(touched => {
+        TokenTools.FunctionRecord(prototype).ensure_default().do(touched => {
             touched[prop] = schedule_function
         })
         return schedule_function

@@ -21,7 +21,7 @@ export const get_consumer_function = MetaWrapper<ConsumerFunction<any>>(DI_TOKEN
         param_types: MetaTools.get_method_parameter_types(prototype, prop)?.map((t: any, i: number) => parameter_injection?.[i] ?? t) as Parameters<T>,
         handler: descriptor.value,
     }
-    TokenTools.Touched(prototype).ensure_default().do(touched => {
+    TokenTools.FunctionRecord(prototype).ensure_default().do(touched => {
         touched[prop] = consumer_function
     })
     return consumer_function
@@ -39,7 +39,7 @@ export const get_producer_function = MetaWrapper<ProducerFunction<any>>(DI_TOKEN
         handler: (() => null) as any,
         produce_cache: new Deque()
     }
-    TokenTools.Touched(prototype).ensure_default().do(touched => {
+    TokenTools.FunctionRecord(prototype).ensure_default().do(touched => {
         touched[property] = producer_function
     })
     return producer_function

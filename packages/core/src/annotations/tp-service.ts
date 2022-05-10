@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { DecoratorClass, } from '../__types__'
-import { TpServiceOptions } from '../__tools__/component-types'
+import { TpServiceMeta, TpServiceOptions } from '../__tools__/component-types'
 import { TokenTools } from '../__tools__/token-tools'
+import { DecoratorClass, } from '../__types__'
+import { Injector } from '../injector'
+import { ClassProvider } from '../provider'
 
 /**
  * 把一个类标记为 Tp.TpService。
@@ -23,9 +25,10 @@ export function TpService(options?: TpServiceOptions): DecoratorClass {
             })
             .set({
                 type: 'TpService',
-                loader: '∑∫πœ-TpService',
+                loader: 'œœ-TpService',
                 category: 'service',
                 name: constructor.name,
+                on_load: (meta: TpServiceMeta, injector: Injector) => meta.provider = injector.set_provider(constructor, new ClassProvider(constructor, injector)),
             })
     }
 }

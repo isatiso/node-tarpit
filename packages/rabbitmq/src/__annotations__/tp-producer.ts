@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { DecoratorClass, load_component, Meta, set_touched, TokenTools } from '@tarpit/core'
+import { DecoratorClass, load_component, Meta, collect_function, TokenTools } from '@tarpit/core'
 import { ProducerFunction, TpProducerMeta, TpProducerOptions } from '../__types__'
 
 export function TpProducer(options?: TpProducerOptions): DecoratorClass {
@@ -17,16 +17,12 @@ export function TpProducer(options?: TpProducerOptions): DecoratorClass {
 
         meta.set({
             type: 'TpProducer',
+            loader: 'œœ-TpProducer',
             category: 'service',
-            loader: '∑∫πœ-TpProducer',
             name: constructor.name,
             producer_options: options,
+            function_collector: () => collect_function<ProducerFunction<any>>(constructor, 'TpProducerFunction'),
             on_load: (meta, injector) => load_component(constructor, injector, meta),
-            function_collector: () => {
-                const touched = set_touched(constructor).value
-                return Object.values(touched)
-                    .filter((item): item is ProducerFunction<any> => item.type === 'TpProducerFunction')
-            },
         })
     }
 }

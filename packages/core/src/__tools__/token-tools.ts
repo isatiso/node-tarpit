@@ -6,7 +6,7 @@
  */
 
 import { Constructor } from '../__types__'
-import { BasePropertyFunction, BaseTpComponentMeta, TpComponentCollector, TpComponentMeta } from './component-types'
+import { BaseTpComponentMeta, FunctionRecord, TpComponentCollector, TpComponentMeta } from './component-types'
 import { Meta, MetaWrapper } from './meta'
 import { DI_TOKEN } from './token'
 
@@ -27,7 +27,7 @@ export namespace TokenTools {
      * 自定义数据。
      * @category Basic Meta
      */
-    export const Touched = MetaWrapper<Record<string, BasePropertyFunction<any>>>(DI_TOKEN.touched, 'prototype_only', () => ({}))
+    export const FunctionRecord = MetaWrapper<FunctionRecord>(DI_TOKEN.function_record, 'prototype_only', () => ({}))
 
     /**
      * 参数类型。

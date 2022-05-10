@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Meta } from '../__tools__/meta'
-import { DecoratorClass } from '../__types__/'
-import { make_provider_collector } from '../__tools__/collector'
+import { collect_provider } from '../__tools__/collector'
 import { TpModuleMeta, TpModuleOptions } from '../__tools__/component-types'
+import { Meta } from '../__tools__/meta'
 import { TokenTools } from '../__tools__/token-tools'
+import { DecoratorClass } from '../__types__/'
 
 /**
  * 把一个类标记为 Tp.TpModule，并提供配置元数据。
@@ -25,10 +25,10 @@ export function TpModule(options?: TpModuleOptions): DecoratorClass {
         }
         meta.set({
             type: 'TpModule',
+            loader: 'œœ-TpModule',
             category: 'module',
             name: constructor.name,
-            provider_collector: make_provider_collector(constructor, options),
-            loader: '∑∫πœ-TpModule'
+            provider_collector: collect_provider(constructor, options),
         })
     }
 }

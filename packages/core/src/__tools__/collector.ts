@@ -12,15 +12,7 @@ import { BasePropertyFunction, ImportsAndProviders, TpComponentMeta } from './co
 import { MetaTools } from './meta-tools'
 import { TokenTools } from './token-tools'
 
-/**
- * @private
- *
- * 遍历依赖加载树，查找没有被使用的 Tp.TpModule。
- *
- * @param tree_node
- * @param indent
- */
-export function _find_usage(tree_node: ProviderTreeNode | undefined, indent: number = 0): boolean {
+function _find_usage(tree_node: ProviderTreeNode | undefined, indent: number = 0): boolean {
     return Boolean(tree_node?.providers?.find(p => p?.used)
         || tree_node?.children?.find(t => _find_usage(t, indent + 1)))
 }
@@ -45,10 +37,12 @@ export function get_providers(desc: BasePropertyFunction<any>, injector: Injecto
 export function load_component(constructor: Constructor<any>, injector: Injector, meta: TpComponentMeta): ProviderTreeNode | undefined {
 
     if (!injector.has(constructor)) {
-        const provider_tree: ProviderTreeNode | undefined = meta.category === 'module' ? meta.provider_collector?.(injector) : undefined
+        const provider_tree: ProviderTreeNode | undefined =
+            meta.category === 'module'
+                ? meta.provider_collector?.(injector)
+                : undefined
 
-        injector.set_provider(constructor, new ClassProvider(constructor, injector))
-        meta.provider = injector.get(constructor)!
+        meta.provider = injector.set_provider(constructor, new ClassProvider(constructor, injector))
         TokenTools.Instance(constructor).set(meta.provider.create())
 
         const token = injector.get<any>(meta.loader)?.create()
@@ -56,28 +50,32 @@ export function load_component(constructor: Constructor<any>, injector: Injector
             injector.get<any>(token)?.create().load(meta, injector)
         }
 
+        provider_tree?.children.filter(def => !_find_usage(def))
+            .forEach(def => console.log(`Warning: ${name} -> ${def?.name} not used.`))
+
+        check_used(provider_tree, constructor.name)
+
         return provider_tree
     }
 }
 
-export function check_used(provider_tree: ProviderTreeNode | undefined, constructor: Constructor<any>) {
+export function check_used(provider_tree: ProviderTreeNode | undefined, name: string) {
     provider_tree?.children.filter(def => !_find_usage(def))
-        .forEach(def => {
-            console.log(`Warning: ${constructor.name} -> ${def?.name} not used.`)
-        })
+        .forEach(def => console.log(`Warning: ${name} -> ${def?.name} not used.`))
 }
 
-export function set_touched(constructor: Constructor<any>) {
-    return TokenTools.Touched(constructor.prototype)
+export function collect_function<T extends BasePropertyFunction<any>>(constructor: Constructor<any>, type: T['type']) {
+    const record = TokenTools.FunctionRecord(constructor.prototype)
         .ensure_default()
         .do((touched: Record<string, BasePropertyFunction<any>>) => Object.values(touched).forEach(item => {
             item.meta = MetaTools.PropertyMeta(constructor.prototype, item.property).value
             item.pos = `${constructor.name}.${item.property}`
             item.handler = item.handler.bind(TokenTools.Instance(constructor).value)
         }))
+    return Object.values(record).filter((item): item is T => item.type === type)
 }
 
-export function make_provider_collector(constructor: Constructor<any>, options?: ImportsAndProviders): (injector: Injector) => ProviderTreeNode {
+export function collect_provider(constructor: Constructor<any>, options?: ImportsAndProviders): (injector: Injector) => ProviderTreeNode {
     return function(injector: Injector) {
         const children = options?.imports?.map(md => {
             const module_meta = TokenTools.ensure_component(md).value
@@ -86,12 +84,6 @@ export function make_provider_collector(constructor: Constructor<any>, options?:
             }
             return module_meta.provider_collector(injector)
         }) ?? []
-
-        // TODO:
-        // options?.producers?.forEach(m => {
-        //     const meta = TokenTools.ensure_component(m, 'TpProducer').value
-        //     meta.on_load(meta, injector)
-        // })
 
         const providers: (Provider<any> | undefined)[] = [
             ...def2Provider([...options?.providers ?? []] as (ProviderDef<any> | Constructor<any>)[], injector) ?? []

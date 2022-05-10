@@ -34,7 +34,7 @@ export interface TpServer extends TpPluginConstructor<'TpRouter'> {
  * @private
  * Koa adaptor.
  */
-@TpPluginType({ type: 'TpRouter', loader_list: ['∑∫πœ-TpRouter'], option_key: 'routers' })
+@TpPluginType({ type: 'TpRouter', loader_list: ['œœ-TpRouter'], option_key: 'routers' })
 export class TpHttpServer implements TpPlugin<'TpRouter'> {
 
     private _koa = new Koa()
@@ -50,10 +50,10 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
         this._koa.use(this.body_parser)
         this._koa.use(async (ctx: LiteContext, next) => this._http_handler.handle(ctx, next))
 
-        this.injector.set_provider(Authenticator, new ValueProvider('Authenticator', null))
-        this.injector.set_provider(CacheProxy, new ValueProvider('CacheProxy', null))
-        this.injector.set_provider(LifeCycle, new ValueProvider('LifeCycle', null))
-        this.injector.set_provider(ResultWrapper, new ValueProvider('ResultWrapper', null))
+        this.injector.set_provider(Authenticator, new ValueProvider('Authenticator', null)).set_used()
+        this.injector.set_provider(CacheProxy, new ValueProvider('CacheProxy', null)).set_used()
+        this.injector.set_provider(LifeCycle, new ValueProvider('LifeCycle', null)).set_used()
+        this.injector.set_provider(ResultWrapper, new ValueProvider('ResultWrapper', null)).set_used()
     }
 
     load(meta: TpRouterMeta, injector: Injector): void {

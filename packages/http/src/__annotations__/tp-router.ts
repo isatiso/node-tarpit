@@ -5,11 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { check_used, Constructor, DecoratorClass, load_component, make_provider_collector, Meta, set_touched, TokenTools } from '@tarpit/core'
-import { Authenticator } from '../__services__/authenticator'
-import { CacheProxy } from '../__services__/cache-proxy'
-import { LifeCycle } from '../__services__/life-cycle'
-import { ResultWrapper } from '../__services__/result-wrapper'
+import { collect_function, collect_provider, Constructor, DecoratorClass, load_component, Meta, TokenTools } from '@tarpit/core'
 import { get_router_function, IGunslinger } from '../__tools__'
 import { RouterFunction, TpRouterMeta, TpRouterOptions } from '../__types__'
 
@@ -26,25 +22,14 @@ export function TpRouter(path: `/${string}`, options?: TpRouterOptions): Decorat
         }
         meta.set({
             type: 'TpRouter',
-            loader: '∑∫πœ-TpRouter',
+            loader: 'œœ-TpRouter',
             category: 'module',
             name: constructor.name,
             router_path: path,
             router_options: options,
-            provider_collector: make_provider_collector(constructor, options),
-            on_load: (meta, injector) => {
-                const provider_tree = load_component(constructor, injector, meta)
-                injector.get(Authenticator)?.set_used()
-                injector.get(LifeCycle)?.set_used()
-                injector.get(CacheProxy)?.set_used()
-                injector.get(ResultWrapper)?.set_used()
-                check_used(provider_tree, constructor)
-            },
-            function_collector: () => {
-                const touched = set_touched(constructor).value
-                return Object.values(touched)
-                    .filter((item): item is RouterFunction<any> => item.type === 'TpRouterFunction')
-            },
+            provider_collector: collect_provider(constructor, options),
+            function_collector: () => collect_function<RouterFunction<any>>(constructor, 'TpRouterFunction'),
+            on_load: (meta, injector) => load_component(constructor, injector, meta),
             path_replacement: {},
         })
 

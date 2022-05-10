@@ -21,7 +21,7 @@ export enum DI_TOKEN {
     class_meta = 'œœ:class_meta',
     property_meta = 'œœ:property_meta',
     property_function = 'œœ:property_function',
-    touched = 'œœ:touched',
+    function_record = 'œœ:function_record',
     component_meta = 'œœ:component_meta',
     dependencies = 'œœ:dependencies',
     instance = 'œœ:instance',

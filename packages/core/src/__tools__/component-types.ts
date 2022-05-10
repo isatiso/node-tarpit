@@ -14,7 +14,7 @@ export interface BaseTpComponentMeta<Type extends ComponentType> {
     type: Type
     name: string
     provider?: Provider<any>
-    loader: `∑∫πœ-${Type}`
+    loader: `œœ-${Type}`
     on_load?: (meta: any, injector: Injector) => void
     category: string
 }
@@ -39,7 +39,10 @@ export interface BasePropertyFunction<T extends (...args: any) => any> {
     meta?: PropertyMeta
 }
 
+export type FunctionRecord = Record<string, BasePropertyFunction<any>>
+
 export interface TpServiceMeta extends BaseTpServiceMeta<'TpService'> {
+    on_load: (meta: TpServiceMeta, injector: Injector) => void
 }
 
 export interface TpModuleMeta extends BaseTpModuleMeta<'TpModule'> {

@@ -14,7 +14,7 @@ import { ChannelWrapper } from './channel-wrapper'
 import { Ack, Dead, Requeue } from './error'
 import { Letter, PURE_LETTER } from './letter'
 
-@TpPluginType({ type: 'TpConsumer', loader_list: ['∑∫πœ-TpConsumer', '∑∫πœ-TpProducer'], option_key: 'consumers' })
+@TpPluginType({ type: 'TpConsumer', loader_list: ['œœ-TpConsumer', 'œœ-TpProducer'], option_key: 'consumers' })
 export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
 
     public connection?: Connection
@@ -35,7 +35,7 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
         private config_data: ConfigData
     ) {
         this.emitter.setMaxListeners(1000)
-        this.injector.set_provider('∑∫πœ-TpProducer', new ValueProvider('MessageQueue', TpRabbitMQ))
+        this.injector.set_provider('œœ-TpProducer', new ValueProvider('MessageQueue', TpRabbitMQ))
         const amqp = this.config_data.get('rabbitmq')
         if (amqp) {
             this.set_config(amqp.url, amqp.prefetch, amqp.socket_options)

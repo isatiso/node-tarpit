@@ -21,7 +21,7 @@ export const get_router_function = MetaWrapper<RouterFunction<any>>(
             auth: false,
             wrap_result: true,
         }
-        TokenTools.Touched(prototype).ensure_default().do(touched => {
+        TokenTools.FunctionRecord(prototype).ensure_default().do(touched => {
             touched[prop] = router_function
         })
         return router_function

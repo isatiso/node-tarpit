@@ -28,7 +28,7 @@ function on_error_or_throw(hooks: TaskLifeCycle | undefined, err: any, context: 
  *
  * @category Schedule
  */
-@TpPluginType({ type: 'TpSchedule', loader_list: ['∑∫πœ-TpSchedule'], option_key: 'schedules' })
+@TpPluginType({ type: 'TpSchedule', loader_list: ['œœ-TpSchedule'], option_key: 'schedules' })
 export class TpTrigger implements TpPlugin<'TpSchedule'> {
 
     private static id_cursor = 1
