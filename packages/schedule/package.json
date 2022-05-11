@@ -33,6 +33,6 @@
         "@tarpit/core": "^0.1.2"
     },
     "peerDependencies": {
-        "@tarpit/core": "^0.0.8"
+        "@tarpit/core": "^0.1.2"
     }
 }

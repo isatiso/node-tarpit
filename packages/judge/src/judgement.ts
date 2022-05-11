@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { JudgementUtil } from './judgement-utils'
+import { Matcher } from './matcher'
 
 export type ValueType =
     | 'exist'
@@ -23,7 +23,7 @@ export type ValueType =
     | 'true'
     | 'false'
 
-export type JudgementMatcher = ValueType | RegExp | JudgementUtil<(...args: any[]) => boolean>
+export type JudgementRule = ValueType | RegExp | Matcher<(target: any) => boolean>
 
 /**
  * 推断配置对象的合法路径。
@@ -65,6 +65,18 @@ export type PathValue<T extends Object, P extends Path<T>> =
             T[P]
             :
             never;
+
+export type PathValueMap<T> = {
+    [P in Path<T>]: PathValue<T, P>
+}
+
+export type PathOfType<T, M> = {
+    [P in Path<T>]: PathValue<T, P> extends M ? P : never
+}[Path<T>]
+
+export type PathValueMapOfType<T, M> = {
+    [P in PathOfType<T, M>]: PathValue<T, P>
+}
 
 /**
  * 内置字段查询类，提供了路径类型的定义。
@@ -111,21 +123,45 @@ export class Reference<T> {
  */
 export class Judgement<T> extends Reference<T> {
 
+    getIf<P extends Path<T>>(prop: P, matcher: 'exist' | 'nonNull'): Exclude<PathValue<T, P>, undefined> | undefined
+    getIf<P extends Path<T>>(prop: P, matcher: 'exist' | 'nonNull', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIf<P extends PathOfType<T, Array<any>>>(prop: P, matcher: 'array' | 'nonEmptyArray'): Exclude<PathValue<T, P>, undefined> | undefined
+    getIf<P extends PathOfType<T, Array<any>>>(prop: P, matcher: 'array' | 'nonEmptyArray', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIf<P extends PathOfType<T, null>>(prop: P, matcher: 'null'): Exclude<PathValue<T, P>, undefined> | undefined
+    getIf<P extends PathOfType<T, null>>(prop: P, matcher: 'null', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIf<P extends PathOfType<T, string>>(prop: P, matcher: 'string' | 'nonEmptyString'): Exclude<PathValue<T, P>, undefined> | undefined
+    getIf<P extends PathOfType<T, string>>(prop: P, matcher: 'string' | 'nonEmptyString', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIf<P extends PathOfType<T, number>>(prop: P, matcher: 'number' | 'nonZeroNumber'): Exclude<PathValue<T, P>, undefined> | undefined
+    getIf<P extends PathOfType<T, number>>(prop: P, matcher: 'number' | 'nonZeroNumber', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIf<P extends PathOfType<T, boolean>>(prop: P, matcher: 'boolean' | 'true' | 'false'): Exclude<PathValue<T, P>, undefined> | undefined
+    getIf<P extends PathOfType<T, boolean>>(prop: P, matcher: 'boolean' | 'true' | 'false', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIf<P extends PathOfType<T, string>>(prop: P, matcher: RegExp): Exclude<PathValue<T, P>, undefined> | undefined
+    getIf<P extends PathOfType<T, string>>(prop: P, matcher: RegExp, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIf<P extends Path<T>>(prop: P, matcher: Matcher<Exclude<PathValue<T, P>, undefined>>): Exclude<PathValue<T, P>, undefined> | undefined
+    getIf<P extends Path<T>>(prop: P, matcher: Matcher<Exclude<PathValue<T, P>, undefined>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIf(prop: Path<T>, matcher: JudgementRule, def?: any): any {
+        const res = super.get(prop)
+        if (res !== undefined && this.if(res, matcher)) {
+            return res
+        }
+        return def
+    }
+
     /**
      * 检查一个字段的值是否匹配指定规则。
      *
      * @param value
-     * @param type
+     * @param rule
      * @protected
      */
-    protected testValue(value: any, type?: JudgementMatcher): any {
-        if (type instanceof RegExp) {
-            return typeof value === 'string' && type.test(value)
+    protected if(value: any, rule?: JudgementRule): any {
+        if (rule instanceof RegExp) {
+            return typeof value === 'string' && rule.test(value)
         }
-        if (type instanceof JudgementUtil) {
-            return type.check(value)
+        if (rule instanceof Matcher) {
+            return rule.check(value)
         }
-        switch (type) {
+        switch (rule) {
             case 'exist':
                 return value !== undefined
             case 'true':
@@ -163,31 +199,21 @@ export class Judgement<T> extends Reference<T> {
      * 检查一个字段的值是否匹配指定规则中的任意一个。
      *
      * @param value
-     * @param types
+     * @param rules
      * @protected
      */
-    protected any(value: any, types: JudgementMatcher[]) {
-        for (const type of types) {
-            if (this.testValue(value, type)) {
-                return true
-            }
-        }
-        return false
+    protected any(value: any, rules: JudgementRule[]) {
+        return rules.some(rule => this.if(value, rule))
     }
 
     /**
      * 检查一个字段的值是否匹配全部指定规则。
      *
      * @param value
-     * @param types
+     * @param rules
      * @protected
      */
-    protected all(value: any, types: JudgementMatcher[]) {
-        for (const type of types) {
-            if (!this.testValue(value, type)) {
-                return false
-            }
-        }
-        return true
+    protected all(value: any, rules: JudgementRule[]) {
+        return rules.every(rule => this.if(value, rule))
     }
 }

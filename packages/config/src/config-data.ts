@@ -43,7 +43,7 @@ export class ConfigData extends Reference<TpConfigSchema> {
     /**
      * 返回完整配置对象。
      */
-    get<K extends Path<TpConfigSchema>>(): TpConfigSchema
+    get(): TpConfigSchema
     /**
      * 查找指定路径的配置。
      *

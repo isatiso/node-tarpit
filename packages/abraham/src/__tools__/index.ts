@@ -1,6 +1,5 @@
 export {
     read_json_file_sync,
-    deliver_shell
 } from './files'
 export {
     parse_tsconfig,

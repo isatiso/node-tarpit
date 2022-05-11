@@ -1,5 +1,5 @@
 {
-    "name": "@tarpit/http",
+    "name": "@tarpit/cli",
     "version": "0.1.2",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
@@ -9,8 +9,12 @@
     "types": "./lib/index.d.ts",
     "module": "./lib/index.esm.js",
     "files": [
-        "lib"
+        "lib",
+        "script"
     ],
+    "bin": {
+        "tp": "bin/cli.js"
+    },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/",
         "access": "public"
@@ -27,14 +31,13 @@
         "test": "echo \"Error: run tests from root\" && exit 1"
     },
     "dependencies": {
-        "co-body": "^6.1.0",
-        "koa": "^2.13.4"
-    },
-    "devDependencies": {
-        "@tarpit/core": "^0.1.2",
-        "@types/koa": "^2.13.4"
-    },
-    "peerDependencies": {
-        "@tarpit/core": "^0.1.2"
+        "@types/chai": "^4.3.1",
+        "@types/chai-as-promised": "^7.1.5",
+        "@types/mocha": "^9.1.1",
+        "chai": "^4.3.6",
+        "chai-as-promised": "^7.1.1",
+        "commander": "^9.2.0",
+        "mocha": "^10.0.0",
+        "nyc": "^15.1.0"
     }
 }

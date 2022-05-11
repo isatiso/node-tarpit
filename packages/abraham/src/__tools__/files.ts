@@ -12,42 +12,6 @@ export async function command_exists(cmd: string) {
     })
 }
 
-export async function deliver_shell(cmd_line: string, options?: {
-    no_stdout?: boolean
-    no_stderr?: boolean
-}): Promise<string> {
-
-    const error = new Error()
-    const output: string[] = []
-    const err_msg: string[] = []
-
-    function make_error(code: number) {
-        error.message = `script returned exit code ${code}\n\n` + err_msg.join('') + '\n\n'
-        return error
-    }
-
-    return new Promise<string>((resolve, reject) => {
-        cmd_line = cmd_line.trim()
-        process.stdout.write('tcli> ' + cmd_line + '\n')
-        const child = exec(cmd_line)
-        child.stdout?.on('data', data => {
-            output.push(data)
-            if (!options?.no_stdout) {
-                process.stdout.write(data)
-            }
-        })
-        child.stderr?.on('data', data => {
-            err_msg.push(data)
-            if (!options?.no_stderr) {
-                process.stderr.write(data)
-            }
-        })
-        child.on('exit', () => {
-            child.exitCode ? reject(make_error(child.exitCode)) : resolve(output.join(''))
-        })
-    })
-}
-
 function read_text_file_sync(path: string) {
     return fs.readFileSync(path, 'utf-8')
 }
