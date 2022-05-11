@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/rabbitmq",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -31,7 +31,7 @@
         "koa": "^2.13.4"
     },
     "devDependencies": {
-        "@tarpit/core": "^0.1.1",
+        "@tarpit/core": "^0.1.2",
         "@types/koa": "^2.13.4"
     },
     "peerDependencies": {
