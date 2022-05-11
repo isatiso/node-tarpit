@@ -1,1 +1,2 @@
-export { ConfigData, TpConfigSchema, load_config } from './config-data'
+export { ConfigData, TpConfigSchema } from './config-data'
+export { load_config } from './config-tools'

@@ -17,20 +17,25 @@ function _find_usage(tree_node: ProviderTreeNode | undefined, indent: number = 0
         || tree_node?.children?.find(t => _find_usage(t, indent + 1)))
 }
 
+export function check_used(provider_tree: ProviderTreeNode | undefined, name: string) {
+    provider_tree?.children.filter(def => !_find_usage(def))
+        .forEach(def => console.log(`Warning: ${name} -> ${def?.name} not used.`))
+}
+
 export function get_providers(desc: BasePropertyFunction<any>, injector: Injector, except_list?: any[]): Provider<any>[] {
     return desc.param_types?.map((token: any, i: number) => {
         if (token === undefined) {
-            throw new Error(`type 'undefined' at ${desc.pos}[${i}], if it's not specified, there maybe a circular import.`)
+            console.error(`type 'undefined' at ${desc.pos}[${i}], if it's not specified, there maybe a circular import.`)
         }
         if (except_list?.includes(token)) {
             return token
         }
         const provider = injector.get(token, desc.pos)
-        if (provider) {
-            provider.create()
-            return provider
+        if (!provider) {
+            throw new Error(`Can't find provider of "${token}" in [${desc.pos}, args[${i}]]`)
         }
-        throw new Error(`Can't find provider of "${token}" in [${desc.pos}, args[${i}]]`)
+        provider.create()
+        return provider
     }) ?? []
 }
 
@@ -57,11 +62,6 @@ export function load_component(constructor: Constructor<any>, injector: Injector
 
         return provider_tree
     }
-}
-
-export function check_used(provider_tree: ProviderTreeNode | undefined, name: string) {
-    provider_tree?.children.filter(def => !_find_usage(def))
-        .forEach(def => console.log(`Warning: ${name} -> ${def?.name} not used.`))
 }
 
 export function collect_function<T extends BasePropertyFunction<any>>(constructor: Constructor<any>, type: T['type']) {
