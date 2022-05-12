@@ -110,8 +110,8 @@ export class Judgement<T> extends Reference<T> {
 
     getIf<P extends PathOfType<T, string>>(prop: P, matcher: RegExp): Exclude<PathValue<T, P>, undefined> | undefined
     getIf<P extends PathOfType<T, string>>(prop: P, matcher: RegExp, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIf<P extends Path<T>>(prop: P, matcher: Matcher<Exclude<PathValue<T, P>, undefined>>): Exclude<PathValue<T, P>, undefined> | undefined
-    getIf<P extends Path<T>>(prop: P, matcher: Matcher<Exclude<PathValue<T, P>, undefined>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIf<V, P extends PathOfType<T, V>>(prop: P, matcher: Matcher<V>): Exclude<V, undefined> | undefined
+    getIf<V, P extends PathOfType<T, V>>(prop: P, matcher: Matcher<V>, def: Exclude<V, undefined>): Exclude<V, undefined>
     getIf(prop: Path<T>, matcher: JudgementRule, def?: any): any {
         const res = super.get(prop)
         if (res !== undefined && this.if(res, matcher)) {

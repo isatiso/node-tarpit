@@ -33,7 +33,7 @@ export async function deliver_shell(cmd_line: string, options?: {
 
     return new Promise<string>((resolve, reject) => {
         cmd_line = cmd_line.trim()
-        process.stdout.write('tcli> ' + cmd_line + '\n')
+        process.stdout.write('tp> ' + cmd_line + '\n')
         const child = exec(cmd_line)
         child.stdout?.on('data', data => {
             output.push(data)

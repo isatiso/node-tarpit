@@ -86,7 +86,6 @@ describe('judgement.ts', function() {
                 expect(judge.getIf('a', Jtl.nonEmptyString)).not.to.be.undefined
                 expect(judge.getIf('a', /some [a-z]{1,8}/)).not.to.be.undefined
                 expect(judge.getIf('a', /some thing/)).to.be.undefined
-                expect(judge.getIf('a', /some thing/)).to.be.undefined
             })
         })
 
