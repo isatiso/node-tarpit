@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/schedule",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -30,7 +30,7 @@
         "@tarpit/dora": "^0.1.0"
     },
     "devDependencies": {
-        "@tarpit/core": "^0.1.4"
+        "@tarpit/core": "^0.1.5"
     },
     "peerDependencies": {
         "@tarpit/core": "^0.1.2"
