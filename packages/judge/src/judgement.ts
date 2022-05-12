@@ -7,23 +7,7 @@
 
 import { Matcher } from './matcher'
 
-export type ValueType =
-    | 'exist'
-    | 'function'
-    | 'object'
-    | 'array'
-    | 'nonEmptyArray'
-    | 'null'
-    | 'nonNull'
-    | 'string'
-    | 'nonEmptyString'
-    | 'number'
-    | 'nonZeroNumber'
-    | 'boolean'
-    | 'true'
-    | 'false'
-
-export type JudgementRule = ValueType | RegExp | Matcher<(target: any) => boolean>
+export type JudgementRule = RegExp | Matcher<(target: any) => boolean>
 
 /**
  * 推断配置对象的合法路径。
@@ -88,6 +72,7 @@ export class Reference<T> {
     } = {}
 
     constructor(public data: T) {
+        this.data = data ?? {} as T
         this._cache[''] = { value: JSON.parse(JSON.stringify(this.data)) }
     }
 
@@ -102,14 +87,14 @@ export class Reference<T> {
             const paths = path.split('.')
             let data: any = this.data
             for (const p of paths) {
-                data = data?.[p]
+                data = data[p]
                 if (data === undefined) {
                     break
                 }
             }
             const final = data ?? def
             if (final !== undefined) {
-                this._cache[path] = { value: JSON.parse(JSON.stringify(data ?? def)) }
+                this._cache[path] = { value: JSON.parse(JSON.stringify(final)) }
             } else {
                 this._cache[path] = { value: undefined }
             }
@@ -123,18 +108,6 @@ export class Reference<T> {
  */
 export class Judgement<T> extends Reference<T> {
 
-    getIf<P extends Path<T>>(prop: P, matcher: 'exist' | 'nonNull'): Exclude<PathValue<T, P>, undefined> | undefined
-    getIf<P extends Path<T>>(prop: P, matcher: 'exist' | 'nonNull', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIf<P extends PathOfType<T, Array<any>>>(prop: P, matcher: 'array' | 'nonEmptyArray'): Exclude<PathValue<T, P>, undefined> | undefined
-    getIf<P extends PathOfType<T, Array<any>>>(prop: P, matcher: 'array' | 'nonEmptyArray', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIf<P extends PathOfType<T, null>>(prop: P, matcher: 'null'): Exclude<PathValue<T, P>, undefined> | undefined
-    getIf<P extends PathOfType<T, null>>(prop: P, matcher: 'null', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIf<P extends PathOfType<T, string>>(prop: P, matcher: 'string' | 'nonEmptyString'): Exclude<PathValue<T, P>, undefined> | undefined
-    getIf<P extends PathOfType<T, string>>(prop: P, matcher: 'string' | 'nonEmptyString', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIf<P extends PathOfType<T, number>>(prop: P, matcher: 'number' | 'nonZeroNumber'): Exclude<PathValue<T, P>, undefined> | undefined
-    getIf<P extends PathOfType<T, number>>(prop: P, matcher: 'number' | 'nonZeroNumber', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIf<P extends PathOfType<T, boolean>>(prop: P, matcher: 'boolean' | 'true' | 'false'): Exclude<PathValue<T, P>, undefined> | undefined
-    getIf<P extends PathOfType<T, boolean>>(prop: P, matcher: 'boolean' | 'true' | 'false', def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
     getIf<P extends PathOfType<T, string>>(prop: P, matcher: RegExp): Exclude<PathValue<T, P>, undefined> | undefined
     getIf<P extends PathOfType<T, string>>(prop: P, matcher: RegExp, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
     getIf<P extends Path<T>>(prop: P, matcher: Matcher<Exclude<PathValue<T, P>, undefined>>): Exclude<PathValue<T, P>, undefined> | undefined
@@ -147,6 +120,24 @@ export class Judgement<T> extends Reference<T> {
         return def
     }
 
+    getIfAny<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<T, P>, undefined> | undefined
+    getIfAny<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIfAny<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[]): Exclude<PathValue<T, P>, undefined> | undefined
+    getIfAny<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIfAny(prop: Path<T>, matcher_list: JudgementRule[], def?: any): any {
+        const res = super.get(prop)
+        return this.any(res, matcher_list) ? res : def
+    }
+
+    getIfAll<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<T, P>, undefined> | undefined
+    getIfAll<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIfAll<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[]): Exclude<PathValue<T, P>, undefined> | undefined
+    getIfAll<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    getIfAll(prop: Path<T>, matcher_list: JudgementRule[], def?: any): any {
+        const res = super.get(prop)
+        return this.all(res, matcher_list) ? res : def
+    }
+
     /**
      * 检查一个字段的值是否匹配指定规则。
      *
@@ -154,44 +145,11 @@ export class Judgement<T> extends Reference<T> {
      * @param rule
      * @protected
      */
-    protected if(value: any, rule?: JudgementRule): any {
+    protected if(value: any, rule: JudgementRule): any {
         if (rule instanceof RegExp) {
             return typeof value === 'string' && rule.test(value)
-        }
-        if (rule instanceof Matcher) {
+        } else {
             return rule.check(value)
-        }
-        switch (rule) {
-            case 'exist':
-                return value !== undefined
-            case 'true':
-                return Boolean(value)
-            case 'false':
-                return !Boolean(value)
-            case 'boolean':
-                return typeof value === 'boolean'
-            case 'object':
-                return Object.prototype.toString.call(value) === '[object Object]'
-            case 'function':
-                return Object.prototype.toString.call(value) === '[object Function]'
-            case 'array':
-                return Array.isArray(value)
-            case 'nonEmptyArray':
-                return Array.isArray(value) && value.length
-            case 'string':
-                return typeof value === 'string'
-            case 'nonEmptyString':
-                return typeof value === 'string' && value
-            case 'number':
-                return typeof value === 'number'
-            case 'nonZeroNumber':
-                return typeof value === 'number' && value
-            case 'null':
-                return value === null
-            case 'nonNull':
-                return value !== null
-            default:
-                return value !== undefined
         }
     }
 

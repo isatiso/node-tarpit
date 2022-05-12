@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Judgement, JudgementRule, Path, PathValue } from '@tarpit/judge'
+import { Jtl, Judgement, JudgementRule, Path, PathValue } from '@tarpit/judge'
 import { ReasonableError } from './error'
 
 export const PURE_PARAMS = 'PURE_PARAMS'
@@ -18,82 +18,13 @@ export const PURE_PARAMS = 'PURE_PARAMS'
 export class ApiParams<T> extends Judgement<T> {
 
     /**
-     * 指定参数是否匹配指定规则。是：返回参数本身；否：返回 `undefined`。
-     *
-     * @param prop
-     * @param match
-     */
-    getIf<P extends Path<T>>(prop: P, match: JudgementRule): PathValue<T, P> | undefined
-    /**
-     * 指定参数是否匹配指定规则。是：返回参数本身；否：返回默认值 def。
-     *
-     * @param prop
-     * @param match
-     * @param def
-     */
-    getIf<P extends Path<T>>(prop: P, match: JudgementRule, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIf<P extends Path<T>>(prop: P, match: JudgementRule, def?: PathValue<T, P>) {
-        const res = super.get(prop)
-        if (res !== undefined && this.if(res, match)) {
-            return res
-        }
-        return def
-    }
-
-    /**
-     * 指定参数是否匹配指定规则中的任意一个。是：返回参数本身；否：返回 `undefined`。
-     *
-     * @param prop 需要匹配的属性
-     * @param match_list 预设的多个匹配规则
-     */
-    getIfAny<P extends Path<T>>(prop: P, match_list: JudgementRule[]): PathValue<T, P> | undefined
-    /**
-     * 指定参数是否匹配指定规则中的任意一个。是：返回参数本身；否：返回默认值 def。
-     *
-     * @param prop
-     * @param match_list
-     * @param def
-     */
-    getIfAny<P extends Path<T>>(prop: P, match_list: JudgementRule[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIfAny<P extends Path<T>>(prop: P, match_list: JudgementRule[], def?: PathValue<T, P>) {
-        const res = super.get(prop)
-        if (res !== undefined && this.any(res, match_list)) {
-            return res
-        }
-        return def
-    }
-
-    /**
-     * 指定参数是否匹配全部指定规则。是：返回参数本身；否：返回 `undefined`。
-     *
-     * @param prop
-     * @param match_list
-     */
-    getIfAll<P extends Path<T>>(prop: P, match_list: JudgementRule[]): PathValue<T, P> | undefined
-    /**
-     * 指定参数是否匹配全部指定规则。是：返回参数本身；否：返回默认值 def。
-     *
-     * @param prop
-     * @param match_list
-     * @param def
-     */
-    getIfAll<P extends Path<T>>(prop: P, match_list: JudgementRule[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIfAll<P extends Path<T>>(prop: P, match_list: JudgementRule[], def?: PathValue<T, P>) {
-        const res = super.get(prop)
-        if (res !== undefined && this.all(res, match_list)) {
-            return res
-        }
-        return def
-    }
-
-    /**
      * 指定参数是否匹配指定规则。是：返回参数本身；否：抛出 ReasonableError。
      *
      * @param prop
      * @param match
      */
     ensure<P extends Path<T>>(prop: P, match?: JudgementRule): Exclude<PathValue<T, P>, undefined> {
-        match = match || 'exist'
+        match = match || Jtl.exist
         const res = super.get(prop)
         if (res === undefined) {
             throw new ReasonableError(400, `Can not find ${prop}`)

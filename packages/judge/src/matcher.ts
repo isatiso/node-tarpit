@@ -64,4 +64,19 @@ export namespace Jtl {
     export const $le = less_than_or_equal
     export const $eq = equal
     export const $ne = not_equal
+
+    export const exist = new Matcher<any>((target: any) => target !== undefined)
+    export const isFunction = new Matcher<Function>((target: any) => Object.prototype.toString.call(target) === '[object Function]')
+    export const object = new Matcher<object>((target: any) => Object.prototype.toString.call(target) === '[object Object]')
+    export const array = new Matcher<Array<any>>((target: any) => Array.isArray(target))
+    export const nonEmptyArray = new Matcher<Array<any>>((target: any) => Array.isArray(target) && target.length !== 0)
+
+    export const isNull = new Matcher<string>((target: any) => target === null)
+    export const string = new Matcher<string>((target: any) => typeof target === 'string')
+    export const nonEmptyString = new Matcher<string>((target: any) => typeof target === 'string' && target !== '')
+    export const number = new Matcher<number>((target: any) => typeof target === 'number')
+    export const nonZeroNumber = new Matcher<number>((target: any) => typeof target === 'number' && target !== 0)
+    export const boolean = new Matcher<boolean>((target: any) => typeof target === 'boolean')
+    export const isTrue = new Matcher<boolean>((target: any) => target === true)
+    export const isFalse = new Matcher<boolean>((target: any) => target === false)
 }
