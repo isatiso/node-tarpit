@@ -6,8 +6,7 @@
  */
 
 /**
- * 提供针对 Judgement 提供的检查工具。
- * 通过扩展 JudgementUtil 实现。
+ * 提供针对 Judgement 的检查工具
  */
 export class Matcher<T> {
     constructor(public check: (target: any) => boolean) {
@@ -15,7 +14,7 @@ export class Matcher<T> {
 }
 
 /**
- * 预设的 JudgementUtil。
+ * 预设的 Matcher
  */
 export namespace Jtl {
 

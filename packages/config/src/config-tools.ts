@@ -47,7 +47,6 @@ export function load_config(data: () => TpConfigSchema): ConfigData
 export function load_config(data?: string | TpConfigSchema | (() => TpConfigSchema)): ConfigData
 export function load_config(data?: string | TpConfigSchema | (() => TpConfigSchema)): ConfigData {
     if (!data) {
-
         if (!fs.existsSync(path.resolve('tarpit.json'))) {
             throw new Error('No specified configuration file, and "tarpit.json" not exist.')
         }

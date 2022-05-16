@@ -10,7 +10,17 @@ import { Matcher } from './matcher'
 import { Reference } from './reference'
 
 /**
- * 内置对象内容检查。
+ * 继承 Reference 增加值类型检查功能。
+ * ```typescript
+ * const judge = new Judgement({ a: 'abc', b: 123, c: { c1: 'abc', c2: 123 }, d: '', e: 'asd' })
+ * ref.getIf('c.c1', Jtl.number) // undefined
+ * ref.getIf('c.c1', Jtl.string) // 'abc'
+ * ref.getIf('c.d', Jtl.string) // ''
+ * ref.getIf('c.d', Jtl.nonEmptyString) // undefined
+ * ref.getIf('c.e', /asd/) // 'asd'
+ * ref.getIf('c.e', /[ads]/) // 'asd'
+ * ref.getIf('c.e', /abc/) // undefined
+ * ```
  */
 export class Judgement<T> extends Reference<T> {
 
