@@ -4,11 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { parse_date_field } from './date-tools'
 
 export const REGEX_FORMAT = /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g
 export const WEEKDAY_NAME = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_')
 export const MONTH_NAME = 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_')
 export type DateTimeUnit = 'year' | 'month' | 'date' | 'day' | 'hour' | 'minute' | 'second' | 'millisecond'
+export type DateTimeArray = [year: number, month: number, date?: number, hours?: number, minutes?: number, seconds?: number, milliseconds?: number]
+
+// noinspection SpellCheckingInspection
+const DEFAULT_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
 
 function formatUTCOffset(dora: Dora, format: 'Z' | 'ZZ') {
     const negMinutes = dora.utcOffset()
@@ -30,9 +35,9 @@ export class Dora {
         D: dora => String(dora.$D),
         DD: dora => String(dora.$D).padStart(2, '0'),
         d: dora => String(dora.$W),
-        dd: dora => MONTH_NAME[dora.$W].substring(0, 2),
-        ddd: dora => MONTH_NAME[dora.$W].substring(0, 3),
-        dddd: dora => MONTH_NAME[dora.$W],
+        dd: dora => WEEKDAY_NAME[dora.$W].substring(0, 2),
+        ddd: dora => WEEKDAY_NAME[dora.$W].substring(0, 3),
+        dddd: dora => WEEKDAY_NAME[dora.$W],
         H: dora => String(dora.$H),
         HH: dora => String(dora.$H).padStart(2, '0'),
         h: dora => String(dora.$H % 12 || 12),
@@ -49,60 +54,29 @@ export class Dora {
     }
 
     public readonly $d: Date
-    public $y!: number
-    public $M!: number
-    public $D!: number
-    public $W!: number
-    public $H!: number
-    public $m!: number
-    public $s!: number
-    public $ms!: number
-    public readonly $utcOffset!: number
-    private readonly $z!: string
+    public $y: number
+    public $M: number
+    public $D: number
+    public $W: number
+    public $H: number
+    public $m: number
+    public $s: number
+    public $ms: number
+    public readonly $utcOffset: number
+    private readonly $z: string
 
     constructor(ts: number, timezone?: string) {
         this.$z = timezone ?? Dora.guess_timezone()
         this.$d = new Date(ts)
-        new Intl.DateTimeFormat('en-US', {
-            weekday: 'short',
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric',
-            fractionalSecondDigits: 3,
-            hourCycle: 'h23',
-            timeZone: this.$z,
-            timeZoneName: 'short'
-        } as any).formatToParts(this.$d).forEach(item => {
-            switch (item.type) {
-                case 'year':
-                    this.$y = +item.value
-                    break
-                case 'month':
-                    this.$M = +item.value - 1
-                    break
-                case 'day':
-                    this.$D = +item.value
-                    break
-                case 'weekday':
-                    this.$W = Math.floor(WEEKDAY_NAME.indexOf(item.value))
-                    break
-                case 'hour':
-                    this.$H = +item.value
-                    break
-                case 'minute':
-                    this.$m = +item.value
-                    break
-                case 'second':
-                    this.$s = +item.value
-                    break
-                case 'fractionalSecond' as any:
-                    this.$ms = +item.value
-                    break
-            }
-        })
+        const fields = parse_date_field(this.$d, this.$z)
+        this.$y = fields.year
+        this.$M = fields.month
+        this.$D = fields.date
+        this.$W = fields.weekday
+        this.$H = fields.hour
+        this.$m = fields.minute
+        this.$s = fields.second
+        this.$ms = fields.millisecond
         this.$utcOffset = (this.$d.getUTCFullYear() - this.$y || this.$d.getUTCMonth() - this.$M || this.$d.getUTCDate() - this.$D) * 24 * 60
             + (this.$d.getUTCHours() - this.$H) * 60
             + this.$d.getUTCMinutes() - this.$m
@@ -116,22 +90,19 @@ export class Dora {
         return new Dora(Date.now(), timezone)
     }
 
-    static from(date_arr: [year: number, month: number, date?: number, hours?: number, minutes?: number, seconds?: number, milliseconds?: number], timezone?: string) {
+    static from(date_arr: DateTimeArray, timezone?: string) {
         return new Dora(Date.UTC(...date_arr), timezone).dial_utc_offset()
     }
 
-    static parse(date_str: string, options?: {
-        format?: string
-        timezone?: string
-    }) {
+    static parse(date_str: string) {
         const ts = Date.parse(date_str)
         if (isNaN(ts)) {
             throw new Error()
         }
-        return new Dora(ts, options?.timezone)
+        return new Dora(ts)
     }
 
-    format(format: string = `YYYY-MM-DDTHH:mm:ss.SSSZ`) {
+    format(format: string = DEFAULT_FORMAT) {
         return format.replace(REGEX_FORMAT, (match, $1) => $1 ?? Dora.DATE_TIME_FORMAT_MATCHES[match](this))
     }
 
@@ -183,12 +154,12 @@ export class Dora {
 
     add(int: number, unit: DateTimeUnit): Dora {
         switch (unit) {
-            case 'year':{
+            case 'year': {
                 const date = this.date()
                 const nd = new Date(this.date(5).valueOf())
                 return new Dora(nd.setUTCFullYear(nd.getUTCFullYear() + int), this.$z).date(date)
             }
-            case 'month':{
+            case 'month': {
                 const date = this.date()
                 const nd = new Date(this.date(5).valueOf())
                 return new Dora(nd.setUTCMonth(nd.getUTCMonth() + int), this.$z).date(date)
@@ -252,7 +223,6 @@ export class Dora {
             case 'millisecond':
                 return this.add(int - this.$ms, 'millisecond')
         }
-        return this
     }
 
     year(): number
@@ -332,6 +302,16 @@ export class Dora {
             return this.set('millisecond', int)
         } else {
             return this.$ms
+        }
+    }
+
+    timezone(): string
+    timezone(str: string): Dora
+    timezone(str?: string): Dora | string {
+        if (typeof str === 'string') {
+            return new Dora(this.$d.getTime(), str)
+        } else {
+            return this.$z
         }
     }
 
