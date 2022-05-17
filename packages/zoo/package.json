@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/zoo",
-    "version": "0.1.9",
+    "version": "0.1.10",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -34,7 +34,7 @@
         "@tarpit/http": "^0.1.7",
         "@tarpit/judge": "^0.1.7",
         "@tarpit/rabbitmq": "^0.1.7",
-        "@tarpit/schedule": "^0.1.9",
+        "@tarpit/schedule": "^0.1.10",
         "typescript-json-schema": "^0.53.0"
     }
 }

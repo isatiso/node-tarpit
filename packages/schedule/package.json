@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/schedule",
-    "version": "0.1.9",
+    "version": "0.1.10",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -27,7 +27,7 @@
         "test": "echo \"Error: run tests from root\" && exit 1"
     },
     "dependencies": {
-        "@tarpit/dora": "^0.1.9"
+        "@tarpit/dora": "^0.1.10"
     },
     "devDependencies": {
         "@tarpit/core": "^0.1.7"
