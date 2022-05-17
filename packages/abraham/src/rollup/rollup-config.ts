@@ -2,6 +2,7 @@ import json from '@rollup/plugin-json'
 import fs from 'fs'
 import path from 'path'
 import { InputOptions } from 'rollup'
+import { terser } from 'rollup-plugin-terser'
 import { CompilerOptions } from 'typescript'
 import { PackageJson } from '../types'
 import { parse_tsconfig, read_json_file_sync, read_tsconfig } from '../__tools__'
@@ -77,6 +78,7 @@ export class RollupConfig {
             [
                 json(),
                 rpt2({}, this.rpt2CacheRoot),
+                terser(),
             ], { external: this.externals.slice(), ...this._inputOptions })
     }
 
@@ -93,6 +95,7 @@ export class RollupConfig {
                     declaration: true,
                     declarationDir: this.declarationDir,
                 }, this.rpt2CacheRoot),
+                terser(),
             ], { external: this.externals.slice(), ...this._inputOptions })
     }
 
