@@ -72,7 +72,7 @@ export function collect_function<T extends BasePropertyFunction<any>>(constructo
             item.pos = `${constructor.name}.${item.property}`
             item.handler = item.handler.bind(TokenTools.Instance(constructor).value)
         }))
-    return Object.values(record).filter((item): item is T => item.type === type)
+    return Object.values(record.value).filter((item): item is T => item.type === type)
 }
 
 export function collect_provider(constructor: Constructor<any>, options?: ImportsAndProviders): (injector: Injector) => ProviderTreeNode {

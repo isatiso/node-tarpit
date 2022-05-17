@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { Plugin } from 'rollup'
 import _dts from 'rollup-plugin-dts'
+import { terser as _terser } from 'rollup-plugin-terser'
 import _rpt2 from 'rollup-plugin-typescript2'
 import ttypescript from 'ttypescript'
 import ts from 'typescript'
@@ -35,4 +36,13 @@ export function rpt2(override: ts.CompilerOptions, cacheRoot?: string) {
 
 export function dts() {
     return _dts({ compilerOptions: { paths: {}, module: ts.ModuleKind.ESNext } })
+}
+
+export function terser() {
+    return _terser({
+        ecma: 2020,
+        // keep_classnames: true,
+        // keep_fnames: true,
+        // mangle: false,
+    })
 }
