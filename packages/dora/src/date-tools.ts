@@ -1,4 +1,4 @@
-import { WEEKDAY_NAME } from './dora'
+export const WEEKDAY_NAME = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_')
 
 export interface DateFields {
     year: number

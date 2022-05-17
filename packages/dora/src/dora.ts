@@ -7,7 +7,7 @@
 import { parse_date_field } from './date-tools'
 
 export const REGEX_FORMAT = /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g
-export const WEEKDAY_NAME = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_')
+export const WEEKDAY_NAME = 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_')
 export const MONTH_NAME = 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_')
 export type DateTimeUnit = 'year' | 'month' | 'date' | 'day' | 'hour' | 'minute' | 'second' | 'millisecond'
 export type DateTimeArray = [year: number, month: number, date?: number, hours?: number, minutes?: number, seconds?: number, milliseconds?: number]
@@ -23,6 +23,9 @@ function formatUTCOffset(dora: Dora, format: 'Z' | 'ZZ') {
     return `${negMinutes <= 0 ? '+' : '-'}${String(hourOffset).padStart(2, '0')}${format === 'Z' ? ':' : ''}${String(minuteOffset).padStart(2, '0')}`
 }
 
+/**
+ * 日期时间封装，不可变对象，所有修改方法都会返回一个新的 Dora 对象。
+ */
 export class Dora {
 
     static DATE_TIME_FORMAT_MATCHES: Record<string, (dora: Dora) => string> = {
@@ -82,18 +85,38 @@ export class Dora {
             + this.$d.getUTCMinutes() - this.$m
     }
 
+    /**
+     * 通过 Intl.DateTimeFormat 获取当前时区。
+     */
     static guess_timezone() {
         return Intl.DateTimeFormat().resolvedOptions().timeZone
     }
 
+    /**
+     * 提取当前时间的 Dora 对象
+     *
+     * @param timezone 指定时区
+     */
     static now(timezone?: string) {
         return new Dora(Date.now(), timezone)
     }
 
+    /**
+     * 从日期时间数组生成 Dora 对象
+     *
+     * @param date_arr 日期时间数组
+     * @param timezone 时区
+     */
     static from(date_arr: DateTimeArray, timezone?: string) {
         return new Dora(Date.UTC(...date_arr), timezone).dial_utc_offset()
     }
 
+    /**
+     * 通过 Date.parse 解析 date string
+     * 默认使用通过 guess_timezone 获取的时区，如果需要指定时区，可以通过调用 .timezone() 进行修改。
+     *
+     * @param date_str
+     */
     static parse(date_str: string) {
         const ts = Date.parse(date_str)
         if (isNaN(ts)) {
@@ -102,11 +125,49 @@ export class Dora {
         return new Dora(ts)
     }
 
+    /**
+     * 输出指定格式的 date string
+     *
+     * 下面是可用的格式：
+     * ```
+     * YY: 年的后两位，如 1987 => '87', 2020 => '20'
+     * YYYY: 完整年，如 1987 => '1987', 2020 => '2020'
+     * M: 月对应的数字，如 一月 => '1', 十月 => '10'
+     * MM: 月对应的数字，带前置 0，如 一月 => '01', 十月 => '10'
+     * MMM: 月对应的名称保留前三位，如 一月 => 'Jan', 十月 => 'Oct'
+     * MMMM: 月对应的完整名称，如 一月 => 'January', 十月 => 'October'
+     * D: 日期，如 23号 => '23', 1号 => '1'
+     * DD: 日期带前置 0，如 23号 => '23', 1号 => '01'
+     * d: 一周中的第几天，如 周一 => '1', 周日 => '7'
+     * dd: 一周中的第几天对应的名称，保留前两位，如 周一 => 'Mo', 周日 => 'Su'
+     * ddd: 一周中的第几天对应的名称，保留前三位，如 周一 => 'Mon', 周日 => 'Sun'
+     * dddd: 一周中的第几天对应的完整名称，如 周一 => 'Mon', 周日 => 'Sun'
+     * H: 24小时制，如 凌晨1点 => '1', 下午6点 => '18'
+     * HH: 24小时制带前置 0，如 凌晨1点 => '01', 下午6点 => '18'
+     * h: 12小时制，如 凌晨1点 => '1', 下午6点 => '6'
+     * hh: 12小时制前置 0，如 凌晨1点 => '01', 中午12点 => '12', 下午6点 => '06'
+     * a: 小写 am pm
+     * A: 大写 am pm
+     * m: 分钟数
+     * mm: 分钟数带前置 0
+     * s: 秒数
+     * ss: 秒数带前置 0
+     * SSS: 毫秒数带前置 0
+     * Z: 时区，+08:00
+     * ZZ: 时区，+0800
+     * ```
+     * @param format 指定具体格式，默认格式为 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+     */
     format(format: string = DEFAULT_FORMAT) {
         return format.replace(REGEX_FORMAT, (match, $1) => $1 ?? Dora.DATE_TIME_FORMAT_MATCHES[match](this))
     }
 
-    startOf(unit: Exclude<DateTimeUnit, 'millisecond'> | 'week' | 'isoWeek'): Dora {
+    /**
+     * 按照时间单位提取起始毫秒对应的 Dora
+     *
+     * @param unit
+     */
+    startOf(unit: DateTimeUnit | 'week' | 'isoWeek'): Dora {
         switch (unit) {
             case 'year': {
                 const d = new Date(this.$d)
@@ -141,9 +202,16 @@ export class Dora {
             case 'second': {
                 return new Dora(new Date(this.$d).setUTCMilliseconds(0), this.$z)
             }
+            default:
+                return this
         }
     }
 
+    /**
+     * 返回指定时间单位的最后一毫秒对应的 Dora
+     *
+     * @param unit
+     */
     endOf(unit: Exclude<DateTimeUnit, 'millisecond'> | 'week' | 'isoWeek'): Dora {
         if (unit === 'week' || unit === 'isoWeek') {
             return this.add(7, 'day').startOf(unit).subtract(1, 'millisecond')
@@ -152,6 +220,12 @@ export class Dora {
         }
     }
 
+    /**
+     * 返回增加指定时间后的 Dora
+     *
+     * @param int
+     * @param unit
+     */
     add(int: number, unit: DateTimeUnit): Dora {
         switch (unit) {
             case 'year': {
@@ -179,10 +253,21 @@ export class Dora {
         }
     }
 
+    /**
+     * 返回减少指定时间段后的 Dora
+     *
+     * @param int
+     * @param unit
+     */
     subtract(int: number, unit: DateTimeUnit): Dora {
         return this.add(-int, unit)
     }
 
+    /**
+     * 获取指定时间单位上的值
+     *
+     * @param unit
+     */
     get(unit: DateTimeUnit) {
         switch (unit) {
             case 'year':
@@ -204,6 +289,12 @@ export class Dora {
         }
     }
 
+    /**
+     * 设置指定时间单位上的值
+     *
+     * @param unit
+     * @param int
+     */
     set(unit: DateTimeUnit, int: number): Dora {
         switch (unit) {
             case 'year':
@@ -225,7 +316,14 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取年的值，相当于 #get('year')
+     */
     year(): number
+    /**
+     * 设置年的值，相当于 #set(int, 'year')
+     * @param int
+     */
     year(int: number): Dora
     year(int?: number): Dora | number {
         if (typeof int === 'number') {
@@ -235,7 +333,14 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取月的值，相当于 #get('month')
+     */
     month(): number
+    /**
+     * 设置月的值，相当于 #set(int, 'month')
+     * @param int
+     */
     month(int: number): Dora
     month(int?: number): Dora | number {
         if (typeof int === 'number') {
@@ -245,7 +350,14 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取日期的值，相当于 #get('date')
+     */
     date(): number
+    /**
+     * 设置日期的值，相当于 #set(int, 'date')
+     * @param int
+     */
     date(int: number): Dora
     date(int?: number): Dora | number {
         if (typeof int === 'number') {
@@ -255,7 +367,14 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取 weekday 的值，相当于 #get('day')
+     */
     day(): number
+    /**
+     * 设置 weekday 的值，相当于 #set(int, 'day')
+     * @param int
+     */
     day(int: number): Dora
     day(int?: number): Dora | number {
         if (typeof int === 'number') {
@@ -265,7 +384,14 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取 hour 的值，相当于 #get('hour')
+     */
     hour(): number
+    /**
+     * 设置 hour 的值，相当于 #set(int, 'hour')
+     * @param int
+     */
     hour(int: number): Dora
     hour(int?: number): Dora | number {
         if (typeof int === 'number') {
@@ -275,7 +401,14 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取 minute 的值，相当于 #get('minute')
+     */
     minute(): number
+    /**
+     * 设置 minute 的值，相当于 #set(int, 'minute')
+     * @param int
+     */
     minute(int: number): Dora
     minute(int?: number): Dora | number {
         if (typeof int === 'number') {
@@ -285,7 +418,14 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取 second 的值，相当于 #get('second')
+     */
     second(): number
+    /**
+     * 设置 second 的值，相当于 #set(int, 'second')
+     * @param int
+     */
     second(int: number): Dora
     second(int?: number): Dora | number {
         if (typeof int === 'number') {
@@ -295,7 +435,14 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取 millisecond 的值，相当于 #get('millisecond')
+     */
     millisecond(): number
+    /**
+     * 设置 millisecond 的值，相当于 #set(int, 'millisecond')
+     * @param int
+     */
     millisecond(int: number): Dora
     millisecond(int?: number): Dora | number {
         if (typeof int === 'number') {
@@ -305,7 +452,14 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取时区的值
+     */
     timezone(): string
+    /**
+     * 设置时区的值
+     * @param str
+     */
     timezone(str: string): Dora
     timezone(str?: string): Dora | string {
         if (typeof str === 'string') {
@@ -315,22 +469,37 @@ export class Dora {
         }
     }
 
+    /**
+     * 获取当前月总共多少天
+     */
     daysInMonth() {
         return this.endOf('month').$D
     }
 
+    /**
+     * 获取当前时区距离 UTC 时间偏移的分钟数
+     */
     utcOffset() {
         return this.$utcOffset
     }
 
+    /**
+     * 格式化当前 Dora 对象，相当于 format()
+     */
     toString() {
         return this.format()
     }
 
+    /**
+     * 获取当前 Dora 对象对应的毫秒时间戳
+     */
     valueOf() {
         return this.$d.getTime()
     }
 
+    /**
+     * 复制当前 Dora 对象
+     */
     clone() {
         return new Dora(this.$d.getTime(), this.$z)
     }

@@ -87,11 +87,11 @@ describe('dora.ts', function() {
                 expect(m.format('YY/M/D d H:m:s')).to.equal('22/5/16 1 15:38:28')
                 expect(m.format('YY/MM/D dd h:m:s a ZZ')).to.equal('22/05/16 Mo 3:38:28 pm +0800')
                 expect(m.format('YYYY/MMM/DD ddd h:mm:ss A Z')).to.equal('2022/May/16 Mon 3:38:28 PM +08:00')
-                expect(m.format('YYYY/MMMM/DD dddd hh:mm:ss A Z')).to.equal('2022/May/16 Mon 03:38:28 PM +08:00')
+                expect(m.format('YYYY/MMMM/DD dddd hh:mm:ss A Z')).to.equal('2022/May/16 Monday 03:38:28 PM +08:00')
                 expect(new Dora(1652675908000, 'Asia/Shanghai').format('YYYY/MMM/DD ddd h:mm:ss A Z')).to.equal('2022/May/16 Mon 12:38:28 PM +08:00')
-                expect(new Dora(1652675908000, 'Asia/Shanghai').format('YYYY/MMMM/DD dddd hh:mm:ss A Z')).to.equal('2022/May/16 Mon 12:38:28 PM +08:00')
+                expect(new Dora(1652675908000, 'Asia/Shanghai').format('YYYY/MMMM/DD dddd hh:mm:ss A Z')).to.equal('2022/May/16 Monday 12:38:28 PM +08:00')
                 expect(new Dora(1644968075000, 'Asia/Shanghai').format('YYYY/MMM/DD ddd h:mm:ss a Z')).to.equal('2022/Feb/16 Wed 7:34:35 am +08:00')
-                expect(new Dora(1644968075000, 'Asia/Shanghai').format('YYYY/MMMM/DD dddd hh:mm:ss A Z')).to.equal('2022/February/16 Wed 07:34:35 AM +08:00')
+                expect(new Dora(1644968075000, 'Asia/Shanghai').format('YYYY/MMMM/DD dddd hh:mm:ss A Z')).to.equal('2022/February/16 Wednesday 07:34:35 AM +08:00')
                 expect(n.format('YYYY年MM月DD日 HH时mm分ss秒Z')).to.equal('2022年05月16日 01时38分28秒-06:00')
             })
         })
@@ -337,6 +337,10 @@ describe('dora.ts', function() {
 
             const m = new Dora(1652686708168, 'Asia/Shanghai')
             // const m = '2022-05-16T15:38:28.000+08:00'
+
+            it('should return given Dora self if specified millisecond.', function() {
+                expect(m.startOf('millisecond').format()).to.equal('2022-05-16T15:38:28.168+08:00')
+            })
 
             it('should get start of second of given Dora', function() {
                 expect(m.startOf('second').format()).to.equal('2022-05-16T15:38:28.000+08:00')
