@@ -1,5 +1,6 @@
-import { deliver_shell, make_action, register_clean_files } from '../__tools__'
+import { deliver_shell, register_clean_files } from '../__tools__'
 import { CliOptions } from '../cli.type'
+import { make_action } from './__base__'
 
 export const action_cover = make_action('cover', async (cli_options: CliOptions['cover'], config) => {
 

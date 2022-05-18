@@ -41,8 +41,6 @@ export function dts() {
 export function terser() {
     return _terser({
         ecma: 2020,
-        // keep_classnames: true,
-        // keep_fnames: true,
-        // mangle: false,
+        format: { comments: false }
     })
 }

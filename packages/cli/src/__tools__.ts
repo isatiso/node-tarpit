@@ -1,8 +1,5 @@
 import { ChildProcess, exec } from 'child_process'
-import { Command, program } from 'commander'
 import fs from 'fs'
-import { CliOptions } from './cli.type'
-import { ConfigLoader } from './scripts/config-loader'
 
 const clean_board: string[] = []
 const processing: Record<string, ChildProcess> = {}
@@ -72,19 +69,8 @@ export function read_json_file_sync<T = any>(path: string): T | undefined {
     return
 }
 
-function camelcase(str: string) {
+export function camelcase(str: string) {
     return str.split('-').reduce((str, word) => {
         return str + word[0].toUpperCase() + word.slice(1)
     })
-}
-
-export function make_action<K extends keyof CliOptions, T extends CliOptions[K]>(action_name: string, callback: (options: T, config: ConfigLoader) => Promise<void>) {
-    return async (options: T, command: Command) => {
-        const start = Date.now()
-        const workdir = program.opts().workdir
-        workdir && process.chdir(workdir)
-        const config = ConfigLoader.load({ [camelcase(command.name())]: options }, program.opts().config)
-        await callback(options, config)
-        console.log(`Action ${action_name} done in ${(Date.now() - start) / 1000}s.`)
-    }
 }
