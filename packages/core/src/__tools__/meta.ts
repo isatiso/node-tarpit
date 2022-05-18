@@ -1,8 +1,9 @@
 /**
- * Copyright (c) Plank Root.
+ * @license
+ * Copyright Cao Jiahang All Rights Reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at source root.
  */
 
 export type MetaValue<T> = T extends (target: any, property_key?: string) => Meta<infer P | undefined> ? P : never

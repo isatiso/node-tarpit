@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Cao Jiahang All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at source root.
+ */
+
 import { DI_TOKEN, MetaTools, MetaWrapper, TokenTools } from '@tarpit/core'
 import { RouterFunction } from '../__types__'
 

@@ -1,6 +1,13 @@
+/**
+ * @license
+ * Copyright Cao Jiahang All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at source root.
+ */
+
 import { exec } from 'child_process'
 import fs from 'fs'
-import process from 'process'
 
 export async function command_exists(cmd: string) {
     cmd = cmd.trim()

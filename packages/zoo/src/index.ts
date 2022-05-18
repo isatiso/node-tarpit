@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Cao Jiahang All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at source root.
+ */
+
 import { Platform, TpRoot } from '@tarpit/core'
 import { Get, TpHttpServer, TpRouter } from '@tarpit/http'
 import { AssertExchange, AssertQueue, BindQueue, Consume, Letter, Produce, Producer, TpConsumer, TpProducer, TpRabbitMQ } from '@tarpit/rabbitmq'

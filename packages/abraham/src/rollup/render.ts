@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Cao Jiahang All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at source root.
+ */
+
 import { InputOptions, MergedRollupOptions, OutputOptions, Plugin } from 'rollup'
 
 export function create_render_process(input: string, output: OutputOptions[], plugins: Plugin[], options?: InputOptions): MergedRollupOptions {
