@@ -12,6 +12,7 @@
         "@types/node": "^17.0.32",
         "lerna": "^4.0.0",
         "normalize-package-data": "^4.0.0",
-        "npm-check-updates": "^12.5.11"
+        "npm-check-updates": "^12.5.11",
+        "typedoc": "^0.22.15"
     }
 }
