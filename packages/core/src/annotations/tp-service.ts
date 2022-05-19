@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpServiceMeta, TpServiceOptions } from '../__types__/__tools__/component-types'
-import { TokenTools } from '../__types__/__tools__/token-tools'
+import { TpServiceMeta, TpServiceOptions } from '../__tools__/component-types'
+import { TokenTools } from '../__tools__/token-tools'
 import { DecoratorClass, } from '../__types__'
 import { Injector } from '../injector'
 import { ClassProvider } from '../provider'

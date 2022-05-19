@@ -6,13 +6,13 @@
  * found in the LICENSE file at source root.
  */
 
-import { check_used, collect_provider } from '../__types__/__tools__/collector'
-import { TpRootMeta, TpRootOptions } from '../__types__/__tools__/component-types'
-import { Meta } from '../__types__/__tools__/meta'
-import { MetaTools } from '../__types__/__tools__/meta-tools'
+import { check_used, collect_provider } from '../__tools__/collector'
+import { TpRootMeta, TpRootOptions } from '../__tools__/component-types'
+import { Meta } from '../__tools__/meta'
+import { MetaTools } from '../__tools__/meta-tools'
 import { PluginSet } from '../builtin/plugin-set'
 import { ClassProvider } from '../provider'
-import { TokenTools } from '../__types__/__tools__/token-tools'
+import { TokenTools } from '../__tools__/token-tools'
 import { Constructor, DecoratorClass } from '../__types__'
 
 /**

@@ -7,12 +7,12 @@
  */
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
-import { MetaTools } from './__types__/__tools__/meta-tools'
+import { MetaTools } from './__tools__/meta-tools'
 
 import { Constructor, ProviderDef } from './__types__'
-import { TpComponentCollector, TpComponentMeta, TpModuleLikeCollector } from './__types__/__tools__/component-types'
-import { TpPluginConstructor } from './__types__/__tools__/plugin-types'
-import { TokenTools } from './__types__/__tools__/token-tools'
+import { TpComponentCollector, TpComponentMeta, TpModuleLikeCollector } from './__tools__/component-types'
+import { TpPluginConstructor } from './__tools__/plugin-types'
+import { TokenTools } from './__tools__/token-tools'
 import { Timestamp, UUID } from './builtin'
 import { PluginSet } from './builtin/plugin-set'
 import { Injector } from './injector'

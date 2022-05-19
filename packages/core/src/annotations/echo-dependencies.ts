@@ -7,8 +7,8 @@
  */
 
 import { DecoratorClass, DecoratorInstanceMethod } from '../__types__'
-import { MetaTools } from '../__types__/__tools__/meta-tools'
-import { TokenTools } from '../__types__/__tools__/token-tools'
+import { MetaTools } from '../__tools__/meta-tools'
+import { TokenTools } from '../__tools__/token-tools'
 
 /**
  * 这是一个调试用的装饰器。

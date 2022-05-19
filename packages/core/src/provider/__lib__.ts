@@ -7,7 +7,7 @@
  */
 
 import { ClassProviderDef, Constructor, FactoryProviderDef, Provider, ProviderDef, ValueProviderDef } from '../__types__'
-import { TokenTools } from '../__types__/__tools__/token-tools'
+import { TokenTools } from '../__tools__/token-tools'
 import { Injector } from '../injector'
 import { ClassProvider } from './class-provider'
 import { FactoryProvider } from './factory-provider'
