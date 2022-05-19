@@ -7,7 +7,7 @@
  */
 
 import { DecoratorInstanceMethod } from '../__types__'
-import { MetaTools } from '../__tools__/meta-tools'
+import { MetaTools } from '../__types__/__tools__/meta-tools'
 
 /**
  * 用于标记一个 Function 类型中的一个方法为无效的。

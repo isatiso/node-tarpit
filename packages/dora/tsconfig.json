@@ -2,14 +2,7 @@
     "extends": "@tarpit/abraham/assets/common-tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./",
-        "outDir": "./lib",
-        "plugins": [
-            {
-                "transform": "@tarpit/transformer",
-                "import": "comment_decorators",
-                "afterDeclarations": true
-            }
-        ]
+        "outDir": "./lib"
     },
     "include": [
         "src/**/*.ts"

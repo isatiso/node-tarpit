@@ -10,20 +10,12 @@ import fs from 'fs'
 import path from 'path'
 import { ConfigData, TpConfigSchema } from './config-data'
 
-function try_read_json(file: string) {
-    try {
-        const res = JSON.parse(fs.readFileSync(path.resolve(file)).toString('utf-8'))
-        if (!res) {
-            console.error('Specified configuration file is empty.')
-            process.exit(1)
-        }
-        return res
-    } catch (e: any) {
-        console.error(`Parse configuration file failed.`)
-        console.error(`    File: ${path.resolve(file)}`)
-        console.error(`    Error: ${e.message}`)
-        process.exit(1)
+function read_json(file: string) {
+    const res: TpConfigSchema = JSON.parse(fs.readFileSync(path.resolve(file)).toString('utf-8'))
+    if (!res) {
+        throw new Error('Specified configuration file is empty.')
     }
+    return res
 }
 
 /**
@@ -51,12 +43,12 @@ export function load_config(data?: string | TpConfigSchema | (() => TpConfigSche
         if (!fs.existsSync(path.resolve('tarpit.json'))) {
             throw new Error('No specified configuration file, and "tarpit.json" not exist.')
         }
-        return new ConfigData(try_read_json('tarpit.json'))
+        return new ConfigData(read_json('tarpit.json'))
     } else if (typeof data === 'string') {
         if (!fs.existsSync(path.resolve(path.resolve(data)))) {
             throw new Error(`Specified configuration file "${data}" not exists.`)
         }
-        return new ConfigData(try_read_json(data))
+        return new ConfigData(read_json(data))
     } else if (typeof data === 'function') {
         return new ConfigData(data())
     } else {

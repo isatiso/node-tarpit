@@ -8,7 +8,7 @@
 
 
 import { Constructor, Provider } from '../__types__'
-import { MetaTools } from '../__tools__/meta-tools'
+import { MetaTools } from '../__types__/__tools__/meta-tools'
 import { Injector } from '../injector'
 import { Stranger } from './stranger'
 

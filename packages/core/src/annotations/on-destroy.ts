@@ -7,7 +7,7 @@
  */
 
 import { DecoratorInstanceMethod } from '../__types__'
-import { MetaTools } from '../__tools__/meta-tools'
+import { MetaTools } from '../__types__/__tools__/meta-tools'
 
 /**
  * 将 Tp.TpService 中的一个方法标记为清理函数。

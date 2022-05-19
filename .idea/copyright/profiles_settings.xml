@@ -4,7 +4,7 @@
       <element module="Project Files" copyright="MIT" />
     </module2copyright>
     <LanguageOptions name="JavaScript">
-      <option name="fileTypeOverride" value="3" />
+      <option name="fileTypeOverride" value="1" />
       <option name="separateBefore" value="true" />
       <option name="lenBefore" value="2" />
     </LanguageOptions>

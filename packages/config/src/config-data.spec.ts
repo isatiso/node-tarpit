@@ -23,7 +23,7 @@ declare module './config-data' {
     }
 }
 
-describe('ConfigData', function() {
+describe('config-data.ts', function() {
 
     const data: TpConfigSchema = {
         a: 123,

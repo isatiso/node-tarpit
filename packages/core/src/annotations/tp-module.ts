@@ -6,10 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { collect_provider } from '../__tools__/collector'
-import { TpModuleMeta, TpModuleOptions } from '../__tools__/component-types'
-import { Meta } from '../__tools__/meta'
-import { TokenTools } from '../__tools__/token-tools'
+import { collect_provider } from '../__types__/__tools__/collector'
+import { TpModuleMeta, TpModuleOptions } from '../__types__/__tools__/component-types'
+import { Meta } from '../__types__/__tools__/meta'
+import { TokenTools } from '../__types__/__tools__/token-tools'
 import { DecoratorClass } from '../__types__/'
 
 /**
