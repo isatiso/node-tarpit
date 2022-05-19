@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/core",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -33,7 +33,7 @@
         "reflect-metadata": "^0.1.13"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.3.1",
+        "@tarpit/config": "^0.3.2",
         "@types/amqplib": "^0.8.2",
         "@types/co-body": "^6.1.0",
         "@types/koa": "^2.13.4"
