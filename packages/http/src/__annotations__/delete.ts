@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorInstanceMethod } from '@tarpit/core'
 import { get_router_function } from '../__tools__'
 
 /**
@@ -15,12 +14,14 @@ import { get_router_function } from '../__tools__'
  *
  * @category Router Annotation
  */
-export function Delete(path_tail?: string): DecoratorInstanceMethod {
+export function Delete(path_tail?: string): MethodDecorator {
     return (prototype, prop, _) => {
         get_router_function(prototype, prop)
             .ensure_default()
             .do(router_function => {
-                router_function.path = path_tail ?? prop
+                if (path_tail !== undefined) {
+                    router_function.path = path_tail
+                }
                 router_function.DELETE = true
             })
     }

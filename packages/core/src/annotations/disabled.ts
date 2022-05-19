@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorInstanceMethod } from '../__types__'
 import { MetaTools } from '../__tools__/meta-tools'
 
 /**
@@ -21,7 +20,7 @@ import { MetaTools } from '../__tools__/meta-tools'
  * @category Common Annotation
  * @param disabled_options 目前没有可用的选项内容，后续可能会添加一些。
  */
-export function Disabled(disabled_options?: {}): DecoratorInstanceMethod {
+export function Disabled(disabled_options?: {}): MethodDecorator {
     return (prototype, prop, _) => {
         MetaTools.PropertyMeta(prototype, prop)
             .ensure_default()

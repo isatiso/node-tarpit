@@ -20,7 +20,7 @@ export class TaskContext {
     private readonly _lock_expires?: number
     private readonly _crontab: string
     private readonly _pos: string
-    private readonly _property_key: string
+    private readonly _property_key: string | symbol
     private readonly _execution: Dora
     private readonly _temp_exec: boolean
 
@@ -30,7 +30,7 @@ export class TaskContext {
             crontab: string,
             execution: Dora,
             pos: string,
-            property_key: string,
+            property_key: string | symbol,
             temp_exec?: boolean,
             lock_key?: string
             lock_expires?: number
@@ -70,7 +70,7 @@ export class TaskContext {
         return this._pos
     }
 
-    get property_key(): string {
+    get property_key(): string | symbol {
         return this._property_key
     }
 

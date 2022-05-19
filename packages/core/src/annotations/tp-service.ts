@@ -8,7 +8,6 @@
 
 import { TpServiceMeta, TpServiceOptions } from '../__tools__/component-types'
 import { TokenTools } from '../__tools__/token-tools'
-import { DecoratorClass, } from '../__types__'
 import { Injector } from '../injector'
 import { ClassProvider } from '../provider'
 
@@ -18,7 +17,7 @@ import { ClassProvider } from '../provider'
  * @category Service Annotation
  * @param options
  */
-export function TpService(options?: TpServiceOptions): DecoratorClass {
+export function TpService(options?: TpServiceOptions): ClassDecorator {
     return constructor => {
         TokenTools.ComponentMeta(constructor.prototype)
             .if_exist(meta => {
@@ -29,7 +28,7 @@ export function TpService(options?: TpServiceOptions): DecoratorClass {
                 loader: 'œœ-TpService',
                 category: 'service',
                 name: constructor.name,
-                on_load: (meta: TpServiceMeta, injector: Injector) => meta.provider = injector.set_provider(constructor, new ClassProvider(constructor, injector)),
+                on_load: (meta: TpServiceMeta, injector: Injector) => meta.provider = injector.set_provider(constructor, new ClassProvider(constructor as any, injector)),
             })
     }
 }

@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { ClassProviderDef, Constructor, FactoryProviderDef, Provider, ProviderDef, ValueProviderDef } from '../__types__'
 import { TokenTools } from '../__tools__/token-tools'
+import { ClassProviderDef, Constructor, FactoryProviderDef, Provider, ProviderDef, ValueProviderDef } from '../__types__'
 import { Injector } from '../injector'
 import { ClassProvider } from './class-provider'
 import { FactoryProvider } from './factory-provider'

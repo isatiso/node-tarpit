@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, DecoratorParameter } from '../__types__'
 import { MetaTools } from '../__tools__/meta-tools'
 
 /**
@@ -24,13 +23,13 @@ import { MetaTools } from '../__tools__/meta-tools'
  * @category Common Annotation
  * @param token - 任何可以通过 === 进行相等判断的值。一般会选择具有某些含义的字符串。
  */
-export function Inject(token: any): DecoratorParameter {
+export function Inject(token: any): ParameterDecorator | ClassDecorator {
     if (token === undefined) {
         throw new Error(`You can not inject a "undefined".`)
     }
-    return <CLASS extends object>(target: Constructor<CLASS> | CLASS, prop: string | undefined, index: number) => {
+    return (target: Function | Object, prop: string | symbol | undefined, index: number) => {
         if (prop === undefined) {
-            MetaTools.ClassMeta((target as Constructor<CLASS>).prototype).ensure_default().do(meta => meta.parameter_injection[index] = token)
+            MetaTools.ClassMeta((target as Function).prototype).ensure_default().do(meta => meta.parameter_injection[index] = token)
         } else {
             MetaTools.PropertyMeta(target, prop).ensure_default().do(meta => meta.parameter_injection[index] = token)
         }

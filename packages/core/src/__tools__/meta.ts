@@ -8,17 +8,17 @@
 
 export type MetaValue<T> = T extends (target: any, property_key?: string) => Meta<infer P | undefined> ? P : never
 export type MetaWrapperType = 'prototype_only' | 'property_only' | 'both'
-export type MetaWrapperDefaultByFunction<T> = (prototype: any, property?: string) => Exclude<T, undefined>
+export type MetaWrapperDefaultByFunction<T> = (prototype: any, property?: string | symbol) => Exclude<T, undefined>
 
 /**
  * @private
  * 通过 reflect-metadata 存取元数据的工具。
  */
 export function MetaWrapper<T = any>(metadata_key: string, type: 'prototype_only', default_by?: MetaWrapperDefaultByFunction<T>): (proto: any) => Meta<T | undefined>
-export function MetaWrapper<T = any>(metadata_key: string, type: 'property_only', default_by?: MetaWrapperDefaultByFunction<T>): (proto: any, prop: string) => Meta<T | undefined>
-export function MetaWrapper<T = any>(metadata_key: string, type: 'both', default_by?: MetaWrapperDefaultByFunction<T>): (proto: any, prop?: string) => Meta<T | undefined>
-export function MetaWrapper<T = any>(metadata_key: string, type: MetaWrapperType, default_by?: MetaWrapperDefaultByFunction<T>): (proto: any, prop?: string) => Meta<T | undefined> {
-    return function(prototype: any, property?: string): Meta<T | undefined> {
+export function MetaWrapper<T = any>(metadata_key: string, type: 'property_only', default_by?: MetaWrapperDefaultByFunction<T>): (proto: any, prop: string | symbol) => Meta<T | undefined>
+export function MetaWrapper<T = any>(metadata_key: string, type: 'both', default_by?: MetaWrapperDefaultByFunction<T>): (proto: any, prop?: string | symbol) => Meta<T | undefined>
+export function MetaWrapper<T = any>(metadata_key: string, type: MetaWrapperType, default_by?: MetaWrapperDefaultByFunction<T>): (proto: any, prop?: string | symbol) => Meta<T | undefined> {
+    return function(prototype: any, property?: string | symbol): Meta<T | undefined> {
         return new Meta<T | undefined>(metadata_key, prototype, property, default_by)
     }
 }
@@ -30,7 +30,7 @@ export class Meta<T> {
     constructor(
         private metadata_key: string,
         private target: any,
-        private property?: string,
+        private property?: string | symbol,
         private default_by?: MetaWrapperDefaultByFunction<T>,
     ) {
     }

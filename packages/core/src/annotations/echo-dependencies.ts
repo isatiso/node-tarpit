@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorClass, DecoratorInstanceMethod } from '../__types__'
 import { MetaTools } from '../__tools__/meta-tools'
 import { TokenTools } from '../__tools__/token-tools'
 
@@ -17,7 +16,7 @@ import { TokenTools } from '../__tools__/token-tools'
  *
  * @category Common Annotation
  */
-export function EchoDependencies(): DecoratorClass {
+export function EchoDependencies(): ClassDecorator {
     return constructor => {
         console.log(`${constructor.name} dependencies`, MetaTools.get_constructor_parameter_types(constructor))
         TokenTools.Dependencies(constructor.prototype).ensure_default()
@@ -38,7 +37,7 @@ export function EchoDependencies(): DecoratorClass {
  *
  * @category Common Annotation
  */
-export function EchoMethodDependencies(): DecoratorInstanceMethod {
+export function EchoMethodDependencies(): MethodDecorator {
     return (prototype, prop, _) => {
         TokenTools.Dependencies(prototype).ensure_default().do(dependencies => {
             dependencies[prop] = MetaTools.get_method_parameter_types(prototype, prop)

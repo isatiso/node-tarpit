@@ -6,11 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorInstanceMethod } from '@tarpit/core'
 import { get_consumer_function } from '../__tools__'
 import { ConsumeOptions } from '../__types__'
 
-export function Consume(queue: string, options?: ConsumeOptions): DecoratorInstanceMethod {
+export function Consume(queue: string, options?: ConsumeOptions): MethodDecorator {
     return (prototype, prop, _) => {
         get_consumer_function(prototype, prop)
             .ensure_default()

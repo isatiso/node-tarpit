@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
-import { DecoratorClass, load_component, Meta, collect_function, TokenTools } from '@tarpit/core'
+import { collect_function, load_component, Meta, TokenTools } from '@tarpit/core'
 import { ProducerFunction, TpProducerMeta, TpProducerOptions } from '../__types__'
 
-export function TpProducer(options?: TpProducerOptions): DecoratorClass {
+export function TpProducer(options?: TpProducerOptions): ClassDecorator {
     return constructor => {
 
         const meta: Meta<TpProducerMeta | undefined> = TokenTools.ComponentMeta(constructor.prototype) as any
@@ -22,8 +22,8 @@ export function TpProducer(options?: TpProducerOptions): DecoratorClass {
             category: 'service',
             name: constructor.name,
             producer_options: options,
-            function_collector: () => collect_function<ProducerFunction<any>>(constructor, 'TpProducerFunction'),
-            on_load: (meta, injector) => load_component(constructor, injector, meta),
+            function_collector: () => collect_function<ProducerFunction<any>>(constructor as any, 'TpProducerFunction'),
+            on_load: (meta, injector) => load_component(constructor as any, injector, meta),
         })
     }
 }

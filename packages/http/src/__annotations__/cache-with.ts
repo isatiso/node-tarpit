@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorInstanceMethod } from '@tarpit/core'
 import { get_router_function } from '../__tools__'
 
 /**
@@ -14,7 +13,7 @@ import { get_router_function } from '../__tools__'
  *
  * @category Router Annotation
  */
-export function CacheWith(prefix?: string, expires?: number): DecoratorInstanceMethod {
+export function CacheWith(prefix?: string, expires?: number): MethodDecorator {
     return (prototype, prop, _) => {
         get_router_function(prototype, prop)
             .ensure_default()

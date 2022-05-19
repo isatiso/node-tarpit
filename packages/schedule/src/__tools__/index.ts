@@ -12,7 +12,7 @@ import { ScheduleFunction } from '../__types__'
 export const get_schedule_function = MetaWrapper<ScheduleFunction<any>>(
     DI_TOKEN.property_function,
     'property_only',
-    <T extends (...args: any) => any>(prototype: any, property?: string): ScheduleFunction<T> => {
+    <T extends (...args: any) => any>(prototype: any, property?: string | symbol): ScheduleFunction<T> => {
 
         const [descriptor, prop] = MetaTools.check_property(prototype, property)
         const parameter_injection = MetaTools.PropertyMeta(prototype, prop).value?.parameter_injection

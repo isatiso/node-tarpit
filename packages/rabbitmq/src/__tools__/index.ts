@@ -11,7 +11,7 @@ import { ConsumerFunction, ProducerFunction } from '../__types__'
 
 export { BindExchange, BindQueue, AssertQueue, AssertExchange } from './annotation-tools'
 
-export const get_consumer_function = MetaWrapper<ConsumerFunction<any>>(DI_TOKEN.property_function, 'property_only', <T extends (...args: any) => any>(prototype: any, property?: string): ConsumerFunction<T> => {
+export const get_consumer_function = MetaWrapper<ConsumerFunction<any>>(DI_TOKEN.property_function, 'property_only', <T extends (...args: any) => any>(prototype: any, property?: string | symbol): ConsumerFunction<T> => {
     const [descriptor, prop] = MetaTools.check_property(prototype, property)
     const parameter_injection = MetaTools.PropertyMeta(prototype, prop).value?.parameter_injection
     const consumer_function: ConsumerFunction<T> = {
@@ -28,7 +28,7 @@ export const get_consumer_function = MetaWrapper<ConsumerFunction<any>>(DI_TOKEN
     return consumer_function
 })
 
-export const get_producer_function = MetaWrapper<ProducerFunction<any>>(DI_TOKEN.property_function, 'property_only', <T extends (...args: any) => any>(prototype: any, property?: string): ProducerFunction<T> => {
+export const get_producer_function = MetaWrapper<ProducerFunction<any>>(DI_TOKEN.property_function, 'property_only', <T extends (...args: any) => any>(prototype: any, property?: string | symbol): ProducerFunction<T> => {
     if (!property) {
         throw new Error('Function Decorator can not place on class.')
     }

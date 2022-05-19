@@ -6,8 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-
-import { DecoratorInstanceMethod } from '@tarpit/core'
 import { get_schedule_function } from '../__tools__'
 import { TaskOptions } from '../__types__'
 
@@ -20,7 +18,7 @@ import { TaskOptions } from '../__types__'
  * @param options
  * @constructor
  */
-export function Task(crontab: string, options?: TaskOptions): DecoratorInstanceMethod {
+export function Task(crontab: string, options?: TaskOptions): MethodDecorator {
     return (prototype, prop, _) => {
         get_schedule_function(prototype, prop)
             .ensure_default()

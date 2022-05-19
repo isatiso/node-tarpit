@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorInstanceMethod } from '../__types__'
 import { MetaTools } from '../__tools__/meta-tools'
 
 /**
@@ -14,7 +13,7 @@ import { MetaTools } from '../__tools__/meta-tools'
  *
  * @category Service Annotation
  */
-export function OnDestroy(): DecoratorInstanceMethod {
+export function OnDestroy(): MethodDecorator {
     return (prototype, prop, descriptor) => {
         MetaTools.ClassMeta(prototype)
             .ensure_default()

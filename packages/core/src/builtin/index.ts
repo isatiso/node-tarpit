@@ -6,6 +6,5 @@
  * found in the LICENSE file at source root.
  */
 
-export { Timestamp, Timestamp as CurrentTimestamp } from './timestamp'
 export { UUID } from './uuid'
 export { Deque } from './deque'

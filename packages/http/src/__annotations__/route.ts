@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorInstanceMethod } from '@tarpit/core'
 import { get_router_function } from '../__tools__'
 import { ApiMethod } from '../__types__'
 
@@ -15,12 +14,14 @@ import { ApiMethod } from '../__types__'
  *
  * @category Router Annotation
  */
-export function Route(methods: ApiMethod[], path_tail?: string,): DecoratorInstanceMethod {
+export function Route(methods: ApiMethod[], path_tail?: string,): MethodDecorator {
     return (prototype, prop, _) => {
         get_router_function(prototype, prop)
             .ensure_default()
             .do(router_function => {
-                router_function.path = path_tail ?? prop
+                if (path_tail !== undefined) {
+                    router_function.path = path_tail
+                }
                 for (const method of methods) {
                     router_function[method] = true
                 }

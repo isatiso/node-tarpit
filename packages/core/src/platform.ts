@@ -7,13 +7,13 @@
  */
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
-import { MetaTools } from './__tools__/meta-tools'
-
-import { Constructor, ProviderDef } from './__types__'
 import { TpComponentCollector, TpComponentMeta, TpModuleLikeCollector } from './__tools__/component-types'
+import { MetaTools } from './__tools__/meta-tools'
 import { TpPluginConstructor } from './__tools__/plugin-types'
 import { TokenTools } from './__tools__/token-tools'
-import { Timestamp, UUID } from './builtin'
+
+import { Constructor, ProviderDef } from './__types__'
+import { UUID } from './builtin'
 import { PluginSet } from './builtin/plugin-set'
 import { Injector } from './injector'
 import { ClassProvider, def2Provider, ValueProvider } from './provider'
@@ -78,7 +78,6 @@ export class Platform {
 
         // 设置默认的内置工具。
         this.root_injector.set_provider(UUID, new ClassProvider(UUID, this.root_injector))
-        this.root_injector.set_provider(Timestamp, new ClassProvider(Timestamp, this.root_injector, true))
     }
 
     /**

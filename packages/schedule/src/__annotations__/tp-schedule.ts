@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { collect_function, collect_provider, DecoratorClass, load_component, Meta, TokenTools } from '@tarpit/core'
+import { collect_function, collect_provider, load_component, Meta, TokenTools } from '@tarpit/core'
 import { ScheduleFunction, TpScheduleMeta, TpScheduleOptions } from '../__types__'
 
 /**
@@ -17,7 +17,7 @@ import { ScheduleFunction, TpScheduleMeta, TpScheduleOptions } from '../__types_
  * @category Tora Core
  * @param options
  */
-export function TpSchedule(options?: TpScheduleOptions): DecoratorClass {
+export function TpSchedule(options?: TpScheduleOptions): ClassDecorator {
     return constructor => {
         const meta: Meta<TpScheduleMeta | undefined> = TokenTools.ComponentMeta(constructor.prototype) as any
         if (meta.exist() && meta.value.type) {
@@ -30,8 +30,8 @@ export function TpSchedule(options?: TpScheduleOptions): DecoratorClass {
             name: constructor.name,
             schedule_options: options,
             provider_collector: collect_provider(constructor, options),
-            function_collector: () => collect_function<ScheduleFunction<any>>(constructor, 'TpScheduleFunction'),
-            on_load: (meta, injector) => load_component(constructor, injector, meta),
+            function_collector: () => collect_function<ScheduleFunction<any>>(constructor as any, 'TpScheduleFunction'),
+            on_load: (meta, injector) => load_component(constructor as any, injector, meta),
         })
     }
 }

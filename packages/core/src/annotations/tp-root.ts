@@ -10,10 +10,10 @@ import { check_used, collect_provider } from '../__tools__/collector'
 import { TpRootMeta, TpRootOptions } from '../__tools__/component-types'
 import { Meta } from '../__tools__/meta'
 import { MetaTools } from '../__tools__/meta-tools'
+import { TokenTools } from '../__tools__/token-tools'
+import { Constructor } from '../__types__'
 import { PluginSet } from '../builtin/plugin-set'
 import { ClassProvider } from '../provider'
-import { TokenTools } from '../__tools__/token-tools'
-import { Constructor, DecoratorClass } from '../__types__'
 
 /**
  * 把一个类标记为 Tp.TpRoot，并提供配置元数据。
@@ -21,8 +21,8 @@ import { Constructor, DecoratorClass } from '../__types__'
  * @category Root Annotation
  * @param options
  */
-export function TpRoot(options?: TpRootOptions): DecoratorClass {
-    return constructor => {
+export function TpRoot(options?: TpRootOptions): ClassDecorator {
+    return (constructor) => {
         const meta: Meta<TpRootMeta | undefined> = TokenTools.ComponentMeta(constructor.prototype) as any
         if (meta.exist() && meta.value.type) {
             throw new Error(`Component ${meta.value.type} is exist -> ${meta.value.name}.`)
@@ -39,8 +39,8 @@ export function TpRoot(options?: TpRootOptions): DecoratorClass {
                 if (!injector.has(constructor)) {
                     const provider_tree = meta.provider_collector?.(injector)
 
-                    injector.set_provider(constructor, new ClassProvider(constructor, injector))
-                    meta.provider = injector.get(constructor)!
+                    injector.set_provider(constructor, new ClassProvider(constructor as any, injector))
+                    meta.provider = injector.get(constructor as any)!
                     TokenTools.Instance(constructor).set(meta.provider.create())
 
                     const ps = injector.get(PluginSet)!.create()

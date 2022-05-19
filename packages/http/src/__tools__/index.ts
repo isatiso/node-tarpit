@@ -11,17 +11,15 @@ import { RouterFunction } from '../__types__'
 
 export * from './gunslinger'
 
-export const get_router_function = MetaWrapper<RouterFunction<any>>(
-    DI_TOKEN.property_function,
-    'property_only',
-    <T extends (...args: any) => any>(prototype: any, property?: string): RouterFunction<T> => {
+export const get_router_function = MetaWrapper<RouterFunction<any>>(DI_TOKEN.property_function, 'property_only',
+    <T extends (...args: any) => any>(prototype: any, property?: string | symbol): RouterFunction<T> => {
 
         const [descriptor, prop] = MetaTools.check_property(prototype, property)
         const parameter_injection = MetaTools.PropertyMeta(prototype, prop).value?.parameter_injection
         const router_function: RouterFunction<T> = {
             type: 'TpRouterFunction',
             prototype,
-            path: prop,
+            path: typeof prop === 'symbol' ? prop.toString() : prop,
             descriptor: descriptor,
             handler: descriptor.value,
             property: prop,

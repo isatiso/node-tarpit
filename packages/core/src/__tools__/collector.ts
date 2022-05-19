@@ -70,13 +70,13 @@ export function collect_function<T extends BasePropertyFunction<any>>(constructo
         .ensure_default()
         .do((touched: Record<string, BasePropertyFunction<any>>) => Object.values(touched).forEach(item => {
             item.meta = MetaTools.PropertyMeta(constructor.prototype, item.property).value
-            item.pos = `${constructor.name}.${item.property}`
+            item.pos = `${constructor.name}.${item.property.toString()}`
             item.handler = item.handler.bind(TokenTools.Instance(constructor).value)
         }))
     return Object.values(record.value).filter((item): item is T => item.type === type)
 }
 
-export function collect_provider(constructor: Constructor<any>, options?: ImportsAndProviders): (injector: Injector) => ProviderTreeNode {
+export function collect_provider(constructor: Function, options?: ImportsAndProviders): (injector: Injector) => ProviderTreeNode {
     return function(injector: Injector) {
         const children = options?.imports?.map(md => {
             const module_meta = TokenTools.ensure_component(md).value

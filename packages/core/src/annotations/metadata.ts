@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorClass } from '../__types__'
 import { MetaTools } from '../__tools__/meta-tools'
 
 /**
@@ -25,7 +24,7 @@ import { MetaTools } from '../__tools__/meta-tools'
  *
  * @category Common Annotation
  */
-export function MetaData<T extends object = any>(meta: T): DecoratorClass {
+export function MetaData<T extends object = any>(meta: T): ClassDecorator {
     return constructor => {
         MetaTools.CustomData(constructor.prototype).ensure_default().do(origin_meta => {
             Object.entries(meta).forEach(([k, v]) => {

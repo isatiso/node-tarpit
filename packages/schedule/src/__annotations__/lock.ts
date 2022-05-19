@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorInstanceMethod } from '@tarpit/core'
 import { get_schedule_function } from '../__tools__'
 
 /**
@@ -16,7 +15,7 @@ import { get_schedule_function } from '../__tools__'
  * @category Trigger Annotation
  * @param lock_options
  */
-export function Lock(lock_options?: { key: string, expires?: number }): DecoratorInstanceMethod {
+export function Lock(lock_options?: { key: string, expires?: number }): MethodDecorator {
     return (prototype, prop, _) => {
         get_schedule_function(prototype, prop)
             .ensure_default()

@@ -6,12 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorInstanceProperty, KeyOfFilterType } from '@tarpit/core'
+import { KeyOfFilterType } from '@tarpit/core'
 
 import { get_producer_function } from '../__tools__'
 import { ProduceOptions, Producer } from '../__types__'
 
-export function Produce<T extends object, K extends KeyOfFilterType<T, Producer<any>>>(exchange: string, routing_key: string, options?: ProduceOptions): DecoratorInstanceProperty<Producer<any>> {
+export function Produce<T extends object, K extends KeyOfFilterType<T, Producer<any>>>(exchange: string, routing_key: string, options?: ProduceOptions): PropertyDecorator {
     return (prototype, prop) => {
         get_producer_function(prototype, prop)
             .ensure_default()

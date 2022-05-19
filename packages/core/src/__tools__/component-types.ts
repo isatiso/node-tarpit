@@ -32,7 +32,7 @@ export interface BaseTpServiceMeta<Type extends ComponentType> extends BaseTpCom
 export interface BasePropertyFunction<T extends (...args: any) => any> {
     type: `Tp${string}Function`
     prototype: any
-    property: string
+    property: string | symbol
     descriptor: TypedPropertyDescriptor<T>
     handler: T
     param_types?: Parameters<T>
@@ -40,7 +40,7 @@ export interface BasePropertyFunction<T extends (...args: any) => any> {
     meta?: PropertyMeta
 }
 
-export type FunctionRecord = Record<string, BasePropertyFunction<any>>
+export type FunctionRecord = Record<string | symbol, BasePropertyFunction<any>>
 
 export interface TpServiceMeta extends BaseTpServiceMeta<'TpService'> {
     on_load: (meta: TpServiceMeta, injector: Injector) => void

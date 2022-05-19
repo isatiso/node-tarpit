@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor } from '../__types__'
 import { BaseTpComponentMeta, FunctionRecord, TpComponentCollector, TpComponentMeta } from './component-types'
 import { Meta, MetaWrapper } from './meta'
 import { DI_TOKEN } from './token'
@@ -34,7 +33,7 @@ export namespace TokenTools {
      * 参数类型。
      * @category Basic Meta
      */
-    export const Dependencies = MetaWrapper<{ [property: string]: any[] }>(DI_TOKEN.dependencies, 'both', () => ({}))
+    export const Dependencies = MetaWrapper<{ [property: string | symbol]: any[] }>(DI_TOKEN.dependencies, 'both', () => ({}))
 
     /**
      * 存储实例。
@@ -42,7 +41,7 @@ export namespace TokenTools {
      */
     export const Instance = MetaWrapper<any>(DI_TOKEN.instance, 'prototype_only')
 
-    export function ensure_component(module: Constructor<any>): { [K in keyof TpComponentCollector]: Meta<TpComponentCollector[K]> }[keyof TpComponentCollector] {
+    export function ensure_component(module: Function): { [K in keyof TpComponentCollector]: Meta<TpComponentCollector[K]> }[keyof TpComponentCollector] {
         const meta = TokenTools.ComponentMeta(module.prototype)
         const meta_value = meta.value
         if (!meta_value) {
@@ -52,9 +51,9 @@ export namespace TokenTools {
     }
 
     export function ensure_component_is<K extends keyof TpComponentCollector>(
-        module: Constructor<any>,
+        module: Function,
         type: K,
-        msg?: (meta_value: BaseTpComponentMeta<any> | undefined, module: Constructor<any>) => string | undefined
+        msg?: (meta_value: BaseTpComponentMeta<any> | undefined, module: Function) => string | undefined
     ): Meta<TpComponentCollector[K]> {
         const meta = ensure_component(module.prototype)
         if (type !== meta.value.type) {

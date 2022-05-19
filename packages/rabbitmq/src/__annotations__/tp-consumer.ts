@@ -6,10 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { DecoratorClass, load_component, collect_provider, Meta, collect_function, TokenTools } from '@tarpit/core'
+import { collect_function, collect_provider, load_component, Meta, TokenTools } from '@tarpit/core'
 import { ConsumerFunction, TpConsumerMeta, TpConsumerOptions } from '../__types__'
 
-export function TpConsumer(options?: TpConsumerOptions): DecoratorClass {
+export function TpConsumer(options?: TpConsumerOptions): ClassDecorator {
     return constructor => {
 
         const meta: Meta<TpConsumerMeta | undefined> = TokenTools.ComponentMeta(constructor.prototype) as any
@@ -24,8 +24,8 @@ export function TpConsumer(options?: TpConsumerOptions): DecoratorClass {
             name: constructor.name,
             consumer_options: options,
             provider_collector: collect_provider(constructor, options),
-            function_collector: () => collect_function<ConsumerFunction<any>>(constructor, 'TpConsumerFunction'),
-            on_load: (meta, injector) => load_component(constructor, injector, meta),
+            function_collector: () => collect_function<ConsumerFunction<any>>(constructor as any, 'TpConsumerFunction'),
+            on_load: (meta, injector) => load_component(constructor as any, injector, meta),
         })
     }
 }
