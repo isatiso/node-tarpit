@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { collect_function, collect_provider, Constructor, load_component, Meta, TokenTools } from '@tarpit/core'
+import { collect_function, collect_provider, Constructor, load_component, TpMeta, MetaTools } from '@tarpit/core'
 import { get_router_function, IGunslinger } from '../__tools__'
 import { RouterFunction, TpRouterMeta, TpRouterOptions } from '../__types__'
 
@@ -17,7 +17,7 @@ import { RouterFunction, TpRouterMeta, TpRouterOptions } from '../__types__'
  */
 export function TpRouter(path: `/${string}`, options?: TpRouterOptions): ClassDecorator {
     return (constructor: Function) => {
-        const meta: Meta<TpRouterMeta | undefined> = TokenTools.ComponentMeta(constructor.prototype) as any
+        const meta: TpMeta<TpRouterMeta | undefined> = MetaTools.ComponentMeta(constructor.prototype) as any
         if (meta.exist() && meta.value.type) {
             throw new Error(`Component ${meta.value.type} is exist -> ${meta.value.name}.`)
         }
@@ -37,7 +37,7 @@ export function TpRouter(path: `/${string}`, options?: TpRouterOptions): ClassDe
         const gunslinger: IGunslinger<any> = constructor as any
 
         gunslinger.mount = (new_path: `/${string}`) => {
-            TokenTools.ensure_component_is(gunslinger, 'TpRouter').do(meta => {
+            MetaTools.ensure_component_is(gunslinger, 'TpRouter').do(meta => {
                 meta.router_path = new_path
             })
             return gunslinger

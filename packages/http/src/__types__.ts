@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { BasePropertyFunction, BaseTpModuleMeta, ImportsAndProviders, Injector } from '@tarpit/core'
+import { TpWorkerCommon, TpModuleMetaCommon, ImportsAndProviders, Injector } from '@tarpit/core'
 import { ExtendableContext } from 'koa'
 import { Stream } from 'stream'
 
@@ -46,7 +46,7 @@ export interface TpRouterOptions extends ImportsAndProviders {
 
 }
 
-export interface TpRouterMeta extends BaseTpModuleMeta<'TpRouter'> {
+export interface TpRouterMeta extends TpModuleMetaCommon<'TpRouter'> {
     router_path: `/${string}`
     router_options?: TpRouterOptions
     path_replacement: Record<string, string>
@@ -54,7 +54,7 @@ export interface TpRouterMeta extends BaseTpModuleMeta<'TpRouter'> {
     on_load: (meta: TpRouterMeta, injector: Injector) => void
 }
 
-export interface RouterFunction<T extends (...args: any) => any> extends BasePropertyFunction<T> {
+export interface RouterFunction<T extends (...args: any) => any> extends TpWorkerCommon<T> {
     type: 'TpRouterFunction'
     path: string
     GET?: boolean

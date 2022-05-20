@@ -9,9 +9,8 @@
 import { Constructor, Provider, ProviderDef, ProviderTreeNode } from '../__types__'
 import { Injector } from '../injector'
 import { ClassProvider, def2Provider } from '../provider'
-import { BasePropertyFunction, ImportsAndProviders, TpComponentMeta } from './component-types'
-import { MetaTools } from './meta-tools'
-import { TokenTools } from './token-tools'
+import { ImportsAndProviders, TpComponentMeta, TpWorkerCommon } from '../tp-component-type'
+import { MetaTools } from './tp-meta-tools'
 
 function _find_usage(tree_node: ProviderTreeNode | undefined, indent: number = 0): boolean {
     return Boolean(tree_node?.providers?.find(p => p?.used)
@@ -23,7 +22,7 @@ export function check_used(provider_tree: ProviderTreeNode | undefined, name: st
         .forEach(def => console.log(`Warning: ${name} -> ${def?.name} not used.`))
 }
 
-export function get_providers(desc: BasePropertyFunction<any>, injector: Injector, except_list?: any[]): Provider<any>[] {
+export function get_providers(desc: TpWorkerCommon<any>, injector: Injector, except_list?: any[]): Provider<any>[] {
     return desc.param_types?.map((token: any, i: number) => {
         if (token === undefined) {
             console.error(`type 'undefined' at ${desc.pos}[${i}], if it's not specified, there maybe a circular import.`)
@@ -49,7 +48,7 @@ export function load_component(constructor: Constructor<any>, injector: Injector
                 : undefined
 
         meta.provider = injector.set_provider(constructor, new ClassProvider(constructor, injector))
-        TokenTools.Instance(constructor).set(meta.provider.create())
+        MetaTools.Instance(constructor).set(meta.provider.create())
 
         const token = injector.get<any>(meta.loader)?.create()
         if (token) {
@@ -65,13 +64,13 @@ export function load_component(constructor: Constructor<any>, injector: Injector
     }
 }
 
-export function collect_function<T extends BasePropertyFunction<any>>(constructor: Constructor<any>, type: T['type']) {
-    const record = TokenTools.FunctionRecord(constructor.prototype)
+export function collect_function<T extends TpWorkerCommon<any>>(constructor: Constructor<any>, type: T['type']) {
+    const record = MetaTools.FunctionRecord(constructor.prototype)
         .ensure_default()
-        .do((touched: Record<string, BasePropertyFunction<any>>) => Object.values(touched).forEach(item => {
+        .do((touched: Record<string, TpWorkerCommon<any>>) => Object.values(touched).forEach(item => {
             item.meta = MetaTools.PropertyMeta(constructor.prototype, item.property).value
             item.pos = `${constructor.name}.${item.property.toString()}`
-            item.handler = item.handler.bind(TokenTools.Instance(constructor).value)
+            item.handler = item.handler.bind(MetaTools.Instance(constructor).value)
         }))
     return Object.values(record.value).filter((item): item is T => item.type === type)
 }
@@ -79,7 +78,7 @@ export function collect_function<T extends BasePropertyFunction<any>>(constructo
 export function collect_provider(constructor: Function, options?: ImportsAndProviders): (injector: Injector) => ProviderTreeNode {
     return function(injector: Injector) {
         const children = options?.imports?.map(md => {
-            const module_meta = TokenTools.ensure_component(md).value
+            const module_meta = MetaTools.ensure_component(md).value
             if (module_meta.category !== 'module') {
                 throw new Error(`${module_meta.name} is "${module_meta.type}" which should be a "TpModuleLike".`)
             }

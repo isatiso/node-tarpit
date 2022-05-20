@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { BasePropertyFunction, BaseTpModuleMeta, BaseTpServiceMeta, Deque, ImportsAndProviders, Injector, PureJSON } from '@tarpit/core'
+import { TpWorkerCommon, TpModuleMetaCommon, TpServiceMetaCommon, Deque, ImportsAndProviders, Injector, PureJSON } from '@tarpit/core'
 import { ChannelWrapper } from './channel-wrapper'
 
 export interface ExchangeAssertion {
@@ -134,19 +134,19 @@ export interface TpProducerOptions {
     bindings?: Binding[]
 }
 
-export interface TpProducerMeta extends BaseTpServiceMeta<'TpProducer'> {
+export interface TpProducerMeta extends TpServiceMetaCommon<'TpProducer'> {
     producer_options?: TpProducerOptions
     function_collector: () => ProducerFunction<any>[]
     on_load: (meta: TpProducerMeta, injector: Injector) => void
 }
 
-export interface TpConsumerMeta extends BaseTpModuleMeta<'TpConsumer'> {
+export interface TpConsumerMeta extends TpModuleMetaCommon<'TpConsumer'> {
     consumer_options?: TpConsumerOptions
     function_collector: () => ConsumerFunction<any>[]
     on_load: (meta: TpConsumerMeta, injector: Injector) => void
 }
 
-export interface ConsumerFunction<T extends (...args: any) => any> extends BasePropertyFunction<T> {
+export interface ConsumerFunction<T extends (...args: any) => any> extends TpWorkerCommon<T> {
     type: 'TpConsumerFunction'
     consumerTag?: string
     consume?: { queue: string, options: ConsumeOptions }
@@ -154,7 +154,7 @@ export interface ConsumerFunction<T extends (...args: any) => any> extends BaseP
     channel_error?: any
 }
 
-export interface ProducerFunction<T extends (...args: any) => any> extends BasePropertyFunction<T> {
+export interface ProducerFunction<T extends (...args: any) => any> extends TpWorkerCommon<T> {
     type: 'TpProducerFunction'
     produce?: { exchange: string, routing_key: string, options: ProduceOptions }
     produce_cache: Deque<[message: any, produce_options: ProduceOptions | undefined, resolve: (data: any) => void, reject: (err: any) => void]>

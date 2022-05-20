@@ -7,14 +7,12 @@
  */
 
 import crypto from 'crypto'
-import { TpService } from '../annotations'
 
 /**
  * 内置的 UUID（通用唯一识别码）服务，版本为 Version 1 (date-time and MAC address)。
  *
  * @category Builtin
  */
-@TpService()
 export class UUID {
 
     private static random_8_pool = new Uint8Array(256) // # of random values to pre-allocate

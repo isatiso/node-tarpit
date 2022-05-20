@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { MetaTools } from '../__tools__/meta-tools'
+import { MetaTools } from '../__tools__/tp-meta-tools'
 
 /**
  * 由于 Typescript 中具有值和类型双重身份的只有 Class 和 Enum。

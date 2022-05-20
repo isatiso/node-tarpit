@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { MetaTools } from '../__tools__/meta-tools'
+import { MetaTools } from '../__tools__/tp-meta-tools'
 
 /**
  * 将 Tp.TpService 中的一个方法标记为清理函数。

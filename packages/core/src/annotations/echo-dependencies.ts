@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { MetaTools } from '../__tools__/meta-tools'
-import { TokenTools } from '../__tools__/token-tools'
+import { MetaTools } from '../__tools__/tp-meta-tools'
 
 /**
  * 这是一个调试用的装饰器。
@@ -19,7 +18,7 @@ import { TokenTools } from '../__tools__/token-tools'
 export function EchoDependencies(): ClassDecorator {
     return constructor => {
         console.log(`${constructor.name} dependencies`, MetaTools.get_constructor_parameter_types(constructor))
-        TokenTools.Dependencies(constructor.prototype).ensure_default()
+        MetaTools.Dependencies(constructor.prototype).ensure_default()
             .do(dependencies => {
                 Object.keys(dependencies).forEach(propertyKey => {
                     console.log(`${constructor.name}.${propertyKey} dependencies`, dependencies[propertyKey])
@@ -39,7 +38,7 @@ export function EchoDependencies(): ClassDecorator {
  */
 export function EchoMethodDependencies(): MethodDecorator {
     return (prototype, prop, _) => {
-        TokenTools.Dependencies(prototype).ensure_default().do(dependencies => {
+        MetaTools.Dependencies(prototype).ensure_default().do(dependencies => {
             dependencies[prop] = MetaTools.get_method_parameter_types(prototype, prop)
         })
     }

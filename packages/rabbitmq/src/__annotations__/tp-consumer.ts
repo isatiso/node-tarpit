@@ -6,13 +6,13 @@
  * found in the LICENSE file at source root.
  */
 
-import { collect_function, collect_provider, load_component, Meta, TokenTools } from '@tarpit/core'
+import { collect_function, collect_provider, load_component, TpMeta, MetaTools } from '@tarpit/core'
 import { ConsumerFunction, TpConsumerMeta, TpConsumerOptions } from '../__types__'
 
 export function TpConsumer(options?: TpConsumerOptions): ClassDecorator {
     return constructor => {
 
-        const meta: Meta<TpConsumerMeta | undefined> = TokenTools.ComponentMeta(constructor.prototype) as any
+        const meta: TpMeta<TpConsumerMeta | undefined> = MetaTools.ComponentMeta(constructor.prototype) as any
         if (meta.exist() && meta.value.type) {
             throw new Error(`Component ${meta.value.type} is exist -> ${meta.value.name}.`)
         }

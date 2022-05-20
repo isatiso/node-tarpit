@@ -9,8 +9,8 @@
 import { ConfigData } from '@tarpit/config'
 import { Constructor } from '../__types__'
 import { Injector } from '../injector'
-import { TpComponentCollector } from './component-types'
-import { MetaTools } from './meta-tools'
+import { TpComponentCollector } from '../tp-component-type'
+import { MetaTools } from './tp-meta-tools'
 
 export type TpPluginConstructor<K extends keyof TpComponentCollector> = {
     new(injector: Injector, config_data: ConfigData): TpPlugin<K>

@@ -7,9 +7,9 @@
  */
 
 import { collect_provider } from '../__tools__/collector'
-import { TpModuleMeta, TpModuleOptions } from '../__tools__/component-types'
-import { Meta } from '../__tools__/meta'
-import { TokenTools } from '../__tools__/token-tools'
+import { TpMeta } from '../__tools__/tp-meta'
+import { MetaTools } from '../__tools__/tp-meta-tools'
+import { TpModuleMeta, TpModuleOptions } from '../tp-component-type'
 
 /**
  * 把一个类标记为 Tp.TpModule，并提供配置元数据。
@@ -19,7 +19,7 @@ import { TokenTools } from '../__tools__/token-tools'
  */
 export function TpModule(options?: TpModuleOptions): ClassDecorator {
     return constructor => {
-        const meta: Meta<TpModuleMeta | undefined> = TokenTools.ComponentMeta(constructor.prototype) as any
+        const meta: TpMeta<TpModuleMeta | undefined> = MetaTools.ComponentMeta(constructor.prototype) as any
         if (meta.exist() && meta.value.type) {
             throw new Error(`Component ${meta.value.type} is exist -> ${meta.value.name}.`)
         }

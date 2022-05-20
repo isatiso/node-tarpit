@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { MetaTools } from '../__tools__/meta-tools'
+import { MetaTools } from '../__tools__/tp-meta-tools'
 
 /**
  * 用于标记一个 Function 类型中的一个方法为无效的。

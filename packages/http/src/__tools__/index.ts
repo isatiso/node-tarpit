@@ -6,12 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { DI_TOKEN, MetaTools, MetaWrapper, TokenTools } from '@tarpit/core'
+import { DI_TOKEN, MetaTools, TpMetaWrapper } from '@tarpit/core'
 import { RouterFunction } from '../__types__'
 
 export * from './gunslinger'
 
-export const get_router_function = MetaWrapper<RouterFunction<any>>(DI_TOKEN.property_function, 'property_only',
+export const get_router_function = TpMetaWrapper<RouterFunction<any>>(DI_TOKEN.property_function, 'property_only',
     <T extends (...args: any) => any>(prototype: any, property?: string | symbol): RouterFunction<T> => {
 
         const [descriptor, prop] = MetaTools.check_property(prototype, property)
@@ -27,7 +27,7 @@ export const get_router_function = MetaWrapper<RouterFunction<any>>(DI_TOKEN.pro
             auth: false,
             wrap_result: true,
         }
-        TokenTools.FunctionRecord(prototype).ensure_default().do(touched => {
+        MetaTools.FunctionRecord(prototype).ensure_default().do(touched => {
             touched[prop] = router_function
         })
         return router_function

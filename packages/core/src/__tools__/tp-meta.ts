@@ -6,24 +6,40 @@
  * found in the LICENSE file at source root.
  */
 
-export type MetaValue<T> = T extends (target: any, property_key?: string) => Meta<infer P | undefined> ? P : never
-export type MetaWrapperType = 'prototype_only' | 'property_only' | 'both'
-export type MetaWrapperDefaultByFunction<T> = (prototype: any, property?: string | symbol) => Exclude<T, undefined>
+/**
+ * @private
+ * 用于通过反射存取数据的 metadataKey 集合。
+ */
+export enum DI_TOKEN {
+    class_meta = 'œœ:class_meta',
+    component_meta = 'œœ:component_meta',
+    custom_data = 'œœ:custom_data',
+    dependencies = 'œœ:dependencies',
+    function_record = 'œœ:function_record',
+    instance = 'œœ:instance',
+    plugin_meta = 'œœ:plugin_meta',
+    property_function = 'œœ:property_function',
+    property_meta = 'œœ:property_meta',
+}
+
+export type TpMetaValue<T> = T extends (target: any, property_key?: string) => TpMeta<infer P | undefined> ? P : never
+export type TpMetaWrapperType = 'prototype_only' | 'property_only' | 'both'
+export type TpMetaWrapperDefaultFunction<T> = (prototype: any, property?: string | symbol) => Exclude<T, undefined>
 
 /**
  * @private
  * 通过 reflect-metadata 存取元数据的工具。
  */
-export function MetaWrapper<T = any>(metadata_key: string, type: 'prototype_only', default_by?: MetaWrapperDefaultByFunction<T>): (proto: any) => Meta<T | undefined>
-export function MetaWrapper<T = any>(metadata_key: string, type: 'property_only', default_by?: MetaWrapperDefaultByFunction<T>): (proto: any, prop: string | symbol) => Meta<T | undefined>
-export function MetaWrapper<T = any>(metadata_key: string, type: 'both', default_by?: MetaWrapperDefaultByFunction<T>): (proto: any, prop?: string | symbol) => Meta<T | undefined>
-export function MetaWrapper<T = any>(metadata_key: string, type: MetaWrapperType, default_by?: MetaWrapperDefaultByFunction<T>): (proto: any, prop?: string | symbol) => Meta<T | undefined> {
-    return function(prototype: any, property?: string | symbol): Meta<T | undefined> {
-        return new Meta<T | undefined>(metadata_key, prototype, property, default_by)
+export function TpMetaWrapper<T = any>(metadata_key: string, type: 'prototype_only', default_by?: TpMetaWrapperDefaultFunction<T>): (proto: any) => TpMeta<T | undefined>
+export function TpMetaWrapper<T = any>(metadata_key: string, type: 'property_only', default_by?: TpMetaWrapperDefaultFunction<T>): (proto: any, prop: string | symbol) => TpMeta<T | undefined>
+export function TpMetaWrapper<T = any>(metadata_key: string, type: 'both', default_by?: TpMetaWrapperDefaultFunction<T>): (proto: any, prop?: string | symbol) => TpMeta<T | undefined>
+export function TpMetaWrapper<T = any>(metadata_key: string, type: TpMetaWrapperType, default_by?: TpMetaWrapperDefaultFunction<T>): (proto: any, prop?: string | symbol) => TpMeta<T | undefined> {
+    return function(prototype: any, property?: string | symbol): TpMeta<T | undefined> {
+        return new TpMeta<T | undefined>(metadata_key, prototype, property, default_by)
     }
 }
 
-export class Meta<T> {
+export class TpMeta<T> {
 
     private _exist: boolean | undefined
 
@@ -31,7 +47,7 @@ export class Meta<T> {
         private metadata_key: string,
         private target: any,
         private property?: string | symbol,
-        private default_by?: MetaWrapperDefaultByFunction<T>,
+        private default_by?: TpMetaWrapperDefaultFunction<T>,
     ) {
     }
 
@@ -57,7 +73,7 @@ export class Meta<T> {
     /**
      * 是否存在指定元数据。
      */
-    exist(): this is Meta<Exclude<T, undefined>> {
+    exist(): this is TpMeta<Exclude<T, undefined>> {
         if (this._exist === undefined) {
             if (this.property === undefined) {
                 this._exist = Reflect.hasMetadata(this.metadata_key, this.target)
@@ -83,7 +99,7 @@ export class Meta<T> {
      *
      * @param value
      */
-    set(value: Exclude<T, undefined>): Meta<Exclude<T, undefined>> {
+    set(value: Exclude<T, undefined>): TpMeta<Exclude<T, undefined>> {
         if (this.property === undefined) {
             Reflect.defineMetadata(this.metadata_key, value, this.target)
         } else {
@@ -99,7 +115,7 @@ export class Meta<T> {
      *
      * @param value
      */
-    ensure_default<R extends Exclude<T, undefined> = Exclude<T, undefined>>(value?: R): Meta<R> {
+    ensure_default<R extends Exclude<T, undefined> = Exclude<T, undefined>>(value?: R): TpMeta<R> {
         if (!this.exist()) {
             const metadata_value = value ?? this.default_by?.(this.target, this.property)
             if (this.property === undefined) {

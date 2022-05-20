@@ -6,10 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpServiceMeta, TpServiceOptions } from '../__tools__/component-types'
-import { TokenTools } from '../__tools__/token-tools'
+import { MetaTools } from '../__tools__/tp-meta-tools'
 import { Injector } from '../injector'
 import { ClassProvider } from '../provider'
+import { TpServiceMeta, TpServiceOptions } from '../tp-component-type'
 
 /**
  * 把一个类标记为 Tp.TpService。
@@ -19,7 +19,7 @@ import { ClassProvider } from '../provider'
  */
 export function TpService(options?: TpServiceOptions): ClassDecorator {
     return constructor => {
-        TokenTools.ComponentMeta(constructor.prototype)
+        MetaTools.ComponentMeta(constructor.prototype)
             .if_exist(meta => {
                 throw new Error(`Component ${meta.type} is exist -> ${meta.name}.`)
             })

@@ -6,10 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { DI_TOKEN, MetaTools, MetaWrapper, TokenTools } from '@tarpit/core'
+import { DI_TOKEN, MetaTools, TpMetaWrapper } from '@tarpit/core'
 import { ScheduleFunction } from '../__types__'
 
-export const get_schedule_function = MetaWrapper<ScheduleFunction<any>>(
+export const get_schedule_function = TpMetaWrapper<ScheduleFunction<any>>(
     DI_TOKEN.property_function,
     'property_only',
     <T extends (...args: any) => any>(prototype: any, property?: string | symbol): ScheduleFunction<T> => {
@@ -26,7 +26,7 @@ export const get_schedule_function = MetaWrapper<ScheduleFunction<any>>(
             crontab_str: '',
             name: 'unset'
         }
-        TokenTools.FunctionRecord(prototype).ensure_default().do(touched => {
+        MetaTools.FunctionRecord(prototype).ensure_default().do(touched => {
             touched[prop] = schedule_function
         })
         return schedule_function

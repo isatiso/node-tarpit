@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { MetaTools } from '../__tools__/meta-tools'
+import { MetaTools } from '../__tools__/tp-meta-tools'
 
 /**
  * 向 Class 标记一些自定义元信息（CustomData），在自定义装饰器工具 `AnnotationTools` 中会很有用。

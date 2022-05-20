@@ -6,11 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-
 import { Constructor, Provider } from '../__types__'
-import { MetaTools } from '../__tools__/meta-tools'
+import { MetaTools } from '../__tools__/tp-meta-tools'
 import { Injector } from '../injector'
-import { Stranger } from './stranger'
+import { Stranger } from '../builtin/stranger'
 
 /**
  * @private

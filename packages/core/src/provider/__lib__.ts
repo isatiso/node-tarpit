@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TokenTools } from '../__tools__/token-tools'
+import { MetaTools } from '../__tools__/tp-meta-tools'
 import { ClassProviderDef, Constructor, FactoryProviderDef, Provider, ProviderDef, ValueProviderDef } from '../__types__'
 import { Injector } from '../injector'
 import { ClassProvider } from './class-provider'
@@ -48,14 +48,14 @@ export function def2Provider(defs: (ProviderDef<any> | Constructor<any>)[], inje
             return injector.set_provider(def.provide, new FactoryProvider('FactoryProvider', def.useFactory as any, def.deps))
 
         } else if (isClassProvider(def)) {
-            const meta = TokenTools.ensure_component(def.useClass).value
+            const meta = MetaTools.ensure_component(def.useClass).value
             if (meta.category !== 'service') {
                 throw new Error(`${def.useClass.name} is not TpServiceLike.`)
             }
             return meta.provider = injector.set_provider(def, new ClassProvider(def.useClass, injector))
 
         } else {
-            const meta = TokenTools.ensure_component(def).value
+            const meta = MetaTools.ensure_component(def).value
             if (meta.category !== 'service') {
                 throw new Error(`${def.name} is not TpServiceLike.`)
             }

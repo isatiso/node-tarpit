@@ -7,17 +7,16 @@
  */
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
-import { TpComponentCollector, TpComponentMeta, TpModuleLikeCollector } from './__tools__/component-types'
-import { MetaTools } from './__tools__/meta-tools'
-import { TpPluginConstructor } from './__tools__/plugin-types'
-import { TokenTools } from './__tools__/token-tools'
+import { TpComponentCollector, TpComponentMeta, TpModuleLikeCollector } from './tp-component-type'
+import { MetaTools } from './__tools__/tp-meta-tools'
+import { TpPluginConstructor } from './__tools__/tp-plugin'
 
 import { Constructor, ProviderDef } from './__types__'
 import { UUID } from './builtin'
 import { PluginSet } from './builtin/plugin-set'
 import { Injector } from './injector'
 import { ClassProvider, def2Provider, ValueProvider } from './provider'
-import { Stranger } from './provider/stranger'
+import { Stranger } from './builtin/stranger'
 
 /**
  * Tp 运行时。
@@ -41,7 +40,7 @@ export class Platform {
      * @private
      * ConfigData 实例，用于管理加载的配置文件内容。
      */
-    private _config_data?: ConfigData
+    private readonly _config_data?: ConfigData
 
     /**
      * @private
@@ -114,7 +113,7 @@ export class Platform {
      * @param type
      */
     import<Type extends keyof TpModuleLikeCollector>(module: Constructor<any>, type: Type) {
-        TokenTools.ensure_component_is(module, type, (meta) => meta && `You can just import a "TpModuleLike" Component, not ${meta.type}.`)
+        MetaTools.ensure_component_is(module, type, (meta) => meta && `You can just import a "TpModuleLike" Component, not ${meta.type}.`)
             .do((component_meta: TpModuleLikeCollector[Type]) => {
                 component_meta.provider_collector?.(this.root_injector)
             })
@@ -128,7 +127,7 @@ export class Platform {
      */
     bootstrap(module: Constructor<any>) {
 
-        const meta: TpComponentMeta | undefined = TokenTools.ComponentMeta(module.prototype).value
+        const meta: TpComponentMeta | undefined = MetaTools.ComponentMeta(module.prototype).value
         if (!meta) {
             throw new Error(`Unknown module "${module.name}".`)
         }
