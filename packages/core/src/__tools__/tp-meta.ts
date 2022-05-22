@@ -15,10 +15,10 @@ export enum DI_TOKEN {
     component_meta = 'œœ:component_meta',
     custom_data = 'œœ:custom_data',
     dependencies = 'œœ:dependencies',
-    function_record = 'œœ:function_record',
+    unit_record = 'œœ:unit_record',
     instance = 'œœ:instance',
     plugin_meta = 'œœ:plugin_meta',
-    property_function = 'œœ:property_function',
+    unit = 'œœ:unit',
     property_meta = 'œœ:property_meta',
 }
 

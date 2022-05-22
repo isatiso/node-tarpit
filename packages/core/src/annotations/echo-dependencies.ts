@@ -19,11 +19,7 @@ export function EchoDependencies(): ClassDecorator {
     return constructor => {
         console.log(`${constructor.name} dependencies`, MetaTools.get_constructor_parameter_types(constructor))
         MetaTools.Dependencies(constructor.prototype).ensure_default()
-            .do(dependencies => {
-                Object.keys(dependencies).forEach(propertyKey => {
-                    console.log(`${constructor.name}.${propertyKey} dependencies`, dependencies[propertyKey])
-                })
-            })
+            .do(deps => deps.forEach((value, key) => console.log(`${constructor.name}.${key.toString()} dependencies`, value)))
     }
 }
 
@@ -38,8 +34,8 @@ export function EchoDependencies(): ClassDecorator {
  */
 export function EchoMethodDependencies(): MethodDecorator {
     return (prototype, prop, _) => {
-        MetaTools.Dependencies(prototype).ensure_default().do(dependencies => {
-            dependencies[prop] = MetaTools.get_method_parameter_types(prototype, prop)
-        })
+        MetaTools.Dependencies(prototype)
+            .ensure_default()
+            .do(deps => deps.set(prop, MetaTools.get_method_parameter_types(prototype, prop)))
     }
 }

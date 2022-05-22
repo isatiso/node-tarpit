@@ -7,31 +7,15 @@
  */
 
 import { Injector } from '../injector'
-import { TpModuleMetaCommon, TpServiceMetaCommon } from './common'
+import { TpAssemblyCommon, TpWorkerCommon } from './common'
 
-export interface TpServiceMeta extends TpServiceMetaCommon<'TpService'> {
+export interface TpServiceMeta extends TpWorkerCommon<'TpService'> {
     on_load: (meta: TpServiceMeta, injector: Injector) => void
 }
 
-export interface TpModuleMeta extends TpModuleMetaCommon<'TpModule'> {
+export interface TpModuleMeta extends TpAssemblyCommon<'TpModule'> {
 }
 
-export interface TpRootMeta extends TpModuleMetaCommon<'TpRoot'> {
+export interface TpRootMeta extends TpAssemblyCommon<'TpRoot'> {
     on_load: (meta: TpRootMeta, injector: Injector) => void
 }
-
-export interface TpModuleLikeCollector {
-    TpModule: TpModuleMeta
-    TpRoot: TpRootMeta
-}
-
-export interface TpServiceLikeCollector {
-    TpService: TpServiceMeta
-}
-
-export interface TpComponentCollector extends TpModuleLikeCollector, TpServiceLikeCollector {
-}
-
-export type TpModuleLikeMeta = TpModuleLikeCollector[keyof TpModuleLikeCollector]
-export type TpServiceLikeMeta = TpServiceLikeCollector[keyof TpServiceLikeCollector]
-export type TpComponentMeta = TpComponentCollector[keyof TpComponentCollector]

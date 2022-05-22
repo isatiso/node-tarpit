@@ -7,7 +7,7 @@
  */
 
 import { Constructor } from '@tarpit/core'
-import { TpConsumerMeta, TpProducerMeta } from './__types__'
+import { TpConsumerMeta, TpConsumerUnit, TpProducerMeta, TpProducerUnit } from './__types__'
 
 export interface AMQPConnect {
     /**
@@ -74,12 +74,17 @@ declare module '@tarpit/core' {
         consumers?: Constructor<any>[]
     }
 
-    export interface TpModuleLikeCollector {
+    export interface TpAssemblyCollection {
         TpConsumer: TpConsumerMeta
     }
 
-    export interface TpServiceLikeCollector {
+    export interface TpWorkerCollection {
         TpProducer: TpProducerMeta
+    }
+
+    export interface TpUnitCollection {
+        TpConsumerUnit: TpConsumerUnit<any>,
+        TpProducerUnit: TpProducerUnit<any>,
     }
 }
 

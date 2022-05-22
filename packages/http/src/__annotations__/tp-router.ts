@@ -6,9 +6,9 @@
  * found in the LICENSE file at source root.
  */
 
-import { collect_function, collect_provider, Constructor, load_component, TpMeta, MetaTools } from '@tarpit/core'
-import { get_router_function, IGunslinger } from '../__tools__'
-import { RouterFunction, TpRouterMeta, TpRouterOptions } from '../__types__'
+import { Constructor, load_component, MetaTools, TpMeta } from '@tarpit/core'
+import { get_router_unit, IGunslinger } from '../__tools__'
+import { TpRouterMeta, TpRouterOptions } from '../__types__'
 
 /**
  * 把一个类标记为 Tp.TpRouter，并配置元数据。
@@ -24,12 +24,14 @@ export function TpRouter(path: `/${string}`, options?: TpRouterOptions): ClassDe
         meta.set({
             type: 'TpRouter',
             loader: 'œœ-TpRouter',
-            category: 'module',
+            category: 'assembly',
             name: constructor.name,
+            self: constructor as unknown as Constructor<any>,
+            imports: options?.imports ?? [],
+            providers: options?.providers ?? [],
             router_path: path,
             router_options: options,
-            provider_collector: collect_provider(constructor, options),
-            function_collector: () => collect_function<RouterFunction<any>>(constructor as Constructor<any>, 'TpRouterFunction'),
+            // function_collector: () => collect_unit<RouterFunction<any>>(constructor as Constructor<any>, 'TpRouterFunction'),
             on_load: (meta, injector) => load_component(constructor as Constructor<any>, injector, meta),
             path_replacement: {},
         })
@@ -37,20 +39,20 @@ export function TpRouter(path: `/${string}`, options?: TpRouterOptions): ClassDe
         const gunslinger: IGunslinger<any> = constructor as any
 
         gunslinger.mount = (new_path: `/${string}`) => {
-            MetaTools.ensure_component_is(gunslinger, 'TpRouter').do(meta => {
-                meta.router_path = new_path
-            })
+            MetaTools.ensure_component_is(gunslinger, 'TpRouter')
+                .do(meta => meta.router_path = new_path)
             return gunslinger
         }
 
         gunslinger.replace = (property_key: string, new_path: string) => {
-            get_router_function(gunslinger.prototype, property_key).do(router_function => {
-                if (router_function) {
-                    router_function.path = new_path
-                } else {
-                    console.log(`Warning: No RouterFunction exist at ${constructor.name}.${property_key}.`)
-                }
-            })
+            get_router_unit(gunslinger.prototype, property_key)
+                .do(unit => {
+                    if (unit) {
+                        unit.path = new_path
+                    } else {
+                        console.log(`Warning: No TpRouterUnit exist at ${constructor.name}.${property_key}.`)
+                    }
+                })
             return gunslinger
         }
     }

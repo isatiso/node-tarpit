@@ -6,12 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, ProviderDef } from '../__types__'
-
-export interface ImportsAndProviders {
-    imports?: Array<Constructor<any>>
-    providers?: (ProviderDef<any> | Constructor<any>)[]
-}
+import { ImportsAndProviders } from './common'
 
 export interface TpModuleOptions extends ImportsAndProviders {
 }

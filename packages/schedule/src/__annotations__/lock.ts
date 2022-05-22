@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { get_schedule_function } from '../__tools__'
+import { get_schedule_unit } from '../__tools__'
 
 /**
  * 将 Tora.TpSchedule 中的一个任务标记为需要上锁。
@@ -17,11 +17,9 @@ import { get_schedule_function } from '../__tools__'
  */
 export function Lock(lock_options?: { key: string, expires?: number }): MethodDecorator {
     return (prototype, prop, _) => {
-        get_schedule_function(prototype, prop)
+        get_schedule_unit(prototype, prop)
             .ensure_default()
-            .do(schedule_function => {
-                schedule_function.lock_key = lock_options?.key
-                schedule_function.lock_expires = lock_options?.expires
-            })
+            .do(unit => unit.lock_key = lock_options?.key)
+            .do(unit => unit.lock_expires = lock_options?.expires)
     }
 }

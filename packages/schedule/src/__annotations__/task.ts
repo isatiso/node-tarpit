@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { get_schedule_function } from '../__tools__'
+import { get_schedule_unit } from '../__tools__'
 import { TaskOptions } from '../__types__'
 
 /**
@@ -20,12 +20,10 @@ import { TaskOptions } from '../__types__'
  */
 export function Task(crontab: string, options?: TaskOptions): MethodDecorator {
     return (prototype, prop, _) => {
-        get_schedule_function(prototype, prop)
+        get_schedule_unit(prototype, prop)
             .ensure_default()
-            .do(schedule_function => {
-                schedule_function.crontab_str = crontab
-                schedule_function.name = options?.name
-                schedule_function.task_options = options
-            })
+            .do(unit => unit.crontab_str = crontab)
+            .do(unit => unit.name = options?.name)
+            .do(unit => unit.task_options = options)
     }
 }

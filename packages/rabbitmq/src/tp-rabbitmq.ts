@@ -7,10 +7,10 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
+import { collect_unit, get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
 import { connect, Connection, ConsumeMessage, Options } from 'amqplib'
 import EventEmitter from 'events'
-import { ConsumerFunction, ProduceOptions, ProducerFunction, TpConsumerMeta, TpProducerMeta } from './__types__'
+import { TpConsumerUnit, ProduceOptions, TpProducerUnit, TpConsumerMeta, TpProducerMeta } from './__types__'
 import { ChannelWrapper } from './channel-wrapper'
 import { Ack, Dead, Requeue } from './error'
 import { Letter, PURE_LETTER } from './letter'
@@ -139,16 +139,14 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
                     await channel.bindQueue(binding.queue, binding.exchange, binding.routing_key)
                 }
             }
-            const function_list = meta.function_collector()
-                .filter((func) => func.type === 'TpProducerFunction')
+            const function_list = collect_unit(meta.self, 'TpProducerUnit')
             for (const func of function_list) {
                 if (!func.meta?.disabled) {
                     await this.put_producer(func)
                 }
             }
         } else {
-            const function_list = meta.function_collector()
-                .filter((func) => func.type === 'TpConsumerFunction')
+            const function_list = collect_unit(meta.self, 'TpConsumerUnit')
             for (const func of function_list) {
                 if (!func.meta?.disabled) {
                     await this.put_consumer(injector, func, [Letter, PURE_LETTER])
@@ -158,7 +156,7 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
         await channel.close()
     }
 
-    private async put_producer(desc: ProducerFunction<any>) {
+    private async put_producer(desc: TpProducerUnit<any>) {
         const produce = desc.produce
         if (!produce) {
             throw new Error('produce is empty')
@@ -181,7 +179,7 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
         }
     }
 
-    private async put_consumer(injector: Injector, desc: ConsumerFunction<any>, except_list?: any[]): Promise<void> {
+    private async put_consumer(injector: Injector, desc: TpConsumerUnit<any>, except_list?: any[]): Promise<void> {
 
         const consume = desc.consume
         if (!consume) {

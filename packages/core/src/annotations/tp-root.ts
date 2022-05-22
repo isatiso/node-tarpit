@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { check_used, collect_provider } from '../__tools__/collector'
+import { check_used, collect_worker } from '../__tools__/collector'
 import { TpMeta } from '../__tools__/tp-meta'
 import { MetaTools } from '../__tools__/tp-meta-tools'
 import { Constructor } from '../__types__'
@@ -30,13 +30,15 @@ export function TpRoot(options?: TpRootOptions): ClassDecorator {
             ...options,
             type: 'TpRoot',
             loader: 'œœ-TpRoot',
-            category: 'module',
+            category: 'assembly',
+            self: constructor as unknown as Constructor<any>,
+            imports: options?.imports ?? [],
+            providers: options?.providers ?? [],
             name: constructor.name,
-            provider_collector: collect_provider(constructor, options),
             on_load: (meta, injector) => {
 
                 if (!injector.has(constructor)) {
-                    const provider_tree = meta.provider_collector?.(injector)
+                    const provider_tree = collect_worker(constructor, injector)
 
                     injector.set_provider(constructor, new ClassProvider(constructor as any, injector))
                     meta.provider = injector.get(constructor as any)!

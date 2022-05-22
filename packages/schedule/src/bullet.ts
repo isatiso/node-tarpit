@@ -7,7 +7,7 @@
  */
 
 import { Dora } from '@tarpit/dora'
-import { ScheduleFunction } from './__types__'
+import { TpScheduleUnit } from './__types__'
 import { Crontab } from './crontab'
 
 export class Bullet {
@@ -19,7 +19,7 @@ export class Bullet {
     constructor(
         public id: string,
         public handler: Function,
-        public desc: ScheduleFunction<any>,
+        public desc: TpScheduleUnit<any>,
     ) {
         if (!desc.crontab_str) {
             throw new Error()

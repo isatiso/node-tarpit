@@ -29,9 +29,13 @@ export function Inject(token: any): ParameterDecorator | ClassDecorator {
     }
     return (target: Function | Object, prop: string | symbol | undefined, index: number) => {
         if (prop === undefined) {
-            MetaTools.ClassMeta((target as Function).prototype).ensure_default().do(meta => meta.parameter_injection[index] = token)
+            MetaTools.ClassMeta((target as Function).prototype)
+                .ensure_default()
+                .do(meta => meta.parameter_injection[index] = token)
         } else {
-            MetaTools.PropertyMeta(target, prop).ensure_default().do(meta => meta.parameter_injection[index] = token)
+            MetaTools.PropertyMeta(target, prop)
+                .ensure_default()
+                .do(meta => meta.parameter_injection[index] = token)
         }
     }
 }

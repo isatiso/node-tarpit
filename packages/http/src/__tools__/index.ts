@@ -7,17 +7,19 @@
  */
 
 import { DI_TOKEN, MetaTools, TpMetaWrapper } from '@tarpit/core'
-import { RouterFunction } from '../__types__'
+import { TpRouterUnit } from '../__types__'
 
 export * from './gunslinger'
 
-export const get_router_function = TpMetaWrapper<RouterFunction<any>>(DI_TOKEN.property_function, 'property_only',
-    <T extends (...args: any) => any>(prototype: any, property?: string | symbol): RouterFunction<T> => {
+export const get_router_unit = TpMetaWrapper<TpRouterUnit<any>>(
+    DI_TOKEN.unit,
+    'property_only',
+    <T extends (...args: any) => any>(prototype: any, property?: string | symbol): TpRouterUnit<T> => {
 
         const [descriptor, prop] = MetaTools.check_property(prototype, property)
         const parameter_injection = MetaTools.PropertyMeta(prototype, prop).value?.parameter_injection
-        const router_function: RouterFunction<T> = {
-            type: 'TpRouterFunction',
+        const router_unit: TpRouterUnit<T> = {
+            type: 'TpRouterUnit',
             prototype,
             path: typeof prop === 'symbol' ? prop.toString() : prop,
             descriptor: descriptor,
@@ -27,8 +29,8 @@ export const get_router_function = TpMetaWrapper<RouterFunction<any>>(DI_TOKEN.p
             auth: false,
             wrap_result: true,
         }
-        MetaTools.FunctionRecord(prototype).ensure_default().do(touched => {
-            touched[prop] = router_function
-        })
-        return router_function
+        MetaTools.UnitRecord(prototype)
+            .ensure_default()
+            .do(touched => touched.set(prop, router_unit))
+        return router_unit
     })

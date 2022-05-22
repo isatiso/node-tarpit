@@ -12,7 +12,7 @@ import { Authenticator } from './__services__/authenticator'
 import { CacheProxy } from './__services__/cache-proxy'
 import { LifeCycle } from './__services__/life-cycle'
 import { ResultWrapper } from './__services__/result-wrapper'
-import { ApiMethod, ApiPath, HandlerReturnType, HttpHandler, HttpHandlerDescriptor, HttpHandlerKey, KoaResponseType, LiteContext, RouterFunction, TpRouterMeta } from './__types__'
+import { ApiMethod, ApiPath, HandlerReturnType, HttpHandler, HttpHandlerDescriptor, HttpHandlerKey, KoaResponseType, LiteContext, TpRouterUnit, TpRouterMeta } from './__types__'
 import { ApiParams, PURE_PARAMS } from './api-params'
 import { HttpError, InnerFinish, OuterFinish, reasonable } from './error'
 import { SessionContext } from './session-context'
@@ -76,21 +76,21 @@ export class Handler {
         return next()
     }
 
-    load(router_function: RouterFunction<any>, injector: Injector, meta: TpRouterMeta): void {
-        if (!router_function.meta?.disabled) {
-            const router_handler = this.make_router(injector, router_function, [ApiParams, SessionContext, PURE_PARAMS])
+    load(router_unit: TpRouterUnit<any>, injector: Injector, meta: TpRouterMeta): void {
+        if (!router_unit.meta?.disabled) {
+            const router_handler = this.make_router(injector, router_unit, [ApiParams, SessionContext, PURE_PARAMS])
             const prefix = meta.router_path.replace(/\/{2,}/g, '/').replace(/\/\s*$/g, '')
-            const suffix = router_function.path.replace(/(^\/|\/$)/g, '')
+            const suffix = router_unit.path.replace(/(^\/|\/$)/g, '')
             const full_path = prefix + '/' + suffix
 
-            router_function.GET && this.on('GET', full_path, router_handler)
-            router_function.POST && this.on('POST', full_path, router_handler)
-            router_function.PUT && this.on('PUT', full_path, router_handler)
-            router_function.DELETE && this.on('DELETE', full_path, router_handler)
+            router_unit.GET && this.on('GET', full_path, router_handler)
+            router_unit.POST && this.on('POST', full_path, router_handler)
+            router_unit.PUT && this.on('PUT', full_path, router_handler)
+            router_unit.DELETE && this.on('DELETE', full_path, router_handler)
         }
     }
 
-    private make_router(injector: Injector, desc: RouterFunction<any>, except_list?: any[]) {
+    private make_router(injector: Injector, desc: TpRouterUnit<any>, except_list?: any[]) {
 
         const provider_list = get_providers(desc, injector, except_list)
 

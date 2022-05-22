@@ -6,18 +6,18 @@
  * found in the LICENSE file at source root.
  */
 
-import { get_consumer_function } from '../__tools__'
+import { get_consumer_unit } from '../__tools__'
 import { ConsumeOptions } from '../__types__'
 
 export function Consume(queue: string, options?: ConsumeOptions): MethodDecorator {
     return (prototype, prop, _) => {
-        get_consumer_function(prototype, prop)
+        get_consumer_unit(prototype, prop)
             .ensure_default()
-            .do(amqp_function => {
-                if (amqp_function.consume) {
+            .do(unit => {
+                if (unit.consume) {
                     throw new Error('Duplicated decorator "Consume".')
                 } else {
-                    amqp_function.consume = { queue, options: options ?? {} }
+                    unit.consume = { queue, options: options ?? {} }
                 }
             })
     }

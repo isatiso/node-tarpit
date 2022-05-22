@@ -7,17 +7,17 @@
  */
 
 import { DI_TOKEN, MetaTools, TpMetaWrapper } from '@tarpit/core'
-import { ScheduleFunction } from '../__types__'
+import { TpScheduleUnit } from '../__types__'
 
-export const get_schedule_function = TpMetaWrapper<ScheduleFunction<any>>(
-    DI_TOKEN.property_function,
+export const get_schedule_unit = TpMetaWrapper<TpScheduleUnit<any>>(
+    DI_TOKEN.unit,
     'property_only',
-    <T extends (...args: any) => any>(prototype: any, property?: string | symbol): ScheduleFunction<T> => {
+    <T extends (...args: any) => any>(prototype: any, property?: string | symbol): TpScheduleUnit<T> => {
 
         const [descriptor, prop] = MetaTools.check_property(prototype, property)
         const parameter_injection = MetaTools.PropertyMeta(prototype, prop).value?.parameter_injection
-        const schedule_function: ScheduleFunction<T> = {
-            type: 'TpScheduleFunction',
+        const schedule_unit: TpScheduleUnit<T> = {
+            type: 'TpScheduleUnit',
             prototype,
             descriptor,
             handler: descriptor.value,
@@ -26,8 +26,8 @@ export const get_schedule_function = TpMetaWrapper<ScheduleFunction<any>>(
             crontab_str: '',
             name: 'unset'
         }
-        MetaTools.FunctionRecord(prototype).ensure_default().do(touched => {
-            touched[prop] = schedule_function
-        })
-        return schedule_function
+        MetaTools.UnitRecord(prototype)
+            .ensure_default()
+            .do(touched => touched.set(prop, schedule_unit))
+        return schedule_unit
     })

@@ -7,12 +7,12 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
+import { collect_unit, get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
 
 import { TaskLifeCycle } from './__services__/task-life-cycle'
 import { TaskLock } from './__services__/task-lock'
-import { ScheduleFunction, TaskDesc, TpScheduleMeta } from './__types__'
+import { TpScheduleUnit, TaskDesc, TpScheduleMeta } from './__types__'
 import { Bullet } from './bullet'
 import { TaskContext } from './task-context'
 
@@ -158,14 +158,12 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
     }
 
     load(meta: TpScheduleMeta, injector: Injector): void {
-        meta.function_collector()
-            .filter((f) => f.type === 'TpScheduleFunction')
-            .forEach(schedule_function => {
-                if (!schedule_function.meta?.disabled) {
-                    const task_handler = this.make_trigger(injector, schedule_function, [TaskContext])
-                    this._fill(task_handler, schedule_function)
-                }
-            })
+        collect_unit(meta.self, 'TpScheduleUnit').forEach(unit => {
+            if (!unit.meta?.disabled) {
+                const task_handler = this.make_trigger(injector, unit, [TaskContext])
+                this._fill(task_handler, unit)
+            }
+        })
     }
 
     async start(): Promise<void> {
@@ -184,7 +182,7 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
     /**
      * @private
      */
-    private _fill(handler: Function, desc: ScheduleFunction<any>) {
+    private _fill(handler: Function, desc: TpScheduleUnit<any>) {
         const bullet = new Bullet(TpTrigger.get_id(), handler, desc)
         if (!this._clip) {
             this._clip = bullet
@@ -309,7 +307,7 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         }
     }
 
-    private make_trigger(injector: Injector, desc: ScheduleFunction<any>, except_list?: any[]) {
+    private make_trigger(injector: Injector, desc: TpScheduleUnit<any>, except_list?: any[]) {
 
         const provider_list = get_providers(desc, injector, except_list)
 

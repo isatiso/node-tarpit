@@ -7,7 +7,7 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { Injector, TpPlugin, TpPluginConstructor, TpPluginType, ValueProvider } from '@tarpit/core'
+import { collect_unit, Injector, TpPlugin, TpPluginConstructor, TpPluginType, ValueProvider } from '@tarpit/core'
 import { Server } from 'http'
 import Koa from 'koa'
 import { Socket } from 'net'
@@ -58,9 +58,7 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
     }
 
     load(meta: TpRouterMeta, injector: Injector): void {
-        meta.function_collector()
-            .filter((f) => f.type === 'TpRouterFunction')
-            .forEach(f => this._http_handler.load(f, injector, meta))
+        collect_unit(meta.self, 'TpRouterUnit').forEach(f => this._http_handler.load(f, injector, meta))
     }
 
     on<T, R extends KoaResponseType>(method: ApiMethod, path: ApiPath, handler: (params: T, ctx: LiteContext) => HandlerReturnType<R>): void {

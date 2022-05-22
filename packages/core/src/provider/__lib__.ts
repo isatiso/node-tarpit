@@ -33,7 +33,7 @@ function isClassProvider<T extends object>(def: ProviderDef<T> | Constructor<any
  * @param defs
  * @param injector
  */
-export function def2Provider(defs: (ProviderDef<any> | Constructor<any>)[], injector: Injector): (Provider<unknown> | undefined)[] | undefined {
+export function def2Provider(defs: (ProviderDef<any> | Constructor<any>)[], injector: Injector): (Provider<unknown> | undefined)[] {
     return defs?.map(def => {
 
         const token = (def as any).provide ?? def
@@ -48,19 +48,13 @@ export function def2Provider(defs: (ProviderDef<any> | Constructor<any>)[], inje
             return injector.set_provider(def.provide, new FactoryProvider('FactoryProvider', def.useFactory as any, def.deps))
 
         } else if (isClassProvider(def)) {
-            const meta = MetaTools.ensure_component(def.useClass).value
-            if (meta.category !== 'service') {
-                throw new Error(`${def.useClass.name} is not TpServiceLike.`)
-            }
+            const meta = MetaTools.ensure_worker(def.useClass).value
             return meta.provider = injector.set_provider(def, new ClassProvider(def.useClass, injector))
 
         } else {
-            const meta = MetaTools.ensure_component(def).value
-            if (meta.category !== 'service') {
-                throw new Error(`${def.name} is not TpServiceLike.`)
-            }
+            const meta = MetaTools.ensure_worker(def).value
             meta.on_load?.(meta, injector)
             return meta.provider
         }
-    })
+    }) ?? []
 }

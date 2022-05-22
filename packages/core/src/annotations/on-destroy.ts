@@ -17,8 +17,6 @@ export function OnDestroy(): MethodDecorator {
     return (prototype, prop, descriptor) => {
         MetaTools.ClassMeta(prototype)
             .ensure_default()
-            .do(meta => {
-                meta.on_destroy = descriptor
-            })
+            .do(meta => meta.on_destroy = descriptor)
     }
 }

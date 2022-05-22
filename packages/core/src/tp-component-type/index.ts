@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-export { TpWorkerRecord, TpWorkerCommon, TpModuleMetaCommon, TpServiceMetaCommon, TpComponentMetaCommon, ComponentType } from './common'
-export { ImportsAndProviders, TpRootOptions, TpServiceOptions, TpModuleOptions } from './options'
-export { TpModuleLikeMeta, TpModuleLikeCollector, TpServiceLikeCollector, TpModuleMeta, TpComponentMeta, TpRootMeta, TpServiceLikeMeta, TpServiceMeta, TpComponentCollector } from './meta'
+export { TpUnitRecord, TpUnitCommon, TpAssemblyCommon, TpWorkerCommon, TpComponentCommon, ComponentType, ImportsAndProviders } from './common'
+export { TpRootOptions, TpServiceOptions, TpModuleOptions } from './options'
+export { TpModuleMeta, TpRootMeta, TpServiceMeta } from './meta'
+export { TpComponentLike, TpAssemblyLike, TpWorkerLike, TpWorkerCollection, TpAssemblyCollection, TpComponentCollection, TpUnitLike, TpUnitCollection } from './collection'

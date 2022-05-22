@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { collect_function, collect_provider, load_component, TpMeta, MetaTools } from '@tarpit/core'
-import { ScheduleFunction, TpScheduleMeta, TpScheduleOptions } from '../__types__'
+import { Constructor, load_component, MetaTools, TpMeta } from '@tarpit/core'
+import { TpScheduleMeta, TpScheduleOptions } from '../__types__'
 
 /**
  * 把一个类标记为 Tp.TpSchedule，并配置元数据。
@@ -26,11 +26,12 @@ export function TpSchedule(options?: TpScheduleOptions): ClassDecorator {
         meta.set({
             type: 'TpSchedule',
             loader: 'œœ-TpSchedule',
-            category: 'module',
+            category: 'assembly',
             name: constructor.name,
+            self: constructor as unknown as Constructor<any>,
+            imports: options?.imports ?? [],
+            providers: options?.providers ?? [],
             schedule_options: options,
-            provider_collector: collect_provider(constructor, options),
-            function_collector: () => collect_function<ScheduleFunction<any>>(constructor as any, 'TpScheduleFunction'),
             on_load: (meta, injector) => load_component(constructor as any, injector, meta),
         })
     }

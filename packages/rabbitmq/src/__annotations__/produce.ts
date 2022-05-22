@@ -8,21 +8,21 @@
 
 import { KeyOfFilterType } from '@tarpit/core'
 
-import { get_producer_function } from '../__tools__'
+import { get_producer_unit } from '../__tools__'
 import { ProduceOptions, Producer } from '../__types__'
 
 export function Produce<T extends object, K extends KeyOfFilterType<T, Producer<any>>>(exchange: string, routing_key: string, options?: ProduceOptions): PropertyDecorator {
     return (prototype, prop) => {
-        get_producer_function(prototype, prop)
+        get_producer_unit(prototype, prop)
             .ensure_default()
-            .do(amqp_function => {
-                if (amqp_function.produce) {
+            .do(unit => {
+                if (unit.produce) {
                     throw new Error('Duplicated decorator "Produce".')
                 } else {
-                    amqp_function.produce = { exchange, routing_key, options: options ?? {} }
+                    unit.produce = { exchange, routing_key, options: options ?? {} }
                     const producer: Producer<any> = (message: any, produce_options?: ProduceOptions): Promise<void> => {
                         return new Promise((resolve, reject) => {
-                            amqp_function.produce_cache.push([message, produce_options, resolve, reject])
+                            unit.produce_cache.push([message, produce_options, resolve, reject])
                         })
                     }
                     Object.defineProperty(prototype, prop, {

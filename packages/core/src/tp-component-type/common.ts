@@ -6,13 +6,14 @@
  * found in the LICENSE file at source root.
  */
 
-import { PropertyMeta, Provider, ProviderTreeNode } from '../__types__'
+import { Constructor, PropertyMeta, Provider, ProviderDef } from '../__types__'
 import { Injector } from '../injector'
+import { TpUnitLike } from './collection'
 
 export type ComponentType = `Tp${string}`
 
-export interface TpWorkerCommon<T extends (...args: any) => any> {
-    type: `Tp${string}Function`
+export interface TpUnitCommon<T extends (...args: any) => any> {
+    type: `Tp${string}Unit`
     prototype: any
     property: string | symbol
     descriptor: TypedPropertyDescriptor<T>
@@ -22,22 +23,33 @@ export interface TpWorkerCommon<T extends (...args: any) => any> {
     meta?: PropertyMeta
 }
 
-export type TpWorkerRecord = Record<string | symbol, TpWorkerCommon<any>>
+export type TpUnitRecord = Map<string | symbol, TpUnitLike>
 
-export interface TpComponentMetaCommon<Type extends ComponentType> {
+export interface TpDefaultUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
+    type: 'TpDefaultUnit'
+}
+
+export interface TpComponentCommon<Type extends ComponentType> {
     type: Type
     name: string
     provider?: Provider<any>
+    self: Constructor<any>
     loader: `œœ-${Type}`
     on_load?: (meta: any, injector: Injector) => void
     category: string
 }
 
-export interface TpModuleMetaCommon<Type extends ComponentType> extends TpComponentMetaCommon<Type> {
-    category: 'module'
-    provider_collector: (injector: Injector) => ProviderTreeNode
+export interface TpAssemblyCommon<Type extends ComponentType> extends TpComponentCommon<Type> {
+    category: 'assembly'
+    imports: Constructor<any>[]
+    providers: (ProviderDef<any> | Constructor<any>)[]
 }
 
-export interface TpServiceMetaCommon<Type extends ComponentType> extends TpComponentMetaCommon<Type> {
-    category: 'service'
+export interface TpWorkerCommon<Type extends ComponentType> extends TpComponentCommon<Type> {
+    category: 'worker'
+}
+
+export interface ImportsAndProviders {
+    imports?: Array<Constructor<any>>
+    providers?: (ProviderDef<any> | Constructor<any>)[]
 }

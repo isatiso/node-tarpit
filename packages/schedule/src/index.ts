@@ -7,7 +7,7 @@
  */
 
 import { Constructor } from '@tarpit/core'
-import { TpScheduleMeta } from './__types__'
+import { TpScheduleMeta, TpScheduleUnit } from './__types__'
 
 declare module '@tarpit/core' {
 
@@ -15,8 +15,12 @@ declare module '@tarpit/core' {
         schedules?: Constructor<any>[]
     }
 
-    export interface TpModuleLikeCollector {
+    export interface TpAssemblyCollection {
         TpSchedule: TpScheduleMeta
+    }
+
+    export interface TpUnitCollection {
+        TpScheduleUnit: TpScheduleUnit<any>,
     }
 }
 

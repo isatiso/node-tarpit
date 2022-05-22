@@ -7,7 +7,7 @@
  */
 
 import { Constructor } from '@tarpit/core'
-import { TpRouterMeta } from './__types__'
+import { TpRouterMeta, TpRouterUnit } from './__types__'
 
 declare module '@tarpit/core' {
 
@@ -15,8 +15,12 @@ declare module '@tarpit/core' {
         routers?: Constructor<any>[]
     }
 
-    export interface TpModuleLikeCollector {
+    export interface TpAssemblyCollection {
         TpRouter: TpRouterMeta
+    }
+
+    export interface TpUnitCollection {
+        TpRouterUnit: TpRouterUnit<any>
     }
 }
 

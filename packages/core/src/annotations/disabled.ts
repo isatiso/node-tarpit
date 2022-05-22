@@ -24,8 +24,6 @@ export function Disabled(disabled_options?: {}): MethodDecorator {
     return (prototype, prop, _) => {
         MetaTools.PropertyMeta(prototype, prop)
             .ensure_default()
-            .do(meta => {
-                meta.disabled = true
-            })
+            .do(meta => meta.disabled = true)
     }
 }

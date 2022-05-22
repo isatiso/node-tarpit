@@ -7,16 +7,17 @@
  */
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
-import { TpComponentCollector, TpComponentMeta, TpModuleLikeCollector } from './tp-component-type'
+import { collect_worker } from './__tools__/collector'
 import { MetaTools } from './__tools__/tp-meta-tools'
 import { TpPluginConstructor } from './__tools__/tp-plugin'
 
 import { Constructor, ProviderDef } from './__types__'
 import { UUID } from './builtin'
 import { PluginSet } from './builtin/plugin-set'
+import { Stranger } from './builtin/stranger'
 import { Injector } from './injector'
 import { ClassProvider, def2Provider, ValueProvider } from './provider'
-import { Stranger } from './builtin/stranger'
+import { TpAssemblyCollection, TpComponentCollection, TpComponentLike } from './tp-component-type'
 
 /**
  * Tp 运行时。
@@ -82,7 +83,7 @@ export class Platform {
     /**
      * 添加系统插件，如 HTTPServer Schedule AMQP 等。
      */
-    plug<K extends keyof TpComponentCollector>(plugin: TpPluginConstructor<K>) {
+    plug<K extends keyof TpComponentCollection>(plugin: TpPluginConstructor<K>) {
         // TODO: 检查 ConfigData
         if (!this._plugin_set.plugins.has(plugin)) {
             const meta = MetaTools.PluginMeta(plugin.prototype).value
@@ -112,11 +113,8 @@ export class Platform {
      * @param module
      * @param type
      */
-    import<Type extends keyof TpModuleLikeCollector>(module: Constructor<any>, type: Type) {
-        MetaTools.ensure_component_is(module, type, (meta) => meta && `You can just import a "TpModuleLike" Component, not ${meta.type}.`)
-            .do((component_meta: TpModuleLikeCollector[Type]) => {
-                component_meta.provider_collector?.(this.root_injector)
-            })
+    import<Type extends keyof TpAssemblyCollection>(module: Constructor<any>, type: Type) {
+        collect_worker(module, this.root_injector)
         return this
     }
 
@@ -127,7 +125,7 @@ export class Platform {
      */
     bootstrap(module: Constructor<any>) {
 
-        const meta: TpComponentMeta | undefined = MetaTools.ComponentMeta(module.prototype).value
+        const meta: TpComponentLike | undefined = MetaTools.ComponentMeta(module.prototype).value
         if (!meta) {
             throw new Error(`Unknown module "${module.name}".`)
         }
