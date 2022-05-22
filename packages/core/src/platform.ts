@@ -7,7 +7,7 @@
  */
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
-import { collect_worker } from './__tools__/collector'
+import { collect_worker, def2Provider, load_component } from './__tools__/collector'
 import { MetaTools } from './__tools__/tp-meta-tools'
 import { TpPluginConstructor } from './__tools__/tp-plugin'
 
@@ -16,8 +16,8 @@ import { UUID } from './builtin'
 import { PluginSet } from './builtin/plugin-set'
 import { Stranger } from './builtin/stranger'
 import { Injector } from './injector'
-import { ClassProvider, def2Provider, ValueProvider } from './provider'
-import { TpAssemblyCollection, TpComponentCollection, TpComponentLike } from './tp-component-type'
+import { ClassProvider, ValueProvider } from './provider'
+import { TpAssemblyCollection, TpComponentCollection, TpRootMeta } from './tp-component-type'
 
 /**
  * Tp 运行时。
@@ -78,6 +78,8 @@ export class Platform {
 
         // 设置默认的内置工具。
         this.root_injector.set_provider(UUID, new ClassProvider(UUID, this.root_injector))
+        this.root_injector.set_provider('œœ-TpRoot', new ValueProvider('TpRoot', Platform))
+        this.root_injector.set_provider(Platform, new ValueProvider('Platform', this))
     }
 
     /**
@@ -97,6 +99,22 @@ export class Platform {
             console.warn(`Plugin "${plugin.name ?? plugin.toString()}" exists, maybe its a mistake.`)
         }
         return this
+    }
+
+    load(meta: TpRootMeta, injector: Injector): void {
+        const plugins = injector.get(PluginSet)!.create().plugins
+
+        Array.from(plugins).forEach(plugin => {
+            const plugin_meta = MetaTools.PluginMeta(plugin.prototype).value!
+            const plugin_component_array = (meta[plugin_meta.option_key as keyof TpRootMeta] ?? []) as Array<Constructor<any>>
+            for (const component of plugin_component_array) {
+                const component_meta = MetaTools.ensure_component(component).value
+                if (component_meta.type !== plugin_meta.type) {
+                    continue
+                }
+                load_component(component, injector)
+            }
+        })
     }
 
     /**
@@ -124,17 +142,8 @@ export class Platform {
      * @param module
      */
     bootstrap(module: Constructor<any>) {
-
-        const meta: TpComponentLike | undefined = MetaTools.ComponentMeta(module.prototype).value
-        if (!meta) {
-            throw new Error(`Unknown module "${module.name}".`)
-        }
-
-        if (meta.on_load) {
-            const sub_injector = Injector.create(this.root_injector)
-            meta.on_load(meta as any, sub_injector)
-        }
-
+        const meta = MetaTools.ensure_component(module).value
+        load_component(meta.self, Injector.create(this.root_injector))
         return this
     }
 

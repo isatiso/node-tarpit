@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, load_component, MetaTools, TpMeta } from '@tarpit/core'
+import { Constructor, MetaTools, TpMeta } from '@tarpit/core'
 import { TpConsumerMeta, TpConsumerOptions } from '../__types__'
 
 export function TpConsumer(options?: TpConsumerOptions): ClassDecorator {
@@ -26,8 +26,6 @@ export function TpConsumer(options?: TpConsumerOptions): ClassDecorator {
             imports: options?.imports ?? [],
             providers: options?.providers ?? [],
             consumer_options: options,
-            // function_collector: () => collect_unit<TpConsumerUnit<any>>(constructor as any, 'TpConsumerFunction'),
-            on_load: (meta, injector) => load_component(constructor as any, injector, meta),
         })
     }
 }

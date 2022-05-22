@@ -6,55 +6,16 @@
  * found in the LICENSE file at source root.
  */
 
-import { MetaTools } from '../__tools__/tp-meta-tools'
-import { ClassProviderDef, Constructor, FactoryProviderDef, Provider, ProviderDef, ValueProviderDef } from '../__types__'
-import { Injector } from '../injector'
-import { ClassProvider } from './class-provider'
-import { FactoryProvider } from './factory-provider'
-import { ValueProvider } from './value-provider'
+import { ClassProviderDef, Constructor, FactoryProviderDef, ProviderDef, ValueProviderDef } from '../__types__'
 
-function isFactoryProvider<T extends object>(def: ProviderDef<T> | Constructor<any>): def is FactoryProviderDef {
+export function isFactoryProvider<T extends object>(def: ProviderDef<T> | Constructor<any>): def is FactoryProviderDef {
     return !(def as any).prototype && (def as any).useFactory
 }
 
-function isValueProvider<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ValueProviderDef {
+export function isValueProvider<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ValueProviderDef {
     return !(def as any).prototype && (def as any).useValue
 }
 
-function isClassProvider<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ClassProviderDef<T> {
+export function isClassProvider<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ClassProviderDef<T> {
     return !(def as any).prototype && (def as any).useClass
-}
-
-/**
- * @private
- *
- * Provider 定义解析函数。
- *
- * @param defs
- * @param injector
- */
-export function def2Provider(defs: (ProviderDef<any> | Constructor<any>)[], injector: Injector): (Provider<unknown> | undefined)[] {
-    return defs?.map(def => {
-
-        const token = (def as any).provide ?? def
-        if (injector.local_has(token)) {
-            return injector.get(token)
-        }
-
-        if (isValueProvider(def)) {
-            return injector.set_provider(def.provide, new ValueProvider('valueProvider', def.useValue))
-
-        } else if (isFactoryProvider(def)) {
-            return injector.set_provider(def.provide, new FactoryProvider('FactoryProvider', def.useFactory as any, def.deps))
-
-        } else if (isClassProvider(def)) {
-            const meta = MetaTools.ensure_worker(def.useClass).value
-            return meta.provider = injector.set_provider(def, new ClassProvider(def.useClass, injector))
-
-        } else {
-            const meta = MetaTools.ensure_worker(def).value
-            meta.on_load?.(meta, injector)
-            return meta.provider
-        }
-    }) ?? []
 }

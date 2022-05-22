@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
-import { Constructor, load_component, MetaTools, TpMeta } from '@tarpit/core'
+import { Constructor, MetaTools, TpMeta } from '@tarpit/core'
 import { TpProducerMeta, TpProducerOptions } from '../__types__'
 
 export function TpProducer(options?: TpProducerOptions): ClassDecorator {
@@ -23,7 +23,6 @@ export function TpProducer(options?: TpProducerOptions): ClassDecorator {
             category: 'worker',
             self: constructor as unknown as Constructor<any>,
             producer_options: options,
-            on_load: (meta, injector) => load_component(constructor as any, injector, meta),
         })
     }
 }

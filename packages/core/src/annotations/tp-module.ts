@@ -8,7 +8,6 @@
 
 import { TpMeta } from '../__tools__/tp-meta'
 import { MetaTools } from '../__tools__/tp-meta-tools'
-import { Constructor } from '../__types__'
 import { TpModuleMeta, TpModuleOptions } from '../tp-component-type'
 
 /**
@@ -27,10 +26,10 @@ export function TpModule(options?: TpModuleOptions): ClassDecorator {
             type: 'TpModule',
             loader: 'œœ-TpModule',
             category: 'assembly',
-            self: constructor as unknown as Constructor<any>,
+            name: constructor.name,
+            self: constructor as any,
             imports: options?.imports ?? [],
             providers: options?.providers ?? [],
-            name: constructor.name,
         })
     }
 }

@@ -7,7 +7,6 @@
  */
 
 import { Constructor, PropertyMeta, Provider, ProviderDef } from '../__types__'
-import { Injector } from '../injector'
 import { TpUnitLike } from './collection'
 
 export type ComponentType = `Tp${string}`
@@ -35,7 +34,6 @@ export interface TpComponentCommon<Type extends ComponentType> {
     provider?: Provider<any>
     self: Constructor<any>
     loader: `œœ-${Type}`
-    on_load?: (meta: any, injector: Injector) => void
     category: string
 }
 

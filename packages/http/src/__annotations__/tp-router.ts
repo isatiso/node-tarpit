@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, load_component, MetaTools, TpMeta } from '@tarpit/core'
+import { Constructor, MetaTools, TpMeta } from '@tarpit/core'
 import { get_router_unit, IGunslinger } from '../__tools__'
 import { TpRouterMeta, TpRouterOptions } from '../__types__'
 
@@ -31,8 +31,6 @@ export function TpRouter(path: `/${string}`, options?: TpRouterOptions): ClassDe
             providers: options?.providers ?? [],
             router_path: path,
             router_options: options,
-            // function_collector: () => collect_unit<RouterFunction<any>>(constructor as Constructor<any>, 'TpRouterFunction'),
-            on_load: (meta, injector) => load_component(constructor as Constructor<any>, injector, meta),
             path_replacement: {},
         })
 

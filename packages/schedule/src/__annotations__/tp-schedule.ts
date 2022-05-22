@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, load_component, MetaTools, TpMeta } from '@tarpit/core'
+import { Constructor, MetaTools, TpMeta } from '@tarpit/core'
 import { TpScheduleMeta, TpScheduleOptions } from '../__types__'
 
 /**
@@ -32,7 +32,6 @@ export function TpSchedule(options?: TpScheduleOptions): ClassDecorator {
             imports: options?.imports ?? [],
             providers: options?.providers ?? [],
             schedule_options: options,
-            on_load: (meta, injector) => load_component(constructor as any, injector, meta),
         })
     }
 }

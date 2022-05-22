@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpUnitCommon, TpAssemblyCommon, TpWorkerCommon, Deque, ImportsAndProviders, Injector, PureJSON } from '@tarpit/core'
+import { Deque, ImportsAndProviders, PureJSON, TpAssemblyCommon, TpUnitCommon, TpWorkerCommon } from '@tarpit/core'
 import { ChannelWrapper } from './channel-wrapper'
 
 export interface ExchangeAssertion {
@@ -136,12 +136,10 @@ export interface TpProducerOptions {
 
 export interface TpProducerMeta extends TpWorkerCommon<'TpProducer'> {
     producer_options?: TpProducerOptions
-    on_load: (meta: TpProducerMeta, injector: Injector) => void
 }
 
 export interface TpConsumerMeta extends TpAssemblyCommon<'TpConsumer'> {
     consumer_options?: TpConsumerOptions
-    on_load: (meta: TpConsumerMeta, injector: Injector) => void
 }
 
 export interface TpConsumerUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {

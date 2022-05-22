@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpUnitCommon, TpAssemblyCommon, ImportsAndProviders, Injector } from '@tarpit/core'
+import { ImportsAndProviders, TpAssemblyCommon, TpUnitCommon } from '@tarpit/core'
 import { Crontab } from './crontab'
 
 export type FieldType = 'second' | 'minute' | 'hour' | 'dayOfMonth' | 'month' | 'dayOfWeek'
@@ -59,7 +59,6 @@ export interface TpScheduleOptions extends ImportsAndProviders {
 export interface TpScheduleMeta extends TpAssemblyCommon<'TpSchedule'> {
     type: 'TpSchedule'
     schedule_options?: TpScheduleOptions
-    on_load: (meta: TpScheduleMeta, injector: Injector) => void
 }
 
 export interface TpScheduleUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {

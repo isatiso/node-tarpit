@@ -6,12 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { check_used, collect_worker } from '../__tools__/collector'
 import { TpMeta } from '../__tools__/tp-meta'
 import { MetaTools } from '../__tools__/tp-meta-tools'
-import { Constructor } from '../__types__'
-import { PluginSet } from '../builtin/plugin-set'
-import { ClassProvider } from '../provider'
 import { TpRootMeta, TpRootOptions } from '../tp-component-type'
 
 /**
@@ -31,38 +27,10 @@ export function TpRoot(options?: TpRootOptions): ClassDecorator {
             type: 'TpRoot',
             loader: 'œœ-TpRoot',
             category: 'assembly',
-            self: constructor as unknown as Constructor<any>,
+            self: constructor as any,
             imports: options?.imports ?? [],
             providers: options?.providers ?? [],
             name: constructor.name,
-            on_load: (meta, injector) => {
-
-                if (!injector.has(constructor)) {
-                    const provider_tree = collect_worker(constructor, injector)
-
-                    injector.set_provider(constructor, new ClassProvider(constructor as any, injector))
-                    meta.provider = injector.get(constructor as any)!
-                    MetaTools.Instance(constructor).set(meta.provider.create())
-
-                    const ps = injector.get(PluginSet)!.create()
-
-                    Array.from(ps.plugins).forEach(plugin => {
-                        const plugin_meta = MetaTools.PluginMeta(plugin.prototype).value!
-                        const plugin_component_array: Constructor<any>[] = meta[plugin_meta.option_key as keyof TpRootMeta] as any
-                        for (const component of plugin_component_array) {
-                            const component_meta = MetaTools.ensure_component(component).value
-                            if (component_meta.type !== plugin_meta.type) {
-                                continue
-                            }
-                            if (component_meta.on_load) {
-                                component_meta.on_load(component_meta as any, injector)
-                            }
-                        }
-                    })
-
-                    check_used(provider_tree, meta.name)
-                }
-            }
         })
     }
 }

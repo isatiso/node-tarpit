@@ -6,10 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, Provider, ProviderTreeNode } from '../__types__'
+import { Constructor, Provider, ProviderDef, ProviderTreeNode } from '../__types__'
 import { Injector } from '../injector'
-import { ClassProvider, def2Provider } from '../provider'
-import { TpComponentLike, TpUnitCollection, TpUnitCommon } from '../tp-component-type'
+import { ClassProvider, FactoryProvider, isClassProvider, isFactoryProvider, isValueProvider, ValueProvider } from '../provider'
+import { TpUnitCollection, TpUnitCommon } from '../tp-component-type'
 import { MetaTools } from './tp-meta-tools'
 
 function _find_usage(tree_node: ProviderTreeNode | undefined, indent: number = 0): boolean {
@@ -39,17 +39,18 @@ export function get_providers(desc: TpUnitCommon<any>, injector: Injector, excep
     }) ?? []
 }
 
-export function load_component(constructor: Constructor<any>, injector: Injector, meta: TpComponentLike): ProviderTreeNode | undefined {
+export function load_component(constructor: Constructor<any>, injector: Injector): ProviderTreeNode | undefined {
 
     if (!injector.has(constructor)) {
+        const meta = MetaTools.ensure_component(constructor).value
         const provider_tree = meta.category === 'assembly' ? collect_worker(constructor, injector) : undefined
-
         meta.provider = injector.set_provider(constructor, new ClassProvider(constructor, injector))
         MetaTools.Instance(constructor).set(meta.provider.create())
 
-        const token = injector.get<any>(meta.loader)?.create()
-        // TODO: token not exist
-        if (token) {
+        const token = meta.loader && injector.get<any>(meta.loader)?.create()
+        if (!token) {
+            meta.provider = injector.set_provider(constructor, new ClassProvider(constructor as any, injector))
+        } else {
             injector.get<any>(token)?.create().load(meta, injector)
         }
 
@@ -79,4 +80,38 @@ export function collect_worker(constructor: Function, injector: Injector): Provi
         providers: [...def2Provider([...meta.providers], injector)],
         children: meta.imports.map(item => collect_worker(item, injector)) ?? []
     }
+}
+
+/**
+ * @private
+ *
+ * Provider 定义解析函数。
+ *
+ * @param defs
+ * @param injector
+ */
+export function def2Provider(defs: (ProviderDef<any> | Constructor<any>)[], injector: Injector): (Provider<unknown> | undefined)[] {
+    return defs?.map(def => {
+
+        const token = (def as any).provide ?? def
+        if (injector.local_has(token)) {
+            return injector.get(token)
+        }
+
+        if (isValueProvider(def)) {
+            return injector.set_provider(def.provide, new ValueProvider('valueProvider', def.useValue))
+
+        } else if (isFactoryProvider(def)) {
+            return injector.set_provider(def.provide, new FactoryProvider('FactoryProvider', def.useFactory as any, def.deps))
+
+        } else if (isClassProvider(def)) {
+            const meta = MetaTools.ensure_worker(def.useClass).value
+            return meta.provider = injector.set_provider(def, new ClassProvider(def.useClass, injector))
+
+        } else {
+            const meta = MetaTools.ensure_worker(def).value
+            load_component(meta.self, injector)
+            return meta.provider
+        }
+    }) ?? []
 }

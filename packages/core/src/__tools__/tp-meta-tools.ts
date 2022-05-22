@@ -29,7 +29,7 @@ export namespace MetaTools {
 
     export function ensure_component(module: Function): { [K in keyof TpComponentCollection]: TpMeta<TpComponentCollection[K]> }[keyof TpComponentCollection] {
         const meta = MetaTools.ComponentMeta(module.prototype)
-        const meta_value = meta.value
+        const meta_value = meta?.value
         if (!meta_value) {
             throw new Error(`ComponentMeta of ${module.name ?? module.prototype?.toString()} is empty.`)
         }
@@ -40,7 +40,7 @@ export namespace MetaTools {
         module: Function,
         msg?: (meta_value: TpComponentCommon<any> | undefined, module: Function) => string | undefined
     ): { [K in keyof TpAssemblyCollection]: TpMeta<TpAssemblyCollection[K]> }[keyof TpAssemblyCollection] {
-        const meta = ensure_component(module.prototype)
+        const meta = ensure_component(module)
         if (meta.value.category !== 'assembly') {
             throw new Error(msg?.(meta.value, module) ?? `${meta.value.name} is "${meta.value.type}" which should be a "TpAssemblyLike".`)
         }
@@ -51,7 +51,7 @@ export namespace MetaTools {
         module: Function,
         msg?: (meta_value: TpComponentCommon<any> | undefined, module: Function) => string | undefined
     ): { [K in keyof TpWorkerCollection]: TpMeta<TpWorkerCollection[K]> }[keyof TpWorkerCollection] {
-        const meta = ensure_component(module.prototype)
+        const meta = ensure_component(module)
         if (meta.value.category !== 'worker') {
             throw new Error(msg?.(meta.value, module) ?? `${meta.value.name} is "${meta.value.type}" which should be a "TpWorkerLike".`)
         }
@@ -63,7 +63,7 @@ export namespace MetaTools {
         type: K,
         msg?: (meta_value: TpComponentCommon<any> | undefined, module: Function) => string | undefined
     ): TpMeta<TpComponentCollection[K]> {
-        const meta = ensure_component(module.prototype)
+        const meta = ensure_component(module)
         if (type !== meta.value.type) {
             throw new Error(msg?.(meta.value, module) ?? `${meta.value.name} is "${meta.value.type}" which should be a ${type}.`)
         }

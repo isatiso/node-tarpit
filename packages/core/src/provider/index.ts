@@ -9,4 +9,4 @@
 export { ClassProvider } from './class-provider'
 export { FactoryProvider } from './factory-provider'
 export { ValueProvider } from './value-provider'
-export { def2Provider } from './__lib__'
+export { isValueProvider, isFactoryProvider, isClassProvider } from './__lib__'

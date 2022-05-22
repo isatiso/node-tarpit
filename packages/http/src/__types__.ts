@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpUnitCommon, TpAssemblyCommon, ImportsAndProviders, Injector } from '@tarpit/core'
+import { ImportsAndProviders, TpAssemblyCommon, TpUnitCommon } from '@tarpit/core'
 import { ExtendableContext } from 'koa'
 import { Stream } from 'stream'
 
@@ -50,7 +50,6 @@ export interface TpRouterMeta extends TpAssemblyCommon<'TpRouter'> {
     router_path: `/${string}`
     router_options?: TpRouterOptions
     path_replacement: Record<string, string>
-    on_load: (meta: TpRouterMeta, injector: Injector) => void
 }
 
 export interface TpRouterUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {

@@ -70,7 +70,7 @@ export interface AMQPConnect {
 declare module '@tarpit/core' {
 
     export interface TpRootOptions {
-        routers?: Constructor<any>[]
+        producers?: Constructor<any>[]
         consumers?: Constructor<any>[]
     }
 

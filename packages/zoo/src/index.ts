@@ -76,7 +76,7 @@ class TestSchedule {
         TestRouter
     ],
     schedules: [
-        // TestSchedule
+        TestSchedule
     ],
     consumers: [
         TestConsumer
@@ -87,7 +87,7 @@ class TestRoot {
 
 new Platform()
     .plug(TpHttpServer)
-    .plug(TpTrigger)
     .plug(TpRabbitMQ)
+    .plug(TpTrigger)
     .bootstrap(TestRoot)
     .start()

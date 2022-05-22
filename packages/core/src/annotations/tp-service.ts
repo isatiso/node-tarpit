@@ -7,10 +7,7 @@
  */
 
 import { MetaTools } from '../__tools__/tp-meta-tools'
-import { Constructor } from '../__types__'
-import { Injector } from '../injector'
-import { ClassProvider } from '../provider'
-import { TpServiceMeta, TpServiceOptions } from '../tp-component-type'
+import { TpServiceOptions } from '../tp-component-type'
 
 /**
  * 把一个类标记为 Tp.TpService。
@@ -29,8 +26,7 @@ export function TpService(options?: TpServiceOptions): ClassDecorator {
                 name: constructor.name,
                 loader: 'œœ-TpService',
                 category: 'worker',
-                self: constructor as unknown as Constructor<any>,
-                on_load: (meta: TpServiceMeta, injector: Injector) => meta.provider = injector.set_provider(constructor, new ClassProvider(constructor as any, injector)),
+                self: constructor as any,
             })
     }
 }
