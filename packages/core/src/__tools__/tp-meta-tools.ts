@@ -19,13 +19,20 @@ import { DI_TOKEN, TpMeta, TpMetaWrapper } from './tp-meta'
 export namespace MetaTools {
 
     export const ComponentMeta = TpMetaWrapper<TpComponentLike>(DI_TOKEN.component_meta, 'prototype_only')
+    export const Instance = TpMetaWrapper<any>(DI_TOKEN.instance, 'prototype_only')
     export const UnitRecord = TpMetaWrapper<TpUnitRecord>(DI_TOKEN.unit_record, 'prototype_only', () => new Map())
     export const Dependencies = TpMetaWrapper<Map<string | symbol, any[]>>(DI_TOKEN.dependencies, 'both', () => new Map())
-    export const Instance = TpMetaWrapper<any>(DI_TOKEN.instance, 'prototype_only')
     export const ClassMeta = TpMetaWrapper<ClassMeta>(DI_TOKEN.class_meta, 'prototype_only', () => ({ parameter_injection: [], loader: '', type: '' }))
     export const PropertyMeta = TpMetaWrapper<PropertyMeta>(DI_TOKEN.property_meta, 'property_only', () => ({ parameter_injection: [] }))
     export const CustomData = TpMetaWrapper<Map<string | symbol, any>>(DI_TOKEN.custom_data, 'prototype_only', () => new Map())
     export const PluginMeta = TpMetaWrapper<PluginMeta>(DI_TOKEN.plugin_meta, 'prototype_only', () => ({ loader_list: [], type: '', option_key: '' }))
+
+    export const default_unit_record = (prototype: Object) => UnitRecord(prototype).ensure_default()
+    export const default_dependencies = (prototype: Object, prop?: string | symbol) => Dependencies(prototype, prop).ensure_default()
+    export const default_class_meta = (prototype: Object) => ClassMeta(prototype).ensure_default()
+    export const default_property_meta = (prototype: Object, prop: string | symbol) => PropertyMeta(prototype, prop).ensure_default()
+    export const default_custom_data = (prototype: Object) => CustomData(prototype).ensure_default()
+    export const default_plugin_meta = (prototype: Object) => PluginMeta(prototype).ensure_default()
 
     export function ensure_component(module: Function): { [K in keyof TpComponentCollection]: TpMeta<TpComponentCollection[K]> }[keyof TpComponentCollection] {
         const meta = MetaTools.ComponentMeta(module.prototype)

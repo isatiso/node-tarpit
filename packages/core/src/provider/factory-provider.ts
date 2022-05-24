@@ -6,13 +6,14 @@
  * found in the LICENSE file at source root.
  */
 
-import { Provider } from '../__types__'
+import { Constructor, FactoryProviderDef, Provider, ProviderDef } from '../__types__'
 
 /**
  * @private
  *
  * @category Injector
  */
+
 export class FactoryProvider<M> implements Provider<M> {
 
     public used = false
@@ -22,6 +23,10 @@ export class FactoryProvider<M> implements Provider<M> {
         private factory: (...args: any[]) => M,
         private deps?: any[]
     ) {
+    }
+
+    static isFactoryProviderDef<T extends object>(def: ProviderDef<T> | Constructor<any>): def is FactoryProviderDef<T> {
+        return !(def as any).prototype && (def as any).useFactory
     }
 
     create() {

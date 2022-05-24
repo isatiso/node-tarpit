@@ -27,24 +27,20 @@ import { TpAssemblyCollection, TpComponentCollection, TpRootMeta } from './tp-co
 export class Platform {
 
     /**
-     * @protected
      * 根注入器，在它上面还有 NullInjector。
      */
     protected root_injector = Injector.create()
     /**
-     * @private
      * 记录创建 [[Platform]] 的时间，用于计算启动时间。
      */
     private readonly started_at: number
 
     /**
-     * @private
      * ConfigData 实例，用于管理加载的配置文件内容。
      */
     private readonly _config_data?: ConfigData
 
     /**
-     * @private
      * 收集需要启动和销毁的插件。
      */
     private _plugin_set = new PluginSet()

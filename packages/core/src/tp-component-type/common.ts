@@ -22,7 +22,7 @@ export interface TpUnitCommon<T extends (...args: any) => any> {
     meta?: PropertyMeta
 }
 
-export type TpUnitRecord = Map<string | symbol, TpUnitLike>
+export type TpUnitRecord<T extends TpUnitLike = TpUnitLike> = Map<string | symbol, TpUnitLike>
 
 export interface TpDefaultUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
     type: 'TpDefaultUnit'

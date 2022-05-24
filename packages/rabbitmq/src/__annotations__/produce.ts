@@ -8,13 +8,12 @@
 
 import { KeyOfFilterType } from '@tarpit/core'
 
-import { get_producer_unit } from '../__tools__'
+import { default_producer_unit } from '../__tools__'
 import { ProduceOptions, Producer } from '../__types__'
 
 export function Produce<T extends object, K extends KeyOfFilterType<T, Producer<any>>>(exchange: string, routing_key: string, options?: ProduceOptions): PropertyDecorator {
     return (prototype, prop) => {
-        get_producer_unit(prototype, prop)
-            .ensure_default()
+        default_producer_unit(prototype, prop)
             .do(unit => {
                 if (unit.produce) {
                     throw new Error('Duplicated decorator "Produce".')

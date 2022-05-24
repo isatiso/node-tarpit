@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, MetaTools, TpMeta } from '@tarpit/core'
-import { get_router_unit, IGunslinger } from '../__tools__'
+import { Constructor, MetaTools } from '@tarpit/core'
+import { IGunslinger, RouterUnit } from '../__tools__'
 import { TpRouterMeta, TpRouterOptions } from '../__types__'
 
 /**
@@ -16,23 +16,23 @@ import { TpRouterMeta, TpRouterOptions } from '../__types__'
  * @category Router Annotation
  */
 export function TpRouter(path: `/${string}`, options?: TpRouterOptions): ClassDecorator {
-    return (constructor: Function) => {
-        const meta: TpMeta<TpRouterMeta | undefined> = MetaTools.ComponentMeta(constructor.prototype) as any
-        if (meta.exist() && meta.value.type) {
-            throw new Error(`Component ${meta.value.type} is exist -> ${meta.value.name}.`)
-        }
-        meta.set({
-            type: 'TpRouter',
-            loader: 'œœ-TpRouter',
-            category: 'assembly',
-            name: constructor.name,
-            self: constructor as unknown as Constructor<any>,
-            imports: options?.imports ?? [],
-            providers: options?.providers ?? [],
-            router_path: path,
-            router_options: options,
-            path_replacement: {},
-        })
+    return constructor => {
+        MetaTools.ComponentMeta(constructor.prototype)
+            .if_exist(meta => {
+                throw new Error(`Component ${meta.type} is exist -> ${meta.name}.`)
+            })
+            .set<TpRouterMeta>({
+                type: 'TpRouter',
+                loader: 'œœ-TpRouter',
+                category: 'assembly',
+                name: constructor.name,
+                self: constructor as unknown as Constructor<any>,
+                imports: options?.imports ?? [],
+                providers: options?.providers ?? [],
+                router_path: path,
+                router_options: options,
+                path_replacement: {},
+            })
 
         const gunslinger: IGunslinger<any> = constructor as any
 
@@ -43,7 +43,7 @@ export function TpRouter(path: `/${string}`, options?: TpRouterOptions): ClassDe
         }
 
         gunslinger.replace = (property_key: string, new_path: string) => {
-            get_router_unit(gunslinger.prototype, property_key)
+            RouterUnit(gunslinger.prototype, property_key)
                 .do(unit => {
                     if (unit) {
                         unit.path = new_path

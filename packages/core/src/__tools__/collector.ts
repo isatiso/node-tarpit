@@ -8,7 +8,7 @@
 
 import { Constructor, Provider, ProviderDef, ProviderTreeNode } from '../__types__'
 import { Injector } from '../injector'
-import { ClassProvider, FactoryProvider, isClassProvider, isFactoryProvider, isValueProvider, ValueProvider } from '../provider'
+import { ClassProvider, FactoryProvider, ValueProvider } from '../provider'
 import { TpUnitCollection, TpUnitCommon } from '../tp-component-type'
 import { MetaTools } from './tp-meta-tools'
 
@@ -98,13 +98,13 @@ export function def2Provider(defs: (ProviderDef<any> | Constructor<any>)[], inje
             return injector.get(token)
         }
 
-        if (isValueProvider(def)) {
+        if (ValueProvider.isValueProviderDef(def)) {
             return injector.set_provider(def.provide, new ValueProvider('valueProvider', def.useValue))
 
-        } else if (isFactoryProvider(def)) {
+        } else if (FactoryProvider.isFactoryProviderDef(def)) {
             return injector.set_provider(def.provide, new FactoryProvider('FactoryProvider', def.useFactory as any, def.deps))
 
-        } else if (isClassProvider(def)) {
+        } else if (ClassProvider.isClassProviderDef(def)) {
             const meta = MetaTools.ensure_worker(def.useClass).value
             return meta.provider = injector.set_provider(def, new ClassProvider(def.useClass, injector))
 

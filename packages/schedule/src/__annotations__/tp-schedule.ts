@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, MetaTools, TpMeta } from '@tarpit/core'
+import { Constructor, MetaTools } from '@tarpit/core'
 import { TpScheduleMeta, TpScheduleOptions } from '../__types__'
 
 /**
@@ -19,11 +19,10 @@ import { TpScheduleMeta, TpScheduleOptions } from '../__types__'
  */
 export function TpSchedule(options?: TpScheduleOptions): ClassDecorator {
     return constructor => {
-        const meta: TpMeta<TpScheduleMeta | undefined> = MetaTools.ComponentMeta(constructor.prototype) as any
-        if (meta.exist() && meta.value.type) {
-            throw new Error(`Component ${meta.value.type} is exist -> ${meta.value.name}.`)
-        }
-        meta.set({
+        MetaTools.ComponentMeta(constructor.prototype)
+            .if_exist(meta => {
+                throw new Error(`Component ${meta.type} is exist -> ${meta.name}.`)
+            }).set<TpScheduleMeta>({
             type: 'TpSchedule',
             loader: 'œœ-TpSchedule',
             category: 'assembly',

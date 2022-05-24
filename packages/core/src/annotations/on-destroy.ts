@@ -15,8 +15,7 @@ import { MetaTools } from '../__tools__/tp-meta-tools'
  */
 export function OnDestroy(): MethodDecorator {
     return (prototype, prop, descriptor) => {
-        MetaTools.ClassMeta(prototype)
-            .ensure_default()
+        MetaTools.default_class_meta(prototype)
             .do(meta => meta.on_destroy = descriptor)
     }
 }

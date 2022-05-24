@@ -8,11 +8,11 @@
 
 import { Constructor } from './base'
 
-export type ProviderDef<T extends object> = ValueProviderDef | ClassProviderDef<T> | FactoryProviderDef
+export type ProviderDef<T extends object> = ValueProviderDef<T> | ClassProviderDef<T> | FactoryProviderDef<T>
 
-export interface ValueProviderDef {
+export interface ValueProviderDef<T> {
     provide: any
-    useValue: any
+    useValue: T
 }
 
 export interface ClassProviderDef<T extends object> {
@@ -21,9 +21,9 @@ export interface ClassProviderDef<T extends object> {
     multi?: boolean
 }
 
-export interface FactoryProviderDef {
+export interface FactoryProviderDef<T> {
     provide: any
-    useFactory: Function
+    useFactory: () => T
     deps?: any[]
 }
 

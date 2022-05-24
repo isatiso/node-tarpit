@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Provider } from '../__types__'
+import { Constructor, Provider, ProviderDef, ValueProviderDef } from '../__types__'
 
 /**
  * @private
@@ -21,6 +21,10 @@ export class ValueProvider<M> implements Provider<M> {
         public name: string,
         private readonly value: M
     ) {
+    }
+
+    static isValueProviderDef<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ValueProviderDef<T> {
+        return !(def as any).prototype && (def as any).useValue
     }
 
     create() {

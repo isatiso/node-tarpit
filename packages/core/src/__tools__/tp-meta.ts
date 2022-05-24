@@ -15,11 +15,11 @@ export enum DI_TOKEN {
     component_meta = 'œœ:component_meta',
     custom_data = 'œœ:custom_data',
     dependencies = 'œœ:dependencies',
-    unit_record = 'œœ:unit_record',
     instance = 'œœ:instance',
     plugin_meta = 'œœ:plugin_meta',
-    unit = 'œœ:unit',
     property_meta = 'œœ:property_meta',
+    unit = 'œœ:unit',
+    unit_record = 'œœ:unit_record',
 }
 
 export type TpMetaValue<T> = T extends (target: any, property_key?: string) => TpMeta<infer P | undefined> ? P : never
@@ -99,7 +99,7 @@ export class TpMeta<T> {
      *
      * @param value
      */
-    set(value: Exclude<T, undefined>): TpMeta<Exclude<T, undefined>> {
+    set<R extends T = T>(value: Exclude<R, undefined>): TpMeta<Exclude<R, undefined>> {
         if (this.property === undefined) {
             Reflect.defineMetadata(this.metadata_key, value, this.target)
         } else {
@@ -113,11 +113,10 @@ export class TpMeta<T> {
     /**
      * 设置元数据默认值。
      *
-     * @param value
      */
-    ensure_default<R extends Exclude<T, undefined> = Exclude<T, undefined>>(value?: R): TpMeta<R> {
+    ensure_default<R extends Exclude<T, undefined> = Exclude<T, undefined>>(): TpMeta<R> {
         if (!this.exist()) {
-            const metadata_value = value ?? this.default_by?.(this.target, this.property)
+            const metadata_value = this.default_by?.(this.target, this.property)
             if (this.property === undefined) {
                 Reflect.defineMetadata(this.metadata_key, metadata_value, this.target)
             } else {

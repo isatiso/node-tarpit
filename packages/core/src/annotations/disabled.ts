@@ -22,8 +22,7 @@ import { MetaTools } from '../__tools__/tp-meta-tools'
  */
 export function Disabled(disabled_options?: {}): MethodDecorator {
     return (prototype, prop, _) => {
-        MetaTools.PropertyMeta(prototype, prop)
-            .ensure_default()
+        MetaTools.default_property_meta(prototype, prop)
             .do(meta => meta.disabled = true)
     }
 }

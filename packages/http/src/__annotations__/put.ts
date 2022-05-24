@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { get_router_unit } from '../__tools__'
+import { default_router_unit } from '../__tools__'
 
 /**
  * 将 Tp.TpRouter 中的一个方法标记为 PUT 请求处理函数。
@@ -16,8 +16,7 @@ import { get_router_unit } from '../__tools__'
  */
 export function Put(path_tail?: string): MethodDecorator {
     return (prototype, prop, _) => {
-        get_router_unit(prototype, prop)
-            .ensure_default()
+        default_router_unit(prototype, prop)
             .do(unit => unit.path = path_tail ?? unit.path)
             .do(unit => unit.PUT = true)
     }

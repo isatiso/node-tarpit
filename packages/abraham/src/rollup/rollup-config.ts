@@ -13,7 +13,7 @@ import { InputOptions } from 'rollup'
 import { CompilerOptions } from 'typescript'
 import { parse_tsconfig, read_json_file_sync, read_tsconfig } from '../__tools__'
 import { PackageJson } from '../types'
-import { clean, dts, rpt2 } from './plugins'
+import { clean, dts, rpt2, terser } from './plugins'
 import { create_render_process, output_dts, output_js } from './render'
 import { gen_external } from './utils'
 
@@ -85,7 +85,7 @@ export class RollupConfig {
             [
                 json(),
                 rpt2({}, this.rpt2CacheRoot),
-                // terser(),
+                terser(),
             ], { external: this.externals.slice(), ...this._inputOptions })
     }
 
@@ -102,7 +102,7 @@ export class RollupConfig {
                     declaration: true,
                     declarationDir: this.declarationDir,
                 }, this.rpt2CacheRoot),
-                // terser(),
+                terser(),
             ], { external: this.externals.slice(), ...this._inputOptions })
     }
 

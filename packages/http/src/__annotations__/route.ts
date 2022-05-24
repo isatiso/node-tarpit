@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { get_router_unit } from '../__tools__'
+import { default_router_unit } from '../__tools__'
 import { ApiMethod } from '../__types__'
 
 /**
@@ -16,8 +16,7 @@ import { ApiMethod } from '../__types__'
  */
 export function Route(methods: ApiMethod[], path_tail?: string,): MethodDecorator {
     return (prototype, prop, _) => {
-        get_router_unit(prototype, prop)
-            .ensure_default()
+        default_router_unit(prototype, prop)
             .do(unit => unit.path = path_tail ?? unit.path)
             .do(unit => methods.forEach(method => unit[method] = true))
     }

@@ -26,8 +26,7 @@ import { MetaTools } from '../__tools__/tp-meta-tools'
  */
 export function MetaData<T extends object = any>(meta: T): ClassDecorator {
     return constructor => {
-        MetaTools.CustomData(constructor.prototype)
-            .ensure_default()
+        MetaTools.default_custom_data(constructor.prototype)
             .do(custom_meta => Object.entries(meta).forEach(([k, v]) => custom_meta.set(k, v)))
     }
 }

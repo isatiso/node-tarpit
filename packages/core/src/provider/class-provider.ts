@@ -6,16 +6,17 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, Provider } from '../__types__'
 import { MetaTools } from '../__tools__/tp-meta-tools'
-import { Injector } from '../injector'
+import { ClassProviderDef, Constructor, Provider, ProviderDef } from '../__types__'
 import { Stranger } from '../builtin/stranger'
+import { Injector } from '../injector'
 
 /**
  * @private
  *
  * @category Injector
  */
+
 export class ClassProvider<M extends object> implements Provider<M> {
 
     public resolved?: M
@@ -29,6 +30,10 @@ export class ClassProvider<M extends object> implements Provider<M> {
     ) {
         this.name = cls.name
         this.multi = this.multi ?? false
+    }
+
+    static isClassProviderDef<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ClassProviderDef<T> {
+        return !(def as any).prototype && (def as any).useClass
     }
 
     /**

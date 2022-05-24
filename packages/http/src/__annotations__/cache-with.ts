@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { get_router_unit } from '../__tools__'
+import { default_router_unit } from '../__tools__'
 
 /**
  * 将 Tp.TpRouter 中的一个请求处理函数标记为结果需要进行缓存。
@@ -15,8 +15,7 @@ import { get_router_unit } from '../__tools__'
  */
 export function CacheWith(prefix?: string, expires?: number): MethodDecorator {
     return (prototype, prop, _) => {
-        get_router_unit(prototype, prop)
-            .ensure_default()
+        default_router_unit(prototype, prop)
             .do(unit => unit.cache_prefix = prefix)
             .do(unit => unit.cache_expires = expires)
     }

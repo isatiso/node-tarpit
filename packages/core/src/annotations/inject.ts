@@ -29,12 +29,10 @@ export function Inject(token: any): ParameterDecorator | ClassDecorator {
     }
     return (target: Function | Object, prop: string | symbol | undefined, index: number) => {
         if (prop === undefined) {
-            MetaTools.ClassMeta((target as Function).prototype)
-                .ensure_default()
+            MetaTools.default_class_meta((target as Function).prototype)
                 .do(meta => meta.parameter_injection[index] = token)
         } else {
-            MetaTools.PropertyMeta(target, prop)
-                .ensure_default()
+            MetaTools.default_property_meta(target, prop)
                 .do(meta => meta.parameter_injection[index] = token)
         }
     }

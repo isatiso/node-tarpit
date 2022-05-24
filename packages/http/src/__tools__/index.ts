@@ -11,26 +11,24 @@ import { TpRouterUnit } from '../__types__'
 
 export * from './gunslinger'
 
-export const get_router_unit = TpMetaWrapper<TpRouterUnit<any>>(
-    DI_TOKEN.unit,
-    'property_only',
-    <T extends (...args: any) => any>(prototype: any, property?: string | symbol): TpRouterUnit<T> => {
+export const RouterUnit = TpMetaWrapper<TpRouterUnit<any>>(DI_TOKEN.unit, 'property_only',
 
+    (prototype: any, property?: string | symbol): TpRouterUnit<any> => {
         const [descriptor, prop] = MetaTools.check_property(prototype, property)
-        const parameter_injection = MetaTools.PropertyMeta(prototype, prop).value?.parameter_injection
-        const router_unit: TpRouterUnit<T> = {
+        const parameter_injection = MetaTools.default_property_meta(prototype, prop).value.parameter_injection
+        const router_unit: TpRouterUnit<any> = {
             type: 'TpRouterUnit',
             prototype,
             path: typeof prop === 'symbol' ? prop.toString() : prop,
-            descriptor: descriptor,
+            descriptor,
             handler: descriptor.value,
             property: prop,
-            param_types: MetaTools.get_method_parameter_types(prototype, prop)?.map((t: any, i: number) => parameter_injection?.[i] ?? t) as Parameters<T>,
+            param_types: MetaTools.get_method_parameter_types(prototype, prop)?.map((t: any, i: number) => parameter_injection[i] ?? t) as Parameters<any>,
             auth: false,
             wrap_result: true,
         }
-        MetaTools.UnitRecord(prototype)
-            .ensure_default()
-            .do(touched => touched.set(prop, router_unit))
+        MetaTools.default_unit_record(prototype).do(touched => touched.set(prop, router_unit))
         return router_unit
     })
+
+export const default_router_unit = (prototype: Object, prop: string | symbol) => RouterUnit(prototype, prop).ensure_default()
