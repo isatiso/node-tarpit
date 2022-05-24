@@ -18,7 +18,7 @@ import { default_schedule_unit } from '../__tools__'
 export function Lock(lock_options?: { key: string, expires?: number }): MethodDecorator {
     return (prototype, prop, _) => {
         default_schedule_unit(prototype, prop)
-            .do(unit => unit.lock_key = lock_options?.key)
-            .do(unit => unit.lock_expires = lock_options?.expires)
+            .do(unit => unit.us_lock_key = lock_options?.key)
+            .do(unit => unit.us_lock_expires = lock_options?.expires)
     }
 }

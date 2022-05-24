@@ -17,7 +17,7 @@ import { default_router_unit } from '../__tools__'
 export function Get(path_tail?: string): MethodDecorator {
     return (prototype, prop, _) => {
         default_router_unit(prototype, prop)
-            .do(unit => unit.path = path_tail ?? unit.path)
-            .do(unit => unit.GET = true)
+            .do(unit => unit.uh_path = path_tail ?? unit.uh_path)
+            .do(unit => unit.uh_get = true)
     }
 }

@@ -7,17 +7,18 @@
  */
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
-import { collect_worker, def2Provider, load_component } from './__tools__/collector'
+import { collect_worker, def_to_provider, load_component } from './__tools__/collector'
 import { MetaTools } from './__tools__/tp-meta-tools'
 import { TpPluginConstructor } from './__tools__/tp-plugin'
 
 import { Constructor, ProviderDef } from './__types__'
-import { UUID } from './builtin'
 import { PluginSet } from './builtin/plugin-set'
 import { Stranger } from './builtin/stranger'
+import { TpRootLoader } from './builtin/tp-root-loader'
+import { UUID } from './builtin/uuid'
 import { Injector } from './injector'
 import { ClassProvider, ValueProvider } from './provider'
-import { TpAssemblyCollection, TpComponentCollection, TpRootMeta } from './tp-component-type'
+import { TpAssemblyCollection, TpComponentCollection } from './tp-component-type'
 
 /**
  * Tp 运行时。
@@ -74,7 +75,8 @@ export class Platform {
 
         // 设置默认的内置工具。
         this.root_injector.set_provider(UUID, new ClassProvider(UUID, this.root_injector))
-        this.root_injector.set_provider('œœ-TpRoot', new ValueProvider('TpRoot', Platform))
+        this.root_injector.set_provider('œœ-TpRoot', new ValueProvider('TpRootLoader', TpRootLoader))
+        this.root_injector.set_provider(TpRootLoader, new ClassProvider(TpRootLoader, this.root_injector))
         this.root_injector.set_provider(Platform, new ValueProvider('Platform', this))
     }
 
@@ -97,28 +99,12 @@ export class Platform {
         return this
     }
 
-    load(meta: TpRootMeta, injector: Injector): void {
-        const plugins = injector.get(PluginSet)!.create().plugins
-
-        Array.from(plugins).forEach(plugin => {
-            const plugin_meta = MetaTools.PluginMeta(plugin.prototype).value!
-            const plugin_component_array = (meta[plugin_meta.option_key as keyof TpRootMeta] ?? []) as Array<Constructor<any>>
-            for (const component of plugin_component_array) {
-                const component_meta = MetaTools.ensure_component(component).value
-                if (component_meta.type !== plugin_meta.type) {
-                    continue
-                }
-                load_component(component, injector)
-            }
-        })
-    }
-
     /**
      * 直接挂载 TpService 到 [[Platform.root_injector]] 的接口。
      * @param def
      */
     provide(def: (ProviderDef<any> | Constructor<any>)) {
-        def2Provider([def], this.root_injector)
+        def_to_provider(def, this.root_injector)
         return this
     }
 
@@ -175,11 +161,6 @@ export class Platform {
         })).catch(() => {
             // TODO: 处理异常
         })
-        // this.mq.start()
-        // this.server.listen(port, this._config_data?.get('tp.server_options') ?? {}, () => {
-        //     const duration = Date.now() - this.started_at
-        //     console.log(`\ntp server started successfully in ${duration / 1000}s.`)
-        // })
         return this
     }
 

@@ -6,9 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-/**
- * @private
- */
 export class _NullInjector {
 
     readonly children: any[] = []
@@ -22,7 +19,4 @@ export class _NullInjector {
     }
 }
 
-/**
- * @private
- */
 export const NullInjector = new _NullInjector()

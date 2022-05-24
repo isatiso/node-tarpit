@@ -46,7 +46,7 @@ export function TpRouter(path: `/${string}`, options?: TpRouterOptions): ClassDe
             RouterUnit(gunslinger.prototype, property_key)
                 .do(unit => {
                     if (unit) {
-                        unit.path = new_path
+                        unit.uh_path = new_path
                     } else {
                         console.log(`Warning: No TpRouterUnit exist at ${constructor.name}.${property_key}.`)
                     }

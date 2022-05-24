@@ -143,17 +143,17 @@ export interface TpConsumerMeta extends TpAssemblyCommon<'TpConsumer'> {
 }
 
 export interface TpConsumerUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
-    type: 'TpConsumerUnit'
-    consumerTag?: string
-    consume?: { queue: string, options: ConsumeOptions }
-    channel_wrapper?: ChannelWrapper
-    channel_error?: any
+    u_type: 'TpConsumerUnit'
+    ur_consumer_tag?: string
+    ur_consume?: { queue: string, options: ConsumeOptions }
+    ur_channel_wrapper?: ChannelWrapper
+    ur_channel_error?: any
 }
 
 export interface TpProducerUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
-    type: 'TpProducerUnit'
-    produce?: { exchange: string, routing_key: string, options: ProduceOptions }
-    produce_cache: Deque<[message: any, produce_options: ProduceOptions | undefined, resolve: (data: any) => void, reject: (err: any) => void]>
-    channel_wrapper?: ChannelWrapper
-    channel_error?: any
+    u_type: 'TpProducerUnit'
+    ur_produce?: { exchange: string, routing_key: string, options: ProduceOptions }
+    ur_produce_cache: Deque<[message: any, produce_options: ProduceOptions | undefined, resolve: (data: any) => void, reject: (err: any) => void]>
+    ur_channel_wrapper?: ChannelWrapper
+    ur_channel_error?: any
 }

@@ -13,10 +13,10 @@ export function Consume(queue: string, options?: ConsumeOptions): MethodDecorato
     return (prototype, prop, _) => {
         default_consumer_unit(prototype, prop)
             .do(unit => {
-                if (unit.consume) {
+                if (unit.ur_consume) {
                     throw new Error('Duplicated decorator "Consume".')
                 } else {
-                    unit.consume = { queue, options: options ?? {} }
+                    unit.ur_consume = { queue, options: options ?? {} }
                 }
             })
     }

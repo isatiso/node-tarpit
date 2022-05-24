@@ -53,14 +53,14 @@ export interface TpRouterMeta extends TpAssemblyCommon<'TpRouter'> {
 }
 
 export interface TpRouterUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
-    type: 'TpRouterUnit'
-    path: string
-    GET?: boolean
-    POST?: boolean
-    PUT?: boolean
-    DELETE?: boolean
-    auth: boolean
-    wrap_result: boolean
-    cache_prefix?: string
-    cache_expires?: number
+    u_type: 'TpRouterUnit'
+    uh_path: string
+    uh_get?: boolean
+    uh_post?: boolean
+    uh_put?: boolean
+    uh_delete?: boolean
+    uh_auth: boolean
+    uh_wrap_result: boolean
+    uh_cache_prefix?: string
+    uh_cache_expires?: number
 }

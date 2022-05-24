@@ -10,7 +10,7 @@ import { ConfigData } from '@tarpit/config'
 import { collect_unit, get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
 import { connect, Connection, ConsumeMessage, Options } from 'amqplib'
 import EventEmitter from 'events'
-import { TpConsumerUnit, ProduceOptions, TpProducerUnit, TpConsumerMeta, TpProducerMeta } from './__types__'
+import { ProduceOptions, TpConsumerMeta, TpConsumerUnit, TpProducerMeta, TpProducerUnit } from './__types__'
 import { ChannelWrapper } from './channel-wrapper'
 import { Ack, Dead, Requeue } from './error'
 import { Letter, PURE_LETTER } from './letter'
@@ -141,14 +141,14 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
             }
             const function_list = collect_unit(meta.self, 'TpProducerUnit')
             for (const func of function_list) {
-                if (!func.meta?.disabled) {
+                if (!func.u_meta?.disabled) {
                     await this.put_producer(func)
                 }
             }
         } else {
             const function_list = collect_unit(meta.self, 'TpConsumerUnit')
             for (const func of function_list) {
-                if (!func.meta?.disabled) {
+                if (!func.u_meta?.disabled) {
                     await this.put_consumer(injector, func, [Letter, PURE_LETTER])
                 }
             }
@@ -157,7 +157,7 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
     }
 
     private async put_producer(desc: TpProducerUnit<any>) {
-        const produce = desc.produce
+        const produce = desc.ur_produce
         if (!produce) {
             throw new Error('produce is empty')
         }
@@ -166,14 +166,14 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
             const o = options ? { ...produce.options, ...options } : produce.options
             return channel_wrapper.publish(produce.exchange, produce.routing_key, Buffer.from(JSON.stringify(message)), o)
         }
-        Object.defineProperty(desc.prototype, desc.property, {
+        Object.defineProperty(desc.u_proto, desc.u_prop, {
             writable: true,
             enumerable: true,
             configurable: true,
             value: producer
         })
-        while (desc.produce_cache.length) {
-            const [msg, options, resolve, reject] = desc.produce_cache.shift()!
+        while (desc.ur_produce_cache.length) {
+            const [msg, options, resolve, reject] = desc.ur_produce_cache.shift()!
             const o = options ? { ...produce.options, ...options } : produce.options
             channel_wrapper.pure_publish(produce.exchange, produce.routing_key, Buffer.from(JSON.stringify(msg)), o, resolve, reject)
         }
@@ -181,7 +181,7 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
 
     private async put_consumer(injector: Injector, desc: TpConsumerUnit<any>, except_list?: any[]): Promise<void> {
 
-        const consume = desc.consume
+        const consume = desc.ur_consume
         if (!consume) {
             throw new Error('consume is empty')
         }
@@ -206,7 +206,7 @@ export class TpRabbitMQ implements TpPlugin<'TpConsumer' | 'TpProducer'> {
             })
 
             try {
-                await desc.handler(...param_list)
+                await desc.u_handler(...param_list)
                 channel_wrapper.channel?.ack(msg)
             } catch (reason) {
                 if (reason instanceof Ack) {

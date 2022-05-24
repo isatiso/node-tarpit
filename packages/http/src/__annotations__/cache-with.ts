@@ -16,7 +16,7 @@ import { default_router_unit } from '../__tools__'
 export function CacheWith(prefix?: string, expires?: number): MethodDecorator {
     return (prototype, prop, _) => {
         default_router_unit(prototype, prop)
-            .do(unit => unit.cache_prefix = prefix)
-            .do(unit => unit.cache_expires = expires)
+            .do(unit => unit.uh_cache_prefix = prefix)
+            .do(unit => unit.uh_cache_expires = expires)
     }
 }

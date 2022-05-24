@@ -16,6 +16,6 @@ import { default_router_unit } from '../__tools__'
 export function NoWrap(): MethodDecorator {
     return (prototype, prop, _) => {
         default_router_unit(prototype, prop)
-            .do(unit => unit.wrap_result = false)
+            .do(unit => unit.uh_wrap_result = false)
     }
 }

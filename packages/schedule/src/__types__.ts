@@ -62,11 +62,11 @@ export interface TpScheduleMeta extends TpAssemblyCommon<'TpSchedule'> {
 }
 
 export interface TpScheduleUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
-    type: 'TpScheduleUnit'
-    crontab_str?: string
-    crontab?: Crontab
-    task_options?: TaskOptions
-    name?: string
-    lock_key?: string
-    lock_expires?: number
+    u_type: 'TpScheduleUnit'
+    us_crontab_str?: string
+    us_crontab?: Crontab
+    us_task_options?: TaskOptions
+    us_name?: string
+    us_lock_key?: string
+    us_lock_expires?: number
 }

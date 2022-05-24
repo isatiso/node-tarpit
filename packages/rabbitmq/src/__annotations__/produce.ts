@@ -15,13 +15,13 @@ export function Produce<T extends object, K extends KeyOfFilterType<T, Producer<
     return (prototype, prop) => {
         default_producer_unit(prototype, prop)
             .do(unit => {
-                if (unit.produce) {
+                if (unit.ur_produce) {
                     throw new Error('Duplicated decorator "Produce".')
                 } else {
-                    unit.produce = { exchange, routing_key, options: options ?? {} }
+                    unit.ur_produce = { exchange, routing_key, options: options ?? {} }
                     const producer: Producer<any> = (message: any, produce_options?: ProduceOptions): Promise<void> => {
                         return new Promise((resolve, reject) => {
-                            unit.produce_cache.push([message, produce_options, resolve, reject])
+                            unit.ur_produce_cache.push([message, produce_options, resolve, reject])
                         })
                     }
                     Object.defineProperty(prototype, prop, {

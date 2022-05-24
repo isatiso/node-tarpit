@@ -31,8 +31,7 @@ export function TpPluginType<K extends keyof TpComponentCollection>(options: {
     option_key: K extends `Tp${infer M}` ? `${Lowercase<M>}s` : never
 }): (constructor: Constructor<TpPlugin<K>>) => void {
     return constructor => {
-        MetaTools.PluginMeta(constructor.prototype)
-            .ensure_default()
+        MetaTools.default_plugin_meta(constructor.prototype)
             .do(meta => meta.type = options.type)
             .do(meta => meta.loader_list = options.loader_list)
             .do(meta => meta.option_key = options.option_key)

@@ -16,12 +16,12 @@ export const ConsumerUnit = TpMetaWrapper<TpConsumerUnit<any>>(DI_TOKEN.unit, 'p
         const [descriptor, prop] = MetaTools.check_property(prototype, property)
         const parameter_injection = MetaTools.default_property_meta(prototype, prop).value.parameter_injection
         const consumer_unit: TpConsumerUnit<T> = {
-            type: 'TpConsumerUnit',
-            prototype,
-            descriptor,
-            property: prop,
-            param_types: MetaTools.get_method_parameter_types(prototype, prop)?.map((t: any, i: number) => parameter_injection[i] ?? t) as Parameters<T>,
-            handler: descriptor.value,
+            u_type: 'TpConsumerUnit',
+            u_desc: descriptor,
+            u_handler: descriptor.value,
+            u_param_types: MetaTools.get_method_parameter_types(prototype, prop)?.map((t: any, i: number) => parameter_injection[i] ?? t) as Parameters<T>,
+            u_prop: prop,
+            u_proto: prototype,
         }
         MetaTools.default_unit_record(prototype)
             .do(touched => touched.set(prop, consumer_unit))
@@ -34,12 +34,12 @@ export const ProducerUnit = TpMetaWrapper<TpProducerUnit<any>>(DI_TOKEN.unit, 'p
             throw new Error('Function Decorator can not place on class.')
         }
         const producer_unit: TpProducerUnit<T> = {
-            type: 'TpProducerUnit',
-            prototype,
-            descriptor: {},
-            property,
-            handler: (() => null) as any,
-            produce_cache: new Deque()
+            u_type: 'TpProducerUnit',
+            u_desc: {},
+            u_handler: (() => null) as any,
+            u_prop: property,
+            u_proto: prototype,
+            ur_produce_cache: new Deque()
         }
         MetaTools.default_unit_record(prototype)
             .do(touched => touched.set(property, producer_unit))

@@ -24,7 +24,7 @@ export class ValueProvider<M> implements Provider<M> {
     }
 
     static isValueProviderDef<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ValueProviderDef<T> {
-        return !(def as any).prototype && (def as any).useValue
+        return def.constructor.name === 'Object' && (def as any).useValue
     }
 
     create() {

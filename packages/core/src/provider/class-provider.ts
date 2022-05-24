@@ -33,7 +33,7 @@ export class ClassProvider<M extends object> implements Provider<M> {
     }
 
     static isClassProviderDef<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ClassProviderDef<T> {
-        return !(def as any).prototype && (def as any).useClass
+        return def.constructor.name === 'Object' && (def as any).useClass
     }
 
     /**

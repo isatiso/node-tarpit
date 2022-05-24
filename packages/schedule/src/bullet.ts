@@ -21,10 +21,10 @@ export class Bullet {
         public handler: Function,
         public desc: TpScheduleUnit<any>,
     ) {
-        if (!desc.crontab_str) {
+        if (!desc.us_crontab_str) {
             throw new Error()
         }
-        this.crontab = Crontab.parse(desc.crontab_str, desc.task_options)
+        this.crontab = Crontab.parse(desc.us_crontab_str, desc.us_task_options)
         this.execution = this.crontab.next()
     }
 }

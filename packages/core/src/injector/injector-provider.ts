@@ -10,8 +10,6 @@ import { Provider } from '../__types__'
 import { Injector } from './injector'
 
 /**
- * @private
- *
  * Injector 中内置的 Provider。
  */
 export class InjectorProvider implements Provider<Injector> {

@@ -12,7 +12,7 @@ import { Authenticator } from './__services__/authenticator'
 import { CacheProxy } from './__services__/cache-proxy'
 import { LifeCycle } from './__services__/life-cycle'
 import { ResultWrapper } from './__services__/result-wrapper'
-import { ApiMethod, ApiPath, HandlerReturnType, HttpHandler, HttpHandlerDescriptor, HttpHandlerKey, KoaResponseType, LiteContext, TpRouterUnit, TpRouterMeta } from './__types__'
+import { ApiMethod, ApiPath, HandlerReturnType, HttpHandler, HttpHandlerDescriptor, HttpHandlerKey, KoaResponseType, LiteContext, TpRouterMeta, TpRouterUnit } from './__types__'
 import { ApiParams, PURE_PARAMS } from './api-params'
 import { HttpError, InnerFinish, OuterFinish, reasonable } from './error'
 import { SessionContext } from './session-context'
@@ -77,16 +77,16 @@ export class Handler {
     }
 
     load(router_unit: TpRouterUnit<any>, injector: Injector, meta: TpRouterMeta): void {
-        if (!router_unit.meta?.disabled) {
+        if (!router_unit.u_meta?.disabled) {
             const router_handler = this.make_router(injector, router_unit, [ApiParams, SessionContext, PURE_PARAMS])
             const prefix = meta.router_path.replace(/\/{2,}/g, '/').replace(/\/\s*$/g, '')
-            const suffix = router_unit.path.replace(/(^\/|\/$)/g, '')
+            const suffix = router_unit.uh_path.replace(/(^\/|\/$)/g, '')
             const full_path = prefix + '/' + suffix
 
-            router_unit.GET && this.on('GET', full_path, router_handler)
-            router_unit.POST && this.on('POST', full_path, router_handler)
-            router_unit.PUT && this.on('PUT', full_path, router_handler)
-            router_unit.DELETE && this.on('DELETE', full_path, router_handler)
+            router_unit.uh_get && this.on('GET', full_path, router_handler)
+            router_unit.uh_post && this.on('POST', full_path, router_handler)
+            router_unit.uh_put && this.on('PUT', full_path, router_handler)
+            router_unit.uh_delete && this.on('DELETE', full_path, router_handler)
         }
     }
 
@@ -103,21 +103,21 @@ export class Handler {
 
             const auth_info = await authenticator?.auth(koa_context)
 
-            const context = new SessionContext(koa_context, auth_info, cache, desc.cache_prefix, desc.cache_expires)
+            const context = new SessionContext(koa_context, auth_info, cache, desc.uh_cache_prefix, desc.uh_cache_expires)
 
             await hooks?.on_init(context)
 
-            if (desc.auth) {
+            if (desc.uh_auth) {
                 if (!authenticator) {
                     const err = new HttpError(new Error('no provider for <Authenticator>.'))
                     await hooks?.on_error(context, err)
-                    const err_result = desc.wrap_result ? do_wrap_error(result_wrapper, err, context) : { error: err.err_data }
+                    const err_result = desc.uh_wrap_result ? do_wrap_error(result_wrapper, err, context) : { error: err.err_data }
                     return finish_process(koa_context, err_result)
                 }
                 if (auth_info === undefined) {
                     const err = new HttpError(reasonable(401, 'Unauthorized.'))
                     await hooks?.on_error(context, err)
-                    const err_result = desc.wrap_result ? do_wrap_error(result_wrapper, err, context) : { error: err.err_data }
+                    const err_result = desc.uh_wrap_result ? do_wrap_error(result_wrapper, err, context) : { error: err.err_data }
                     return finish_process(koa_context, err_result)
                 }
             }
@@ -139,7 +139,7 @@ export class Handler {
             let handler_result: any
 
             try {
-                handler_result = await desc.handler(...param_list)
+                handler_result = await desc.u_handler(...param_list)
             } catch (reason) {
                 if (reason instanceof InnerFinish) {
                     handler_result = await reason.body
@@ -152,14 +152,14 @@ export class Handler {
 
             if (handler_result instanceof HttpError) {
                 await hooks?.on_error(context, handler_result)
-                const err_response = desc.wrap_result ? do_wrap_error(result_wrapper, handler_result, context) : { error: handler_result.err_data }
+                const err_response = desc.uh_wrap_result ? do_wrap_error(result_wrapper, handler_result, context) : { error: handler_result.err_data }
                 finish_process(koa_context, err_response)
             } else if (handler_result instanceof OuterFinish) {
                 await hooks?.on_finish(context)
                 finish_process(koa_context, await handler_result.body)
             } else {
                 await hooks?.on_finish(context)
-                const normal_res = desc.wrap_result ? do_wrap(result_wrapper, handler_result, context) : handler_result
+                const normal_res = desc.uh_wrap_result ? do_wrap(result_wrapper, handler_result, context) : handler_result
                 finish_process(koa_context, normal_res)
             }
         }

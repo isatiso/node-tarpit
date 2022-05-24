@@ -26,7 +26,7 @@ export class FactoryProvider<M> implements Provider<M> {
     }
 
     static isFactoryProviderDef<T extends object>(def: ProviderDef<T> | Constructor<any>): def is FactoryProviderDef<T> {
-        return !(def as any).prototype && (def as any).useFactory
+        return def.constructor.name === 'Object' && (def as any).useFactory
     }
 
     create() {

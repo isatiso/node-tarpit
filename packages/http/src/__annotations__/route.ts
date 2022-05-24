@@ -9,6 +9,13 @@
 import { default_router_unit } from '../__tools__'
 import { ApiMethod } from '../__types__'
 
+const method_map = {
+    GET: 'uh_get' as 'uh_get',
+    POST: 'uh_post' as 'uh_post',
+    PUT: 'uh_put' as 'uh_put',
+    DELETE: 'uh_delete' as 'uh_delete',
+}
+
 /**
  * 将 Tp.TpRouter 中的一个方法标记为请求处理函数。
  *
@@ -17,7 +24,7 @@ import { ApiMethod } from '../__types__'
 export function Route(methods: ApiMethod[], path_tail?: string,): MethodDecorator {
     return (prototype, prop, _) => {
         default_router_unit(prototype, prop)
-            .do(unit => unit.path = path_tail ?? unit.path)
-            .do(unit => methods.forEach(method => unit[method] = true))
+            .do(unit => unit.uh_path = path_tail ?? unit.uh_path)
+            .do(unit => methods.forEach(method => unit[method_map[method]] = true))
     }
 }

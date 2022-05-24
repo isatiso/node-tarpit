@@ -12,20 +12,20 @@ import { TpUnitLike } from './collection'
 export type ComponentType = `Tp${string}`
 
 export interface TpUnitCommon<T extends (...args: any) => any> {
-    type: `Tp${string}Unit`
-    prototype: any
-    property: string | symbol
-    descriptor: TypedPropertyDescriptor<T>
-    handler: T
-    param_types?: Parameters<T>
-    pos?: string
-    meta?: PropertyMeta
+    u_type: `Tp${string}Unit`
+    u_desc: TypedPropertyDescriptor<T>
+    u_handler: T
+    u_meta?: PropertyMeta
+    u_param_types?: Parameters<T>
+    u_position?: string
+    u_prop: string | symbol
+    u_proto: any
 }
 
 export type TpUnitRecord<T extends TpUnitLike = TpUnitLike> = Map<string | symbol, TpUnitLike>
 
 export interface TpDefaultUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
-    type: 'TpDefaultUnit'
+    tp_type: 'TpDefaultUnit'
 }
 
 export interface TpComponentCommon<Type extends ComponentType> {

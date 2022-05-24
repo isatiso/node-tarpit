@@ -12,7 +12,7 @@ import { Dora } from '@tarpit/dora'
 
 import { TaskLifeCycle } from './__services__/task-life-cycle'
 import { TaskLock } from './__services__/task-lock'
-import { TpScheduleUnit, TaskDesc, TpScheduleMeta } from './__types__'
+import { TaskDesc, TpScheduleMeta, TpScheduleUnit } from './__types__'
 import { Bullet } from './bullet'
 import { TaskContext } from './task-context'
 
@@ -128,9 +128,9 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         return Object.values(this._suspended_task).map(bullet => {
             return {
                 id: bullet.id,
-                name: bullet.desc.name ?? bullet.desc.pos ?? '',
-                pos: bullet.desc.pos ?? '',
-                crontab: bullet.desc.crontab_str ?? '',
+                name: bullet.desc.us_name ?? bullet.desc.u_position ?? '',
+                pos: bullet.desc.u_position ?? '',
+                crontab: bullet.desc.us_crontab_str ?? '',
                 next_exec_ts: bullet.execution.valueOf(),
                 next_exec_date_string: bullet.execution.format(),
             }
@@ -146,9 +146,9 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         while (bullet) {
             list.push({
                 id: bullet.id,
-                name: bullet.desc.name ?? bullet.desc.pos ?? '',
-                pos: bullet.desc.pos ?? '',
-                crontab: bullet.desc.crontab_str ?? '',
+                name: bullet.desc.us_name ?? bullet.desc.u_position ?? '',
+                pos: bullet.desc.u_position ?? '',
+                crontab: bullet.desc.us_crontab_str ?? '',
                 next_exec_ts: bullet.execution.valueOf(),
                 next_exec_date_string: bullet.execution.format(),
             })
@@ -159,7 +159,7 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
 
     load(meta: TpScheduleMeta, injector: Injector): void {
         collect_unit(meta.self, 'TpScheduleUnit').forEach(unit => {
-            if (!unit.meta?.disabled) {
+            if (!unit.u_meta?.disabled) {
                 const task_handler = this.make_trigger(injector, unit, [TaskContext])
                 this._fill(task_handler, unit)
             }
@@ -314,23 +314,23 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         return async function(execution?: Dora) {
             const hooks = injector.get(TaskLifeCycle)?.create()
             const task_lock = injector.get(TaskLock)?.create()
-            if (desc.lock_key && !task_lock) {
-                throw new Error(`Decorator "@Lock" is settled on ${desc.pos}, but there's no "TaskLock" implements found.`)
+            if (desc.us_lock_key && !task_lock) {
+                throw new Error(`Decorator "@Lock" is settled on ${desc.u_position}, but there's no "TaskLock" implements found.`)
             }
 
-            if (!desc.crontab_str) {
+            if (!desc.us_crontab_str) {
                 throw new Error()
             }
 
             const context = new TaskContext({
-                name: desc.name ?? desc.pos ?? '',
+                name: desc.us_name ?? desc.u_position ?? '',
                 execution: execution ?? Dora.now(),
-                pos: desc.pos!,
-                property_key: desc.property,
-                crontab: desc.crontab_str,
+                pos: desc.u_position!,
+                property_key: desc.u_prop,
+                crontab: desc.us_crontab_str,
                 temp_exec: !!execution,
-                lock_key: desc.lock_key,
-                lock_expires: desc.lock_expires,
+                lock_key: desc.us_lock_key,
+                lock_expires: desc.us_lock_expires,
             })
 
             await hooks?.on_init(context)
@@ -344,11 +344,11 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
                 }
             })
 
-            if (task_lock && desc.lock_key) {
-                const locked = await task_lock.lock(desc.lock_key ?? desc.pos, context)
+            if (task_lock && desc.us_lock_key) {
+                const locked = await task_lock.lock(desc.us_lock_key ?? desc.u_position, context)
                 if (locked !== undefined) {
-                    const lock_key = desc.lock_key
-                    return desc.handler(...param_list)
+                    const lock_key = desc.us_lock_key
+                    return desc.u_handler(...param_list)
                         .then((res: any) => hooks?.on_finish(res, context))
                         .catch((err: any) => on_error_or_throw(hooks, err, context))
                         .finally(() => task_lock.unlock(lock_key, locked, context))
@@ -356,7 +356,7 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
                     await task_lock.on_lock_failed(context)
                 }
             } else {
-                return desc.handler(...param_list)
+                return desc.u_handler(...param_list)
                     .then((res: any) => hooks?.on_finish(res, context))
                     .catch((err: any) => on_error_or_throw(hooks, err, context))
             }

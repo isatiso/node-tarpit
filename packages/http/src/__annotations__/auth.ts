@@ -15,6 +15,6 @@ import { default_router_unit } from '../__tools__'
  */
 export function Auth(): MethodDecorator {
     return (prototype, prop, _) => {
-        default_router_unit(prototype, prop).do(unit => unit.auth = true)
+        default_router_unit(prototype, prop).do(unit => unit.uh_auth = true)
     }
 }

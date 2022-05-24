@@ -21,8 +21,8 @@ import { TaskOptions } from '../__types__'
 export function Task(crontab: string, options?: TaskOptions): MethodDecorator {
     return (prototype, prop, _) => {
         default_schedule_unit(prototype, prop)
-            .do(unit => unit.crontab_str = crontab)
-            .do(unit => unit.name = options?.name)
-            .do(unit => unit.task_options = options)
+            .do(unit => unit.us_crontab_str = crontab)
+            .do(unit => unit.us_name = options?.name)
+            .do(unit => unit.us_task_options = options)
     }
 }

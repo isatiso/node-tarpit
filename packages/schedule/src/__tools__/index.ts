@@ -16,14 +16,14 @@ export const ScheduleUnit = TpMetaWrapper<TpScheduleUnit<any>>(DI_TOKEN.unit, 'p
         const [descriptor, prop] = MetaTools.check_property(prototype, property)
         const parameter_injection = MetaTools.default_property_meta(prototype, prop).value.parameter_injection
         const schedule_unit: TpScheduleUnit<any> = {
-            type: 'TpScheduleUnit',
-            prototype,
-            descriptor,
-            handler: descriptor.value,
-            property: prop,
-            param_types: MetaTools.get_method_parameter_types(prototype, prop)?.map((t: any, i: number) => parameter_injection[i] ?? t),
-            crontab_str: '',
-            name: 'unset'
+            u_type: 'TpScheduleUnit',
+            u_desc: descriptor,
+            u_handler: descriptor.value,
+            u_param_types: MetaTools.get_method_parameter_types(prototype, prop)?.map((t: any, i: number) => parameter_injection[i] ?? t),
+            u_prop: prop,
+            u_proto: prototype,
+            us_crontab_str: '',
+            us_name: 'unset',
         }
         default_unit_record(prototype)
             .do(touched => touched.set(prop, schedule_unit))
