@@ -6,11 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
+import { Plugins } from './__tools__/tp-plugin'
 import { AbstractConstructor } from './__types__'
 import { Injector } from './injector'
 import { Platform } from './platform'
 
-export class DebugPlatform extends Platform {
+export class DebugPlatform<T extends Plugins> extends Platform<T> {
 
     constructor() {
         super()

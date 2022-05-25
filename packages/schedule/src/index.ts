@@ -8,6 +8,7 @@
 
 import { Constructor } from '@tarpit/core'
 import { TpScheduleMeta, TpScheduleUnit } from './__types__'
+import { TpTrigger } from './tp-trigger'
 
 declare module '@tarpit/core' {
 
@@ -21,6 +22,10 @@ declare module '@tarpit/core' {
 
     export interface TpUnitCollection {
         TpScheduleUnit: TpScheduleUnit<any>,
+    }
+
+    export interface TpPluginCollection {
+        TpTrigger: typeof TpTrigger
     }
 }
 

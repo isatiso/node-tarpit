@@ -6,15 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { Constructor } from '../__types__'
 import { Injector } from '../injector'
 import { TpComponentCollection } from '../tp-component-type'
 import { MetaTools } from './tp-meta-tools'
 
-export type TpPluginConstructor<K extends keyof TpComponentCollection> = {
-    new(injector: Injector, config_data: ConfigData): TpPlugin<K>
-}
+export type PluginSet = Set<TpPluginConstructor<any>>
 
 export interface TpPlugin<K extends keyof TpComponentCollection> {
 
@@ -25,11 +21,17 @@ export interface TpPlugin<K extends keyof TpComponentCollection> {
     destroy(): Promise<void>
 }
 
+export interface TpPluginConstructor<K extends keyof TpComponentCollection> {
+    new(...args: any[]): TpPlugin<K>
+}
+
+export const PluginSetToken = 'œœ-PluginSet'
+
 export function TpPluginType<K extends keyof TpComponentCollection>(options: {
     type: TpComponentCollection[K]['type']
     loader_list: TpComponentCollection[K]['loader'][]
     option_key: K extends `Tp${infer M}` ? `${Lowercase<M>}s` : never
-}): (constructor: Constructor<TpPlugin<K>>) => void {
+}): (constructor: TpPluginConstructor<K>) => void {
     return constructor => {
         MetaTools.default_plugin_meta(constructor.prototype)
             .do(meta => meta.type = options.type)
@@ -37,3 +39,12 @@ export function TpPluginType<K extends keyof TpComponentCollection>(options: {
             .do(meta => meta.option_key = options.option_key)
     }
 }
+
+class TpNullPlugin {
+}
+
+export interface TpPluginCollection {
+    TpNullPlugin: typeof TpNullPlugin
+}
+
+export type Plugins = TpPluginCollection[keyof TpPluginCollection]

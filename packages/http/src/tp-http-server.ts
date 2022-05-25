@@ -7,7 +7,7 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { collect_unit, Injector, TpPlugin, TpPluginConstructor, TpPluginType, ValueProvider } from '@tarpit/core'
+import { collect_unit, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
 import { Server } from 'http'
 import Koa from 'koa'
 import { Socket } from 'net'
@@ -28,9 +28,6 @@ declare module 'koa' {
     }
 }
 
-export interface TpServer extends TpPluginConstructor<'TpRouter'> {
-}
-
 /**
  * @private
  * Koa adaptor.
@@ -46,7 +43,6 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
     private _sockets = new Set<Socket | TLSSocket>()
 
     constructor(private injector: Injector, private config_data: ConfigData) {
-
         this._koa.use(this.cors)
         this._koa.use(this.body_parser)
         this._koa.use(async (ctx: LiteContext, next) => this._http_handler.handle(ctx, next))

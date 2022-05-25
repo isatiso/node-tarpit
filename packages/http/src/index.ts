@@ -8,6 +8,7 @@
 
 import { Constructor } from '@tarpit/core'
 import { TpRouterMeta, TpRouterUnit } from './__types__'
+import { TpHttpServer } from './tp-http-server'
 
 declare module '@tarpit/core' {
 
@@ -21,6 +22,10 @@ declare module '@tarpit/core' {
 
     export interface TpUnitCollection {
         TpRouterUnit: TpRouterUnit<any>
+    }
+
+    export interface TpPluginCollection {
+        TpHttpServer: typeof TpHttpServer
     }
 }
 

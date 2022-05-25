@@ -51,13 +51,15 @@ export class TestConsumer {
 class TestRouter {
 
     constructor(
-        private producer: TestProducer
+        private producer: TestProducer,
+        private platform: Platform
     ) {
     }
 
     @Get('asd')
     async test() {
         await this.producer.print_a({ a: 'qwe' })
+        setTimeout(() => this.platform.destroy(), 2000)
         return { a: 123 }
     }
 }
@@ -65,9 +67,15 @@ class TestRouter {
 @TpSchedule()
 class TestSchedule {
 
+    constructor(
+        // private platform: Platform
+    ) {
+    }
+
     @Task('*/5 * * * * *')
     async test() {
         console.log('asd')
+        // await this.platform.destroy()
     }
 }
 
@@ -85,9 +93,10 @@ class TestSchedule {
 class TestRoot {
 }
 
-new Platform()
+const platform = new Platform()
     .plug(TpHttpServer)
-    .plug(TpRabbitMQ)
     .plug(TpTrigger)
+    .plug(TpRabbitMQ)
     .bootstrap(TestRoot)
     .start()
+

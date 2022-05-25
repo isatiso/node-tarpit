@@ -8,6 +8,7 @@
 
 import { Constructor } from '@tarpit/core'
 import { TpConsumerMeta, TpConsumerUnit, TpProducerMeta, TpProducerUnit } from './__types__'
+import { TpRabbitMQ } from './tp-rabbitmq'
 
 export interface AMQPConnect {
     /**
@@ -85,6 +86,10 @@ declare module '@tarpit/core' {
     export interface TpUnitCollection {
         TpConsumerUnit: TpConsumerUnit<any>,
         TpProducerUnit: TpProducerUnit<any>,
+    }
+
+    export interface TpPluginCollection {
+        TpRabbitMQ: typeof TpRabbitMQ
     }
 }
 

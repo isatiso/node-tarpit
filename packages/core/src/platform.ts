@@ -9,92 +9,58 @@
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
 import { collect_worker, def_to_provider, load_component } from './__tools__/collector'
 import { MetaTools } from './__tools__/tp-meta-tools'
-import { TpPluginConstructor } from './__tools__/tp-plugin'
-
+import { Plugins, PluginSet, PluginSetToken, TpPluginConstructor } from './__tools__/tp-plugin'
 import { Constructor, ProviderDef } from './__types__'
-import { PluginSet } from './builtin/plugin-set'
 import { Stranger } from './builtin/stranger'
+import { BuiltinTpLogger, TpLogger } from './builtin/tp-logger'
 import { TpRootLoader } from './builtin/tp-root-loader'
 import { UUID } from './builtin/uuid'
 import { Injector } from './injector'
 import { ClassProvider, ValueProvider } from './provider'
-import { TpAssemblyCollection, TpComponentCollection } from './tp-component-type'
+import { TpAssemblyCollection } from './tp-component-type'
 
 /**
  * Tp 运行时。
- *
- * @category Platform
  */
-export class Platform {
+export class Platform<T extends Plugins = Plugins> {
 
     /**
-     * 根注入器，在它上面还有 NullInjector。
+     * 根注入器。
      */
     protected root_injector = Injector.create()
-    /**
-     * 记录创建 [[Platform]] 的时间，用于计算启动时间。
-     */
-    private readonly started_at: number
 
-    /**
-     * ConfigData 实例，用于管理加载的配置文件内容。
-     */
-    private readonly _config_data?: ConfigData
-
-    /**
-     * 收集需要启动和销毁的插件。
-     */
-    private _plugin_set = new PluginSet()
-
-    /**
-     * 加载配置文件，读文件方式。
-     * @param file_path
-     */
-    constructor(file_path?: string)
-    /**
-     * 加载配置文件，JSON 对象方式。
-     * @param data
-     */
+    constructor(file_path ?: string)
     constructor(data: TpConfigSchema)
-    /**
-     * 加载配置文件，函数方式。
-     * @param data
-     */
     constructor(data: () => TpConfigSchema)
     constructor(data?: string | TpConfigSchema | (() => TpConfigSchema)) {
-
-        this.started_at = Date.now()
-
-        this._config_data = load_config(data)
-
-        this.root_injector.set_provider(ConfigData, new ValueProvider('ConfigData', this._config_data))
-
-        // 设置默认的内置 Provider，如果没有另外设置 Provider 时，查找结果为 null，而不会查找到 NullInjector。
-        this.root_injector.set_provider(Stranger, new ValueProvider('Stranger', new Stranger()))
-        this.root_injector.set_provider(PluginSet, new ValueProvider('PluginSet', this._plugin_set))
-
-        // 设置默认的内置工具。
-        this.root_injector.set_provider(UUID, new ClassProvider(UUID, this.root_injector))
+        this.root_injector.set_provider(ConfigData, new ValueProvider('ConfigData', load_config(data)))
+        this.root_injector.set_provider('œœ-TpStartedAt', new ValueProvider('TpStartedAt', Date.now()))
         this.root_injector.set_provider('œœ-TpRoot', new ValueProvider('TpRootLoader', TpRootLoader))
-        this.root_injector.set_provider(TpRootLoader, new ClassProvider(TpRootLoader, this.root_injector))
+        this.root_injector.set_provider(PluginSetToken, new ValueProvider('PluginSet', new Set()))
+        this.root_injector.set_provider(UUID, new ClassProvider(UUID, this.root_injector))
         this.root_injector.set_provider(Platform, new ValueProvider('Platform', this))
+        this.root_injector.set_provider(Stranger, new ClassProvider(Stranger, this.root_injector))
+        this.root_injector.set_provider(TpRootLoader, new ClassProvider(TpRootLoader, this.root_injector))
+        this.root_injector.set_provider(TpLogger, new ClassProvider(BuiltinTpLogger, this.root_injector))
     }
 
     /**
      * 添加系统插件，如 HTTPServer Schedule AMQP 等。
      */
-    plug<K extends keyof TpComponentCollection>(plugin: TpPluginConstructor<K>) {
+    plug<P extends T>(plugin: P): Platform<Exclude<T, P>> {
         // TODO: 检查 ConfigData
-        if (!this._plugin_set.plugins.has(plugin)) {
-            const meta = MetaTools.PluginMeta(plugin.prototype).value
+        const _plugin = plugin as P & TpPluginConstructor<any>
+        const plugin_set = this.root_injector.get<PluginSet>(PluginSetToken)?.create()!
+        if (!plugin_set.has(_plugin)) {
+            const meta = MetaTools.PluginMeta(_plugin.prototype).value
             if (!meta) {
-                throw new Error(`Plugin "${plugin.name ?? plugin.toString()}" has no PluginMeta.`)
+                throw new Error(`Plugin "${_plugin.name ?? _plugin.toString()}" has no PluginMeta.`)
             }
-            this._plugin_set.plugins.add(plugin)
-            meta.loader_list.forEach(loader => this.root_injector.set_provider(loader, new ValueProvider(meta.type, plugin)))
-            this.root_injector.set_provider(plugin, new ClassProvider(plugin, this.root_injector))
+            plugin_set.add(_plugin)
+            meta.loader_list.forEach(loader => this.root_injector.set_provider(loader, new ValueProvider(meta.type, _plugin)))
+            this.root_injector.set_provider(_plugin, new ClassProvider(_plugin, this.root_injector))
         } else {
-            console.warn(`Plugin "${plugin.name ?? plugin.toString()}" exists, maybe its a mistake.`)
+            console.warn(`Plugin "${_plugin.name ?? _plugin.toString()}" exists, maybe its a mistake.`)
         }
         return this
     }
@@ -130,48 +96,25 @@ export class Platform {
     }
 
     /**
-     * 自定义启动信息。
-     * 设计这个接口的目的是，有时候你可能需要知道程序启动时使用了哪些配置。
-     *
-     * @param msg_builder
-     */
-    loading_message(msg_builder: (config: ConfigData) => string | string[]) {
-        if (this._config_data) {
-            const message = msg_builder(this._config_data as any)
-            if (typeof message === 'string') {
-                console.log(message)
-            } else {
-                message?.forEach(info => console.log(info))
-            }
-        }
-        return this
-    }
-
-    /**
      * 开始监听请求。
      */
     start() {
-        console.log(`tp server start at ${new Date().toISOString()}`)
-
-        Promise.all(Array.from(this._plugin_set.plugins).map(plugin => {
-            const instance = this.root_injector.get(plugin)?.create()
-            if (instance) {
-                return instance.start()
-            }
-        })).catch(() => {
-            // TODO: 处理异常
-        })
+        const plugins = this.root_injector.get<PluginSet>(PluginSetToken)?.create()!
+        const logger = this.root_injector.get(TpLogger)?.create()!
+        Promise.all(Array.from(plugins).map(plugin => this.root_injector.get(plugin)?.create()?.start()))
+            .catch(() => undefined)
+            .then(() => logger.after_start())
         return this
     }
 
     async destroy(): Promise<void> {
+        const plugins = this.root_injector.get<PluginSet>(PluginSetToken)?.create()!
+        const logger = this.root_injector.get(TpLogger)?.create()!
         this.root_injector.emit('tp-destroy')
-        await this.root_injector.get(Stranger)?.create()?.wait_all_quit()
-        for (const plugin of Array.from(this._plugin_set.plugins)) {
-            const instance = this.root_injector.get(plugin)?.create()
-            if (instance) {
-                await instance.destroy()
-            }
+        await this.root_injector.get(Stranger)?.create().wait_all_quit()
+        for (const plugin of Array.from(plugins)) {
+            await this.root_injector.get(plugin)?.create().destroy()
         }
+        logger.after_destroy()
     }
 }
