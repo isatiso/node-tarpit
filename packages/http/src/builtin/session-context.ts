@@ -6,9 +6,9 @@
  * found in the LICENSE file at source root.
  */
 
-import { CacheProxy } from './__services__/cache-proxy'
-import { LiteContext, TpHttpAuthInfo, TpHttpSession } from './__types__'
-import { InnerFinish, OuterFinish } from './error'
+import { AbstractCacheProxy } from '../__services__/abstract-cache-proxy'
+import { LiteContext, TpHttpSession } from '../__types__'
+import { InnerFinish, OuterFinish } from '../error'
 
 /**
  * 请求上下文对象。
@@ -24,8 +24,7 @@ export class SessionContext {
 
     constructor(
         private _ctx: LiteContext,
-        private _auth_info: TpHttpAuthInfo | undefined,
-        private _cache: CacheProxy | undefined,
+        private _cache: AbstractCacheProxy | undefined,
         cache_prefix?: string,
         cache_expires?: number,
     ) {
@@ -73,14 +72,6 @@ export class SessionContext {
      */
     get query(): NodeJS.Dict<string | string[]> {
         return this._ctx.query
-    }
-
-    /**
-     * 返回用户信息，如果用户信息不存在，返回 undefined。
-     * 通过声明全局 [[TpAuthInfo]] 接口定义授权数据类型。
-     */
-    get auth_info(): TpHttpAuthInfo | undefined {
-        return this._auth_info
     }
 
     /**

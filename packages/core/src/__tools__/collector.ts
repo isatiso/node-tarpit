@@ -22,7 +22,7 @@ export function check_used(provider_tree: ProviderTreeNode | undefined, name: st
         .forEach(def => console.log(`Warning: ${name} -> ${def?.name} not used.`))
 }
 
-export function get_providers(desc: TpUnitCommon<any>, injector: Injector, except_list?: any[]): Provider<any>[] {
+export function get_providers(desc: TpUnitCommon<any>, injector: Injector, except_list?: any[]): any[] {
     return desc.u_param_types?.map((token: any, i: number) => {
         if (token === undefined) {
             console.error(`type 'undefined' at ${desc.u_position}[${i}], if it's not specified, there maybe a circular import.`)

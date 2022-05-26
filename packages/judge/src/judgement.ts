@@ -25,11 +25,11 @@ import { Reference } from './reference'
  */
 export class Judgement<T> extends Reference<T> {
 
-    getIf<P extends PathOfType<T, string>>(prop: P, matcher: RegExp): Exclude<PathValue<T, P>, undefined> | undefined
-    getIf<P extends PathOfType<T, string>>(prop: P, matcher: RegExp, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIf<V, P extends PathOfType<T, V>>(prop: P, matcher: Matcher<V>): Exclude<V, undefined> | undefined
-    getIf<V, P extends PathOfType<T, V>>(prop: P, matcher: Matcher<V>, def: Exclude<V, undefined>): Exclude<V, undefined>
-    getIf(prop: Path<T>, matcher: JudgementRule, def?: any): any {
+    get_if<P extends PathOfType<T, string>>(prop: P, matcher: RegExp): Exclude<PathValue<T, P>, undefined> | undefined
+    get_if<P extends PathOfType<T, string>>(prop: P, matcher: RegExp, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    get_if<V, P extends PathOfType<T, V>>(prop: P, matcher: Matcher<V>): Exclude<V, undefined> | undefined
+    get_if<V, P extends PathOfType<T, V>>(prop: P, matcher: Matcher<V>, def: Exclude<V, undefined>): Exclude<V, undefined>
+    get_if(prop: Path<T>, matcher: JudgementRule, def?: any): any {
         const res = super.get(prop)
         if (res !== undefined && this.if(res, matcher)) {
             return res
@@ -37,20 +37,20 @@ export class Judgement<T> extends Reference<T> {
         return def
     }
 
-    getIfAny<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<T, P>, undefined> | undefined
-    getIfAny<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIfAny<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[]): Exclude<PathValue<T, P>, undefined> | undefined
-    getIfAny<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIfAny(prop: Path<T>, matcher_list: JudgementRule[], def?: any): any {
+    get_if_any<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<T, P>, undefined> | undefined
+    get_if_any<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    get_if_any<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[]): Exclude<PathValue<T, P>, undefined> | undefined
+    get_if_any<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    get_if_any(prop: Path<T>, matcher_list: JudgementRule[], def?: any): any {
         const res = super.get(prop)
         return this.any(res, matcher_list) ? res : def
     }
 
-    getIfAll<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<T, P>, undefined> | undefined
-    getIfAll<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIfAll<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[]): Exclude<PathValue<T, P>, undefined> | undefined
-    getIfAll<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    getIfAll(prop: Path<T>, matcher_list: JudgementRule[], def?: any): any {
+    get_if_all<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<T, P>, undefined> | undefined
+    get_if_all<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    get_if_all<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[]): Exclude<PathValue<T, P>, undefined> | undefined
+    get_if_all<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
+    get_if_all(prop: Path<T>, matcher_list: JudgementRule[], def?: any): any {
         const res = super.get(prop)
         return this.all(res, matcher_list) ? res : def
     }
@@ -62,7 +62,7 @@ export class Judgement<T> extends Reference<T> {
      * @param rule
      * @protected
      */
-    protected if(value: any, rule: JudgementRule): any {
+    protected if(value: any, rule: JudgementRule): boolean {
         if (rule instanceof RegExp) {
             return typeof value === 'string' && rule.test(value)
         } else {
@@ -77,7 +77,7 @@ export class Judgement<T> extends Reference<T> {
      * @param rules
      * @protected
      */
-    protected any(value: any, rules: JudgementRule[]) {
+    protected any(value: any, rules: JudgementRule[]): boolean {
         return rules.some(rule => this.if(value, rule))
     }
 
@@ -88,7 +88,7 @@ export class Judgement<T> extends Reference<T> {
      * @param rules
      * @protected
      */
-    protected all(value: any, rules: JudgementRule[]) {
+    protected all(value: any, rules: JudgementRule[]): boolean {
         return rules.every(rule => this.if(value, rule))
     }
 }

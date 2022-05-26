@@ -9,7 +9,7 @@
 import { TaskContext } from '../task-context'
 
 /**
- * [[Trigger.Task]] 的生命周期服务。和 [[Tora.ToraRouter]] 的 LifeCycle 接口一样，用于在任务执行的几个特定时间点触发一些操作。
+ * [[Trigger.Task]] 的生命周期服务。和 [[Tora.ToraRouter]] 的 AbstractLifeCycle 接口一样，用于在任务执行的几个特定时间点触发一些操作。
  *
  * 需要注意的时，如果实现了 TaskLifeCycle 接口，异常会被捕获并传入 on_error 方法。
  * 如果此时不需要处理异常，需要将异常抛出。

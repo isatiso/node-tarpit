@@ -8,20 +8,21 @@
 
 import { get_providers, Injector } from '@tarpit/core'
 import { Request } from 'koa'
-import { Authenticator } from './__services__/authenticator'
-import { CacheProxy } from './__services__/cache-proxy'
-import { LifeCycle } from './__services__/life-cycle'
-import { ResultWrapper } from './__services__/result-wrapper'
+import { AbstractAuthenticator } from './__services__/abstract-authenticator'
+import { AbstractCacheProxy } from './__services__/abstract-cache-proxy'
+import { AbstractLifeCycle } from './__services__/abstract-life-cycle'
+import { AbstractResultWrapper } from './__services__/abstract-result-wrapper'
 import { ApiMethod, ApiPath, HandlerReturnType, HttpHandler, HttpHandlerDescriptor, HttpHandlerKey, KoaResponseType, LiteContext, TpRouterMeta, TpRouterUnit } from './__types__'
-import { ApiParams, PURE_PARAMS } from './api-params'
-import { HttpError, InnerFinish, OuterFinish, reasonable } from './error'
-import { SessionContext } from './session-context'
+import { ApiParams, PURE_PARAMS } from './builtin/api-params'
+import { Guardian } from './builtin/guardian'
+import { SessionContext } from './builtin/session-context'
+import { HttpError, InnerFinish, OuterFinish } from './error'
 
 function finish_process(koa_context: LiteContext, response_body: KoaResponseType) {
     koa_context.response.body = response_body
 }
 
-function do_wrap(result_wrapper: ResultWrapper | undefined, data: any, context: SessionContext) {
+function do_wrap(result_wrapper: AbstractResultWrapper | undefined, data: any, context: SessionContext) {
     if (!result_wrapper) {
         return data
     }
@@ -29,7 +30,7 @@ function do_wrap(result_wrapper: ResultWrapper | undefined, data: any, context: 
     return res === undefined ? data : res
 }
 
-function do_wrap_error(result_wrapper: ResultWrapper | undefined, err: HttpError<any>, context: SessionContext) {
+function do_wrap_error(result_wrapper: AbstractResultWrapper | undefined, err: HttpError<any>, context: SessionContext) {
     if (!result_wrapper) {
         return { error: err.err_data }
     }
@@ -78,7 +79,7 @@ export class Handler {
 
     load(router_unit: TpRouterUnit<any>, injector: Injector, meta: TpRouterMeta): void {
         if (!router_unit.u_meta?.disabled) {
-            const router_handler = this.make_router(injector, router_unit, [ApiParams, SessionContext, PURE_PARAMS])
+            const router_handler = this.make_router(injector, router_unit, [ApiParams, SessionContext, Guardian, PURE_PARAMS])
             const prefix = meta.router_path.replace(/\/{2,}/g, '/').replace(/\/\s*$/g, '')
             const suffix = router_unit.uh_path.replace(/(^\/|\/$)/g, '')
             const full_path = prefix + '/' + suffix
@@ -96,54 +97,50 @@ export class Handler {
 
         return async function(params: any, koa_context: LiteContext) {
 
-            const cache = injector.get(CacheProxy)?.create()
-            const result_wrapper = injector.get(ResultWrapper)?.create()
-            const hooks = injector.get(LifeCycle)?.create()
-            const authenticator = injector.get(Authenticator)?.create()
+            const cache = injector.get(AbstractCacheProxy)?.create()
+            const result_wrapper = injector.get(AbstractResultWrapper)?.create()
+            const hooks = injector.get(AbstractLifeCycle)?.create()
 
-            const auth_info = await authenticator?.auth(koa_context)
-
-            const context = new SessionContext(koa_context, auth_info, cache, desc.uh_cache_prefix, desc.uh_cache_expires)
+            const context = new SessionContext(koa_context, cache, desc.uh_cache_prefix, desc.uh_cache_expires)
 
             await hooks?.on_init(context)
 
-            if (desc.uh_auth) {
-                if (!authenticator) {
-                    const err = new HttpError(new Error('no provider for <Authenticator>.'))
-                    await hooks?.on_error(context, err)
-                    const err_result = desc.uh_wrap_result ? do_wrap_error(result_wrapper, err, context) : { error: err.err_data }
-                    return finish_process(koa_context, err_result)
+            let handler_result: any
+            let auth_info: any
+
+            async function figure_result() {
+                if (provider_list.includes(Guardian)) {
+                    const authenticator = injector.get(AbstractAuthenticator)?.create()
+                    if (!authenticator) {
+                        throw new HttpError(new Error('no provider for <AbstractAuthenticator>.'))
+                    }
+                    auth_info = await authenticator?.auth(koa_context)
                 }
-                if (auth_info === undefined) {
-                    const err = new HttpError(reasonable(401, 'Unauthorized.'))
-                    await hooks?.on_error(context, err)
-                    const err_result = desc.uh_wrap_result ? do_wrap_error(result_wrapper, err, context) : { error: err.err_data }
-                    return finish_process(koa_context, err_result)
-                }
+                return desc.u_handler(...provider_list.map((provider: any) => {
+                    if (provider === undefined) {
+                        return undefined
+                    } else if (provider === PURE_PARAMS) {
+                        return params
+                    } else if (provider === ApiParams) {
+                        return new ApiParams(params)
+                    } else if (provider === Guardian) {
+                        return new Guardian(auth_info)
+                    } else if (provider === SessionContext) {
+                        return context
+                    } else {
+                        return provider.create()
+                    }
+                }))
             }
 
-            const param_list = provider_list.map((provider: any) => {
-                if (provider === undefined) {
-                    return undefined
-                } else if (provider === PURE_PARAMS) {
-                    return params
-                } else if (provider === ApiParams) {
-                    return new ApiParams(params)
-                } else if (provider === SessionContext) {
-                    return context
-                } else {
-                    return provider.create()
-                }
-            })
-
-            let handler_result: any
-
             try {
-                handler_result = await desc.u_handler(...param_list)
+                handler_result = await figure_result()
             } catch (reason) {
                 if (reason instanceof InnerFinish) {
                     handler_result = await reason.body
                 } else if (reason instanceof OuterFinish) {
+                    handler_result = reason
+                } else if (reason instanceof HttpError) {
                     handler_result = reason
                 } else {
                     handler_result = new HttpError(reason)

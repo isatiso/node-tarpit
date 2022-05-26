@@ -6,14 +6,14 @@
  * found in the LICENSE file at source root.
  */
 
-import { SessionContext } from '../session-context'
+import { SessionContext } from '../builtin/session-context'
 
 /**
  * 请求处理生命周期接口，通过实现抽象类，在请求处理的开始，结束和异常时做相应操作。
  *
  * @category Abstract Service
  */
-export abstract class LifeCycle {
+export abstract class AbstractLifeCycle {
 
     /**
      * 请求初始化之后，进行依赖查找之前调用。

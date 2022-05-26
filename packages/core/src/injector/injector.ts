@@ -66,7 +66,7 @@ export class Injector {
      * @param token
      * @param info 一些帮助调试的信息
      */
-    get<T>(token: string, info?: string): Provider<T> | undefined
+    get<T>(token: string | symbol, info?: string): Provider<T> | undefined
     get<T extends object>(token: AbstractConstructor<T>, info?: string): Provider<T> | undefined
     get<T extends object>(token: any, info?: string): Provider<T> | undefined {
         return this.providers.get(token) ?? this.parent.get(token, info)

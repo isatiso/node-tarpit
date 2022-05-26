@@ -21,7 +21,7 @@ export class Reference<T> {
         [path: string]: { value: any }
     } = {}
 
-    constructor(public data: T) {
+    constructor(public data: T | undefined) {
         this.data = data ?? {} as T
         this._cache[''] = { value: JSON.parse(JSON.stringify(this.data)) }
     }

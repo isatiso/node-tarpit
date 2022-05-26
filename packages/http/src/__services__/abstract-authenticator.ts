@@ -10,13 +10,13 @@ import { LiteContext, TpHttpAuthInfo } from '../__types__'
 
 /**
  * 授权服务接口，通过实现抽象类，实现一个授权服务。
- * Authenticator 的实现方式及 Provider 类型是可以自定义的。
+ * AbstractAuthenticator 的实现方式及 Provider 类型是可以自定义的。
  *
  * [[include:core/service/authenticator.md]]
  *
  * @category Abstract Service
  */
-export abstract class Authenticator {
+export abstract class AbstractAuthenticator {
 
     /**
      * 对用户的请求进行授权校验。

@@ -7,18 +7,19 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { collect_unit, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
+import { ClassProvider, collect_unit, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
 import { Server } from 'http'
 import Koa from 'koa'
 import { Socket } from 'net'
 import { TLSSocket } from 'tls'
-import { Authenticator } from './__services__/authenticator'
-import { CacheProxy } from './__services__/cache-proxy'
-import { LifeCycle } from './__services__/life-cycle'
-import { ResultWrapper } from './__services__/result-wrapper'
+import { AbstractAuthenticator } from './__services__/abstract-authenticator'
+import { AbstractCacheProxy } from './__services__/abstract-cache-proxy'
+import { AbstractLifeCycle } from './__services__/abstract-life-cycle'
+import { AbstractResultWrapper } from './__services__/abstract-result-wrapper'
+import { TpResultWrapper } from './__services__/tp-result-wrapper'
 
 import { ApiMethod, ApiPath, HandlerReturnType, HttpHandlerDescriptor, KoaResponseType, LiteContext, TpRouterMeta } from './__types__'
-import { BodyParser } from './body-parser'
+import { BodyParser } from './builtin/body-parser'
 import { Handler } from './handler'
 
 declare module 'koa' {
@@ -47,10 +48,10 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
         this._koa.use(this.body_parser)
         this._koa.use(async (ctx: LiteContext, next) => this._http_handler.handle(ctx, next))
 
-        this.injector.set_provider(Authenticator, new ValueProvider('Authenticator', null)).set_used()
-        this.injector.set_provider(CacheProxy, new ValueProvider('CacheProxy', null)).set_used()
-        this.injector.set_provider(LifeCycle, new ValueProvider('LifeCycle', null)).set_used()
-        this.injector.set_provider(ResultWrapper, new ValueProvider('ResultWrapper', null)).set_used()
+        this.injector.set_provider(AbstractAuthenticator, new ValueProvider('Authenticator', null)).set_used()
+        this.injector.set_provider(AbstractCacheProxy, new ValueProvider('CacheProxy', null)).set_used()
+        this.injector.set_provider(AbstractLifeCycle, new ValueProvider('LifeCycle', null)).set_used()
+        this.injector.set_provider(AbstractResultWrapper, new ClassProvider(TpResultWrapper, this.injector)).set_used()
     }
 
     load(meta: TpRouterMeta, injector: Injector): void {

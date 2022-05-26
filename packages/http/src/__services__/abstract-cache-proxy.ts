@@ -13,7 +13,7 @@
  *
  * @category Abstract Service
  */
-export abstract class CacheProxy {
+export abstract class AbstractCacheProxy {
 
     /**
      * 查询缓存。

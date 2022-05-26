@@ -7,7 +7,7 @@
  */
 
 import { KoaResponseType } from '../__types__'
-import { SessionContext } from '../session-context'
+import { SessionContext } from '../builtin/session-context'
 
 /**
  * 请求处理结果包装服务。
@@ -21,7 +21,7 @@ import { SessionContext } from '../session-context'
  *
  * @category Abstract Service
  */
-export abstract class ResultWrapper {
+export abstract class AbstractResultWrapper {
 
     /**
      * 实现具体的包装逻辑。

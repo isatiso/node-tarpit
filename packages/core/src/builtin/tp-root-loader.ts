@@ -8,12 +8,13 @@
 
 import { load_component } from '../__tools__/collector'
 import { MetaTools } from '../__tools__/tp-meta-tools'
-import { PluginSet, PluginSetToken } from '../__tools__/tp-plugin'
+import { PluginSet, PluginSetToken, TpPlugin, TpPluginType } from '../__tools__/tp-plugin'
 import { Constructor } from '../__types__'
 import { Injector } from '../injector'
 import { TpRootMeta } from '../tp-component-type'
 
-export class TpRootLoader {
+@TpPluginType({ type: 'TpRoot', loader_list: ['œœ-TpRoot'] })
+export class TpRootLoader implements TpPlugin<'TpRoot'> {
 
     load(meta: TpRootMeta, injector: Injector): void {
         const plugins = injector.get<PluginSet>(PluginSetToken)?.create()!
@@ -28,5 +29,13 @@ export class TpRootLoader {
                 load_component(component, injector)
             }
         })
+    }
+
+    async start() {
+
+    }
+
+    async destroy() {
+
     }
 }

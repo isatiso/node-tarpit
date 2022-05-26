@@ -22,7 +22,7 @@ import { TpAssemblyCollection } from './tp-component-type'
 /**
  * Tp 运行时。
  */
-export class Platform<T extends Plugins = Plugins> {
+export class Platform<T extends Plugins = Exclude<Plugins, typeof TpRootLoader>> {
 
     /**
      * 根注入器。
@@ -35,13 +35,12 @@ export class Platform<T extends Plugins = Plugins> {
     constructor(data?: string | TpConfigSchema | (() => TpConfigSchema)) {
         this.root_injector.set_provider(ConfigData, new ValueProvider('ConfigData', load_config(data)))
         this.root_injector.set_provider('œœ-TpStartedAt', new ValueProvider('TpStartedAt', Date.now()))
-        this.root_injector.set_provider('œœ-TpRoot', new ValueProvider('TpRootLoader', TpRootLoader))
         this.root_injector.set_provider(PluginSetToken, new ValueProvider('PluginSet', new Set()))
         this.root_injector.set_provider(UUID, new ClassProvider(UUID, this.root_injector))
         this.root_injector.set_provider(Platform, new ValueProvider('Platform', this))
         this.root_injector.set_provider(Stranger, new ClassProvider(Stranger, this.root_injector))
-        this.root_injector.set_provider(TpRootLoader, new ClassProvider(TpRootLoader, this.root_injector))
         this.root_injector.set_provider(TpLogger, new ClassProvider(BuiltinTpLogger, this.root_injector))
+        this.plug(TpRootLoader as any)
     }
 
     /**
@@ -51,17 +50,17 @@ export class Platform<T extends Plugins = Plugins> {
         // TODO: 检查 ConfigData
         const _plugin = plugin as P & TpPluginConstructor<any>
         const plugin_set = this.root_injector.get<PluginSet>(PluginSetToken)?.create()!
-        if (!plugin_set.has(_plugin)) {
-            const meta = MetaTools.PluginMeta(_plugin.prototype).value
-            if (!meta) {
-                throw new Error(`Plugin "${_plugin.name ?? _plugin.toString()}" has no PluginMeta.`)
-            }
-            plugin_set.add(_plugin)
-            meta.loader_list.forEach(loader => this.root_injector.set_provider(loader, new ValueProvider(meta.type, _plugin)))
-            this.root_injector.set_provider(_plugin, new ClassProvider(_plugin, this.root_injector))
-        } else {
+        if (plugin_set.has(_plugin)) {
             console.warn(`Plugin "${_plugin.name ?? _plugin.toString()}" exists, maybe its a mistake.`)
+            return this
         }
+        const meta = MetaTools.PluginMeta(_plugin.prototype).value
+        if (!meta) {
+            throw new Error(`Plugin "${_plugin.name ?? _plugin.toString()}" has no PluginMeta.`)
+        }
+        plugin_set.add(_plugin)
+        meta.loader_list.forEach(loader => this.root_injector.set_provider(loader, new ValueProvider(meta.type, _plugin)))
+        this.root_injector.set_provider(_plugin, new ClassProvider(_plugin, this.root_injector))
         return this
     }
 
