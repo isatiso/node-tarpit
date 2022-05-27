@@ -7,7 +7,7 @@
  */
 
 import { KoaResponseType } from '../__types__'
-import { SessionContext } from '../builtin/session-context'
+import { SessionContext } from '../builtin'
 
 /**
  * 请求处理结果包装服务。
@@ -34,10 +34,10 @@ export abstract class AbstractResultWrapper {
      * @param context 请求上下文对象
      * @return real_result 实际需要写入请求连接的响应内容。
      */
-    abstract wrap(result: any, context: SessionContext): KoaResponseType | undefined
+    abstract wrap(result: any, context: SessionContext): KoaResponseType
 
     /**
-     * 实现异常的处理逻辑。
+     * 实现异常地处理逻辑。
      *
      * 如果返回 undefined 则会使用默认的异常结构。
      *
@@ -45,5 +45,5 @@ export abstract class AbstractResultWrapper {
      * @param context 请求上下文对象
      * @return real_result 实际需要写入请求连接的响应内容。
      */
-    abstract wrap_error<T = any>(err: T, context: SessionContext): KoaResponseType | undefined
+    abstract wrap_error<T = any>(err: T, context: SessionContext): KoaResponseType
 }

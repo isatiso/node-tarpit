@@ -18,10 +18,22 @@ export class BodyParser {
     private textTypes = ['text/plain', 'text/xml', 'application/xml', 'text/html']
 
     constructor() {
-        this.opts = { returnRawBody: true }
+        this.opts = {}
     }
 
-    async parseBody(ctx: Koa.Context) {
+    async parse_json(ctx: Koa.Context) {
+        return CoBody.json(ctx, this.opts)
+    }
+
+    async parse_form(ctx: Koa.Context) {
+        return CoBody.form(ctx, this.opts)
+    }
+
+    async parse_text(ctx: Koa.Context) {
+        return CoBody.text(ctx, this.opts)
+    }
+
+    async guess_and_parse(ctx: Koa.Context) {
         if (ctx.request.is(this.jsonTypes)) {
             return CoBody.json(ctx, this.opts)
         } else if (ctx.request.is(this.formTypes)) {

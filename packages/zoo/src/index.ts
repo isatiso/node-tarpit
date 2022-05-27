@@ -7,7 +7,8 @@
  */
 
 import { Platform, TpRoot } from '@tarpit/core'
-import { Get, TpHttpServer, TpRouter } from '@tarpit/http'
+import { JsonBody, Post, TpHttpServer, TpRouter } from '@tarpit/http'
+import { Jtl } from '@tarpit/judge'
 import { AssertExchange, AssertQueue, BindQueue, Consume, Letter, Produce, Producer, TpConsumer, TpProducer, TpRabbitMQ } from '@tarpit/rabbitmq'
 import { Task, TpSchedule, TpTrigger } from '@tarpit/schedule'
 
@@ -56,11 +57,16 @@ class TestRouter {
     ) {
     }
 
-    @Get('asd')
-    async test() {
-        await this.producer.print_a({ a: 'qwe' })
-        setTimeout(() => this.platform.destroy(), 2000)
-        return { a: 123 }
+    @Post('asd')
+    async test(
+        params: JsonBody<{ a: string, b: number }>
+    ) {
+        // await this.producer.print_a({ a: 'qwe' })
+        // setTimeout(() => this.platform.destroy(), 2000)
+        console.log(params.data)
+        const b = params.ensure('b', Jtl.number)
+        const a = params.ensure('a', Jtl.string)
+        return { a, b }
     }
 }
 

@@ -19,15 +19,8 @@ import { AbstractResultWrapper } from './__services__/abstract-result-wrapper'
 import { TpResultWrapper } from './__services__/tp-result-wrapper'
 
 import { ApiMethod, ApiPath, HandlerReturnType, HttpHandlerDescriptor, KoaResponseType, LiteContext, TpRouterMeta } from './__types__'
-import { BodyParser } from './builtin/body-parser'
+import { BodyParser } from './builtin'
 import { Handler } from './handler'
-
-declare module 'koa' {
-    interface Request {
-        body?: any
-        rawBody: string
-    }
-}
 
 /**
  * @private
@@ -39,14 +32,14 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
     private _koa = new Koa()
     private _server?: Server
     private _http_handler = new Handler()
-    private _body_parser = new BodyParser()
     private _terminating: Promise<void> | undefined
     private _sockets = new Set<Socket | TLSSocket>()
 
     constructor(private injector: Injector, private config_data: ConfigData) {
         this._koa.use(this.cors)
-        this._koa.use(this.body_parser)
         this._koa.use(async (ctx: LiteContext, next) => this._http_handler.handle(ctx, next))
+
+        this.injector.set_provider(BodyParser, new ClassProvider(BodyParser, this.injector))
 
         this.injector.set_provider(AbstractAuthenticator, new ValueProvider('Authenticator', null)).set_used()
         this.injector.set_provider(AbstractCacheProxy, new ValueProvider('CacheProxy', null)).set_used()
@@ -58,11 +51,12 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
         collect_unit(meta.self, 'TpRouterUnit').forEach(f => this._http_handler.load(f, injector, meta))
     }
 
-    on<T, R extends KoaResponseType>(method: ApiMethod, path: ApiPath, handler: (params: T, ctx: LiteContext) => HandlerReturnType<R>): void {
+    on<T, R extends KoaResponseType>(method: ApiMethod, path: ApiPath, handler: (ctx: LiteContext) => HandlerReturnType<R>): void {
         this._http_handler.on(method, path, handler)
     }
 
     get_api_list(): Omit<HttpHandlerDescriptor, 'handler'>[]
+    get_api_list(need_handler: false): Omit<HttpHandlerDescriptor, 'handler'>[]
     get_api_list(need_handler: true): HttpHandlerDescriptor[]
     get_api_list(need_handler?: boolean): HttpHandlerDescriptor[] | Omit<HttpHandlerDescriptor, 'handler'>[] {
         return this._http_handler.list(need_handler)
@@ -82,7 +76,7 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
             this._server = this._koa.on('error', (err, ctx: LiteContext) => {
                 if (err.code !== 'HPE_INVALID_EOF_STATE') {
                     console.log('server error', err, ctx)
-                    console.log(ctx.request.rawBody)
+                    // console.log(ctx.request.rawBody) TODO: console.log( body )
                 }
             }).listen(port, () => resolve())
             if (keepalive_timeout) {
@@ -149,24 +143,6 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
             this._sockets.add(socket)
             socket.once('close', () => this._sockets.delete(socket))
         }
-    }
-
-    private body_parser: Koa.Middleware<any> = async (ctx: Koa.Context, next: Koa.Next) => {
-        if (ctx.request.body !== undefined || ctx.disableBodyParser) {
-            return await next()
-        }
-        try {
-            const res = await this._body_parser.parseBody(ctx)
-            ctx.request.body = 'parsed' in res ? res.parsed : {}
-            if (ctx.request.rawBody === undefined) {
-                ctx.request.rawBody = res.raw
-            }
-        } catch (err) {
-            ctx.response.status = 400
-            ctx.response.body = 'Bad Request'
-            console.log('parse body error', ctx.request.path)
-        }
-        return await next()
     }
 
     private cors: Koa.Middleware<any> = async (ctx: Koa.Context, next: Koa.Next) => {

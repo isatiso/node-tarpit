@@ -61,13 +61,6 @@ export class SessionContext {
     }
 
     /**
-     * 返回请求体的原始内容。
-     */
-    get rawBody() {
-        return this._ctx.request.rawBody
-    }
-
-    /**
      * 以 `NodeJS.Dict` 形式返回解析后的 querystring。
      */
     get query(): NodeJS.Dict<string | string[]> {

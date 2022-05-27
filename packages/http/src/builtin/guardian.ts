@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Cao Jiahang All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at source root.
+ */
+
 import { JudgementRule, Matcher, Path, PathOfType, PathValue } from '@tarpit/judge'
 import { TpHttpAuthInfo } from '../__types__'
 import { ApiParams } from './api-params'

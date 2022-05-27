@@ -9,8 +9,6 @@
 import { Judgement, JudgementRule, Matcher, Path, PathOfType, PathValue } from '@tarpit/judge'
 import { ReasonableError } from '../error'
 
-export const PURE_PARAMS = 'PURE_PARAMS'
-
 export class ApiParams<T> extends Judgement<T> {
 
     ensure<P extends PathOfType<T, string>>(prop: P, matcher: RegExp, on_error?: (prop: P) => [code: number, message: string]): Exclude<PathValue<T, P>, undefined>

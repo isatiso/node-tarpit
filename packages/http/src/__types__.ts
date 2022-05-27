@@ -7,7 +7,7 @@
  */
 
 import { ImportsAndProviders, TpAssemblyCommon, TpUnitCommon } from '@tarpit/core'
-import { ExtendableContext } from 'koa'
+import Koa from 'koa'
 import { Stream } from 'stream'
 
 /**
@@ -17,12 +17,12 @@ import { Stream } from 'stream'
  */
 export type KoaResponseType = string | Buffer | Stream | Object | Array<any> | null
 
-export type LiteContext = ExtendableContext & {
+export type LiteContext = Koa.Context & {
     process_start?: number
 }
 
 export type HandlerReturnType<R extends KoaResponseType> = R | Promise<R>
-export type HttpHandler = (params: any, ctx: LiteContext) => HandlerReturnType<any>
+export type HttpHandler = (ctx: LiteContext) => HandlerReturnType<any>
 export type HttpHandlerKey = `${ApiMethod}-${string}`
 
 export interface HttpHandlerDescriptor {
