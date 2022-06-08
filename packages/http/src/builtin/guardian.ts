@@ -6,11 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { JudgementRule, Matcher, Path, PathOfType, PathValue } from '@tarpit/judge'
+import { MismatchDescription } from '@tarpit/judge'
 import { TpHttpAuthInfo } from '../__types__'
-import { ApiParams } from './api-params'
+import { throw_unauthorized } from '../errors'
+import { ApiJudgement, OnJudgementError } from './api-judgement'
 
-export class Guardian extends ApiParams<TpHttpAuthInfo> {
+export class Guardian extends ApiJudgement<TpHttpAuthInfo> {
 
     public readonly certified: boolean
 
@@ -19,21 +20,7 @@ export class Guardian extends ApiParams<TpHttpAuthInfo> {
         this.certified = data !== undefined
     }
 
-    ensure<P extends PathOfType<TpHttpAuthInfo, string>>(prop: P, matcher: RegExp): Exclude<PathValue<TpHttpAuthInfo, P>, undefined>
-    ensure<V, P extends PathOfType<TpHttpAuthInfo, V>>(prop: P, matcher: Matcher<V>): Exclude<V, undefined>
-    ensure<P extends Path<TpHttpAuthInfo>>(prop: P, matcher: JudgementRule): Exclude<PathValue<TpHttpAuthInfo, P>, undefined> {
-        return super.ensure(prop, matcher as any, () => [401, 'Unauthorized.'])
-    }
-
-    ensure_any<P extends PathOfType<TpHttpAuthInfo, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<TpHttpAuthInfo, P>, undefined>
-    ensure_any<P extends Path<TpHttpAuthInfo>>(prop: P, matcher_list: Matcher<Exclude<PathValue<TpHttpAuthInfo, P>, undefined>>[]): Exclude<PathValue<TpHttpAuthInfo, P>, undefined>
-    ensure_any<P extends Path<TpHttpAuthInfo>>(prop: P, matcher_list: JudgementRule[]): Exclude<PathValue<TpHttpAuthInfo, P>, undefined> {
-        return super.ensure_any(prop, matcher_list, () => [401, 'Unauthorized.'])
-    }
-
-    ensure_all<P extends PathOfType<TpHttpAuthInfo, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<TpHttpAuthInfo, P>, undefined>
-    ensure_all<P extends Path<TpHttpAuthInfo>>(prop: P, matcher_list: Matcher<Exclude<PathValue<TpHttpAuthInfo, P>, undefined>>[]): Exclude<PathValue<TpHttpAuthInfo, P>, undefined>
-    ensure_all<P extends Path<TpHttpAuthInfo>>(prop: P, matcher_list: JudgementRule[]): Exclude<PathValue<TpHttpAuthInfo, P>, undefined> {
-        return super.ensure_all(prop, matcher_list, () => [401, 'Unauthorized.'])
+    protected override on_error(prop: string, desc: MismatchDescription, on_error?: OnJudgementError): never {
+        throw_unauthorized(on_error?.(prop, desc) ?? `Token field [${prop}] is not match rule: [${desc.rule}]`, { expose: this._expose })
     }
 }

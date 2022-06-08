@@ -49,6 +49,7 @@ export class UUID {
     ]
 
     private static rng() {
+        /* istanbul ignore next */
         if (UUID.poolPtr > UUID.random_8_pool.length - 16) {
             crypto.randomFillSync(UUID.random_8_pool)
             UUID.poolPtr = 0
@@ -91,6 +92,7 @@ export class UUID {
         let nano_secs = UUID._lastNSecs + 1
         const dt = milli_secs - UUID._lastMSecs + (nano_secs - UUID._lastNSecs) / 10000
 
+        /* istanbul ignore next */
         if (dt < 0) {
             clock_sequence = (clock_sequence + 1) & 0x3fff
         }
@@ -99,6 +101,7 @@ export class UUID {
             nano_secs = 0
         }
 
+        /* istanbul ignore next */
         if (nano_secs >= 10000) {
             throw new Error('Can\'t create more than 10M uuids/sec')
         }

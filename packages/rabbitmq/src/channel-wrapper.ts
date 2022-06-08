@@ -9,7 +9,7 @@
 import { Deque } from '@tarpit/core'
 import { ConfirmChannel, Connection, ConsumeMessage, Options } from 'amqplib'
 import { Replies } from 'amqplib/properties'
-import EventEmitter from 'events'
+import { EventEmitter } from 'events'
 import { ConsumeOptions } from './__types__'
 
 type ConsumeArguments = [queue: string, on_message: (msg: ConsumeMessage | null) => void, options: ConsumeOptions]

@@ -7,10 +7,13 @@
  */
 
 export { Disabled } from './disabled'
-export { EchoDependencies, EchoMethodDependencies } from './echo-dependencies'
+// export { EchoDependencies, EchoMethodDependencies } from './echo-dependencies'
 export { Inject } from './inject'
 export { MetaData } from './metadata'
 export { OnDestroy } from './on-destroy'
-export { TpModule } from './tp-module'
-export { TpRoot } from './tp-root'
-export { TpService } from './tp-service'
+export { Optional } from './optional'
+export { TpComponent, TpWorker, TpAssembly, TpComponentProps, TpEntry, TpUnit } from './tp-base'
+export { TpModuleToken, TpModule } from './tp-module'
+export { TpPlugin, TpPluginType } from './tp-plugin'
+export { TpRootToken, TpRoot } from './tp-root'
+export { TpServiceToken, TpService } from './tp-service'

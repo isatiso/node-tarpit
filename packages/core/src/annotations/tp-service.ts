@@ -6,27 +6,13 @@
  * found in the LICENSE file at source root.
  */
 
-import { MetaTools } from '../__tools__/tp-meta-tools'
-import { TpServiceOptions } from '../tp-component-type'
+import { make_decorator } from '../tools/tp-decorator'
+import { TpServiceOptions } from '../types'
+import { TpWorker } from './tp-base'
 
-/**
- * 把一个类标记为 Tp.TpService。
- *
- * @category Service Annotation
- * @param options
- */
-export function TpService(options?: TpServiceOptions): ClassDecorator {
-    return constructor => {
-        MetaTools.ComponentMeta(constructor.prototype)
-            .if_exist(meta => {
-                throw new Error(`Component ${meta.type} is exist -> ${meta.name}.`)
-            })
-            .set({
-                type: 'TpService',
-                name: constructor.name,
-                loader: 'œœ-TpService',
-                category: 'worker',
-                self: constructor as any,
-            })
-    }
-}
+export const TpServiceToken = Symbol.for('œœ.token.TpService')
+export type TpService = InstanceType<typeof TpService>
+export const TpService = make_decorator('TpService', (options?: TpServiceOptions) => ({
+    ...options,
+    token: TpServiceToken
+}), TpWorker)

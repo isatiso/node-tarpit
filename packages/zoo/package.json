@@ -7,11 +7,19 @@
     "license": "MIT",
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
-    "module": "./lib/index.esm.js",
+    "module": "./lib/index.mjs",
     "private": true,
     "files": [
         "lib"
     ],
+    "exports": {
+        ".": {
+            "require": "./lib/index.js",
+            "import": "./lib/index.mjs"
+        },
+        "./package": "./package.json",
+        "./package.json": "./package.json"
+    },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/",
         "access": "public"
@@ -35,6 +43,7 @@
         "@tarpit/judge": "^0.3.2",
         "@tarpit/rabbitmq": "^0.3.4",
         "@tarpit/schedule": "^0.3.4",
-        "typescript-json-schema": "^0.53.0"
+        "@types/cookies": "^0.7.7",
+        "typescript-json-schema": "^0.53.1"
     }
 }

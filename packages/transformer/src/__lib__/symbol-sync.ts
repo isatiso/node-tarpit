@@ -26,7 +26,6 @@ export class SymbolSync {
             if (ts.isIdentifier(node)) {
                 const symbol = this.type_checker.getSymbolAtLocation(node)
                 if (symbol && this._set.has(symbol)) {
-                    // console.log('symbol => ', symbol)
                     return this.ctx.factory.createIdentifier(symbol.getName())
                 }
             }

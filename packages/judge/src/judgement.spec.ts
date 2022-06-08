@@ -56,28 +56,18 @@ describe('judgement.ts', function() {
         describe('#getIf', function() {
             it('should get value of specified path if match given rule', function() {
                 expect(judge.get_if('a', Jtl.string)).not.to.be.undefined
-                expect(judge.get_if('a', Jtl.nonEmptyString)).not.to.be.undefined
-                expect(judge.get_if('c.c1', Jtl.nonEmptyString, 'lkj')).not.to.be.undefined
+                expect(judge.get_if('a', Jtl.some(Jtl.string, /asd/))).not.to.be.undefined
+                expect(judge.get_if('a', Jtl.every(Jtl.string, /asd/))).to.be.undefined
+                expect(judge.get_if('a', Jtl.non_empty_string)).not.to.be.undefined
+                expect(judge.get_if('c.c1', Jtl.non_empty_string, 'lkj')).not.to.be.undefined
                 expect(judge.get_if('a', /some [a-z]{1,8}/)).not.to.be.undefined
                 expect(judge.get_if('a', /some thing/)).to.be.undefined
                 expect(judge.get_if('a', /some thing/, 'lkj')).not.to.be.undefined
-            })
-        })
-
-        describe('#getIfAny', function() {
-            it('should get value of specified path if match given rule', function() {
-                expect(judge.get_if_any('a', [Jtl.string, Jtl.nonEmptyString])).not.to.be.undefined
-                expect(judge.get_if_any('a', [/some [a-z]{1,8}/, /some thing/])).not.to.be.undefined
-                expect(judge.get_if_any('a', [/some [a-z]{7,8}/, /some thing/])).to.be.undefined
-                expect(judge.get_if_any('a', [/some [a-z]{7,8}/, /some thing/], 'default value')).to.equal('default value')
-            })
-        })
-
-        describe('#getIfAll', function() {
-            it('should get value of specified path if match given rule', function() {
-                expect(judge.get_if_all('a', [Jtl.string, Jtl.nonEmptyString])).not.to.be.undefined
-                expect(judge.get_if_all('a', [/some [a-z]{1,8}/, /some thing/])).to.be.undefined
-                expect(judge.get_if_all('a', [/some [a-z]{1,8}/, /some thing/], 'default value')).to.equal('default value')
+                expect(judge.get_if('c', Jtl.every(
+                    Jtl.object,
+                    Jtl.property('c1', Jtl.string),
+                    Jtl.property('c2', Jtl.number),
+                ))).not.to.be.undefined
             })
         })
     })

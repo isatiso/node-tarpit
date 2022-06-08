@@ -17,6 +17,7 @@ describe('matcher.ts', function() {
     let matcher: Matcher<boolean>
 
     before(function() {
+        matcher = new Matcher<boolean>('is boolean', (target: any) => typeof target === 'boolean')
     })
 
     after(async function() {
@@ -24,219 +25,263 @@ describe('matcher.ts', function() {
 
     describe('class Matcher', function() {
         it('could new instance', function() {
-            matcher = new Matcher<boolean>((target: any) => typeof target === 'boolean')
             expect(matcher).to.be.instanceof(Matcher)
         })
     })
 
     describe('namespace Jtl', function() {
 
-        describe('#check()', function() {
+        describe('#mismatch()', function() {
             it('should check as given function', function() {
-                expect(matcher.check('asd')).to.be.false
-                expect(matcher.check(123)).to.be.false
-                expect(matcher.check(true)).to.be.true
-                expect(matcher.check(false)).to.be.true
+                expect(matcher.mismatch('asd')).to.have.property('rule')
+                expect(matcher.mismatch(123)).to.have.property('rule')
+                expect(matcher.mismatch(true)).to.be.undefined
+                expect(matcher.mismatch(false)).to.be.undefined
+            })
+        })
+
+        describe('#some()', function() {
+            it('should check as given function', function() {
+                expect(Jtl.some(Jtl.array, Jtl.number).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.some(Jtl.equal(123), Jtl.non_zero_number).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.some(Jtl.string, Jtl.number).mismatch('asd')).to.be.undefined
+                expect(Jtl.some(Jtl.string, /asd/).mismatch('asd')).to.be.undefined
+            })
+        })
+
+        describe('#every()', function() {
+            it('should check as given function', function() {
+                expect(Jtl.every(Jtl.array, Jtl.number).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.every(Jtl.equal(4523), Jtl.non_zero_number).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.every(Jtl.string, /12351/).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.every(Jtl.string, /asd/).mismatch('asd')).to.be.undefined
             })
         })
 
         describe('#$gt()', function() {
             it('should check value if greater than given one', function() {
-                expect(Jtl.$gt(123).check('asd')).to.be.false
-                expect(Jtl.$gt(123).check(50)).to.be.false
-                expect(Jtl.$gt(123).check(123)).to.be.false
-                expect(Jtl.$gt(123).check(254)).to.be.true
+                expect(Jtl.$gt(123).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.$gt(123).mismatch(50)).to.have.property('rule')
+                expect(Jtl.$gt(123).mismatch(123)).to.have.property('rule')
+                expect(Jtl.$gt(123).mismatch(254)).to.be.undefined
             })
         })
 
         describe('#$ge()', function() {
             it('should check value if greater than or equal to given one', function() {
-                expect(Jtl.$ge(123).check('asd')).to.be.false
-                expect(Jtl.$ge(123).check(50)).to.be.false
-                expect(Jtl.$ge(123).check(123)).to.be.true
-                expect(Jtl.$ge(123).check(254)).to.be.true
+                expect(Jtl.$ge(123).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.$ge(123).mismatch(50)).to.have.property('rule')
+                expect(Jtl.$ge(123).mismatch(123)).to.be.undefined
+                expect(Jtl.$ge(123).mismatch(254)).to.be.undefined
             })
         })
 
         describe('#$lt()', function() {
             it('should check value if less than given one', function() {
-                expect(Jtl.$lt(123).check('asd')).to.be.false
-                expect(Jtl.$lt(123).check(50)).to.be.true
-                expect(Jtl.$lt(123).check(123)).to.be.false
-                expect(Jtl.$lt(123).check(254)).to.be.false
+                expect(Jtl.$lt(123).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.$lt(123).mismatch(50)).to.be.undefined
+                expect(Jtl.$lt(123).mismatch(123)).to.have.property('rule')
+                expect(Jtl.$lt(123).mismatch(254)).to.have.property('rule')
             })
         })
 
         describe('#$le()', function() {
             it('should check value if less than or equal to given one', function() {
-                expect(Jtl.$le(123).check('asd')).to.be.false
-                expect(Jtl.$le(123).check(50)).to.be.true
-                expect(Jtl.$le(123).check(123)).to.be.true
-                expect(Jtl.$le(123).check(254)).to.be.false
+                expect(Jtl.$le(123).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.$le(123).mismatch(50)).to.be.undefined
+                expect(Jtl.$le(123).mismatch(123)).to.be.undefined
+                expect(Jtl.$le(123).mismatch(254)).to.have.property('rule')
             })
         })
 
         describe('#$eq()', function() {
             it('should check value if equal to given one', function() {
-                expect(Jtl.$eq(123).check('asd')).to.be.false
-                expect(Jtl.$eq(123).check(50)).to.be.false
-                expect(Jtl.$eq(123).check(123)).to.be.true
-                expect(Jtl.$eq(123).check(254)).to.be.false
+                expect(Jtl.$eq(123).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.$eq(123).mismatch(50)).to.have.property('rule')
+                expect(Jtl.$eq(123).mismatch(123)).to.be.undefined
+                expect(Jtl.$eq(123).mismatch(254)).to.have.property('rule')
             })
         })
 
         describe('#$ne()', function() {
             it('should check value if not equal to given one', function() {
-                expect(Jtl.$ne(123).check('asd')).to.be.false
-                expect(Jtl.$ne(123).check(50)).to.be.true
-                expect(Jtl.$ne(123).check(123)).to.be.false
-                expect(Jtl.$ne(123).check(254)).to.be.true
+                expect(Jtl.$ne(123).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.$ne(123).mismatch(50)).to.be.undefined
+                expect(Jtl.$ne(123).mismatch(123)).to.have.property('rule')
+                expect(Jtl.$ne(123).mismatch(254)).to.be.undefined
             })
         })
 
         describe('#$btw()', function() {
             it('should check value if between given range', function() {
-                expect(Jtl.$btw(10, 100).check('asd')).to.be.false
-                expect(Jtl.$btw(10, 100).check(50)).to.be.true
-                expect(Jtl.$btw(10, 100).check(100)).to.be.true
-                expect(Jtl.$btw(10, 100).check(123)).to.be.false
+                expect(Jtl.$btw(10, 100).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.$btw(10, 100).mismatch(50)).to.be.undefined
+                expect(Jtl.$btw(10, 100).mismatch(100)).to.be.undefined
+                expect(Jtl.$btw(10, 100).mismatch(123)).to.have.property('rule')
             })
         })
 
         describe('#$mx()', function() {
             it('should check value if has given factor', function() {
-                expect(Jtl.$mx(3).check('asd')).to.be.false
-                expect(Jtl.$mx(3).check(50)).to.be.false
-                expect(Jtl.$mx(3).check(100)).to.be.false
-                expect(Jtl.$mx(3).check(123)).to.be.true
+                expect(Jtl.$mx(3).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.$mx(3).mismatch(50)).to.have.property('rule')
+                expect(Jtl.$mx(3).mismatch(100)).to.have.property('rule')
+                expect(Jtl.$mx(3).mismatch(123)).to.be.undefined
+            })
+        })
+
+        describe('#array_of()', function() {
+            it('should check value if has given factor', function() {
+                expect(Jtl.array_of(Jtl.string).mismatch([123, 3, 45])).to.have.property('rule')
+                expect(Jtl.array_of(Jtl.some(Jtl.string, Jtl.number)).mismatch([123, 3, 45])).to.be.undefined
+                expect(Jtl.array_of(/look/).mismatch(['he looks like', 'look at', 'look out'])).to.be.undefined
+                expect(Jtl.array_of(/look/).mismatch(['look', 'sleep', 'as'])).to.have.property('rule')
+            })
+        })
+
+        describe('#property()', function() {
+            it('should check value if has given factor', function() {
+                expect(Jtl.property('a', Jtl.string).mismatch({ b: '123' })).to.have.property('rule')
+                expect(Jtl.property('a', Jtl.string).mismatch({ a: 123 })).to.have.property('rule')
+                expect(Jtl.property('a', Jtl.string).mismatch({ a: '123' })).to.be.undefined
             })
         })
 
         describe('#$in()', function() {
             it('should check value if included by given sequence', function() {
-                expect(Jtl.$in([50, 100]).check('asd')).to.be.false
-                expect(Jtl.$in([50, 100]).check(50)).to.be.true
-                expect(Jtl.$in([50, 100]).check(100)).to.be.true
-                expect(Jtl.$in([50, 100]).check(123)).to.be.false
+                expect(Jtl.$in([50, 100]).mismatch('asd')).to.have.property('rule')
+                expect(Jtl.$in([50, 100]).mismatch(50)).to.be.undefined
+                expect(Jtl.$in([50, 100]).mismatch(100)).to.be.undefined
+                expect(Jtl.$in([50, 100]).mismatch(123)).to.have.property('rule')
             })
         })
 
         describe('#exist', function() {
             it('should check value if exists', function() {
-                expect(Jtl.exist.check('asd')).to.be.true
-                expect(Jtl.exist.check(null)).to.be.true
-                expect(Jtl.exist.check(undefined)).to.be.false
+                expect(Jtl.exist.mismatch('asd')).to.be.undefined
+                expect(Jtl.exist.mismatch(null)).to.be.undefined
+                expect(Jtl.exist.mismatch(undefined)).to.have.property('rule')
             })
         })
 
         describe('#isFunction', function() {
             it('should check value if is a function', function() {
-                expect(Jtl.isFunction.check(null)).to.be.false
-                expect(Jtl.isFunction.check('asd')).to.be.false
-                expect(Jtl.isFunction.check(undefined)).to.be.false
-                expect(Jtl.isFunction.check(() => 'true')).to.be.true
-                expect(Jtl.isFunction.check(function() {
+                expect(Jtl.is_function.mismatch(null)).to.have.property('rule')
+                expect(Jtl.is_function.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.is_function.mismatch(undefined)).to.have.property('rule')
+                expect(Jtl.is_function.mismatch(() => 'true')).to.be.undefined
+                expect(Jtl.is_function.mismatch(function() {
                     return 'some thing'
-                })).to.be.true
+                })).to.be.undefined
             })
         })
 
         describe('#object', function() {
             it('should check value if is a object', function() {
-                expect(Jtl.object.check({})).to.be.true
-                expect(Jtl.object.check('asd')).to.be.false
+                expect(Jtl.object.mismatch({})).to.be.undefined
+                expect(Jtl.object.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.every(
+                    Jtl.object,
+                    Jtl.property('a', Jtl.string),
+                    Jtl.property('b', Jtl.number),
+                ).mismatch({ a: '123', b: 13 })).to.be.undefined
+                expect(Jtl.every(
+                    Jtl.object,
+                    Jtl.property('a', Jtl.string),
+                    Jtl.property('b', Jtl.number),
+                ).mismatch({ a: 123, b: 'aa' })).to.have.property('rule')
             })
         })
 
         describe('#array', function() {
             it('should check value is an array', function() {
-                expect(Jtl.array.check('asd')).to.be.false
-                expect(Jtl.array.check([])).to.be.true
-                expect(Jtl.array.check(['asd'])).to.be.true
+                expect(Jtl.array.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.array.mismatch([])).to.be.undefined
+                expect(Jtl.array.mismatch(['asd'])).to.be.undefined
             })
         })
 
         describe('#nonEmptyArray', function() {
             it('should check value is an array and not empty', function() {
-                expect(Jtl.nonEmptyArray.check('asd')).to.be.false
-                expect(Jtl.nonEmptyArray.check([])).to.be.false
-                expect(Jtl.nonEmptyArray.check(['asd'])).to.be.true
+                expect(Jtl.non_empty_array.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.non_empty_array.mismatch([])).to.have.property('rule')
+                expect(Jtl.non_empty_array.mismatch(['asd'])).to.be.undefined
             })
         })
 
         describe('#isNull', function() {
             it('should check value is null', function() {
-                expect(Jtl.isNull.check(null)).to.be.true
-                expect(Jtl.isNull.check('asd')).to.be.false
-                expect(Jtl.isNull.check([])).to.be.false
-                expect(Jtl.isNull.check(['asd'])).to.be.false
+                expect(Jtl.is_null.mismatch(null)).to.be.undefined
+                expect(Jtl.is_null.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.is_null.mismatch([])).to.have.property('rule')
+                expect(Jtl.is_null.mismatch(['asd'])).to.have.property('rule')
             })
         })
 
         describe('#string', function() {
             it('should check value if is string', function() {
-                expect(Jtl.string.check(null)).to.be.false
-                expect(Jtl.string.check('asd')).to.be.true
-                expect(Jtl.string.check('')).to.be.true
-                expect(Jtl.string.check([])).to.be.false
-                expect(Jtl.string.check(['asd'])).to.be.false
+                expect(Jtl.string.mismatch(null)).to.have.property('rule')
+                expect(Jtl.string.mismatch('asd')).to.be.undefined
+                expect(Jtl.string.mismatch('')).to.be.undefined
+                expect(Jtl.string.mismatch([])).to.have.property('rule')
+                expect(Jtl.string.mismatch(['asd'])).to.have.property('rule')
             })
         })
 
         describe('#nonEmptyString', function() {
             it('should check value if is string and not empty', function() {
-                expect(Jtl.nonEmptyString.check(null)).to.be.false
-                expect(Jtl.nonEmptyString.check('asd')).to.be.true
-                expect(Jtl.nonEmptyString.check('')).to.be.false
-                expect(Jtl.nonEmptyString.check([])).to.be.false
-                expect(Jtl.nonEmptyString.check(['asd'])).to.be.false
+                expect(Jtl.non_empty_string.mismatch(null)).to.have.property('rule')
+                expect(Jtl.non_empty_string.mismatch('asd')).to.be.undefined
+                expect(Jtl.non_empty_string.mismatch('')).to.have.property('rule')
+                expect(Jtl.non_empty_string.mismatch([])).to.have.property('rule')
+                expect(Jtl.non_empty_string.mismatch(['asd'])).to.have.property('rule')
             })
         })
 
         describe('#number', function() {
             it('should check value if is number', function() {
-                expect(Jtl.number.check(null)).to.be.false
-                expect(Jtl.number.check('asd')).to.be.false
-                expect(Jtl.number.check('')).to.be.false
-                expect(Jtl.number.check(123)).to.be.true
-                expect(Jtl.number.check(0)).to.be.true
+                expect(Jtl.number.mismatch(null)).to.have.property('rule')
+                expect(Jtl.number.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.number.mismatch('')).to.have.property('rule')
+                expect(Jtl.number.mismatch(123)).to.be.undefined
+                expect(Jtl.number.mismatch(0)).to.be.undefined
             })
         })
 
         describe('#nonZeroNumber', function() {
             it('should check value if is number and not zero', function() {
-                expect(Jtl.nonZeroNumber.check(null)).to.be.false
-                expect(Jtl.nonZeroNumber.check('asd')).to.be.false
-                expect(Jtl.nonZeroNumber.check('')).to.be.false
-                expect(Jtl.nonZeroNumber.check(123)).to.be.true
-                expect(Jtl.nonZeroNumber.check(0)).to.be.false
+                expect(Jtl.non_zero_number.mismatch(null)).to.have.property('rule')
+                expect(Jtl.non_zero_number.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.non_zero_number.mismatch('')).to.have.property('rule')
+                expect(Jtl.non_zero_number.mismatch(123)).to.be.undefined
+                expect(Jtl.non_zero_number.mismatch(0)).to.have.property('rule')
             })
         })
 
         describe('#boolean', function() {
             it('should check value if is a boolean', function() {
-                expect(Jtl.boolean.check(true)).to.be.true
-                expect(Jtl.boolean.check(false)).to.be.true
-                expect(Jtl.boolean.check('asd')).to.be.false
-                expect(Jtl.boolean.check(123)).to.be.false
+                expect(Jtl.boolean.mismatch(true)).to.be.undefined
+                expect(Jtl.boolean.mismatch(false)).to.be.undefined
+                expect(Jtl.boolean.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.boolean.mismatch(123)).to.have.property('rule')
             })
         })
 
         describe('#isTrue', function() {
             it('should check value is true', function() {
-                expect(Jtl.isTrue.check(true)).to.be.true
-                expect(Jtl.isTrue.check(false)).to.be.false
-                expect(Jtl.isTrue.check('asd')).to.be.false
-                expect(Jtl.isTrue.check(123)).to.be.false
+                expect(Jtl.is_true.mismatch(true)).to.be.undefined
+                expect(Jtl.is_true.mismatch(false)).to.have.property('rule')
+                expect(Jtl.is_true.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.is_true.mismatch(123)).to.have.property('rule')
             })
         })
 
         describe('#isFalse', function() {
             it('should check value is false', function() {
-                expect(Jtl.isFalse.check(true)).to.be.false
-                expect(Jtl.isFalse.check(false)).to.be.true
-                expect(Jtl.isFalse.check('asd')).to.be.false
-                expect(Jtl.isFalse.check(123)).to.be.false
+                expect(Jtl.is_false.mismatch(true)).to.have.property('rule')
+                expect(Jtl.is_false.mismatch(false)).to.be.undefined
+                expect(Jtl.is_false.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.is_false.mismatch(123)).to.have.property('rule')
             })
         })
     })

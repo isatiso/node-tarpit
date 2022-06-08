@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-export { Judgement } from './judgement'
-export { Matcher, Jtl } from './matcher'
+export { Judgement, MatcherInferType } from './judgement'
+export { Matcher, Jtl, MismatchDescription } from './matcher'
 export { Path, PathValue, PathValueMap, PathValueMapOfType, PathOfType, JudgementRule } from './__types__'
 export { Reference } from './reference'

@@ -7,7 +7,9 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { Inject } from '../annotations'
+import { TpService } from '../annotations'
+import { Injector } from '../injector'
+import { START_TIME, TERMINATE_TIME } from './tp-inspector'
 
 export abstract class TpLogger {
 
@@ -16,20 +18,23 @@ export abstract class TpLogger {
     abstract after_destroy(): void
 }
 
+@TpService()
 export class BuiltinTpLogger extends TpLogger {
 
     constructor(
-        config_data: ConfigData,
-        @Inject('œœ-TpStartedAt') start_at: number
+        private config_data: ConfigData,
+        private injector: Injector,
     ) {
         super()
     }
 
     after_start() {
-        console.log(`tp server started at ${new Date().toISOString()}`)
+        const duration = this.injector.get<number>(START_TIME)?.create()
+        console.log(`tarpit server started at ${new Date().toISOString()}, during ${duration}s`)
     }
 
     after_destroy() {
-        console.log(`tp server destroyed at ${new Date().toISOString()}`)
+        const duration = this.injector.get<number>(TERMINATE_TIME)?.create()
+        console.log(`tarpit server destroyed at ${new Date().toISOString()}, during ${duration}s`)
     }
 }

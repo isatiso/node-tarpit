@@ -8,7 +8,7 @@
 
 import { Matcher } from './matcher'
 
-export type JudgementRule = RegExp | Matcher<(target: any) => boolean>
+export type JudgementRule = RegExp | Matcher<any>
 
 /**
  * 推断配置对象的合法路径。

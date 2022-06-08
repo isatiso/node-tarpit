@@ -7,8 +7,8 @@
  */
 
 import { Dora } from '@tarpit/dora'
-import { TpScheduleUnit } from './__types__'
 import { Crontab } from './crontab'
+import { TaskUnit } from './tools'
 
 export class Bullet {
 
@@ -19,12 +19,12 @@ export class Bullet {
     constructor(
         public id: string,
         public handler: Function,
-        public desc: TpScheduleUnit<any>,
+        public unit: TaskUnit,
     ) {
-        if (!desc.us_crontab_str) {
+        if (!unit.crontab_str) {
             throw new Error()
         }
-        this.crontab = Crontab.parse(desc.us_crontab_str, desc.us_task_options)
+        this.crontab = Crontab.parse(unit.crontab_str, unit.options)
         this.execution = this.crontab.next()
     }
 }

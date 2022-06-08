@@ -6,18 +6,46 @@
  * found in the LICENSE file at source root.
  */
 
-export * from './__tools__/collector'
-export * from './__tools__/tp-meta'
-export * from './__tools__/tp-meta-tools'
-export * from './__tools__/tp-plugin'
-export * from './__types__'
-export * from './annotations'
-export * from './debug-platform'
-export * from './injector'
-export * from './platform'
-export * from './provider'
-export * from './tp-component-type'
+export * from './types'
+
+export { tp_forward_ref } from './tools/tp-forward-ref'
+export {
+    Disabled,
+    Inject,
+    MetaData,
+    OnDestroy,
+    Optional,
+    TpAssembly,
+    TpComponent,
+    TpComponentProps,
+    TpEntry,
+    TpModule,
+    TpPlugin,
+    TpPluginType,
+    TpRoot,
+    TpService,
+    TpUnit,
+    TpWorker,
+} from './annotations'
+export { Injector } from './injector'
+export { ClassProvider, FactoryProvider, ValueProvider } from './provider'
 export { Deque } from './builtin/deque'
-export { Stranger } from './builtin/stranger'
-export { UUID } from './builtin/uuid'
+export { TpInspector, STARTED_AT, START_TIME, TERMINATE_TIME, TERMINATED_AT } from './builtin/tp-inspector'
 export { TpLogger } from './builtin/tp-logger'
+export { UUID } from './builtin/uuid'
+export { stringify } from './tools/stringify'
+export { Platform } from './platform'
+export {
+    DecoratorInnerField,
+    AbstractDecoratorFactory,
+    DecoratorFactory,
+    MixDecorator,
+    make_abstract_decorator,
+    make_decorator,
+    get_class_decorator,
+    get_class_parameter_decorator,
+    get_method_parameter_decorator,
+    get_prop_decorator,
+    get_all_prop_decorator,
+} from './tools/tp-decorator'
+export { get_providers } from './tools/get-providers'

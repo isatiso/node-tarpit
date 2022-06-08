@@ -6,103 +6,165 @@
  * found in the LICENSE file at source root.
  */
 
-import { Platform, TpRoot } from '@tarpit/core'
-import { JsonBody, Post, TpHttpServer, TpRouter } from '@tarpit/http'
+import { Inject, Optional, Platform, TpInspector, TpRoot, TpService } from '@tarpit/core'
+import { BodyDetector, Post, TpHttpServer, TpRouter } from '@tarpit/http'
 import { Jtl } from '@tarpit/judge'
-import { AssertExchange, AssertQueue, BindQueue, Consume, Letter, Produce, Producer, TpConsumer, TpProducer, TpRabbitMQ } from '@tarpit/rabbitmq'
-import { Task, TpSchedule, TpTrigger } from '@tarpit/schedule'
+import { TestService1 } from './test-service.1'
+import { SymbolToken, TestService2 } from './test-service.2'
 
-const media_watch_history = 'media_watch_history'
-const media_watch_history_add = 'media_watch_history_add'
+//
+// @TpProducer({
+//     assertions: [
+//         AssertExchange(media_watch_history, 'topic', {}),
+//         AssertQueue(media_watch_history_add, {}),
+//     ],
+//     bindings: [
+//         BindQueue(media_watch_history, media_watch_history_add, media_watch_history_add),
+//     ],
+// })
+// export class TestProducer {
+//
+//     @Produce(media_watch_history, media_watch_history_add)
+//     print_a!: Producer<{ a: string }>
+// }
+//
+// @TpConsumer()
+// export class TestConsumer {
+//
+//     constructor() {
+//     }
+//
+//     @Consume(media_watch_history_add, { prefetch: 10 })
+//     async print_a(msg: Letter<{ a: string }>) {
+//         const { a } = msg.content
+//         console.log(a, Date.now())
+//         return
+//     }
+// }
 
-@TpProducer({
-    assertions: [
-        AssertExchange(media_watch_history, 'topic', {}),
-        AssertQueue(media_watch_history_add, {}),
-    ],
-    bindings: [
-        BindQueue(media_watch_history, media_watch_history_add, media_watch_history_add),
-    ],
-})
-export class TestProducer {
+// @TpSchedule()
+// class TestSchedule {
+//
+//     constructor(
+//         // private platform: Platform
+//     ) {
+//     }
+//
+//     @Task('*/5 * * * * *')
+//     async test() {
+//         console.log('asd')
+//         // await this.platform.destroy()
+//     }
+// }
 
-    @Produce(media_watch_history, media_watch_history_add)
-    print_a!: Producer<{ a: string }>
-}
+// @TpService()
+// export class ZooLogger extends TpLogger {
+//
+//     constructor(
+//         private config_data: ConfigData,
+//         private injector: Injector,
+//     ) {
+//         super()
+//     }
+//
+//     after_start() {
+//         const started_at = this.injector.get<number>(STARTUP_AT)?.create() ?? 0
+//         const duration = (Date.now() - started_at) / 1000
+//         this.injector.emit('startup-duration', duration)
+//         // console.log(`tarpit server started at ${new Date().toISOString()}, during ${duration}s`)
+//     }
+//
+//     after_destroy() {
+//         const destroyed_at = this.injector.get<number>('œœ-TpDestroyedAt')?.create() ?? 0
+//         const duration = (Date.now() - destroyed_at) / 1000
+//         this.injector.emit('shutdown-duration', duration)
+//         // console.log(`tarpit server destroyed at ${new Date().toISOString()}, during ${duration}s`)
+//     }
+// }
 
-@TpConsumer()
-export class TestConsumer {
-
-    constructor() {
-    }
-
-    @Consume(media_watch_history_add, { prefetch: 10 })
-    async print_a(msg: Letter<{ a: string }>) {
-        const { a } = msg.content
-        console.log(a, Date.now())
-        return
+@TpService()
+class TestService {
+    constructor(
+        @Optional()
+        @Inject('œœ-TpStartedAtaefaef')
+        private aaa: number,
+        ts: TestService1
+    ) {
     }
 }
 
 @TpRouter('/', {
     providers: [
-        TestProducer
+        // TestProducer,
+        TestService,
+        TestService1,
+        TestService2,
+        {
+            provide: SymbolToken,
+            useFactory: (aaa: number) => {
+                return 123
+            },
+            deps: [
+                [
+                    new Optional(),
+                    new Inject('œœ-TpStartedAt1111111')
+                ]
+            ]
+        }
     ]
 })
 class TestRouter {
 
     constructor(
-        private producer: TestProducer,
-        private platform: Platform
+        private inspector: TpInspector,
+        @Optional()
+        @Inject('œœ-TpStartedAtaefaef')
+        private aaa: number,
+        // private producer: TestProducer,
+        // private platform: Platform
     ) {
     }
 
     @Post('asd')
     async test(
-        params: JsonBody<{ a: string, b: number }>
+        ts: TestService,
+        @Inject(BodyDetector)
+            detector: BodyDetector,
+        @Optional()
+        @Inject('œœ-TpStartedAtaefaef')
+            aaa: number,
     ) {
-        // await this.producer.print_a({ a: 'qwe' })
-        // setTimeout(() => this.platform.destroy(), 2000)
-        console.log(params.data)
-        const b = params.ensure('b', Jtl.number)
-        const a = params.ensure('a', Jtl.string)
-        return { a, b }
-    }
-}
-
-@TpSchedule()
-class TestSchedule {
-
-    constructor(
-        // private platform: Platform
-    ) {
-    }
-
-    @Task('*/5 * * * * *')
-    async test() {
-        console.log('asd')
-        // await this.platform.destroy()
+        console.log(this.inspector.started_at)
+        console.log(this.aaa, aaa)
+        const detect_result = detector.detect<{ name: string, email: string, count: number }>()
+        if (detect_result.type === 'json') {
+            const body = detect_result.body
+            const name = body.ensure('name', Jtl.string)
+            const email = body.ensure('email', Jtl.string)
+            const count = body.ensure('count', Jtl.multiple_of(7))
+            return { name, email, count }
+        } else {
+            return null
+        }
     }
 }
 
 @TpRoot({
-    routers: [
+    entries: [
         TestRouter
     ],
-    schedules: [
-        TestSchedule
-    ],
-    consumers: [
-        TestConsumer
-    ]
 })
-class TestRoot {
+export class TestRoot {
 }
 
-const platform = new Platform()
-    .plug(TpHttpServer)
-    .plug(TpTrigger)
-    .plug(TpRabbitMQ)
-    .bootstrap(TestRoot)
-    .start()
+(async () => {
+    const platform = new Platform()
+        .plug(TpHttpServer)
+        .bootstrap(TestRoot)
+        .start()
+    const server = platform.expose_service(TpHttpServer)
+    console.log(server?.get_api_list())
+    // platform.terminate()
+    // console.log(platform.expose_service(STARTUP_TIME), platform.expose_service(SHUTDOWN_TIME))
+})()
 

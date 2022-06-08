@@ -7,10 +7,18 @@
     "license": "MIT",
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
-    "module": "./lib/index.esm.js",
+    "module": "./lib/index.mjs",
     "files": [
         "lib"
     ],
+    "exports": {
+        ".": {
+            "require": "./lib/index.js",
+            "import": "./lib/index.mjs"
+        },
+        "./package": "./package.json",
+        "./package.json": "./package.json"
+    },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/",
         "access": "public"

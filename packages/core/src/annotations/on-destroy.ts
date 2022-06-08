@@ -6,16 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { MetaTools } from '../__tools__/tp-meta-tools'
+import { make_decorator } from '../tools/tp-decorator'
 
-/**
- * 将 Tp.TpService 中的一个方法标记为清理函数。
- *
- * @category Service Annotation
- */
-export function OnDestroy(): MethodDecorator {
-    return (prototype, prop, descriptor) => {
-        MetaTools.default_class_meta(prototype)
-            .do(meta => meta.on_destroy = descriptor)
-    }
-}
+export type OnDestroy = InstanceType<typeof OnDestroy>
+export const OnDestroy = make_decorator('OnDestroy', () => ({}))

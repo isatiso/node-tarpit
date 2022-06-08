@@ -7,52 +7,92 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { ClassProvider, collect_unit, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
-import { Server } from 'http'
-import Koa from 'koa'
+import { ClassProvider, Injector, TpPlugin, TpPluginType } from '@tarpit/core'
+import http, { IncomingMessage, Server, ServerResponse } from 'http'
 import { Socket } from 'net'
 import { TLSSocket } from 'tls'
-import { AbstractAuthenticator } from './__services__/abstract-authenticator'
-import { AbstractCacheProxy } from './__services__/abstract-cache-proxy'
-import { AbstractLifeCycle } from './__services__/abstract-life-cycle'
-import { AbstractResultWrapper } from './__services__/abstract-result-wrapper'
-import { TpResultWrapper } from './__services__/tp-result-wrapper'
+import { ApiMethod, ApiPath, HttpHandler, HttpHandlerDescriptor } from './__types__'
+import { TpRouter, TpRouterToken } from './annotations'
 
-import { ApiMethod, ApiPath, HandlerReturnType, HttpHandlerDescriptor, KoaResponseType, LiteContext, TpRouterMeta } from './__types__'
-import { BodyParser } from './builtin'
-import { Handler } from './handler'
+import {
+    AbstractAuthenticator,
+    AbstractCacheProxy,
+    AbstractErrorFormatter,
+    AbstractHttpDecompressor,
+    AbstractLifeCycle,
+    AbstractResponseFormatter,
+    BodyReader,
+    Handler,
+    TpAuthenticator,
+    TpCacheProxy,
+    TpErrorFormatter,
+    TpHttpDecompressor,
+    TpLifeCycle,
+    TpResponseFormatter,
+    URLParser
+} from './services'
+import { collect_routes } from './tools/collect-routes'
 
-/**
- * @private
- * Koa adaptor.
- */
-@TpPluginType({ type: 'TpRouter', loader_list: ['œœ-TpRouter'], option_key: 'routers' })
-export class TpHttpServer implements TpPlugin<'TpRouter'> {
+@TpPlugin({ targets: [TpRouterToken] })
+export class TpHttpServer implements TpPluginType {
 
-    private _koa = new Koa()
     private _server?: Server
-    private _http_handler = new Handler()
+    private _http_handler: Handler
     private _terminating: Promise<void> | undefined
     private _sockets = new Set<Socket | TLSSocket>()
+    private readonly allow_origin = this.config_data.get('http.cors.allow_origin') ?? ''
+    private readonly allow_headers = this.config_data.get('http.cors.allow_headers') ?? ''
+    private readonly allow_methods = this.config_data.get('http.cors.allow_methods') ?? ''
+    private readonly max_age = this.config_data.get('http.cors.max_age') ?? 0
 
     constructor(private injector: Injector, private config_data: ConfigData) {
-        this._koa.use(this.cors)
-        this._koa.use(async (ctx: LiteContext, next) => this._http_handler.handle(ctx, next))
-
-        this.injector.set_provider(BodyParser, new ClassProvider(BodyParser, this.injector))
-
-        this.injector.set_provider(AbstractAuthenticator, new ValueProvider('Authenticator', null)).set_used()
-        this.injector.set_provider(AbstractCacheProxy, new ValueProvider('CacheProxy', null)).set_used()
-        this.injector.set_provider(AbstractLifeCycle, new ValueProvider('LifeCycle', null)).set_used()
-        this.injector.set_provider(AbstractResultWrapper, new ClassProvider(TpResultWrapper, this.injector)).set_used()
+        ClassProvider.create(this.injector, AbstractHttpDecompressor, TpHttpDecompressor).set_used()
+        ClassProvider.create(this.injector, AbstractCacheProxy, TpCacheProxy).set_used()
+        ClassProvider.create(this.injector, AbstractLifeCycle, TpLifeCycle).set_used()
+        ClassProvider.create(this.injector, AbstractAuthenticator, TpAuthenticator).set_used()
+        ClassProvider.create(this.injector, AbstractResponseFormatter, TpResponseFormatter).set_used()
+        ClassProvider.create(this.injector, AbstractErrorFormatter, TpErrorFormatter).set_used()
+        ClassProvider.create(this.injector, BodyReader, BodyReader).set_used()
+        ClassProvider.create(this.injector, URLParser, URLParser).set_used()
+        this._http_handler = ClassProvider.create(this.injector, Handler, Handler).set_used().create()
     }
 
-    load(meta: TpRouterMeta, injector: Injector): void {
-        collect_unit(meta.self, 'TpRouterUnit').forEach(f => this._http_handler.load(f, injector, meta))
+    async handle_request(req: IncomingMessage, res: ServerResponse) {
+        res.statusCode = 404
+        this.allow_origin && res.setHeader('Access-Control-Allow-Origin', this.allow_origin)
+        if (req.method === 'OPTIONS') {
+            this.allow_headers && res.setHeader('Access-Control-Allow-Headers', this.allow_headers)
+            this.allow_methods && res.setHeader('Access-Control-Allow-Methods', this.allow_methods)
+            this.max_age && res.setHeader('Access-Control-Max-Age', this.max_age)
+            res.statusCode = 204
+            res.end('')
+            return
+        }
+        if (this._terminating) {
+            res.setHeader('Connection', 'close')
+        }
+        return this._http_handler.handle(req, res)
     }
 
-    on<T, R extends KoaResponseType>(method: ApiMethod, path: ApiPath, handler: (ctx: LiteContext) => HandlerReturnType<R>): void {
-        this._http_handler.on(method, path, handler)
+    load(meta: TpRouter, injector: Injector): void {
+        collect_routes(meta).forEach(f => this._http_handler.load(f, injector, meta))
+    }
+
+    bind(method: ApiMethod, path: ApiPath, handler: HttpHandler): void {
+        this._http_handler.bind(method, path, handler)
+    }
+
+    async start(): Promise<void> {
+        const port = this.config_data.get('http.port')
+        const keepalive_timeout = this.config_data.get('http.keepalive_timeout')
+        return new Promise(resolve => {
+            this._server = http.createServer((req, res) => this.handle_request(req, res))
+                .listen(port, () => resolve())
+            if (keepalive_timeout) {
+                this._server.keepAliveTimeout = keepalive_timeout
+            }
+            this._server.on('connection', socket => this.record_socket(socket))
+        })
     }
 
     get_api_list(): Omit<HttpHandlerDescriptor, 'handler'>[]
@@ -62,61 +102,16 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
         return this._http_handler.list(need_handler)
     }
 
-    use(middleware: (ctx: LiteContext, next: () => Promise<any>) => void) {
-        this._koa.use(middleware)
-    }
-
-    /**
-     * Koa listen
-     */
-    async start(): Promise<void> {
-        const port = this.config_data.get('http.port')
-        const keepalive_timeout = this.config_data.get('http.keepalive_timeout')
-        return new Promise(resolve => {
-            this._server = this._koa.on('error', (err, ctx: LiteContext) => {
-                if (err.code !== 'HPE_INVALID_EOF_STATE') {
-                    console.log('server error', err, ctx)
-                    // console.log(ctx.request.rawBody) TODO: console.log( body )
-                }
-            }).listen(port, () => resolve())
-            if (keepalive_timeout) {
-                this._server.keepAliveTimeout = keepalive_timeout
-            }
-            this._server.on('connection', socket => this.record_socket(socket))
-        })
-    }
-
-    async destroy(): Promise<void> {
+    async terminate() {
         if (!this._server) {
             return
         }
-        return this.terminate()
-    }
-
-    private terminate() {
         if (this._terminating) {
             return this._terminating
         }
 
         this._terminating = new Promise((resolve, reject) => {
-            this._server?.on('request', (req, res) => {
-                if (!res.headersSent) {
-                    res.setHeader('connection', 'close')
-                }
-            })
-            this._server?.close((error) => error ? reject(error) : resolve())
-
-            for (const socket of this._sockets) {
-                // @ts-expect-error Unclear if I am using wrong type or how else this should be handled.
-                const serverResponse = socket._httpMessage
-                if (serverResponse) {
-                    if (!serverResponse.headersSent) {
-                        serverResponse.setHeader('connection', 'close')
-                    }
-                    continue
-                }
-                this.destroy_socket(socket)
-            }
+            this._server?.close(error => error ? reject(error) : resolve())
             let start = Date.now()
             const interval = setInterval(() => {
                 if (this._sockets.size === 0 || Date.now() - start > 4000) {
@@ -144,18 +139,4 @@ export class TpHttpServer implements TpPlugin<'TpRouter'> {
             socket.once('close', () => this._sockets.delete(socket))
         }
     }
-
-    private cors: Koa.Middleware<any> = async (ctx: Koa.Context, next: Koa.Next) => {
-        const allow_origin = this.config_data.get('http.cors.allow_origin') ?? ''
-        const allow_headers = this.config_data.get('http.cors.allow_headers') ?? ''
-        const allow_methods = this.config_data.get('http.cors.allow_methods') ?? ''
-        allow_origin && ctx.response.res.setHeader('Access-Control-Allow-Origin', allow_origin)
-        if (ctx.method === 'OPTIONS') {
-            allow_headers && ctx.response.res.setHeader('Access-Control-Allow-Headers', allow_headers)
-            allow_methods && ctx.response.res.setHeader('Access-Control-Allow-Methods', allow_methods)
-            ctx.response.body = ''
-        }
-        return await next()
-    }
 }
-

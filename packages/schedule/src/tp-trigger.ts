@@ -7,14 +7,16 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { collect_unit, get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
+import { get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
-
-import { TaskLifeCycle } from './__services__/task-life-cycle'
-import { TaskLock } from './__services__/task-lock'
-import { TaskDesc, TpScheduleMeta, TpScheduleUnit } from './__types__'
+import { TaskDesc } from './__types__'
+import { TpSchedule, TpScheduleToken } from './annotations'
 import { Bullet } from './bullet'
+
+import { TaskLifeCycle } from './services/task-life-cycle'
+import { TaskLock } from './services/task-lock'
 import { TaskContext } from './task-context'
+import { collect_tasks, TaskUnit } from './tools'
 
 function on_error_or_throw(hooks: TaskLifeCycle | undefined, err: any, context: TaskContext) {
     if (hooks) {
@@ -29,8 +31,8 @@ function on_error_or_throw(hooks: TaskLifeCycle | undefined, err: any, context: 
  *
  * @category Schedule
  */
-@TpPluginType({ type: 'TpSchedule', loader_list: ['œœ-TpSchedule'], option_key: 'schedules' })
-export class TpTrigger implements TpPlugin<'TpSchedule'> {
+@TpPlugin({ targets: [TpScheduleToken] })
+export class TpTrigger implements TpPluginType {
 
     private static id_cursor = 1
     private _clip?: Bullet | null
@@ -46,8 +48,8 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         private injector: Injector,
         private config_data: ConfigData
     ) {
-        this.injector.set_provider(TaskLifeCycle, new ValueProvider('TaskLifeCycle', null))
-        this.injector.set_provider(TaskLock, new ValueProvider('TaskLock', null))
+        ValueProvider.create(this.injector, TaskLifeCycle, null)
+        ValueProvider.create(this.injector, TaskLock, null)
     }
 
     private static get_id(): string {
@@ -128,9 +130,9 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         return Object.values(this._suspended_task).map(bullet => {
             return {
                 id: bullet.id,
-                name: bullet.desc.us_name ?? bullet.desc.u_position ?? '',
-                pos: bullet.desc.u_position ?? '',
-                crontab: bullet.desc.us_crontab_str ?? '',
+                name: bullet.unit.task_name ?? bullet.unit.position ?? '',
+                pos: bullet.unit.position ?? '',
+                crontab: bullet.unit.crontab_str ?? '',
                 next_exec_ts: bullet.execution.valueOf(),
                 next_exec_date_string: bullet.execution.format(),
             }
@@ -146,9 +148,9 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         while (bullet) {
             list.push({
                 id: bullet.id,
-                name: bullet.desc.us_name ?? bullet.desc.u_position ?? '',
-                pos: bullet.desc.u_position ?? '',
-                crontab: bullet.desc.us_crontab_str ?? '',
+                name: bullet.unit.task_name ?? bullet.unit.position ?? '',
+                pos: bullet.unit.position ?? '',
+                crontab: bullet.unit.crontab_str ?? '',
                 next_exec_ts: bullet.execution.valueOf(),
                 next_exec_date_string: bullet.execution.format(),
             })
@@ -157,13 +159,8 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         return list
     }
 
-    load(meta: TpScheduleMeta, injector: Injector): void {
-        collect_unit(meta.self, 'TpScheduleUnit').forEach(unit => {
-            if (!unit.u_meta?.disabled) {
-                const task_handler = this.make_trigger(injector, unit, [TaskContext])
-                this._fill(task_handler, unit)
-            }
-        })
+    load(meta: TpSchedule, injector: Injector): void {
+        collect_tasks(meta).forEach(unit => this.make_trigger(injector, unit))
     }
 
     async start(): Promise<void> {
@@ -172,7 +169,7 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         }, 100)
     }
 
-    async destroy() {
+    async terminate() {
         if (this._interval) {
             clearInterval(this._interval)
         }
@@ -182,8 +179,8 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
     /**
      * @private
      */
-    private _fill(handler: Function, desc: TpScheduleUnit<any>) {
-        const bullet = new Bullet(TpTrigger.get_id(), handler, desc)
+    private _fill(handler: Function, unit: TaskUnit) {
+        const bullet = new Bullet(TpTrigger.get_id(), handler, unit)
         if (!this._clip) {
             this._clip = bullet
         } else if (bullet.execution < this._clip.execution) {
@@ -307,30 +304,30 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
         }
     }
 
-    private make_trigger(injector: Injector, desc: TpScheduleUnit<any>, except_list?: any[]) {
+    private make_trigger(injector: Injector, unit: TaskUnit) {
 
-        const provider_list = get_providers(desc, injector, except_list)
+        const provider_list = get_providers(unit, injector, new Set([TaskContext]))
 
         return async function(execution?: Dora) {
             const hooks = injector.get(TaskLifeCycle)?.create()
             const task_lock = injector.get(TaskLock)?.create()
-            if (desc.us_lock_key && !task_lock) {
-                throw new Error(`Decorator "@Lock" is settled on ${desc.u_position}, but there's no "TaskLock" implements found.`)
+            if (unit.lock_key && !task_lock) {
+                throw new Error(`Decorator "@Lock" is settled on ${unit.position}, but there's no "TaskLock" implements found.`)
             }
 
-            if (!desc.us_crontab_str) {
+            if (!unit.crontab_str) {
                 throw new Error()
             }
 
             const context = new TaskContext({
-                name: desc.us_name ?? desc.u_position ?? '',
+                name: unit.task_name,
                 execution: execution ?? Dora.now(),
-                pos: desc.u_position!,
-                property_key: desc.u_prop,
-                crontab: desc.us_crontab_str,
+                pos: unit.position!,
+                property_key: unit.prop,
+                crontab: unit.crontab_str,
                 temp_exec: !!execution,
-                lock_key: desc.us_lock_key,
-                lock_expires: desc.us_lock_expires,
+                lock_key: unit.lock_key,
+                lock_expires: unit.lock_expire_secs,
             })
 
             await hooks?.on_init(context)
@@ -344,11 +341,11 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
                 }
             })
 
-            if (task_lock && desc.us_lock_key) {
-                const locked = await task_lock.lock(desc.us_lock_key ?? desc.u_position, context)
+            if (task_lock && unit.lock_key) {
+                const locked = await task_lock.lock(unit.lock_key, context)
                 if (locked !== undefined) {
-                    const lock_key = desc.us_lock_key
-                    return desc.u_handler(...param_list)
+                    const lock_key = unit.lock_key
+                    return unit.handler(...param_list)
                         .then((res: any) => hooks?.on_finish(res, context))
                         .catch((err: any) => on_error_or_throw(hooks, err, context))
                         .finally(() => task_lock.unlock(lock_key, locked, context))
@@ -356,7 +353,7 @@ export class TpTrigger implements TpPlugin<'TpSchedule'> {
                     await task_lock.on_lock_failed(context)
                 }
             } else {
-                return desc.u_handler(...param_list)
+                return unit.handler(...param_list)
                     .then((res: any) => hooks?.on_finish(res, context))
                     .catch((err: any) => on_error_or_throw(hooks, err, context))
             }

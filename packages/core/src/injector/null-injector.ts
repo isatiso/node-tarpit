@@ -6,17 +6,17 @@
  * found in the LICENSE file at source root.
  */
 
-export class _NullInjector {
+import { InjectorType, Provider } from '../types'
+
+export class NullInjector implements InjectorType {
 
     readonly children: any[] = []
 
-    has(_: any) {
+    has(_token: any) {
         return false
     }
 
-    get(token: any, info?: string): never {
-        throw new Error(`Can't find ${token?.name ?? token} in NullInjector [${info}]`)
+    get(_token: any): Provider<any> | null {
+        return null
     }
 }
-
-export const NullInjector = new _NullInjector()

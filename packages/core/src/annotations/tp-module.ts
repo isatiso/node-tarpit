@@ -6,29 +6,13 @@
  * found in the LICENSE file at source root.
  */
 
-import { MetaTools } from '../__tools__/tp-meta-tools'
-import { TpModuleOptions } from '../tp-component-type'
+import { make_decorator } from '../tools/tp-decorator'
+import { TpModuleOptions } from '../types'
+import { TpAssembly } from './tp-base'
 
-/**
- * 把一个类标记为 Tp.TpModule，并提供配置元数据。
- *
- * @category Module Annotation
- * @param options
- */
-export function TpModule(options?: TpModuleOptions): ClassDecorator {
-    return constructor => {
-        MetaTools.ComponentMeta(constructor.prototype)
-            .if_exist(meta => {
-                throw new Error(`Component ${meta.type} is exist -> ${meta.name}.`)
-            })
-            .set({
-                type: 'TpModule',
-                loader: 'œœ-TpModule',
-                category: 'assembly',
-                name: constructor.name,
-                self: constructor as any,
-                imports: options?.imports ?? [],
-                providers: options?.providers ?? [],
-            })
-    }
-}
+export const TpModuleToken = Symbol.for('œœ.token.TpModule')
+export type TpModule = InstanceType<typeof TpModule>
+export const TpModule = make_decorator('TpModule', (options?: TpModuleOptions) => ({
+    ...options,
+    token: TpModuleToken,
+}), TpAssembly)

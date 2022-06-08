@@ -7,10 +7,18 @@
     "license": "MIT",
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
-    "module": "./lib/index.esm.js",
+    "module": "./lib/index.mjs",
     "files": [
         "lib"
     ],
+    "exports": {
+        ".": {
+            "require": "./lib/index.js",
+            "import": "./lib/index.mjs"
+        },
+        "./package": "./package.json",
+        "./package.json": "./package.json"
+    },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/",
         "access": "public"
@@ -27,15 +35,16 @@
         "test": "echo \"Error: run tests from root\" && exit 1"
     },
     "dependencies": {
-        "co-body": "^6.1.0",
-        "koa": "^2.13.4"
+        "@tarpit/judge": "^0.3.2",
+        "amqplib": "^0.10.0"
     },
     "devDependencies": {
+        "@tarpit/config": "^0.3.2",
         "@tarpit/core": "^0.3.4",
-        "@types/koa": "^2.13.4"
+        "@types/amqplib": "^0.8.2"
     },
     "peerDependencies": {
-        "@tarpit/core": "^0.1.2",
-        "@tarpit/judge": "^0.1.0"
+        "@tarpit/config": "^0.3.2",
+        "@tarpit/core": "^0.3.4"
     }
 }

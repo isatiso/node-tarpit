@@ -6,8 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor } from '@tarpit/core'
-import { TpConsumerMeta, TpConsumerUnit, TpProducerMeta, TpProducerUnit } from './__types__'
 import { TpRabbitMQ } from './tp-rabbitmq'
 
 export interface AMQPConnect {
@@ -68,31 +66,6 @@ export interface AMQPConnect {
     vhost?: string
 }
 
-declare module '@tarpit/core' {
-
-    export interface TpRootOptions {
-        producers?: Constructor<any>[]
-        consumers?: Constructor<any>[]
-    }
-
-    export interface TpAssemblyCollection {
-        TpConsumer: TpConsumerMeta
-    }
-
-    export interface TpWorkerCollection {
-        TpProducer: TpProducerMeta
-    }
-
-    export interface TpUnitCollection {
-        TpConsumerUnit: TpConsumerUnit<any>,
-        TpProducerUnit: TpProducerUnit<any>,
-    }
-
-    export interface TpPluginCollection {
-        TpRabbitMQ: typeof TpRabbitMQ
-    }
-}
-
 declare module '@tarpit/config' {
 
     export interface TpConfigSchema {
@@ -104,8 +77,8 @@ declare module '@tarpit/config' {
     }
 }
 
-export { BindExchange, BindQueue, AssertQueue, AssertExchange } from './__tools__'
-export * from './__annotations__'
+export { BindExchange, BindQueue, AssertQueue, AssertExchange } from './tools'
+export * from './annotations'
 export * from './__types__'
 export { Letter, PURE_LETTER } from './letter'
 export { TpRabbitMQ } from './tp-rabbitmq'

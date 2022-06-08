@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Deque, ImportsAndProviders, PureJSON, TpAssemblyCommon, TpUnitCommon, TpWorkerCommon } from '@tarpit/core'
-import { ChannelWrapper } from './channel-wrapper'
+import { ImportsAndProviders, PureJSON } from '@tarpit/core'
 
 export interface ExchangeAssertion {
     type: 'exchange'
@@ -132,28 +131,4 @@ export interface TpConsumerOptions extends ImportsAndProviders {
 export interface TpProducerOptions {
     assertions?: Assertion[]
     bindings?: Binding[]
-}
-
-export interface TpProducerMeta extends TpWorkerCommon<'TpProducer'> {
-    producer_options?: TpProducerOptions
-}
-
-export interface TpConsumerMeta extends TpAssemblyCommon<'TpConsumer'> {
-    consumer_options?: TpConsumerOptions
-}
-
-export interface TpConsumerUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
-    u_type: 'TpConsumerUnit'
-    ur_consumer_tag?: string
-    ur_consume?: { queue: string, options: ConsumeOptions }
-    ur_channel_wrapper?: ChannelWrapper
-    ur_channel_error?: any
-}
-
-export interface TpProducerUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
-    u_type: 'TpProducerUnit'
-    ur_produce?: { exchange: string, routing_key: string, options: ProduceOptions }
-    ur_produce_cache: Deque<[message: any, produce_options: ProduceOptions | undefined, resolve: (data: any) => void, reject: (err: any) => void]>
-    ur_channel_wrapper?: ChannelWrapper
-    ur_channel_error?: any
 }

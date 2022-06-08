@@ -66,7 +66,7 @@ describe('config-tools.ts', function() {
             expect(config_data.get('b')).to.equal('string')
         })
 
-        it('should use return value if given data is function.', function () {
+        it('should use return value if given data is function.', function() {
             const data: TpConfigSchema = {
                 a: 123,
                 b: 'string'

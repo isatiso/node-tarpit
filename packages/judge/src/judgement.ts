@@ -10,6 +10,8 @@ import { JudgementRule, Path, PathOfType, PathValue } from './__types__'
 import { Matcher } from './matcher'
 import { Reference } from './reference'
 
+export type MatcherInferType<T extends Matcher<any> | RegExp> = T extends RegExp ? string : T extends Matcher<infer V> ? V : never
+
 /**
  * 继承 Reference 增加值类型检查功能。
  * ```typescript
@@ -25,70 +27,13 @@ import { Reference } from './reference'
  */
 export class Judgement<T> extends Reference<T> {
 
-    get_if<P extends PathOfType<T, string>>(prop: P, matcher: RegExp): Exclude<PathValue<T, P>, undefined> | undefined
-    get_if<P extends PathOfType<T, string>>(prop: P, matcher: RegExp, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    get_if<V, P extends PathOfType<T, V>>(prop: P, matcher: Matcher<V>): Exclude<V, undefined> | undefined
-    get_if<V, P extends PathOfType<T, V>>(prop: P, matcher: Matcher<V>, def: Exclude<V, undefined>): Exclude<V, undefined>
+    get_if<M extends (Matcher<any> | RegExp), P extends PathOfType<T, MatcherInferType<M>>>(prop: P, matcher: M): Exclude<PathValue<T, P>, undefined> | undefined
+    get_if<M extends (Matcher<any> | RegExp), P extends PathOfType<T, MatcherInferType<M>>>(prop: P, matcher: M, def: MatcherInferType<M>): Exclude<PathValue<T, P>, undefined>
     get_if(prop: Path<T>, matcher: JudgementRule, def?: any): any {
         const res = super.get(prop)
-        if (res !== undefined && this.if(res, matcher)) {
+        if (res !== undefined && Matcher.if(res, matcher)) {
             return res
         }
         return def
-    }
-
-    get_if_any<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<T, P>, undefined> | undefined
-    get_if_any<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    get_if_any<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[]): Exclude<PathValue<T, P>, undefined> | undefined
-    get_if_any<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    get_if_any(prop: Path<T>, matcher_list: JudgementRule[], def?: any): any {
-        const res = super.get(prop)
-        return this.any(res, matcher_list) ? res : def
-    }
-
-    get_if_all<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>): Exclude<PathValue<T, P>, undefined> | undefined
-    get_if_all<P extends PathOfType<T, string>>(prop: P, matcher_list: Array<RegExp | Matcher<string>>, def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    get_if_all<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[]): Exclude<PathValue<T, P>, undefined> | undefined
-    get_if_all<P extends Path<T>>(prop: P, matcher_list: Matcher<Exclude<PathValue<T, P>, undefined>>[], def: Exclude<PathValue<T, P>, undefined>): Exclude<PathValue<T, P>, undefined>
-    get_if_all(prop: Path<T>, matcher_list: JudgementRule[], def?: any): any {
-        const res = super.get(prop)
-        return this.all(res, matcher_list) ? res : def
-    }
-
-    /**
-     * 检查一个字段的值是否匹配指定规则。
-     *
-     * @param value
-     * @param rule
-     * @protected
-     */
-    protected if(value: any, rule: JudgementRule): boolean {
-        if (rule instanceof RegExp) {
-            return typeof value === 'string' && rule.test(value)
-        } else {
-            return rule.check(value)
-        }
-    }
-
-    /**
-     * 检查一个字段的值是否匹配指定规则中的任意一个。
-     *
-     * @param value
-     * @param rules
-     * @protected
-     */
-    protected any(value: any, rules: JudgementRule[]): boolean {
-        return rules.some(rule => this.if(value, rule))
-    }
-
-    /**
-     * 检查一个字段的值是否匹配全部指定规则。
-     *
-     * @param value
-     * @param rules
-     * @protected
-     */
-    protected all(value: any, rules: JudgementRule[]): boolean {
-        return rules.every(rule => this.if(value, rule))
     }
 }

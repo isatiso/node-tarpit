@@ -6,25 +6,23 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, Provider, ProviderDef, ValueProviderDef } from '../__types__'
+import { Injector } from '../injector'
+import { Provider } from '../types'
 
-/**
- * @private
- *
- * @category Injector
- */
 export class ValueProvider<M> implements Provider<M> {
 
     public used = false
 
     constructor(
-        public name: string,
-        private readonly value: M
+        public readonly injector: Injector,
+        public readonly token: any,
+        private readonly value: M,
     ) {
+        injector.set(token, this)
     }
 
-    static isValueProviderDef<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ValueProviderDef<T> {
-        return def.constructor.name === 'Object' && (def as any).useValue
+    static create<M>(injector: Injector, token: any, value: M) {
+        return new ValueProvider<M>(injector, token, value)
     }
 
     create() {
@@ -32,7 +30,8 @@ export class ValueProvider<M> implements Provider<M> {
         return this.value
     }
 
-    set_used(): void {
+    set_used(): this {
         this.used = true
+        return this
     }
 }

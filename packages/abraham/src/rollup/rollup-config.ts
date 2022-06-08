@@ -11,7 +11,7 @@ import fs from 'fs'
 import path from 'path'
 import { InputOptions } from 'rollup'
 import { CompilerOptions } from 'typescript'
-import { parse_tsconfig, read_json_file_sync, read_tsconfig } from '../__tools__'
+import { parse_tsconfig, read_json_file_sync, read_tsconfig } from '../tools'
 import { PackageJson } from '../types'
 import { clean, dts, rpt2 } from './plugins'
 import { create_render_process, output_dts, output_js } from './render'
@@ -80,7 +80,7 @@ export class RollupConfig {
             input,
             output_js(
                 path.join(this.outDir, 'index.js'),
-                path.join(this.outDir, 'index.esm.js'),
+                path.join(this.outDir, 'index.mjs'),
             ),
             [
                 json(),
@@ -94,7 +94,7 @@ export class RollupConfig {
             input,
             output_js(
                 path.join(this.outDir, 'index.js'),
-                path.join(this.outDir, 'index.esm.js'),
+                path.join(this.outDir, 'index.mjs'),
             ),
             [
                 json(),

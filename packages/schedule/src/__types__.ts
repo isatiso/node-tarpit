@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ImportsAndProviders, TpAssemblyCommon, TpUnitCommon } from '@tarpit/core'
-import { Crontab } from './crontab'
+import { ImportsAndProviders } from '@tarpit/core'
 
 export type FieldType = 'second' | 'minute' | 'hour' | 'dayOfMonth' | 'month' | 'dayOfWeek'
 
@@ -44,7 +43,6 @@ export interface TaskDesc {
 export interface TaskOptions {
     utc?: boolean
     tz?: string
-    name?: string
 }
 
 export interface InnerOptions {
@@ -54,19 +52,4 @@ export interface InnerOptions {
 
 export interface TpScheduleOptions extends ImportsAndProviders {
 
-}
-
-export interface TpScheduleMeta extends TpAssemblyCommon<'TpSchedule'> {
-    type: 'TpSchedule'
-    schedule_options?: TpScheduleOptions
-}
-
-export interface TpScheduleUnit<T extends (...args: any) => any> extends TpUnitCommon<T> {
-    u_type: 'TpScheduleUnit'
-    us_crontab_str?: string
-    us_crontab?: Crontab
-    us_task_options?: TaskOptions
-    us_name?: string
-    us_lock_key?: string
-    us_lock_expires?: number
 }

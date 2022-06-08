@@ -1,0 +1,42 @@
+/**
+ * @license
+ * Copyright Cao Jiahang All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at source root.
+ */
+
+import { Judgement, Matcher, MatcherInferType, MismatchDescription, PathOfType, PathValue } from '@tarpit/judge'
+import { throw_bad_request } from '../errors'
+
+export type OnJudgementError = (prop: string, desc: MismatchDescription) => string
+
+export class ApiJudgement<T> extends Judgement<T> {
+
+    protected _expose = false
+
+    expose_error(value?: boolean) {
+        this._expose = value !== false
+    }
+
+    ensure<M extends (Matcher<any> | RegExp), P extends PathOfType<T, MatcherInferType<M>>>(prop: P, matcher: M, on_error?: OnJudgementError): Exclude<PathValue<T, P>, undefined> {
+        const res = super.get(prop)
+        const mismatch_info = Matcher.mismatch(res, matcher)
+        if (mismatch_info) {
+            this.on_error(prop, mismatch_info, on_error)
+        }
+        return res as any
+    }
+
+    do_if<M extends (Matcher<any> | RegExp), P extends PathOfType<T, MatcherInferType<M>>>(prop: P, matcher: M, then: (res: PathValue<T, P>) => void): void {
+        const res = super.get(prop)
+        if (res === undefined) {
+            return
+        }
+        Matcher.if(res, matcher) && then(res)
+    }
+
+    protected on_error(prop: string, desc: MismatchDescription, on_error?: (prop: string, desc: MismatchDescription) => string): never {
+        throw_bad_request(on_error?.(prop, desc) ?? `Value of [${prop}] is not match rule: [${desc.rule}]`, { expose: this._expose })
+    }
+}
