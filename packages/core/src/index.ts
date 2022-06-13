@@ -26,6 +26,7 @@ export {
     TpService,
     TpUnit,
     TpWorker,
+    Debug,
 } from './annotations'
 export { Injector } from './injector'
 export { ClassProvider, FactoryProvider, ValueProvider } from './provider'

@@ -7,7 +7,7 @@
  */
 
 export { Disabled } from './disabled'
-// export { EchoDependencies, EchoMethodDependencies } from './echo-dependencies'
+export { Debug } from './debug'
 export { Inject } from './inject'
 export { MetaData } from './metadata'
 export { OnDestroy } from './on-destroy'

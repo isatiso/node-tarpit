@@ -171,3 +171,8 @@ export function get_param_types(cls: Constructor<any>, prop?: string | symbol) {
     const target = prop === undefined ? cls : cls.prototype
     return Reflect.getMetadata('design:paramtypes', target, prop as any)
 }
+
+export function get_prop_types(cls: Constructor<any>, prop: string | symbol) {
+    const target = cls.prototype
+    return Reflect.getMetadata('design:type', target, prop)
+}
