@@ -21,7 +21,7 @@ export class ClassProvider<M extends object> implements Provider<M> {
     public resolved?: M
     public name: string
     public used = false
-    private providers?: any[]
+    private providers?: Array<Provider<unknown> | undefined>
 
     constructor(
         public readonly injector: Injector,
@@ -49,14 +49,16 @@ export class ClassProvider<M extends object> implements Provider<M> {
 
     set_used(parents?: ParentDesc[]): this {
         this.used = true
-        this._set_param_used([{ token: this.cls }, ...parents ?? []])
         return this
     }
 
     private _get_instance(parents: ParentDesc[]) {
-        const provider_list = this._get_param_providers(parents)
+        if (!this.providers) {
+            const position = parents?.map(p => `${stringify(p.token)}${p.index !== undefined ? `[${p.index}]` : ''}`).join(' -> ')
+            this.providers = get_providers({ cls: this.cls, position }, this.injector)
+        }
         const last = parents.pop()
-        const param_list = provider_list.map((provider, index) => provider?.create([...parents.map(p => ({ ...p })), { ...last, index }]))
+        const param_list = this.providers.map((provider, index) => provider?.create([...parents.map(p => ({ ...p })), { ...last, index }]))
         const instance = new this.cls(...param_list)
 
         for (const [prop, decorators] of get_all_prop_decorator(this.cls) ?? []) {
@@ -69,17 +71,5 @@ export class ClassProvider<M extends object> implements Provider<M> {
         }
 
         return instance
-    }
-
-    private _set_param_used(parents: ParentDesc[]) {
-        this._get_param_providers(parents)?.forEach(provider => provider?.set_used(parents))
-    }
-
-    private _get_param_providers(parents: ParentDesc[]): Array<Provider<unknown> | null> {
-        if (!this.providers) {
-            const position = parents?.map(p => `${stringify(p.token)}${p.index !== undefined ? `[${p.index}]` : ''}`).join(' -> ')
-            this.providers = get_providers({ cls: this.cls, position }, this.injector)
-        }
-        return this.providers
     }
 }

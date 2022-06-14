@@ -30,8 +30,31 @@ function get_param_deps(cls: Constructor<any>, prop?: string | symbol): ParamDep
     }) ?? []
 }
 
-export function get_providers(meta: { cls: Constructor<any>, prop?: string | symbol, position: string }, injector: Injector, excepts?: Set<any>): any[] {
-    return get_param_deps(meta.cls, meta.prop).map((param_meta, i) => {
+function figure_given_deps(deps?: any[]) {
+    return deps?.map((dep) => {
+        const meta: ParamDepsMeta = { token: null, optional: false }
+        if (Array.isArray(dep)) {
+            dep.forEach(d => {
+                if (d instanceof Optional) {
+                    meta.optional = true
+                } else if (d instanceof Inject) {
+                    meta.token = d.token
+                } else {
+                    meta.token = d
+                }
+            })
+        } else {
+            meta.token = dep
+        }
+        return meta
+    }) ?? []
+}
+
+export type ProviderDescriptor = { cls: Constructor<any>, prop?: string | symbol, position: string } | { cls?: undefined, deps?: any[], position: string }
+
+export function get_providers(meta: ProviderDescriptor, injector: Injector, excepts?: Set<any>): any[] {
+    const param_deps = meta.cls ? get_param_deps(meta.cls, meta.prop) : figure_given_deps(meta.deps)
+    return param_deps.map((param_meta, i) => {
         /* istanbul ignore next */
         if (param_meta.token === null || param_meta.token === undefined) {
             console.error(`type 'undefined' at ${meta.position}[${i}], if it's not specified, there maybe a circular import.`)

@@ -108,5 +108,15 @@ describe('get-providers.ts', function() {
             const providers = get_providers({ cls: C, prop: 'no_decorator', position: 'C.no_decorator' }, injector)
             expect(providers).to.eql([])
         })
+
+        it('should get providers of given dependencies', function() {
+            const providers = get_providers({ position: 'C.no_decorator', deps: [A, B, [new Optional(), new Inject(N), N]] }, injector)
+            expect(providers).to.eql([provider_a, provider_b, null])
+        })
+
+        it('should get empty array if given undefined', function() {
+            const providers = get_providers({ position: 'C.no_decorator' }, injector)
+            expect(providers).to.eql([])
+        })
     })
 })
