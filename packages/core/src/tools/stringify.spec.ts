@@ -45,10 +45,12 @@ describe('stringify.ts', function() {
         })
 
         it('should stringify object as it\'s override_name preferentially', function() {
-            expect(stringify(class Bla {
+            class Bla {
                 static override_name = 'Override'
-            })).to.equal('Override')
-            expect(stringify({ name: 'Boom', override_name: 'Override' })).to.equal('Override')
+            }
+
+            expect(stringify(Bla)).to.equal('Override')
+            expect(stringify({ name: 'Boom', override_name: Bla.override_name })).to.equal(Bla.override_name)
         })
 
         it('will use toString method if isn\'t any one above', function() {

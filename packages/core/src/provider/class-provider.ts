@@ -7,30 +7,14 @@
  */
 
 import 'reflect-metadata'
-import { Inject, OnDestroy, Optional } from '../annotations'
+import { OnDestroy } from '../annotations'
 import { Stranger } from '../builtin/stranger'
 import { Injector } from '../injector'
+import { get_providers } from '../tools/get-providers'
 import { detect_cycle_ref } from '../tools/inner/detect-cycle-ref'
 import { stringify } from '../tools/stringify'
-import { get_all_prop_decorator, get_class_parameter_decorator, get_param_types } from '../tools/tp-decorator'
-import { resolve_forward_ref } from '../tools/tp-forward-ref'
-import { Constructor, ParamDepsMeta, ParentDesc, Provider } from '../types'
-
-function get_param_deps(cls: Constructor<any>) {
-    const param_meta = get_class_parameter_decorator(cls)
-    const param_deps: ParamDepsMeta[] = get_param_types(cls)?.map((p: any, index: number) => {
-        const desc = { token: p, optional: false }
-        param_meta[index]?.forEach((d: any) => {
-            if (d instanceof Optional) {
-                desc.optional = true
-            } else if (d instanceof Inject) {
-                desc.token = d.token
-            }
-        })
-        return desc
-    }) ?? []
-    return param_deps
-}
+import { get_all_prop_decorator } from '../tools/tp-decorator'
+import { Constructor, ParentDesc, Provider } from '../types'
 
 export class ClassProvider<M extends object> implements Provider<M> {
 
@@ -99,18 +83,8 @@ export class ClassProvider<M extends object> implements Provider<M> {
 
     private _get_param_providers(parents: ParentDesc[]): Array<Provider<unknown> | null> {
         if (!this.providers) {
-            this.providers = get_param_deps(this.cls)?.map((param_meta, i) => {
-                if (param_meta.token === null || param_meta.token === undefined) {
-                    console.error(`type 'undefined' at ${stringify(this.cls)}[${i}], if it's not specified, there maybe a circular import.`)
-                }
-                param_meta.token = resolve_forward_ref(param_meta.token)
-                const provider = this.injector.get(param_meta.token)
-                if (!provider && !param_meta.optional) {
-                    const position_id = `${parents?.map(p => `${stringify(p.token)}${p.index !== undefined ? `[${p.index}]` : ''}`).join(' -> ')}[${i}]`
-                    throw new Error(`Can't find provider of "${stringify(param_meta.token)}" in [${position_id}]`)
-                }
-                return provider
-            }) ?? []
+            const position = parents?.map(p => `${stringify(p.token)}${p.index !== undefined ? `[${p.index}]` : ''}`).join(' -> ')
+            this.providers = get_providers({ cls: this.cls, position }, this.injector)
         }
         return this.providers
     }

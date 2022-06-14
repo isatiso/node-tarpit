@@ -8,7 +8,6 @@
 
 export * from './types'
 
-export { tp_forward_ref } from './tools/tp-forward-ref'
 export {
     Disabled,
     Inject,

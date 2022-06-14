@@ -26,7 +26,6 @@ export class TpInnerLoader implements TpPluginType {
         } else if (meta instanceof TpModule) {
 
         } else if (meta instanceof TpRoot) {
-
             meta.entries?.map(p => get_class_decorator(p).find(d => d instanceof TpEntry))
                 .filter(meta => meta)
                 .forEach(meta => load_component(meta, injector))

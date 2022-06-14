@@ -134,9 +134,9 @@ export class Handler {
                     ? ResponseCache.create(cache_proxy, unit.cache_scope, unit.cache_expire_secs)
                     : undefined
 
-                return unit.handler(...provider_list.map((provider: any) => {
+                return unit.handler(...provider_list.map((provider: any, index) => {
                     if (!ALL_HANDLER_TOKEN_SET.has(provider)) {
-                        return provider?.create()
+                        return provider?.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
                     }
                     switch (provider) {
                         case undefined:

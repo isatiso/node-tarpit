@@ -15,6 +15,7 @@ import {
     get_method_parameter_decorator,
     get_param_types,
     get_prop_decorator,
+    get_prop_types,
     make_abstract_decorator,
     make_decorator
 } from './tp-decorator'
@@ -57,6 +58,9 @@ describe('tp-decorator.ts', function() {
         ) {
 
         }
+
+        @TestDecorator('a', 123)
+        d?: P = undefined
     }
 
     describe('make_decorator()', function() {
@@ -123,7 +127,7 @@ describe('tp-decorator.ts', function() {
     describe('get_all_prop_decorator()', function() {
         it('should get all decorators of class property', function() {
             const decorators = get_all_prop_decorator(A)
-            expect(decorators?.size).to.equal(1)
+            expect(decorators?.size).to.equal(2)
             expect(decorators?.get('m')).to.have.length(2)
             expect(decorators?.get('m')?.[0]).to.be.instanceof(TestDecorator)
         })
@@ -177,6 +181,13 @@ describe('tp-decorator.ts', function() {
 
         it('should get types of method parameters', function() {
             expect(get_param_types(A, 'm')).to.eql([String, String, Number, Boolean])
+        })
+    })
+
+    describe('get_prop_types()', function() {
+        it('should get types of property', function() {
+            expect(get_prop_types(A, 'm')).to.equal(Function)
+            expect(get_prop_types(A, 'd')).to.eql(P)
         })
     })
 })
