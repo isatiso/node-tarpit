@@ -8,7 +8,6 @@
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
 import { TpEntry, TpPlugin, TpPluginType } from './annotations'
-import { Stranger } from './builtin/stranger'
 import { TpInnerLoader } from './builtin/tp-inner-loader'
 import { START_TIME, STARTED_AT, TERMINATE_TIME, TERMINATED_AT, TpInspector } from './builtin/tp-inspector'
 import { BuiltinTpLogger, TpLogger } from './builtin/tp-logger'
@@ -36,7 +35,6 @@ export class Platform {
         ValueProvider.create(this.root_injector, ConfigData, load_config(data))
         ValueProvider.create(this.root_injector, Platform, this)
         ClassProvider.create(this.root_injector, UUID, UUID)
-        ClassProvider.create(this.root_injector, Stranger, Stranger)
         ClassProvider.create(this.root_injector, TpLogger, BuiltinTpLogger)
         this.root_injector.on('start', this.on_start)
         this.root_injector.on('terminate', this.on_terminate)
@@ -167,7 +165,7 @@ export class Platform {
         await this.prepare()
 
         await Promise.all(this.plugin_center.terminate()).catch(() => undefined)
-        await this.root_injector.get(Stranger)?.create().wait_all_quit()
+        await this.root_injector.get(TpInspector)?.create().wait_all_quit()
 
         const logger = this.root_injector.get(TpLogger)?.create()!
         const duration = (Date.now() - this.inspector.terminated_at) / 1000
