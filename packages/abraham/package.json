@@ -39,7 +39,7 @@
     },
     "dependencies": {
         "@rollup/plugin-json": "^4.1.0",
-        "@types/node": "^17.0.42",
+        "@types/node": "^17.0.43",
         "builtin-modules": "^3.3.0",
         "fast-glob": "^3.2.11",
         "rollup": "^2.75.6",

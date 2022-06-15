@@ -42,7 +42,7 @@
         "@tarpit/core": "^0.3.5"
     },
     "peerDependencies": {
-        "@tarpit/config": "^0.3.2",
-        "@tarpit/core": "^0.3.4"
+        "@tarpit/config": "^0.3.5",
+        "@tarpit/core": "^0.3.5"
     }
 }

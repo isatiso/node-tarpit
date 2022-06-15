@@ -41,6 +41,6 @@
         "@tarpit/config": "^0.3.5"
     },
     "peerDependencies": {
-        "@tarpit/config": "^0.3.2"
+        "@tarpit/config": "^0.3.5"
     }
 }
