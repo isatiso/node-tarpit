@@ -11,9 +11,9 @@
     "devDependencies": {
         "@types/node": "17",
         "jsonwebtoken": "^8.5.1",
-        "lerna": "^5.0.0",
+        "lerna": "^5.1.2",
         "normalize-package-data": "^4.0.0",
-        "npm-check-updates": "^13.0.3",
-        "typedoc": "^0.22.15"
+        "npm-check-updates": "^13.1.5",
+        "typedoc": "^0.22.17"
     }
 }

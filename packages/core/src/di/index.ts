@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+export { Injector } from './injector'
 export { ClassProvider } from './class-provider'
 export { FactoryProvider } from './factory-provider'
 export { ValueProvider } from './value-provider'

@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector } from '../injector'
+import { Injector } from '../di'
 import { make_decorator } from '../tools/tp-decorator'
 
 export interface TpPluginType {

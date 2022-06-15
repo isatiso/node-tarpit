@@ -9,8 +9,7 @@
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { Disabled, Inject, Optional, TpService } from '../annotations'
-import { Injector } from '../injector'
-import { ClassProvider } from '../provider'
+import { ClassProvider, Injector } from '../di'
 import { get_providers } from './get-providers'
 
 chai.use(cap)

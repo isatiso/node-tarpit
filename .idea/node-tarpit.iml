@@ -16,6 +16,7 @@
       <sourceFolder url="file://$MODULE_DIR$/packages/schedule/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/zoo/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/rabbitmq/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/barbeque/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/packages/cli/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/abraham/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/transformer/lib" />
@@ -28,6 +29,7 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/zoo/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/schedule/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/rabbitmq/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/barbeque/lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

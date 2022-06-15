@@ -13,8 +13,7 @@ import { START_TIME, STARTED_AT, TERMINATE_TIME, TERMINATED_AT, TpInspector } fr
 import { BuiltinTpLogger, TpLogger } from './builtin/tp-logger'
 import { TpPluginCenter } from './builtin/tp-plugin-center'
 import { UUID } from './builtin/uuid'
-import { Injector } from './injector'
-import { ClassProvider, ValueProvider } from './provider'
+import { ClassProvider, Injector, ValueProvider } from './di'
 import { def_to_provider, load_component } from './tools/inner/load-component'
 import { stringify } from './tools/stringify'
 import { get_class_decorator } from './tools/tp-decorator'
@@ -165,7 +164,7 @@ export class Platform {
         await this.prepare()
 
         await Promise.all(this.plugin_center.terminate()).catch(() => undefined)
-        await this.root_injector.get(TpInspector)?.create().wait_all_quit()
+        await this.root_injector.wait_all_quit()
 
         const logger = this.root_injector.get(TpLogger)?.create()!
         const duration = (Date.now() - this.inspector.terminated_at) / 1000

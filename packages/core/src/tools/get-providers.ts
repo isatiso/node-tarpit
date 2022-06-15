@@ -8,7 +8,7 @@
 
 import 'reflect-metadata'
 import { Inject, Optional } from '../annotations'
-import { Injector } from '../injector'
+import { Injector } from '../di'
 import { Constructor, ParamDepsMeta } from '../types'
 import { stringify } from './stringify'
 import { get_class_parameter_decorator, get_method_parameter_decorator, get_param_types } from './tp-decorator'

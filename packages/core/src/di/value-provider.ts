@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector } from '../injector'
 import { Provider } from '../types'
+import { Injector } from './injector'
 
 export class ValueProvider<M> implements Provider<M> {
 

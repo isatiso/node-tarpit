@@ -8,7 +8,7 @@
 
 import { ConfigData } from '@tarpit/config'
 import { TpService } from '../annotations'
-import { Injector } from '../injector'
+import { Injector } from '../di'
 import { START_TIME, TERMINATE_TIME } from './tp-inspector'
 
 export abstract class TpLogger {

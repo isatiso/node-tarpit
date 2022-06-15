@@ -6,14 +6,15 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor, Deque, make_decorator } from '@tarpit/core'
+import { Barbeque } from '@tarpit/barbeque'
+import { Constructor, make_decorator } from '@tarpit/core'
 import { ProduceOptions } from '../__types__'
 import { ChannelWrapper } from '../channel-wrapper'
 
 export type ProduceUnit = {
     exchange: string
     routing_key: string
-    produce_cache: Deque<[message: any, produce_options: ProduceOptions | undefined, resolve: (data: any) => void, reject: (err: any) => void]>
+    produce_cache: Barbeque<[message: any, produce_options: ProduceOptions | undefined, resolve: (data: any) => void, reject: (err: any) => void]>
     channel_wrapper?: ChannelWrapper
     channel_error?: any
     options: ProduceOptions

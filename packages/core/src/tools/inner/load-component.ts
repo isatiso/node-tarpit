@@ -7,8 +7,7 @@
  */
 
 import { TpAssembly, TpComponent, TpEntry, TpPluginType, TpWorker } from '../../annotations'
-import { Injector } from '../../injector'
-import { ClassProvider, FactoryProvider, ValueProvider } from '../../provider'
+import { ClassProvider, FactoryProvider, Injector, ValueProvider } from '../../di'
 import { ClassProviderDef, Constructor, FactoryProviderDef, Provider, ProviderDef, ProviderTreeNode, ValueProviderDef } from '../../types'
 import { stringify } from '../stringify'
 import { get_class_decorator } from '../tp-decorator'

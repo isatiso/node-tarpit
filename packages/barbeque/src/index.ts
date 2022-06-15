@@ -6,4 +6,4 @@
  * found in the LICENSE file at source root.
  */
 
-export { Injector } from './injector'
+export { Barbeque } from './barbeque'

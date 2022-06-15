@@ -36,6 +36,7 @@
     },
     "dependencies": {
         "@tarpit/judge": "^0.3.2",
+        "@tarpit/barbeque": "^0.3.4",
         "amqplib": "^0.10.0"
     },
     "devDependencies": {

@@ -7,13 +7,14 @@
  */
 
 import { EventEmitter } from 'events'
-import { ValueProvider } from '../provider'
 import { AbstractConstructor, Constructor, InjectorEventEmitter, InjectorType, Provider, TpEvent, TpEventCollector } from '../types'
 import { NullInjector } from './null-injector'
+import { ValueProvider } from './value-provider'
 
 export class Injector implements InjectorType, InjectorEventEmitter {
 
     readonly children: Injector[] = []
+    private board = new Set<any>()
 
     constructor(
         public parent: InjectorType,
@@ -70,5 +71,15 @@ export class Injector implements InjectorType, InjectorEventEmitter {
     once<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
         this.emitter.once(event, callback)
         return this
+    }
+
+    mark_quit_hook(quit_method: () => Promise<any>) {
+        this.board.add(new Promise<void>(resolve => this.once('terminate', () => {
+            Promise.resolve(quit_method()).then(() => resolve())
+        })))
+    }
+
+    async wait_all_quit() {
+        await Promise.all(this.board)
     }
 }

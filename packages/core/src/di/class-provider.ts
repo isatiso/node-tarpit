@@ -8,13 +8,12 @@
 
 import 'reflect-metadata'
 import { OnDestroy } from '../annotations'
-import { TpInspector } from '../builtin/tp-inspector'
-import { Injector } from '../injector'
 import { get_providers } from '../tools/get-providers'
 import { detect_cycle_ref } from '../tools/inner/detect-cycle-ref'
 import { stringify } from '../tools/stringify'
 import { get_all_prop_decorator } from '../tools/tp-decorator'
 import { Constructor, ParentDesc, Provider } from '../types'
+import { Injector } from './injector'
 
 export class ClassProvider<M extends object> implements Provider<M> {
 
@@ -65,7 +64,7 @@ export class ClassProvider<M extends object> implements Provider<M> {
             const meta: OnDestroy = decorators.find(d => d instanceof OnDestroy)
             if (meta) {
                 const destroy_method = Reflect.get(this.cls.prototype, prop)?.bind(instance)
-                this.injector.get(TpInspector)?.create().mark_quit_hook(destroy_method)
+                this.injector.mark_quit_hook(destroy_method)
                 break
             }
         }

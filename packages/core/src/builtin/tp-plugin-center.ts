@@ -7,7 +7,7 @@
  */
 
 import { TpPlugin, TpService } from '../annotations'
-import { Injector } from '../injector'
+import { Injector } from '../di'
 
 @TpService()
 export class TpPluginCenter {

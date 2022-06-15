@@ -27,13 +27,12 @@ export {
     TpWorker,
     Debug,
 } from './annotations'
-export { Injector } from './injector'
-export { ClassProvider, FactoryProvider, ValueProvider } from './provider'
-export { Deque } from './builtin/deque'
+export { Injector, ClassProvider, FactoryProvider, ValueProvider } from './di'
 export { TpInspector, STARTED_AT, START_TIME, TERMINATE_TIME, TERMINATED_AT } from './builtin/tp-inspector'
 export { TpLogger } from './builtin/tp-logger'
 export { UUID } from './builtin/uuid'
 export { stringify } from './tools/stringify'
+export { get_providers } from './tools/get-providers'
 export { Platform } from './platform'
 export {
     DecoratorInnerField,
@@ -48,4 +47,3 @@ export {
     get_prop_decorator,
     get_all_prop_decorator,
 } from './tools/tp-decorator'
-export { get_providers } from './tools/get-providers'

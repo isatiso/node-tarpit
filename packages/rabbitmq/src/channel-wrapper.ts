@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Deque } from '@tarpit/core'
+import { Barbeque } from '@tarpit/barbeque'
 import { ConfirmChannel, Connection, ConsumeMessage, Options } from 'amqplib'
 import { Replies } from 'amqplib/properties'
 import { EventEmitter } from 'events'
@@ -20,7 +20,7 @@ export class ChannelWrapper {
     public channel_error?: any
     public channel: ConfirmChannel | undefined
     private channel_drain?: boolean = true
-    private channel_publish_queue: Deque<PublishArguments> = new Deque()
+    private channel_publish_queue: Barbeque<PublishArguments> = new Barbeque()
     private consumers: Map<ConsumeArguments, string | null> = new Map()
 
     constructor(
@@ -91,7 +91,7 @@ export class ChannelWrapper {
 
     private flush_publish() {
         this.channel_drain = true
-        while (this.channel && this.channel_drain && !this.channel_publish_queue.isEmpty()) {
+        while (this.channel && this.channel_drain && !this.channel_publish_queue.is_empty()) {
             const args = this.channel_publish_queue.shift()!
             this.channel_drain = this.channel.publish(...args)
         }

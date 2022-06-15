@@ -7,7 +7,7 @@
  */
 
 import { TpService } from '../annotations'
-import { Injector } from '../injector'
+import { Injector } from '../di'
 
 export const STARTED_AT = Symbol('started_at')
 export const START_TIME = Symbol('start_time')
@@ -16,8 +16,6 @@ export const TERMINATE_TIME = Symbol('terminate_time')
 
 @TpService()
 export class TpInspector {
-
-    private board = new Set<any>()
 
     constructor(
         private injector: Injector
@@ -39,15 +37,4 @@ export class TpInspector {
     get terminate_time(): number {
         return this.injector.get<number>(TERMINATE_TIME)?.create() ?? 0
     }
-
-    mark_quit_hook(quit_method: () => Promise<any>) {
-        this.board.add(new Promise<void>(resolve => this.injector.once('terminate', () => {
-            Promise.resolve(quit_method()).then(() => resolve())
-        })))
-    }
-
-    async wait_all_quit() {
-        await Promise.all(this.board)
-    }
-
 }

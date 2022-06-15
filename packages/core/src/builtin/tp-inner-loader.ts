@@ -7,7 +7,7 @@
  */
 
 import { TpEntry, TpModule, TpModuleToken, TpPlugin, TpPluginType, TpRoot, TpRootToken, TpService, TpServiceToken } from '../annotations'
-import { Injector } from '../injector'
+import { Injector } from '../di'
 import { load_component } from '../tools/inner/load-component'
 import { get_class_decorator } from '../tools/tp-decorator'
 

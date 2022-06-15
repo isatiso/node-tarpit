@@ -6,11 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector } from '../injector'
 import { get_providers } from '../tools/get-providers'
 import { detect_cycle_ref } from '../tools/inner/detect-cycle-ref'
 import { stringify } from '../tools/stringify'
 import { ParentDesc, Provider } from '../types'
+import { Injector } from './injector'
 
 export class FactoryProvider<M> implements Provider<M> {
 

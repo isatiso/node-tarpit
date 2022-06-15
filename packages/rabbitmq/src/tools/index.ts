@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Deque, Disabled, get_all_prop_decorator } from '@tarpit/core'
+import { Barbeque } from '@tarpit/barbeque'
+import { Disabled, get_all_prop_decorator } from '@tarpit/core'
 import { Consume, Produce, TpConsumer, TpProducer } from '../annotations'
 import { ConsumeUnit } from '../annotations/consume'
 import { ProduceUnit } from '../annotations/produce'
@@ -45,7 +46,7 @@ export function collect_produces(meta: TpProducer): ProduceUnit[] {
         const prop_meta: ProduceUnit = {
             exchange: '',
             routing_key: '',
-            produce_cache: new Deque(),
+            produce_cache: new Barbeque(),
             options: {},
             position: `${meta.cls.name}.${prop.toString()}`,
             handler: Reflect.getOwnPropertyDescriptor(meta.cls.prototype, prop)?.value.bind(meta.instance),
