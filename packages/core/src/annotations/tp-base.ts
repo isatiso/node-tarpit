@@ -6,11 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { make_abstract_decorator } from '../tools/tp-decorator'
+import { Injector } from '../di'
+import { make_abstract_decorator } from '../tools/decorator'
 import { ImportsAndProviders } from '../types'
 
-export type TpComponentProps = { token: symbol }
-export type TpEntryProps = { instance?: any }
+export type TpComponentProps = { token: symbol, instance?: any }
+export type TpEntryProps = { injector?: Injector }
 
 export type TpComponent = InstanceType<typeof TpComponent>
 export const TpComponent = make_abstract_decorator<TpComponentProps>('TpComponent')

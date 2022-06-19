@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { make_decorator } from '../tools/tp-decorator'
+import { make_decorator } from '../tools/decorator'
 
-export type MetaData = InstanceType<typeof MetaData>
-export const MetaData = make_decorator('MetaData', (meta: any) => ({ meta }))
+export type OnTerminate = InstanceType<typeof OnTerminate>
+export const OnTerminate = make_decorator('OnTerminate', () => ({}))

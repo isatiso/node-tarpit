@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
+import { detect_cycle_ref } from '../tools/detect-cycle-ref'
 import { get_providers } from '../tools/get-providers'
-import { detect_cycle_ref } from '../tools/inner/detect-cycle-ref'
 import { stringify } from '../tools/stringify'
 import { ParentDesc, Provider } from '../types'
 import { Injector } from './injector'
@@ -17,7 +17,7 @@ export class FactoryProvider<M> implements Provider<M> {
     public used = false
     private providers?: Array<Provider<unknown> | undefined>
 
-    constructor(
+    private constructor(
         public readonly injector: Injector,
         public readonly token: any,
         private factory: (...args: any[]) => M,
@@ -26,7 +26,7 @@ export class FactoryProvider<M> implements Provider<M> {
         injector.set(token, this)
     }
 
-    static create<M>(injector: Injector, token: any, factory: (...args: any[]) => M, deps?: any[]) {
+    static create<M>(injector: Injector, token: any, factory: (...args: any[]) => M, deps?: any[]): FactoryProvider<M> {
         return new FactoryProvider<M>(injector, token, factory, deps)
     }
 
@@ -45,7 +45,7 @@ export class FactoryProvider<M> implements Provider<M> {
 
     private _get_instance(parents: ParentDesc[]) {
         if (!this.providers) {
-            const position = parents?.map(p => `${stringify(p.token)}${p.index !== undefined ? `[${p.index}]` : ''}`).join(' -> ') ?? ''
+            const position = parents.map(p => `${stringify(p.token)}${p.index !== undefined ? `[${p.index}]` : ''}`).join(' -> ')
             this.providers = get_providers({ position, deps: this.deps }, this.injector)
         }
         const last = parents.pop()

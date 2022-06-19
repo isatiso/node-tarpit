@@ -8,25 +8,6 @@
 
 import { ProxyConfig } from './__types__'
 
-declare module '@tarpit/core' {
-
-    // export interface TpRootOptions {
-    //     routers?: Constructor<any>[]
-    // }
-    //
-    // export interface TpAssemblyCollection {
-    //     TpRouter: TpRouterMeta
-    // }
-    //
-    // export interface TpUnitCollection {
-    //     TpRouterUnit: TpRouterUnit<any>
-    // }
-    //
-    // export interface TpPluginCollection {
-    //     TpHttpServer: typeof TpHttpServer
-    // }
-}
-
 declare module '@tarpit/config' {
 
     export interface TpConfigSchema {
@@ -47,9 +28,61 @@ declare module '@tarpit/config' {
     }
 }
 
-export * from './annotations'
-export * from './errors'
-export * from './services'
 export * from './__types__'
-export * from './builtin'
-export * from './tp-http-server'
+export {
+    TpRouter,
+    TpRouterToken,
+    Cache,
+    Get,
+    Delete,
+    Put,
+    Post,
+    Route,
+    RouteProps,
+} from './annotations'
+export {
+    BusinessError,
+    CrashError,
+    StandardError,
+    TpHttpError,
+    TpHttpErrorDescription,
+    TpHttpErrorHeader,
+    throw_native_error,
+    throw_standard_error,
+    throw_unauthorized
+} from './errors'
+export {
+    AbstractAuthenticator,
+    AbstractCacheProxy,
+    AbstractErrorFormatter,
+    AbstractHttpDecompressor,
+    AbstractLifeCycle,
+    AbstractResponseFormatter,
+    HttpInspector,
+    TpAuthenticator,
+    TpCacheProxy,
+    TpErrorFormatter,
+    TpHttpDecompressor,
+    TpLifeCycle,
+    TpResponseFormatter,
+} from './services'
+export {
+    ApiJudgement,
+    FormBody,
+    JsonBody,
+    RawBody,
+    TextBody,
+    BodyDetector,
+    ContentTypeMedia,
+    DetectedBodyType,
+    OnJudgementError,
+    Guardian,
+    HttpContext,
+    HttpDict,
+    Params,
+    RequestHeader,
+    ResponseCache,
+    TpRequest,
+    TpResponse,
+} from './builtin'
+export { HttpServerModule } from './http-server.module'

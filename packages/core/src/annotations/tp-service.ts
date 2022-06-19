@@ -6,13 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { make_decorator } from '../tools/tp-decorator'
+import { make_decorator } from '../tools/decorator'
 import { TpServiceOptions } from '../types'
 import { TpWorker } from './tp-base'
 
-export const TpServiceToken = Symbol.for('œœ.token.TpService')
 export type TpService = InstanceType<typeof TpService>
 export const TpService = make_decorator('TpService', (options?: TpServiceOptions) => ({
     ...options,
-    token: TpServiceToken
+    token: null as any
 }), TpWorker)

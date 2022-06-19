@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { make_decorator } from '../tools/tp-decorator'
+import { make_decorator } from '../tools/decorator'
 
 export type Disabled = InstanceType<typeof Disabled>
 export const Disabled = make_decorator('Disabled', () => ({}))

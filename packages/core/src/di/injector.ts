@@ -11,21 +11,24 @@ import { AbstractConstructor, Constructor, InjectorEventEmitter, InjectorType, P
 import { NullInjector } from './null-injector'
 import { ValueProvider } from './value-provider'
 
+export const RootInjector = Symbol.for('œœ.root.injector')
+
 export class Injector implements InjectorType, InjectorEventEmitter {
 
     readonly children: Injector[] = []
-    private board = new Set<any>()
+    protected board: Set<any>
+    protected providers: Map<any, Provider<any>> = new Map([])
 
-    constructor(
-        public parent: InjectorType,
-        public providers: Map<any, Provider<any>> = new Map(),
-        public readonly emitter: EventEmitter,
+    private constructor(
+        protected parent: InjectorType,
+        protected readonly emitter: EventEmitter,
     ) {
+        this.board = parent instanceof Injector ? parent.board : new Set()
     }
 
     static create(parent?: Injector): Injector {
         const emitter = parent ? parent.emitter : new EventEmitter().setMaxListeners(9999)
-        const injector = new Injector(parent ?? new NullInjector(), new Map([]), emitter)
+        const injector = new Injector(parent ?? new NullInjector(), emitter)
         injector.parent.children.push(injector)
         if (!parent) {
             ValueProvider.create(injector, EventEmitter, emitter)
@@ -39,10 +42,10 @@ export class Injector implements InjectorType, InjectorEventEmitter {
         return provider
     }
 
-    get<T>(token: AbstractConstructor<T>): Provider<T> | null
-    get<T>(token: Constructor<T>): Provider<T> | null
-    get<T>(token: string | symbol): Provider<T> | null
-    get<T extends object>(token: any): Provider<T> | null {
+    get<T>(token: AbstractConstructor<T>): Provider<T> | undefined
+    get<T>(token: Constructor<T>): Provider<T> | undefined
+    get<T>(token: string | symbol): Provider<T> | undefined
+    get<T extends object>(token: any): Provider<T> | undefined {
         return this.providers.get(token) ?? this.parent.get(token)
     }
 

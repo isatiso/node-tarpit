@@ -6,13 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { make_decorator } from '../tools/tp-decorator'
+import { make_decorator } from '../tools/decorator'
 import { TpModuleOptions } from '../types'
 import { TpAssembly } from './tp-base'
 
-export const TpModuleToken = Symbol.for('œœ.token.TpModule')
 export type TpModule = InstanceType<typeof TpModule>
 export const TpModule = make_decorator('TpModule', (options?: TpModuleOptions) => ({
     ...options,
-    token: TpModuleToken,
+    token: null as any,
 }), TpAssembly)

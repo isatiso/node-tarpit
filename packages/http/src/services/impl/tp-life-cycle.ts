@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { TpService } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
 import { HttpContext } from '../../builtin'
 import { BusinessError, CrashError, StandardError, TpHttpError } from '../../errors'
@@ -41,6 +42,7 @@ function log(context: HttpContext, duration: number, err?: TpHttpError) {
     }
 }
 
+@TpService()
 export class TpLifeCycle extends AbstractLifeCycle {
 
     /**

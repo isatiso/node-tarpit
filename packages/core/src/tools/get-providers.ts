@@ -9,9 +9,14 @@
 import 'reflect-metadata'
 import { Inject, Optional } from '../annotations'
 import { Injector } from '../di'
-import { Constructor, ParamDepsMeta } from '../types'
+import { Constructor } from '../types'
+import { get_class_parameter_decorator, get_method_parameter_decorator, get_param_types } from './decorator'
 import { stringify } from './stringify'
-import { get_class_parameter_decorator, get_method_parameter_decorator, get_param_types } from './tp-decorator'
+
+export interface ParamDepsMeta {
+    token: any
+    optional: boolean
+}
 
 function get_param_deps(cls: Constructor<any>, prop?: string | symbol): ParamDepsMeta[] {
     const param_meta = prop
@@ -62,7 +67,7 @@ export function get_providers(meta: ProviderDescriptor, injector: Injector, exce
         if (excepts?.has(param_meta.token)) {
             return param_meta.token
         }
-        const provider = injector.get(param_meta.token)
+        const provider = injector.get(param_meta.token)?.set_used()
         if (!provider && !param_meta.optional) {
             throw new Error(`Can't find provider of "${stringify(param_meta.token)}" at {${meta.position}[${i}]}`)
         }

@@ -13,7 +13,7 @@ export class ValueProvider<M> implements Provider<M> {
 
     public used = false
 
-    constructor(
+    private constructor(
         public readonly injector: Injector,
         public readonly token: any,
         private readonly value: M,
@@ -21,7 +21,7 @@ export class ValueProvider<M> implements Provider<M> {
         injector.set(token, this)
     }
 
-    static create<M>(injector: Injector, token: any, value: M) {
+    static create<M>(injector: Injector, token: any, value: M): ValueProvider<M> {
         return new ValueProvider<M>(injector, token, value)
     }
 

@@ -23,7 +23,7 @@ import { TpRequest } from './tp-request'
 
 const type_lru_cache = new LRU({ max: 100 })
 
-export function get_type(type: string): string {
+function get_type(type: string): string {
     let mime_type = type_lru_cache.get<string>(type)
     if (!mime_type) {
         mime_type = mime_types.contentType(type) || ''

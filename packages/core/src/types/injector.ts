@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { Constructor } from './base'
 import { Provider } from './provider'
 
 export interface TpEventCollector {
@@ -13,6 +14,7 @@ export interface TpEventCollector {
     'start': () => void
     'terminate-time': (duration: number) => void
     'terminate': () => void
+    'unused-provider': (path: Constructor<any>[]) => void
 }
 
 export type TpEvent = keyof TpEventCollector
@@ -23,7 +25,7 @@ export interface InjectorType {
 
     has(token: any): boolean
 
-    get(token: any): Provider<any> | null
+    get(token: any): Provider<any> | undefined
 }
 
 export interface InjectorEventEmitter {

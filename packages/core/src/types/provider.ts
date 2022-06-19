@@ -35,8 +35,8 @@ export interface Provider<T> {
 }
 
 export interface ProviderTreeNode {
-    name: string
-    providers?: (Provider<any> | undefined)[]
+    self: Constructor<any>
+    providers?: (Provider<any>)[]
     children?: (ProviderTreeNode | undefined)[]
 }
 

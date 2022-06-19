@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ChildProcess, exec } from 'child_process'
+import { ChildProcess, spawn } from 'child_process'
 import fs from 'fs'
 
 const clean_board: string[] = []
@@ -28,33 +28,26 @@ export async function deliver_shell(cmd_line: string, options?: {
 }): Promise<string> {
 
     const error = new Error()
-    const output: string[] = []
-    const err_msg: string[] = []
 
     function make_error(code: number) {
-        error.message = `script returned exit code ${code}\n\n` + err_msg.join('') + '\n\n'
+        error.message = `script returned exit code ${code}\n`
         return error
     }
 
     return new Promise<string>((resolve, reject) => {
         cmd_line = cmd_line.trim()
         process.stdout.write('tp> ' + cmd_line + '\n')
-        const child = exec(cmd_line)
-        child.stdout?.on('data', data => {
-            output.push(data)
-            if (!options?.no_stdout) {
-                process.stdout.write(data)
-            }
-        })
-        child.stderr?.on('data', data => {
-            err_msg.push(data)
-            if (!options?.no_stderr) {
-                process.stderr.write(data)
-            }
-        })
-        child.on('exit', () => {
-            child.exitCode ? reject(make_error(child.exitCode)) : resolve(output.join(''))
-        })
+
+        const stdio = options?.no_stderr || options?.no_stdout ? 'pipe' : 'inherit'
+
+        const child = spawn(cmd_line, { shell: '/bin/zsh', stdio, })
+
+        stdio === 'pipe' && !options?.no_stdout && child.stdout?.pipe(process.stdout)
+        stdio === 'pipe' && !options?.no_stderr && child.stderr?.pipe(process.stderr)
+
+        child.on('exit', () => child.exitCode
+            ? reject(make_error(child.exitCode))
+            : resolve(''))
     })
 }
 

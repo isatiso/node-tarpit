@@ -25,6 +25,7 @@ export type RouteUnit = {
 }
 
 export function collect_routes(meta: TpRouter): RouteUnit[] {
+
     const units: RouteUnit[] = []
 
     iterate_prop: for (const [prop, decorators] of get_all_prop_decorator(meta.cls) ?? []) {

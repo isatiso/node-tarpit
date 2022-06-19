@@ -10,7 +10,7 @@ import { ConfigData } from '@tarpit/config'
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
 import { UrlWithParsedQuery } from 'url'
-import { ApiMethod, ApiPath, HttpHandler, HttpHandlerDescriptor, HttpHandlerKey } from '../__types__'
+import { ApiMethod, HttpHandler, HttpHandlerKey } from '../__types__'
 import { TpRouter } from '../annotations'
 import { BodyDetector, FormBody, Guardian, HttpContext, JsonBody, Params, RawBody, RequestHeader, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
 import { Finish, StandardError, throw_native_error, TpHttpError } from '../errors'
@@ -18,13 +18,14 @@ import { RouteUnit } from '../tools/collect-routes'
 import { HTTP_STATUS } from '../tools/http-status'
 import { on_error } from '../tools/on-error'
 import { on_finish } from '../tools/on-finished'
-import { BodyReader } from './body-reader'
+import { HttpBodyReader } from './http-body-reader'
+import { HttpServer } from './http-server'
+import { HttpUrlParser } from './http-url-parser'
 import { AbstractAuthenticator } from './inner/abstract-authenticator'
 import { AbstractCacheProxy } from './inner/abstract-cache-proxy'
 import { AbstractErrorFormatter } from './inner/abstract-error-formatter'
 import { AbstractLifeCycle } from './inner/abstract-life-cycle'
 import { AbstractResponseFormatter } from './inner/abstract-response-formatter'
-import { URLParser } from './url-parser'
 
 const BODY_TOKEN: any[] = [BodyDetector, JsonBody, FormBody, TextBody, RawBody]
 const REQUEST_TOKEN: any[] = [RequestHeader, Guardian, Params, IncomingMessage, TpRequest]
@@ -33,41 +34,51 @@ const ALL_HANDLER_TOKEN: any[] = [HttpContext, ResponseCache].concat(BODY_TOKEN,
 const ALL_HANDLER_TOKEN_SET = new Set(ALL_HANDLER_TOKEN)
 
 @TpService()
-export class Handler {
+export class HttpRouters {
 
-    private handlers = new Map<HttpHandlerKey, HttpHandler>()
-    private proxy_config = this.config_data.get('http.proxy')
+    public readonly handlers = new Map<HttpHandlerKey, HttpHandler>()
+
+    private readonly proxy_config = this.config_data.get('http.proxy')
+    private readonly allow_origin = this.config_data.get('http.cors.allow_origin') ?? ''
+    private readonly allow_headers = this.config_data.get('http.cors.allow_headers') ?? ''
+    private readonly allow_methods = this.config_data.get('http.cors.allow_methods') ?? ''
+    private readonly max_age = this.config_data.get('http.cors.max_age') ?? 0
 
     constructor(
+        private server: HttpServer,
         private config_data: ConfigData,
-        private url_parser: URLParser,
-        private body_reader: BodyReader,
+        private url_parser: HttpUrlParser,
+        private body_reader: HttpBodyReader,
     ) {
     }
 
-    list(need_handler?: boolean): HttpHandlerDescriptor[] | Omit<HttpHandlerDescriptor, 'handler'>[] {
-        return Array.from(this.handlers.keys()).sort().map(mp => {
-            const [, method, path] = /^(GET|POST|PUT|DELETE)-(.+)$/.exec(mp) ?? []
-            return {
-                path,
-                method: method as ApiMethod,
-                handler: need_handler ? this.handlers.get(mp) : undefined
-            }
-        })
-    }
-
-    bind(method: ApiMethod, path: ApiPath, handler: HttpHandler): void {
-        if (Array.isArray(path)) {
-            for (const p of path) {
-                this.handlers.set(`${method}-${p}`, handler)
-            }
-        } else {
-            this.handlers.set(`${method}-${path}`, handler)
+    public readonly request_listener = async (req: IncomingMessage, res: ServerResponse) => {
+        res.statusCode = 404
+        this.allow_origin && res.setHeader('Access-Control-Allow-Origin', this.allow_origin)
+        if (req.method === 'OPTIONS') {
+            this.allow_headers && res.setHeader('Access-Control-Allow-Headers', this.allow_headers)
+            this.allow_methods && res.setHeader('Access-Control-Allow-Methods', this.allow_methods)
+            this.max_age && res.setHeader('Access-Control-Max-Age', this.max_age)
+            res.statusCode = 204
+            res.end('')
+            return
         }
+        return this.common_handler(req, res)
     }
 
-    async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    add_router(unit: RouteUnit, meta: TpRouter): void {
+        const router = this.make_router(meta.injector!, unit)
+        const prefix = meta.path.replace(/\/{2,}/g, '/').replace(/\/\s*$/g, '')
+        const suffix = unit.path_tail.replace(/(^\/|\/$)/g, '')
+        const full_path = prefix + '/' + suffix
 
+        unit.get && this.handlers.set(`GET-${full_path}`, router)
+        unit.post && this.handlers.set(`POST-${full_path}`, router)
+        unit.put && this.handlers.set(`PUT-${full_path}`, router)
+        unit.delete && this.handlers.set(`DELETE-${full_path}`, router)
+    }
+
+    private async common_handler(req: IncomingMessage, res: ServerResponse): Promise<void> {
         on_finish(res, err => on_error(err, req, res))
         const parsed_url = this.url_parser.parse(req)
         if (parsed_url) {
@@ -83,18 +94,6 @@ export class Handler {
         res.setHeader('Content-Type', 'text/plain; charset=utf-8')
         res.setHeader('Content-Length', Buffer.byteLength(msg))
         res.end(msg)
-    }
-
-    load(unit: RouteUnit, injector: Injector, meta: TpRouter): void {
-        const router_handler = this.make_router(injector, unit)
-        const prefix = meta.path.replace(/\/{2,}/g, '/').replace(/\/\s*$/g, '')
-        const suffix = unit.path_tail.replace(/(^\/|\/$)/g, '')
-        const full_path = prefix + '/' + suffix
-
-        unit.get && this.bind('GET', full_path, router_handler)
-        unit.post && this.bind('POST', full_path, router_handler)
-        unit.put && this.bind('PUT', full_path, router_handler)
-        unit.delete && this.bind('DELETE', full_path, router_handler)
     }
 
     private make_router(injector: Injector, unit: RouteUnit) {

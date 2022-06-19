@@ -7,33 +7,14 @@
  */
 
 export * from './types'
+export * from './annotations'
+export * from './di'
 
-export {
-    Disabled,
-    Inject,
-    MetaData,
-    OnDestroy,
-    Optional,
-    TpAssembly,
-    TpComponent,
-    TpComponentProps,
-    TpEntry,
-    TpModule,
-    TpPlugin,
-    TpPluginType,
-    TpRoot,
-    TpService,
-    TpUnit,
-    TpWorker,
-    Debug,
-} from './annotations'
-export { Injector, ClassProvider, FactoryProvider, ValueProvider } from './di'
 export { TpInspector, STARTED_AT, START_TIME, TERMINATE_TIME, TERMINATED_AT } from './builtin/tp-inspector'
 export { TpLogger } from './builtin/tp-logger'
-export { UUID } from './builtin/uuid'
+export { TpLoader, TpLoaderType } from './builtin/tp-loader'
 export { stringify } from './tools/stringify'
 export { get_providers } from './tools/get-providers'
-export { Platform } from './platform'
 export {
     DecoratorInnerField,
     AbstractDecoratorFactory,
@@ -46,4 +27,8 @@ export {
     get_method_parameter_decorator,
     get_prop_decorator,
     get_all_prop_decorator,
-} from './tools/tp-decorator'
+    get_prop_types,
+    get_param_types,
+} from './tools/decorator'
+
+export { Platform } from './platform'

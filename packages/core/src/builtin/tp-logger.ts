@@ -6,35 +6,36 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
 import { TpService } from '../annotations'
 import { Injector } from '../di'
-import { START_TIME, TERMINATE_TIME } from './tp-inspector'
 
 export abstract class TpLogger {
 
-    abstract after_start(): void
+    protected constructor(injector: Injector) {
+        injector.on('start-time', duration => this.after_start(duration))
+        injector.on('terminate-time', duration => this.after_terminate(duration))
+    }
 
-    abstract after_destroy(): void
+    abstract after_start(duration: number): void
+
+    abstract after_terminate(duration: number): void
+
 }
 
 @TpService()
 export class BuiltinTpLogger extends TpLogger {
 
     constructor(
-        private config_data: ConfigData,
         private injector: Injector,
     ) {
-        super()
+        super(injector)
     }
 
-    after_start() {
-        const duration = this.injector.get<number>(START_TIME)?.create()
+    after_start(duration: number) {
         console.log(`tarpit server started at ${new Date().toISOString()}, during ${duration}s`)
     }
 
-    after_destroy() {
-        const duration = this.injector.get<number>(TERMINATE_TIME)?.create()
+    after_terminate(duration: number) {
         console.log(`tarpit server destroyed at ${new Date().toISOString()}, during ${duration}s`)
     }
 }

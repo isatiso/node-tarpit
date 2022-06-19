@@ -16,7 +16,7 @@ export class NullInjector implements InjectorType {
         return false
     }
 
-    get(_token: any): Provider<any> | null {
-        return null
+    get(_token: any): Provider<any> | undefined {
+        return
     }
 }

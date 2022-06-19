@@ -80,7 +80,7 @@ describe('get-providers.ts', function() {
     describe('get_providers()', function() {
         it('should get providers of specified parameters at constructor', function() {
             const providers = get_providers({ cls: C, position: 'C' }, injector)
-            expect(providers).to.eql([null, provider_a, provider_b])
+            expect(providers).to.eql([undefined, provider_a, provider_b])
         })
 
         it('should get providers of specified parameters at method', function() {
@@ -110,7 +110,7 @@ describe('get-providers.ts', function() {
 
         it('should get providers of given dependencies', function() {
             const providers = get_providers({ position: 'C.no_decorator', deps: [A, B, [new Optional(), new Inject(N), N]] }, injector)
-            expect(providers).to.eql([provider_a, provider_b, null])
+            expect(providers).to.eql([provider_a, provider_b, undefined])
         })
 
         it('should get empty array if given undefined', function() {

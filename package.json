@@ -9,11 +9,11 @@
         "packages/*"
     ],
     "devDependencies": {
-        "@types/node": "17",
+        "@types/node": "18",
         "jsonwebtoken": "^8.5.1",
-        "lerna": "^5.1.2",
+        "lerna": "^5.1.4",
         "normalize-package-data": "^4.0.0",
-        "npm-check-updates": "^13.1.5",
+        "npm-check-updates": "^14.0.1",
         "typedoc": "^0.22.17"
     }
 }

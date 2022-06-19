@@ -14,7 +14,7 @@ import { StandardError } from '../errors'
 import { AbstractHttpDecompressor } from './inner/abstract-http-decompressor'
 
 @TpService()
-export class BodyReader {
+export class HttpBodyReader {
 
     private max_length = this.config_data.get('http.body.max_length') ?? 0
 

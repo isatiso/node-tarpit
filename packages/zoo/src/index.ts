@@ -7,7 +7,7 @@
  */
 
 import { Inject, Optional, Platform, TpInspector, TpRoot, TpService } from '@tarpit/core'
-import { BodyDetector, Post, TpHttpServer, TpRouter } from '@tarpit/http'
+import { BodyDetector, HttpInspector, HttpServerModule, Post, TpRouter } from '@tarpit/http'
 import { Jtl } from '@tarpit/judge'
 import { TestService1 } from './test-service.1'
 import { SymbolToken, TestService2 } from './test-service.2'
@@ -158,12 +158,13 @@ export class TestRoot {
 }
 
 (async () => {
-    const platform = new Platform()
-        .plug(TpHttpServer)
-        .bootstrap(TestRoot)
-        .start()
-    const server = platform.expose_service(TpHttpServer)
-    console.log(server?.get_api_list())
+    const platform = new Platform({
+        http: {
+            port: 3000
+        }
+    }).import(HttpServerModule).bootstrap(TestRoot).start()
+    await platform.prepare()
+    console.log(platform.expose_service(HttpInspector)?.list_router())
     // platform.terminate()
     // console.log(platform.expose_service(STARTUP_TIME), platform.expose_service(SHUTDOWN_TIME))
 })()

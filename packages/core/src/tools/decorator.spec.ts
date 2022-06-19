@@ -18,11 +18,11 @@ import {
     get_prop_types,
     make_abstract_decorator,
     make_decorator
-} from './tp-decorator'
+} from './decorator'
 
 chai.use(cap)
 
-describe('tp-decorator.ts', function() {
+describe('decorator.ts', function() {
 
     const GrandpaDecorator = make_abstract_decorator('GrandpaDecorator')
     const ParentDecorator = make_abstract_decorator('ParentDecorator', GrandpaDecorator)
