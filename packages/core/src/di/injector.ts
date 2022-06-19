@@ -16,14 +16,12 @@ export const RootInjector = Symbol.for('œœ.root.injector')
 export class Injector implements InjectorType, InjectorEventEmitter {
 
     readonly children: Injector[] = []
-    protected board: Set<any>
     protected providers: Map<any, Provider<any>> = new Map([])
 
     private constructor(
         protected parent: InjectorType,
         protected readonly emitter: EventEmitter,
     ) {
-        this.board = parent instanceof Injector ? parent.board : new Set()
     }
 
     static create(parent?: Injector): Injector {
@@ -74,15 +72,5 @@ export class Injector implements InjectorType, InjectorEventEmitter {
     once<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
         this.emitter.once(event, callback)
         return this
-    }
-
-    mark_quit_hook(quit_method: () => Promise<any>) {
-        this.board.add(new Promise<void>(resolve => this.once('terminate', () => {
-            Promise.resolve(quit_method()).then(() => resolve())
-        })))
-    }
-
-    async wait_all_quit() {
-        await Promise.all(this.board)
     }
 }

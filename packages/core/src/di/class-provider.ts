@@ -7,6 +7,7 @@
  */
 
 import { OnTerminate } from '../annotations'
+import { TpLoader } from '../builtin/tp-loader'
 import { get_all_prop_decorator } from '../tools/decorator'
 import { detect_cycle_ref } from '../tools/detect-cycle-ref'
 import { get_providers } from '../tools/get-providers'
@@ -59,7 +60,7 @@ export class ClassProvider<M extends object> implements Provider<M> {
             if (meta) {
                 const destroy_method = Reflect.get(this.cls.prototype, prop)
                 if (typeof destroy_method === 'function') {
-                    this.injector.mark_quit_hook(destroy_method.bind(instance))
+                    this.injector.get(TpLoader)!.create().on_terminate(destroy_method.bind(instance))
                     break
                 }
             }

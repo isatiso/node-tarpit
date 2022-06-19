@@ -29,6 +29,10 @@ export class TpLoader {
         }
     }
 
+    on_terminate(quit_method: () => Promise<any>) {
+        this._on_terminates.push(quit_method)
+    }
+
     load(meta: any & { token: symbol }) {
         const loader = this._loaders.get(meta.token)
         if (!loader) {

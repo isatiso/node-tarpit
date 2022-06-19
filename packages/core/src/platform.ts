@@ -8,7 +8,7 @@
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
 import { TpEntry } from './annotations'
-import { START_TIME, STARTED_AT, TERMINATE_TIME, TERMINATED_AT, TpInspector } from './builtin/tp-inspector'
+import { TpInspector } from './builtin/tp-inspector'
 import { TpLoader } from './builtin/tp-loader'
 import { BuiltinTpLogger, TpLogger } from './builtin/tp-logger'
 import { ClassProvider, Injector, RootInjector, ValueProvider } from './di'
@@ -21,7 +21,7 @@ export class Platform {
 
     protected root_injector = Injector.create()
     protected inspector = ClassProvider.create(this.root_injector, TpInspector, TpInspector).create()
-    protected plugin_center = ClassProvider.create(this.root_injector, TpLoader, TpLoader).create()
+    protected loader = ClassProvider.create(this.root_injector, TpLoader, TpLoader).create()
     private started = false
     private terminated = false
 
@@ -70,7 +70,6 @@ export class Platform {
             return this
         }
         this.started = true
-        ValueProvider.create(this.root_injector, STARTED_AT, Date.now())
         this.root_injector.emit('start')
         return this
     }
@@ -82,7 +81,6 @@ export class Platform {
         }
         this.terminated = true
         this.inspector.wait_start().then(() => {
-            ValueProvider.create(this.root_injector, TERMINATED_AT, Date.now())
             this.root_injector.emit('terminate')
         })
         return this
@@ -96,23 +94,13 @@ export class Platform {
     }
 
     private on_start = async () => {
-
-        await this.plugin_center.start()
-
-        const duration = (Date.now() - this.inspector.started_at) / 1000
-        ValueProvider.create(this.root_injector, START_TIME, duration)
-        this.root_injector.emit('start-time', duration)
+        await this.loader.start()
+        this.root_injector.emit('start-time', (Date.now() - this.inspector.started_at) / 1000)
     }
 
     private on_terminate = async () => {
-
         await this.inspector.wait_start()
-
-        await this.plugin_center.terminate()
-        await this.root_injector.wait_all_quit()
-
-        const duration = (Date.now() - this.inspector.terminated_at) / 1000
-        ValueProvider.create(this.root_injector, TERMINATE_TIME, duration)
-        this.root_injector.emit('terminate-time', duration)
+        await this.loader.terminate()
+        this.root_injector.emit('terminate-time', (Date.now() - this.inspector.terminated_at) / 1000)
     }
 }

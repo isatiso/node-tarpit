@@ -59,19 +59,19 @@ describe('injector.ts', function() {
         })
     })
 
-    describe('Injector as quit inspector', function() {
-
-        it('could set quit hooks', async function() {
-            const child_injector = Injector.create(injector)
-            expect((child_injector as any).emitter).to.equal((injector as any).emitter)
-            expect((child_injector as any).board).to.equal((injector as any).board)
-            const start = Date.now()
-            child_injector.mark_quit_hook(() => new Promise(resolve => setTimeout(() => resolve(null), 120)))
-            child_injector.mark_quit_hook(() => new Promise(resolve => setTimeout(() => resolve(null), 200)))
-            child_injector.mark_quit_hook(() => new Promise(resolve => setTimeout(() => resolve(null), 80)))
-            child_injector.emit('terminate')
-            await child_injector.wait_all_quit()
-            expect(Date.now() - start).to.be.closeTo(200, 10)
-        })
-    })
+    // describe('Injector as quit inspector', function() {
+    //
+    //     it('could set quit hooks', async function() {
+    //         const child_injector = Injector.create(injector)
+    //         expect((child_injector as any).emitter).to.equal((injector as any).emitter)
+    //         expect((child_injector as any).board).to.equal((injector as any).board)
+    //         const start = Date.now()
+    //         child_injector.mark_quit_hook(() => new Promise(resolve => setTimeout(() => resolve(null), 120)))
+    //         child_injector.mark_quit_hook(() => new Promise(resolve => setTimeout(() => resolve(null), 200)))
+    //         child_injector.mark_quit_hook(() => new Promise(resolve => setTimeout(() => resolve(null), 80)))
+    //         child_injector.emit('terminate')
+    //         await child_injector.wait_all_quit()
+    //         expect(Date.now() - start).to.be.closeTo(200, 10)
+    //     })
+    // })
 })
