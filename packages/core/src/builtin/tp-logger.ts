@@ -32,10 +32,10 @@ export class BuiltinTpLogger extends TpLogger {
     }
 
     after_start(duration: number) {
-        console.log(`tarpit server started at ${new Date().toISOString()}, during ${duration}s`)
+        console.log(`Tarpit server started at ${new Date().toISOString()}, during ${duration}s`)
     }
 
     after_terminate(duration: number) {
-        console.log(`tarpit server destroyed at ${new Date().toISOString()}, during ${duration}s`)
+        console.log(`Tarpit server destroyed at ${new Date().toISOString()}, during ${duration}s`)
     }
 }

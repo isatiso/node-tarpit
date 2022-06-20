@@ -20,7 +20,8 @@ export async function create_cli(package_json: PackageJson) {
         .option('--workdir <workdir>', '工作目录')
 
     cli.command('cover')
-        .option('-c, --clean', '是否清除缓存文件')
+        .option('-c, --clean', '清除缓存文件')
+        .option('--no-clean', '不清除缓存文件')
         .option('-r, --reporter <reporter>', '设置 reporter')
         .action(action_cover)
 
