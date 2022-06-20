@@ -24,7 +24,7 @@ import { HttpUrlParser } from './http-url-parser'
 import { AbstractAuthenticator } from './inner/abstract-authenticator'
 import { AbstractCacheProxy } from './inner/abstract-cache-proxy'
 import { AbstractErrorFormatter } from './inner/abstract-error-formatter'
-import { AbstractLifeCycle } from './inner/abstract-life-cycle'
+import { AbstractHttpHooks } from './inner/abstract-http-hooks'
 import { AbstractResponseFormatter } from './inner/abstract-response-formatter'
 
 const BODY_TOKEN: any[] = [BodyDetector, JsonBody, FormBody, TextBody, RawBody]
@@ -102,14 +102,14 @@ export class HttpRouters {
         const proxy_config = this.proxy_config
         const body_reader = this.body_reader
         const cache_proxy_provider = injector.get(AbstractCacheProxy) ?? throw_native_error('No provider for AbstractCacheProxy')
-        const life_cycle_provider = injector.get(AbstractLifeCycle) ?? throw_native_error('No provider for AbstractLifeCycle')
+        const http_hooks_provider = injector.get(AbstractHttpHooks) ?? throw_native_error('No provider for AbstractHttpHooks')
         const response_formatter_provider = injector.get(AbstractResponseFormatter) ?? throw_native_error('No provider for AbstractResponseFormatter')
         const error_formatter_provider = injector.get(AbstractErrorFormatter) ?? throw_native_error('No provider for AbstractErrorFormatter')
 
         return async function(req: IncomingMessage, res: ServerResponse, parsed_url: UrlWithParsedQuery) {
 
             const cache_proxy = cache_proxy_provider.create()
-            const life_cycle = life_cycle_provider.create()
+            const http_hooks = http_hooks_provider.create()
             const response_formatter = response_formatter_provider.create()
             const error_formatter = error_formatter_provider.create()
 
@@ -117,7 +117,7 @@ export class HttpRouters {
             const response = new TpResponse(res, request)
             const context = new HttpContext(unit, request, response)
 
-            await life_cycle?.on_init(context)
+            await http_hooks?.on_init(context)
 
             let handle_result: any
 
@@ -187,11 +187,11 @@ export class HttpRouters {
             }
 
             if (handle_result instanceof TpHttpError) {
-                await life_cycle?.on_error(context, handle_result)
+                await http_hooks?.on_error(context, handle_result)
                 response.status = handle_result.status
                 response.body = error_formatter.format(context, handle_result)
             } else {
-                await life_cycle?.on_finish(context, handle_result)
+                await http_hooks?.on_finish(context, handle_result)
                 response.status = 200
                 response.body = response_formatter.format(context, handle_result)
             }

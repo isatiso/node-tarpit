@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { FieldType } from '../__types__'
+export type FieldType = 'second' | 'minute' | 'hour' | 'dayOfMonth' | 'month' | 'dayOfWeek'
 
 const VALUE_RANGE = {
     month: { min: 1, max: 12 },

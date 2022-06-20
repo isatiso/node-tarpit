@@ -8,8 +8,6 @@
 
 import { ImportsAndProviders } from '@tarpit/core'
 
-export type FieldType = 'second' | 'minute' | 'hour' | 'dayOfMonth' | 'month' | 'dayOfWeek'
-
 /**
  * 任务描述对象
  */
@@ -40,14 +38,9 @@ export interface TaskDesc {
     next_exec_date_string: string
 }
 
-export interface TaskOptions {
+export interface TriggerOptions {
     utc?: boolean
     tz?: string
-}
-
-export interface InnerOptions {
-    _is_day_of_month_wildcard_match?: boolean
-    _is_day_of_week_wildcard_match?: boolean
 }
 
 export interface TpScheduleOptions extends ImportsAndProviders {

@@ -14,7 +14,7 @@ import { TpHttpError } from '../../errors'
  *
  * @category Abstract Service
  */
-export abstract class AbstractLifeCycle {
+export abstract class AbstractHttpHooks {
 
     /**
      * 请求初始化之后，进行依赖查找之前调用。

@@ -6,5 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-export { Trigger } from './trigger'
-export { TpSchedule, TpScheduleToken } from './tp-schedule'
+export class TaskDone {
+    constructor(public readonly res: any | Promise<any>) {
+    }
+}
+
+export function mission_completed(response: any): never {
+    throw new TaskDone(response)
+}

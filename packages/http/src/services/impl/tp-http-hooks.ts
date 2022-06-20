@@ -10,7 +10,7 @@ import { TpService } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
 import { HttpContext } from '../../builtin'
 import { BusinessError, CrashError, StandardError, TpHttpError } from '../../errors'
-import { AbstractLifeCycle } from '../inner/abstract-life-cycle'
+import { AbstractHttpHooks } from '../inner/abstract-http-hooks'
 
 function assemble_duration(context: HttpContext) {
     const start = context.get('process_start')
@@ -43,7 +43,7 @@ function log(context: HttpContext, duration: number, err?: TpHttpError) {
 }
 
 @TpService()
-export class TpLifeCycle extends AbstractLifeCycle {
+export class TpHttpHooks extends AbstractHttpHooks {
 
     /**
      * 请求到达 API 处理函数时触发

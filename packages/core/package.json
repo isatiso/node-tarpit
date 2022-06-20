@@ -32,7 +32,8 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "test": "echo \"Error: run tests from root\" && exit 1"
+        "docs": "typedoc --tsconfig ./tsconfig.json --out ../../docs/core --excludeTags license ./src/index.ts",
+        "test": "tp cover"
     },
     "dependencies": {
         "reflect-metadata": "^0.1.13"

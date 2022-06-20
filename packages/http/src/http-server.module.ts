@@ -12,7 +12,7 @@ import {
     AbstractCacheProxy,
     AbstractErrorFormatter,
     AbstractHttpDecompressor,
-    AbstractLifeCycle,
+    AbstractHttpHooks,
     AbstractResponseFormatter,
     HttpBodyReader,
     HttpInspector,
@@ -23,7 +23,7 @@ import {
     TpCacheProxy,
     TpErrorFormatter,
     TpHttpDecompressor,
-    TpLifeCycle,
+    TpHttpHooks,
     TpResponseFormatter
 } from './services'
 import { collect_routes } from './tools/collect-routes'
@@ -37,7 +37,7 @@ import { collect_routes } from './tools/collect-routes'
         HttpServer,
         { provide: AbstractHttpDecompressor, useClass: TpHttpDecompressor },
         { provide: AbstractCacheProxy, useClass: TpCacheProxy },
-        { provide: AbstractLifeCycle, useClass: TpLifeCycle },
+        { provide: AbstractHttpHooks, useClass: TpHttpHooks },
         { provide: AbstractAuthenticator, useClass: TpAuthenticator },
         { provide: AbstractResponseFormatter, useClass: TpResponseFormatter },
         { provide: AbstractErrorFormatter, useClass: TpErrorFormatter },

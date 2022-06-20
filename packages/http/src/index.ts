@@ -47,7 +47,6 @@ export {
     TpHttpError,
     TpHttpErrorDescription,
     TpHttpErrorHeader,
-    throw_native_error,
     throw_standard_error,
     throw_unauthorized
 } from './errors'
@@ -56,14 +55,14 @@ export {
     AbstractCacheProxy,
     AbstractErrorFormatter,
     AbstractHttpDecompressor,
-    AbstractLifeCycle,
+    AbstractHttpHooks,
     AbstractResponseFormatter,
     HttpInspector,
     TpAuthenticator,
     TpCacheProxy,
     TpErrorFormatter,
     TpHttpDecompressor,
-    TpLifeCycle,
+    TpHttpHooks,
     TpResponseFormatter,
 } from './services'
 export {

@@ -7,18 +7,18 @@
  */
 
 import { Dora } from '@tarpit/dora'
-import { Crontab } from './crontab'
-import { TaskUnit } from './tools'
+import { Crontab } from '../crontab'
+import { TaskUnit } from '../tools'
 
 export class Bullet {
 
     public crontab: Crontab
     public execution: Dora
-    public next_bullet: Bullet | null = null
+    public next_bullet: Bullet | undefined = undefined
 
     constructor(
         public id: string,
-        public handler: Function,
+        public handler: (execution: Dora, current: Bullet) => Promise<void>,
         public unit: TaskUnit,
     ) {
         if (!unit.crontab_str) {

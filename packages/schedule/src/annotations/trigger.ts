@@ -7,6 +7,7 @@
  */
 
 import { make_decorator } from '@tarpit/core'
+import { TriggerOptions } from '../__types__'
 
-export type Sherlock = InstanceType<typeof Sherlock>
-export const Sherlock = make_decorator('Sherlock', (key: string, expire_secs?: number) => ({ key, expire_secs }))
+export type Trigger = InstanceType<typeof Trigger>
+export const Trigger = make_decorator('Trigger', (crontab: string, name: string, options?: TriggerOptions) => ({ crontab, name, options }))

@@ -7,7 +7,6 @@
  */
 
 export class Finish {
-
     constructor(public readonly response: any | Promise<any>) {
     }
 }

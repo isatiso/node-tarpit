@@ -32,9 +32,8 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "cover": "tp cover",
         "docs": "typedoc --tsconfig ./tsconfig.json --out ../../docs/config --excludeTags license ./src/index.ts",
-        "test": "echo \"Error: run tests from root\" && exit 1"
+        "test": "tp cover"
     },
     "dependencies": {
         "@tarpit/judge": "^0.3.5"

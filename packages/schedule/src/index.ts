@@ -6,32 +6,24 @@
  * found in the LICENSE file at source root.
  */
 
-declare module '@tarpit/core' {
-
-    // export interface TpRootOptions {
-    //     schedules?: Constructor<any>[]
-    // }
-    //
-    // export interface TpAssemblyCollection {
-    //     TpSchedule: TpScheduleMeta
-    // }
-    //
-    // export interface TpUnitCollection {
-    //     TpScheduleUnit: TpScheduleUnit<any>,
-    // }
-    //
-    // export interface TpPluginCollection {
-    //     TpTrigger: typeof TpTrigger
-    // }
-}
-
 export * from './__types__'
-export * from './annotations'
 
-export * from './services/task-life-cycle'
-export * from './services/task-lock'
+export { Trigger, TpSchedule } from './annotations'
+export {
+    TaskCrash,
+    TaskDone,
+    TaskError,
+    TaskIgnore,
+    TaskRetry,
+    TaskErrorDescription,
+    mission_completed,
+    throw_task_crash,
+    throw_task_ignore,
+    throw_task_retry,
+} from './errors'
+export { AbstractTriggerHooks, ScheduleInspector } from './services'
 
-export * from './bullet'
-export * from './crontab'
-export * from './task-context'
-export * from './tp-trigger'
+export { Bullet } from './builtin/bullet'
+export { TriggerContext } from './builtin/trigger-context'
+export { InnerOptions, FieldType, Crontab } from './crontab'
+export { ScheduleModule } from './schedule.module'

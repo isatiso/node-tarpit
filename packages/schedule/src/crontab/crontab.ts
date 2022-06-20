@@ -8,10 +8,15 @@
 
 import { Dora } from '@tarpit/dora'
 
-import { FieldType, InnerOptions, TaskOptions } from '../__types__'
-import { parse_field } from './cron-item-parser'
+import { TriggerOptions } from '../__types__'
+import { FieldType, parse_field } from './cron-item-parser'
 import { CronMonth } from './cron-month'
 import { ParsedFields } from './parsed-fields'
+
+export interface InnerOptions {
+    _is_day_of_month_wildcard_match?: boolean
+    _is_day_of_week_wildcard_match?: boolean
+}
 
 /**
  * @category Schedule
@@ -38,7 +43,7 @@ export class Crontab {
 
     constructor(
         private readonly parsed_fields: ParsedFields,
-        private readonly options?: TaskOptions & InnerOptions,
+        private readonly options?: TriggerOptions & InnerOptions,
     ) {
         this._utc = options?.utc ?? false
         this._tz = this._utc ? 'UTC' : options?.tz ?? Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -53,7 +58,7 @@ export class Crontab {
         this._schedule = this._make_schedule()
     }
 
-    static parse(expression: string, options?: TaskOptions & InnerOptions) {
+    static parse(expression: string, options?: TriggerOptions & InnerOptions) {
 
         options = options ?? {}
         if (Crontab.predefined[expression]) {
