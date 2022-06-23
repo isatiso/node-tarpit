@@ -12,7 +12,7 @@ import { Bullet } from '../builtin/bullet'
 import { TaskUnit } from '../tools'
 import { Clerk } from './clerk'
 
-@TpService()
+@TpService({ inject_root: true })
 export class TaskHub {
 
     private static id_cursor = 1

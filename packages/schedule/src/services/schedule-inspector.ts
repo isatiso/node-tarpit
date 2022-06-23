@@ -11,7 +11,7 @@ import { TaskDesc } from '../__types__'
 import { Bullet } from '../builtin/bullet'
 import { TaskHub } from './task-hub'
 
-@TpService()
+@TpService({ inject_root: true })
 export class ScheduleInspector {
 
     constructor(

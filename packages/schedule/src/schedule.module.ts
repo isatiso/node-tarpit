@@ -17,7 +17,7 @@ import { collect_tasks } from './tools'
         Schedule,
         ScheduleInspector,
         TaskHub,
-        { provide: AbstractTriggerHooks, useClass: TpTriggerHooks },
+        { provide: AbstractTriggerHooks, useClass: TpTriggerHooks, root: true },
     ]
 })
 export class ScheduleModule {

@@ -17,7 +17,7 @@ import { AbstractTriggerHooks } from './inner/abstract-trigger-hooks'
 
 const ALL_TRIGGER_TOKEN_SET = new Set([TriggerContext])
 
-@TpService()
+@TpService({ inject_root: true })
 export class Clerk {
 
     make_task(injector: Injector, unit: TaskUnit): (execution: Dora, task: Bullet) => Promise<void> {

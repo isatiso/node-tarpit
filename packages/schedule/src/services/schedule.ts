@@ -9,7 +9,7 @@
 import { TpService } from '@tarpit/core'
 import { TaskHub } from './task-hub'
 
-@TpService()
+@TpService({ inject_root: true })
 export class Schedule {
 
     private _interval: NodeJS.Timeout | undefined

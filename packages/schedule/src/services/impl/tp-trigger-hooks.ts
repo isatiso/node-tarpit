@@ -10,7 +10,7 @@ import { TpService } from '@tarpit/core'
 import { TriggerContext } from '../../builtin/trigger-context'
 import { AbstractTriggerHooks } from '../inner/abstract-trigger-hooks'
 
-@TpService()
+@TpService({ inject_root: true })
 export class TpTriggerHooks extends AbstractTriggerHooks {
 
     on_init(context: TriggerContext): Promise<void> {
