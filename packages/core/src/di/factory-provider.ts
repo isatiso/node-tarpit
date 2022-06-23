@@ -9,7 +9,7 @@
 import { detect_cycle_ref } from '../tools/detect-cycle-ref'
 import { get_providers } from '../tools/get-providers'
 import { stringify } from '../tools/stringify'
-import { ParentDesc, Provider } from '../types'
+import { FactoryProviderDef, ParentDesc, Provider } from '../types'
 import { Injector } from './injector'
 
 export class FactoryProvider<M> implements Provider<M> {
@@ -26,8 +26,9 @@ export class FactoryProvider<M> implements Provider<M> {
         injector.set(token, this)
     }
 
-    static create<M>(injector: Injector, token: any, factory: (...args: any[]) => M, deps?: any[]): FactoryProvider<M> {
-        return new FactoryProvider<M>(injector, token, factory, deps)
+    static create<M>(injector: Injector, def: FactoryProviderDef<any>): FactoryProvider<M> {
+        injector = def.root ? injector.root : injector
+        return new FactoryProvider<M>(injector, def.provide, def.useFactory, def.deps)
     }
 
     create(parents?: ParentDesc[]): M {

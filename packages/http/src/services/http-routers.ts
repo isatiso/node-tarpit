@@ -33,7 +33,7 @@ const RESPONSE_TOKEN: any[] = [ServerResponse, TpResponse]
 const ALL_HANDLER_TOKEN: any[] = [HttpContext, ResponseCache].concat(BODY_TOKEN, REQUEST_TOKEN, RESPONSE_TOKEN)
 const ALL_HANDLER_TOKEN_SET = new Set(ALL_HANDLER_TOKEN)
 
-@TpService()
+@TpService({ inject_root: true })
 export class HttpRouters {
 
     public readonly handlers = new Map<HttpHandlerKey, HttpHandler>()

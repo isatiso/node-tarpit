@@ -11,7 +11,7 @@ import { HttpResponseType } from '../../__types__'
 import { HttpContext } from '../../builtin'
 import { AbstractResponseFormatter } from '../inner/abstract-response-formatter'
 
-@TpService()
+@TpService({ inject_root: true })
 export class TpResponseFormatter extends AbstractResponseFormatter {
 
     format(context: HttpContext, result: any): HttpResponseType {

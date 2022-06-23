@@ -27,11 +27,11 @@ function isValueProviderDef<T extends object>(def: ProviderDef<T> | Constructor<
 
 export function def_to_provider(def: (ProviderDef<any> | Constructor<any>), injector: Injector): Provider<unknown> {
     if (isValueProviderDef(def)) {
-        return ValueProvider.create(injector, def.provide, def.useValue)
+        return ValueProvider.create(injector, def)
     }
 
     if (isFactoryProviderDef(def)) {
-        return FactoryProvider.create(injector, def.provide, def.useFactory, def.deps)
+        return FactoryProvider.create(injector, def)
     }
 
     if (isClassProviderDef(def)) {
@@ -39,7 +39,7 @@ export function def_to_provider(def: (ProviderDef<any> | Constructor<any>), inje
         if (!meta) {
             throw new Error(`Property 'useClass' of ClassProviderDef must be a "TpWorker", received ${stringify(def.useClass)}.`)
         }
-        return meta.provider = ClassProvider.create(injector, def.provide, def.useClass)
+        return meta.provider = ClassProvider.create(injector, def)
     }
 
     const meta = get_class_decorator(def).find(d => d instanceof TpComponent)
@@ -62,11 +62,17 @@ function collect_worker(meta: TpAssembly, injector: Injector): ProviderTreeNode 
 
 export function load_component(meta: any, injector: Injector): ProviderTreeNode | undefined {
 
-    if (meta instanceof TpComponent && !injector.has(meta.cls)) {
+    if (meta instanceof TpComponent) {
+
+        injector = meta.inject_root ? injector.root : injector
+        if (injector.has(meta.cls)) {
+            return
+        }
+
         // collect imports and providers
         const provider_tree = meta instanceof TpAssembly ? collect_worker(meta, injector) : undefined
 
-        meta.provider = ClassProvider.create(injector, meta.cls, meta.cls)
+        meta.provider = ClassProvider.create(injector, { provide: meta.cls, useClass: meta.cls })
 
         if (meta instanceof TpEntry) {
             meta.injector = injector

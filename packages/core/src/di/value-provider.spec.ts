@@ -23,11 +23,11 @@ describe('value-provider.ts', function() {
     describe('ValueProvider', function() {
 
         it('could create instance by static method "create"', function() {
-            expect(() => ValueProvider.create(injector, 'a', 123)).to.not.throw()
+            expect(() => ValueProvider.create(injector, { provide: 'a', useValue: 123 })).to.not.throw()
         })
 
         it('should set provider to injector on init', function() {
-            const provider = ValueProvider.create(injector, 'b', 456)
+            const provider = ValueProvider.create(injector, { provide: 'b', useValue: 456, root: true })
             expect(injector.get('b')).to.equal(provider)
             expect(injector.get('b')?.create()).to.equal(456)
         })

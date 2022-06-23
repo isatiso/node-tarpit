@@ -11,27 +11,28 @@ import { AbstractConstructor, Constructor, InjectorEventEmitter, InjectorType, P
 import { NullInjector } from './null-injector'
 import { ValueProvider } from './value-provider'
 
-export const RootInjector = Symbol.for('œœ.root.injector')
-
 export class Injector implements InjectorType, InjectorEventEmitter {
 
     readonly children: Injector[] = []
     protected providers: Map<any, Provider<any>> = new Map([])
+    public readonly root: Injector
 
     private constructor(
         protected parent: InjectorType,
         protected readonly emitter: EventEmitter,
+        root?: Injector,
     ) {
+        this.root = root ?? this
     }
 
     static create(parent?: Injector): Injector {
         const emitter = parent ? parent.emitter : new EventEmitter().setMaxListeners(9999)
-        const injector = new Injector(parent ?? new NullInjector(), emitter)
+        const injector = new Injector(parent ?? new NullInjector(), emitter, parent?.root)
         injector.parent.children.push(injector)
         if (!parent) {
-            ValueProvider.create(injector, EventEmitter, emitter)
+            ValueProvider.create(injector, { provide: EventEmitter, useValue: emitter })
         }
-        ValueProvider.create(injector, Injector, injector)
+        ValueProvider.create(injector, { provide: Injector, useValue: injector })
         return injector
     }
 

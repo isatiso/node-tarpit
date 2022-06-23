@@ -12,7 +12,7 @@ import { get_all_prop_decorator } from '../tools/decorator'
 import { detect_cycle_ref } from '../tools/detect-cycle-ref'
 import { get_providers } from '../tools/get-providers'
 import { stringify } from '../tools/stringify'
-import { Constructor, ParentDesc, Provider } from '../types'
+import { ClassProviderDef, Constructor, ParentDesc, Provider } from '../types'
 import { Injector } from './injector'
 
 export class ClassProvider<M extends object> implements Provider<M> {
@@ -28,8 +28,9 @@ export class ClassProvider<M extends object> implements Provider<M> {
         injector.set(token, this)
     }
 
-    static create<M extends object>(injector: Injector, token: any, cls: Constructor<M>): ClassProvider<M> {
-        return new ClassProvider(injector, token, cls)
+    static create<M extends object>(injector: Injector, def: ClassProviderDef<M>): ClassProvider<M> {
+        injector = def.root ? injector.root : injector
+        return new ClassProvider(injector, def.provide, def.useClass)
     }
 
     create(parents?: ParentDesc[]): M {

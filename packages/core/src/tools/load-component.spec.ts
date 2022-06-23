@@ -18,7 +18,7 @@ chai.use(cap)
 
 describe('load-component.ts', function() {
 
-    @TpService()
+    @TpService({ inject_root: true })
     class Decorated {
     }
 
@@ -101,7 +101,7 @@ describe('load-component.ts', function() {
     describe('load_component()', function() {
 
         function set_inner_loader(injector: Injector) {
-            ClassProvider.create(injector, TpLoader, TpLoader)
+            ClassProvider.create(injector, { provide: TpLoader, useClass: TpLoader })
         }
 
         it('should load TpService', function() {
@@ -152,6 +152,11 @@ describe('load-component.ts', function() {
             expect(meta.instance).to.be.instanceof(DecoratedRootWithNoEntries)
         })
 
+        it('should do nothing if meta is not TpComponent', function() {
+            const temp_injector = Injector.create()
+            load_component(null as any, temp_injector)
+        })
+
         it('should search loader if token provided in meta', function() {
             const temp_injector = Injector.create()
             set_inner_loader(temp_injector)
@@ -168,7 +173,7 @@ describe('load-component.ts', function() {
             const temp_injector = Injector.create()
             set_inner_loader(temp_injector)
             const not_plugin_meta = get_class_decorator(Decorated)?.find(d => d instanceof TpService)
-            ClassProvider.create(temp_injector, not_plugin_meta!.cls, not_plugin_meta!.cls)
+            ClassProvider.create(temp_injector, { provide: not_plugin_meta!.cls, useClass: not_plugin_meta!.cls })
             const meta = get_class_decorator(DecoratedRoot)?.find(d => d instanceof TpRoot)
             meta.token = Symbol('tmp')
             expect(() => load_component(meta, temp_injector)).to.throw('Can\'t find loader for component "DecoratedRoot"')

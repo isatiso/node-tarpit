@@ -9,7 +9,7 @@ import { TpService } from '@tarpit/core'
 import { ApiMethod, HttpHandler, HttpHandlerDescriptor } from '../__types__'
 import { HttpRouters } from './http-routers'
 
-@TpService()
+@TpService({ inject_root: true })
 export class HttpInspector {
 
     constructor(

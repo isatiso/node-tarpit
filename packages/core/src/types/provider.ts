@@ -13,17 +13,20 @@ export type ProviderDef<T extends object> = ValueProviderDef<T> | ClassProviderD
 export interface ValueProviderDef<T> {
     provide: any
     useValue: T
+    root?: boolean
 }
 
 export interface ClassProviderDef<T extends object> {
-    provide: T
+    provide: any,
     useClass: Constructor<T>
+    root?: boolean
 }
 
 export interface FactoryProviderDef<T> {
     provide: any
     useFactory: (...args: any[]) => T
     deps?: any[]
+    root?: boolean
 }
 
 export interface Provider<T> {

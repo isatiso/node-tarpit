@@ -13,7 +13,7 @@ import { TpHttpError } from '../../errors'
 import { HTTP_STATUS } from '../../tools/http-status'
 import { AbstractResponseFormatter } from '../inner/abstract-response-formatter'
 
-@TpService()
+@TpService({ inject_root: true })
 export class TpErrorFormatter extends AbstractResponseFormatter {
 
     static format(context: HttpContext, err: TpHttpError): HttpResponseType {

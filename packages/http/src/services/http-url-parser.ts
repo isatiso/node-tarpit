@@ -12,7 +12,7 @@ import { IncomingMessage } from 'http'
 import { TLSSocket } from 'tls'
 import url, { UrlWithParsedQuery } from 'url'
 
-@TpService()
+@TpService({ inject_root: true })
 export class HttpUrlParser {
 
     private proxy_config = this.config_data.get('http.proxy')

@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Provider } from '../types'
+import { Provider, ValueProviderDef } from '../types'
 import { Injector } from './injector'
 
 export class ValueProvider<M> implements Provider<M> {
@@ -21,8 +21,9 @@ export class ValueProvider<M> implements Provider<M> {
         injector.set(token, this)
     }
 
-    static create<M>(injector: Injector, token: any, value: M): ValueProvider<M> {
-        return new ValueProvider<M>(injector, token, value)
+    static create<M>(injector: Injector, def: ValueProviderDef<any>): ValueProvider<M> {
+        injector = def.root ? injector.root : injector
+        return new ValueProvider<M>(injector, def.provide, def.useValue)
     }
 
     create() {

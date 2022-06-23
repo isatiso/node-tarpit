@@ -74,8 +74,8 @@ describe('get-providers.ts', function() {
         }
     }
 
-    const provider_a = ClassProvider.create(injector, A, A)
-    const provider_b = ClassProvider.create(injector, B, B)
+    const provider_a = ClassProvider.create(injector, { provide: A, useClass: A })
+    const provider_b = ClassProvider.create(injector, { provide: B, useClass: B })
 
     describe('get_providers()', function() {
         it('should get providers of specified parameters at constructor', function() {

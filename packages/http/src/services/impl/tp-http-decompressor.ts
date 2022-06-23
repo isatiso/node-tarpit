@@ -11,7 +11,7 @@ import { Readable } from 'stream'
 import zlib from 'zlib'
 import { AbstractHttpDecompressor } from '../inner/abstract-http-decompressor'
 
-@TpService()
+@TpService({ inject_root: true })
 export class TpHttpDecompressor extends AbstractHttpDecompressor {
 
     private decompressors = new Map<string, (req: Readable) => Readable>()

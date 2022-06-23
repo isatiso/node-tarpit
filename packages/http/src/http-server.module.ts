@@ -29,18 +29,19 @@ import {
 import { collect_routes } from './tools/collect-routes'
 
 @TpModule({
+    inject_root: true,
     providers: [
         HttpUrlParser,
         HttpBodyReader,
         HttpInspector,
         HttpRouters,
         HttpServer,
-        { provide: AbstractHttpDecompressor, useClass: TpHttpDecompressor },
-        { provide: AbstractCacheProxy, useClass: TpCacheProxy },
-        { provide: AbstractHttpHooks, useClass: TpHttpHooks },
-        { provide: AbstractAuthenticator, useClass: TpAuthenticator },
-        { provide: AbstractResponseFormatter, useClass: TpResponseFormatter },
-        { provide: AbstractErrorFormatter, useClass: TpErrorFormatter },
+        { provide: AbstractHttpDecompressor, useClass: TpHttpDecompressor, root: true },
+        { provide: AbstractCacheProxy, useClass: TpCacheProxy, root: true },
+        { provide: AbstractHttpHooks, useClass: TpHttpHooks, root: true },
+        { provide: AbstractAuthenticator, useClass: TpAuthenticator, root: true },
+        { provide: AbstractResponseFormatter, useClass: TpResponseFormatter, root: true },
+        { provide: AbstractErrorFormatter, useClass: TpErrorFormatter, root: true },
     ]
 })
 export class HttpServerModule {
@@ -49,6 +50,7 @@ export class HttpServerModule {
     private _routers = this.injector.get(HttpRouters)?.create()!
 
     constructor(private injector: Injector) {
+        console.log('is root injector', injector.root === injector)
         const loader_obj: TpLoaderType = {
             on_start: async () => this._server.start(this._routers.request_listener),
             on_terminate: async () => this._server.terminate(),

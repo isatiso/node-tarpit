@@ -19,7 +19,7 @@ describe('class-provider.ts', function() {
 
     let injector: Injector
 
-    @TpService()
+    @TpService({ inject_root: true })
     class AA {
     }
 
@@ -66,24 +66,24 @@ describe('class-provider.ts', function() {
 
     before(function() {
         injector = Injector.create()
-        ClassProvider.create(injector, TpLoader, TpLoader)
+        ClassProvider.create(injector, { provide: TpLoader, useClass: TpLoader })
     })
 
     describe('ClassProvider', function() {
 
         it('could create instance by static method "create"', function() {
-            expect(() => ClassProvider.create(injector, AA, AA)).to.not.throw()
-            expect(() => ClassProvider.create(injector, A, A)).to.not.throw()
+            expect(() => ClassProvider.create(injector, { provide: AA, useClass: AA, root: true })).to.not.throw()
+            expect(() => ClassProvider.create(injector, { provide: A, useClass: A })).to.not.throw()
         })
 
         it('should set provider to injector on init', function() {
-            const provider = ClassProvider.create(injector, B, B).set_used()
+            const provider = ClassProvider.create(injector, { provide: B, useClass: B }).set_used()
             expect(injector.get(B)).to.equal(provider)
             expect(injector.get(B)?.create()).to.be.instanceof(B)
         })
 
         it('should search deep dependencies on init', function() {
-            const provider_cls = ClassProvider.create(injector, CLS, CLS)
+            const provider_cls = ClassProvider.create(injector, { provide: CLS, useClass: CLS })
             const cls = provider_cls.create()
             expect(cls).to.be.instanceof(CLS)
             expect(cls.a).to.be.instanceof(A)

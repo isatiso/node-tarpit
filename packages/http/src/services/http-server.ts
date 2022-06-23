@@ -12,7 +12,7 @@ import http, { IncomingMessage, Server, ServerResponse } from 'http'
 import { Socket } from 'net'
 import { TLSSocket } from 'tls'
 
-@TpService()
+@TpService({ inject_root: true })
 export class HttpServer {
 
     private _server?: Server

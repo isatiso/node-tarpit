@@ -10,7 +10,7 @@ import { TpService } from '@tarpit/core'
 import LRUCache from 'lru-cache'
 import { AbstractCacheProxy } from '../inner/abstract-cache-proxy'
 
-@TpService()
+@TpService({ inject_root: true })
 export class TpCacheProxy extends AbstractCacheProxy {
 
     private _cache = new LRUCache<string, string | object | Buffer>({ max: 5000 })

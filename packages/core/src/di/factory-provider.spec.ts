@@ -48,18 +48,18 @@ describe('factory-provider.ts', function() {
         const ins_b = new B()
 
         it('could create instance by static method "create"', function() {
-            expect(() => ClassProvider.create(injector, AA, AA)).to.not.throw()
-            expect(() => FactoryProvider.create(injector, A, (aa: AA) => ins_a ? ins_a : ins_a = new A(aa), [AA])).to.not.throw()
+            expect(() => ClassProvider.create(injector, { provide: AA, useClass: AA })).to.not.throw()
+            expect(() => FactoryProvider.create(injector, { provide: A, useFactory: (aa: AA) => ins_a ? ins_a : ins_a = new A(aa), deps: [AA] })).to.not.throw()
         })
 
         it('should set provider to injector on init', function() {
-            const provider = FactoryProvider.create(injector, B, () => ins_b).set_used()
+            const provider = FactoryProvider.create(injector, { provide: B, useFactory: () => ins_b, root: true }).set_used()
             expect(injector.get(B)).to.equal(provider)
             expect(injector.get(B)?.create()).to.be.instanceof(B)
         })
 
         it('should search deep dependencies on init', function() {
-            const provider_factory = FactoryProvider.create(injector, 'CLS', (a: A, b: B, c: C) => [a, b, c], [A, B, [new Optional(), C]])
+            const provider_factory = FactoryProvider.create(injector, { provide: 'CLS', useFactory: (a: A, b: B, c: C) => [a, b, c], deps: [A, B, [new Optional(), C]] })
             const cls = provider_factory.create()
             expect(cls).to.eql([ins_a, ins_b, undefined])
         })

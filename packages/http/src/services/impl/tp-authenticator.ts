@@ -11,7 +11,7 @@ import { TpHttpAuthInfo } from '../../__types__'
 import { TpRequest } from '../../builtin'
 import { AbstractAuthenticator } from '../inner/abstract-authenticator'
 
-@TpService()
+@TpService({ inject_root: true })
 export class TpAuthenticator extends AbstractAuthenticator {
 
     override async auth(request: TpRequest): Promise<TpHttpAuthInfo | undefined> {

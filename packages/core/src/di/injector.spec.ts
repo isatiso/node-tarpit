@@ -24,7 +24,7 @@ describe('injector.ts', function() {
         })
 
         it('should set provider to Injector', function() {
-            const value_provider = ValueProvider.create(injector, 'a', 123)
+            const value_provider = ValueProvider.create(injector, { provide: 'a', useValue: 123 })
             const res = injector.set('b', value_provider)
             expect(res).to.equal(value_provider)
         })

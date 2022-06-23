@@ -11,7 +11,7 @@ import { TpEntry } from './annotations'
 import { TpInspector } from './builtin/tp-inspector'
 import { TpLoader } from './builtin/tp-loader'
 import { BuiltinTpLogger, TpLogger } from './builtin/tp-logger'
-import { ClassProvider, Injector, RootInjector, ValueProvider } from './di'
+import { ClassProvider, Injector, ValueProvider } from './di'
 import { get_class_decorator } from './tools/decorator'
 import { check_usage, def_to_provider, load_component } from './tools/load-component'
 import { stringify } from './tools/stringify'
@@ -20,8 +20,8 @@ import { AbstractConstructor, Constructor, ProviderDef } from './types'
 export class Platform {
 
     protected root_injector = Injector.create()
-    protected inspector = ClassProvider.create(this.root_injector, TpInspector, TpInspector).create()
-    protected loader = ClassProvider.create(this.root_injector, TpLoader, TpLoader).create()
+    protected inspector = ClassProvider.create(this.root_injector, { provide: TpInspector, useClass: TpInspector }).create()
+    protected loader = ClassProvider.create(this.root_injector, { provide: TpLoader, useClass: TpLoader }).create()
     private started = false
     private terminated = false
 
@@ -29,10 +29,9 @@ export class Platform {
     constructor(data: TpConfigSchema)
     constructor(data: () => TpConfigSchema)
     constructor(data?: string | TpConfigSchema | (() => TpConfigSchema)) {
-        ValueProvider.create(this.root_injector, ConfigData, load_config(data))
-        ValueProvider.create(this.root_injector, RootInjector, this.root_injector)
-        ValueProvider.create(this.root_injector, Platform, this)
-        ClassProvider.create(this.root_injector, TpLogger, BuiltinTpLogger).create()
+        ValueProvider.create(this.root_injector, { provide: ConfigData, useValue: load_config(data) })
+        ValueProvider.create(this.root_injector, { provide: Platform, useValue: this })
+        ClassProvider.create(this.root_injector, { provide: TpLogger, useClass: BuiltinTpLogger }).create()
         this.root_injector.on('start', this.on_start)
         this.root_injector.on('terminate', this.on_terminate)
     }

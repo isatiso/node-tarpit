@@ -42,7 +42,7 @@ function log(context: HttpContext, duration: number, err?: TpHttpError) {
     }
 }
 
-@TpService()
+@TpService({ inject_root: true })
 export class TpHttpHooks extends AbstractHttpHooks {
 
     /**
