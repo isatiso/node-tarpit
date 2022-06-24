@@ -9,7 +9,7 @@
 import { Barbeque } from '@tarpit/barbeque'
 import { Constructor, make_decorator } from '@tarpit/core'
 import { ProduceOptions } from '../__types__'
-import { ChannelWrapper } from '../channel-wrapper'
+import { ChannelWrapper } from '../builtin/channel-wrapper'
 
 export type ProduceUnit = {
     exchange: string

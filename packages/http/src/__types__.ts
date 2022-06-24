@@ -21,7 +21,6 @@ export interface HttpHandlerDescriptor {
     handler: HttpHandler
 }
 
-export type ApiPath = string | string[]
 export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 export type ProxyConfig = {

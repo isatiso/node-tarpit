@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpRabbitMQ } from './tp-rabbitmq'
+import { TpRabbitmqOrg } from './services/tp-rabbitmq.org'
 
 export interface AMQPConnect {
     /**
@@ -80,7 +80,7 @@ declare module '@tarpit/config' {
 export { BindExchange, BindQueue, AssertQueue, AssertExchange } from './tools'
 export * from './annotations'
 export * from './__types__'
-export { Letter, PURE_LETTER } from './letter'
-export { TpRabbitMQ } from './tp-rabbitmq'
-export { ChannelWrapper } from './channel-wrapper'
+export { Letter, PURE_LETTER } from './builtin/letter'
+export { TpRabbitmqOrg } from './services/tp-rabbitmq.org'
+export { ChannelWrapper } from './builtin/channel-wrapper'
 export { Dead, Requeue, Ack, requeue_message, kill_message, ack_message } from './error'

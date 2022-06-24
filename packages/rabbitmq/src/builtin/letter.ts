@@ -7,7 +7,7 @@
  */
 
 import { PureJSON } from '@tarpit/core'
-import { MessageFields, MessageProperties } from './__types__'
+import { MessageFields, MessageProperties } from '../__types__'
 
 export const PURE_LETTER = 'PURE_LETTER'
 

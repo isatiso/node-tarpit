@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, TpLoader, TpLoaderType, TpModule } from '@tarpit/core'
+import { TpLoader, TpModule } from '@tarpit/core'
 import { TpSchedule, TpScheduleToken } from './annotations'
 import { AbstractTriggerHooks, Clerk, Schedule, ScheduleInspector, TaskHub, TpTriggerHooks } from './services'
 import { collect_tasks } from './tools'
@@ -23,11 +23,11 @@ import { collect_tasks } from './tools'
 export class ScheduleModule {
 
     constructor(
-        private injector: Injector,
+        private loader: TpLoader,
         private task_hub: TaskHub,
         private schedule: Schedule,
     ) {
-        const loader_obj: TpLoaderType = {
+        this.loader.register(TpScheduleToken, {
             on_start: async () => this.schedule.start(),
             on_terminate: async () => this.schedule.terminate(),
             on_load: (meta: any) => {
@@ -35,7 +35,6 @@ export class ScheduleModule {
                     collect_tasks(meta).forEach(f => this.task_hub.load(f, meta))
                 }
             },
-        }
-        this.injector.get(TpLoader)?.create().register(TpScheduleToken, loader_obj)
+        })
     }
 }

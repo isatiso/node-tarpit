@@ -8,14 +8,14 @@
 
 import { TpError, TpErrorDescription } from '@tarpit/error'
 
-export interface TaskErrorDescription extends TpErrorDescription {
+export interface MessageErrorDesc extends TpErrorDescription {
 }
 
-export class TaskError extends TpError {
+export class MessageError extends TpError {
 
     override jsonify_fields: Array<keyof this> = ['code', 'message', 'detail', 'stack']
 
-    constructor(desc: TaskErrorDescription) {
+    constructor(desc: MessageErrorDesc) {
         super(desc)
     }
 }

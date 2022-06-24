@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
-import { Injector, TpLoader, TpLoaderType, TpModule } from '@tarpit/core'
+import { TpLoader, TpLoaderType, TpModule } from '@tarpit/core'
 import { TpRouter, TpRouterToken } from './annotations'
 import {
     AbstractAuthenticator,
@@ -46,20 +46,20 @@ import { collect_routes } from './tools/collect-routes'
 })
 export class HttpServerModule {
 
-    private _server = this.injector.get(HttpServer)?.create()!
-    private _routers = this.injector.get(HttpRouters)?.create()!
-
-    constructor(private injector: Injector) {
-        console.log('is root injector', injector.root === injector)
+    constructor(
+        private loader: TpLoader,
+        private server: HttpServer,
+        private routers: HttpRouters,
+    ) {
         const loader_obj: TpLoaderType = {
-            on_start: async () => this._server.start(this._routers.request_listener),
-            on_terminate: async () => this._server.terminate(),
+            on_start: async () => this.server.start(this.routers.request_listener),
+            on_terminate: async () => this.server.terminate(),
             on_load: async (meta: any) => {
                 if (meta instanceof TpRouter) {
-                    collect_routes(meta).forEach(f => this._routers.add_router(f, meta))
+                    collect_routes(meta).forEach(f => this.routers.add_router(f, meta))
                 }
             },
         }
-        this.injector.get(TpLoader)?.create().register(TpRouterToken, loader_obj)
+        this.loader.register(TpRouterToken, loader_obj)
     }
 }

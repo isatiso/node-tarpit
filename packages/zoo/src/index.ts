@@ -7,18 +7,24 @@
  */
 
 import { Platform, TpInspector } from '@tarpit/core'
-import { ScheduleInspector, ScheduleModule } from '@tarpit/schedule'
-import { TriggerRoot } from './schedule'
+import { HttpInspector } from '@tarpit/http'
+import { TestRoot } from './router'
 
 (async () => {
     const platform = new Platform({
         http: {
             port: 3000
         }
-    }).import(ScheduleModule).bootstrap(TriggerRoot).start()
+    }).bootstrap(TestRoot).start()
     await platform.expose(TpInspector)?.wait_start()
-    console.log(platform.expose(ScheduleInspector)?.list_bullet())
-    console.log(platform.expose(ScheduleInspector)?.list_suspended())
+    console.log(platform.expose(HttpInspector)?.list_router())
+
+    // const platform = new Platform({ http: { port: 3000 } }).bootstrap(TriggerRoot).start()
+    // await platform.expose(TpInspector)?.wait_start()
+    //
+    // console.log(platform.expose(ScheduleInspector)?.list_bullet())
+    // console.log(platform.expose(ScheduleInspector)?.list_suspended())
+
     // platform.terminate()
     // console.log(platform.expose_service(STARTUP_TIME), platform.expose_service(SHUTDOWN_TIME))
 })()

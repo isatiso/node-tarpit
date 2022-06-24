@@ -7,7 +7,7 @@
  */
 
 import { Inject, Optional, TpRoot, TpService } from '@tarpit/core'
-import { TaskCrash, TaskRetry, TpSchedule, Trigger, TriggerContext } from '@tarpit/schedule'
+import { ScheduleModule, TaskCrash, TaskRetry, TpSchedule, Trigger, TriggerContext } from '@tarpit/schedule'
 
 @TpService()
 class TestService {
@@ -31,18 +31,22 @@ class TestTrigger {
 
     @Trigger('*/5 * * * * *', '测试任务')
     async test(context: TriggerContext) {
-        return await new Promise((resolve, reject) => {
-            console.log('test', context.count, context.retry_limit, new Date().toISOString())
-            if (context.count > 3) {
-                reject(new TaskCrash('Jesus', 'Jesus Christ'))
-            } else {
-                setTimeout(() => reject(new TaskRetry(5)), 200)
-            }
-        })
+        console.log('test', context.count, context.retry_limit, new Date().toISOString())
+        // return await new Promise((resolve, reject) => {
+        //
+        //     if (context.count > 3) {
+        //         reject(new TaskCrash('Jesus', 'Jesus Christ'))
+        //     } else {
+        //         setTimeout(() => reject(new TaskRetry(5)), 200)
+        //     }
+        // })
     }
 }
 
 @TpRoot({
+    imports: [
+        ScheduleModule,
+    ],
     entries: [
         TestTrigger
     ],

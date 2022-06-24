@@ -7,20 +7,19 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { get_providers, Injector, TpPlugin, TpPluginType, ValueProvider } from '@tarpit/core'
-import { connect, Connection, ConsumeMessage, Options } from 'amqplib'
+import { get_providers, Injector, ValueProvider } from '@tarpit/core'
+import { connect as connect_rabbitmq, Connection, ConsumeMessage, Options } from 'amqplib'
 import { EventEmitter } from 'events'
-import { ProduceOptions, Producer } from './__types__'
-import { TpConsumer, TpConsumerToken, TpProducer, TpProducerToken } from './annotations'
-import { ConsumeUnit } from './annotations/consume'
-import { ProduceUnit } from './annotations/produce'
-import { ChannelWrapper } from './channel-wrapper'
+import { ProduceOptions, Producer } from '../__types__'
+import { TpConsumer, TpConsumerToken, TpProducer, TpProducerToken } from '../annotations'
+import { ConsumeUnit } from '../annotations/consume'
+import { ProduceUnit } from '../annotations/produce'
+import { ChannelWrapper } from '../builtin/channel-wrapper'
 import { Ack, Dead, Requeue } from './error'
-import { Letter, PURE_LETTER } from './letter'
-import { collect_consumes, collect_produces } from './tools'
+import { Letter, PURE_LETTER } from '../builtin/letter'
+import { collect_consumes, collect_produces } from '../tools'
 
-@TpPlugin({ targets: [TpConsumerToken, TpProducerToken], })
-export class TpRabbitMQ implements TpPluginType {
+export class TpRabbitmqOrg {
 
     public connection?: Connection
     public readonly emitter = new EventEmitter()
@@ -40,7 +39,7 @@ export class TpRabbitMQ implements TpPluginType {
         private config_data: ConfigData
     ) {
         this.emitter.setMaxListeners(1000)
-        ValueProvider.create(this.injector, 'œœ-TpProducer', TpRabbitMQ)
+        ValueProvider.create(this.injector, { provide: 'œœ-TpProducer', useValue: TpRabbitmqOrg })
         const amqp = this.config_data.get('rabbitmq')
         if (amqp) {
             this.set_config(amqp.url, amqp.prefetch, amqp.socket_options)
@@ -86,7 +85,7 @@ export class TpRabbitMQ implements TpPluginType {
     }
 
     reconnect(url: string | Options.Connect, count: number = 0) {
-        connect(url, this.socket_options).then(conn => {
+        connect_rabbitmq(url, this.socket_options).then(conn => {
             this.connection = conn
             conn.on('close', () => {
                 if (!this.destroyed) {
@@ -108,7 +107,7 @@ export class TpRabbitMQ implements TpPluginType {
             return
         }
         const url = this.url
-        connect(url, this.socket_options).then(async conn => {
+        connect_rabbitmq(url, this.socket_options).then(async conn => {
             this.connection = conn
             conn.on('close', () => {
                 if (!this.destroyed) {

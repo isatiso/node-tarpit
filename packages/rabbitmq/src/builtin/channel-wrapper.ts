@@ -10,7 +10,7 @@ import { Barbeque } from '@tarpit/barbeque'
 import { ConfirmChannel, Connection, ConsumeMessage, Options } from 'amqplib'
 import { Replies } from 'amqplib/properties'
 import { EventEmitter } from 'events'
-import { ConsumeOptions } from './__types__'
+import { ConsumeOptions } from '../__types__'
 
 type ConsumeArguments = [queue: string, on_message: (msg: ConsumeMessage | null) => void, options: ConsumeOptions]
 type PublishArguments = [exchange: string, routingKey: string, content: Buffer, options: Options.Publish, callback: (err: any, ok: Replies.Empty) => void]
