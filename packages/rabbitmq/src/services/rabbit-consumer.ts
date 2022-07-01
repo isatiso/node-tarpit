@@ -29,17 +29,13 @@ export class RabbitConsumer extends Array<[meta: TpConsumer, units: ConsumeUnit[
         super()
     }
 
-    create_consumers() {
-        while (this.length) {
-            const [meta, units] = this.pop()!
-            for (const unit of units) {
-                this.put_consumer(meta.injector!, unit)
-            }
+    add(meta: TpConsumer, units: ConsumeUnit[]) {
+        for (const unit of units) {
+            this.put_consumer(meta.injector!, unit)
         }
     }
 
     private put_consumer(injector: Injector, unit: ConsumeUnit): void {
-
         const message_reader = this.message_reader
         const rabbit_hooks_provider = injector.get(AbstractRabbitHooks) ?? throw_native_error('No provider for AbstractRabbitHooks')
         const session = RabbitConsumeSession.create(injector)

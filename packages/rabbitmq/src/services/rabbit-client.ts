@@ -17,9 +17,6 @@ import { RabbitProducer } from './rabbit-producer'
 @TpService({ inject_root: true })
 export class RabbitClient {
 
-    private interval_num?: NodeJS.Timeout
-    private loading = false
-
     constructor(
         private config_data: ConfigData,
         private connector: RabbitConnector,
@@ -40,21 +37,6 @@ export class RabbitClient {
         })
 
         await this.connector.connect()
-
-        // TODO: optimization
-        this.interval_num = this.interval_num || setInterval(this.worker_rolling, 100)
-    }
-
-    private worker_rolling = async () => {
-        if (this.loading || !this.connector.connection) {
-            return
-        }
-        if (!this.consumers.length) {
-            return
-        }
-        this.loading = true
-        this.consumers.create_consumers()
-        this.loading = false
     }
 
     private async assert_definition(connection: Connection) {

@@ -20,7 +20,7 @@ export class RabbitProducer {
     ) {
     }
 
-    add_producer(meta: TpProducer, units: ProduceUnit[]) {
+    add(meta: TpProducer, units: ProduceUnit[]) {
         for (const unit of units) {
             const producer = new Producer(unit.target, unit.routing_key, meta.injector!)
             this.sessions.add(producer.session)

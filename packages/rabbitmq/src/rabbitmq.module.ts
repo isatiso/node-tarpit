@@ -44,9 +44,9 @@ export class RabbitMQModule {
             on_terminate: async () => this.rabbit.terminate(),
             on_load: (meta: any) => {
                 if (meta instanceof TpConsumer) {
-                    this.consumers.push([meta, collect_consumes(meta)])
+                    this.consumers.add(meta, collect_consumes(meta))
                 } else if (meta instanceof TpProducer) {
-                    this.producers.add_producer(meta, collect_produces(meta))
+                    this.producers.add(meta, collect_produces(meta))
                 }
             },
         })
