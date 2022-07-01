@@ -29,9 +29,9 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/http/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/zoo/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/schedule/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/rabbitmq/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/barbeque/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/error/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/rabbitmq/lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -9,5 +9,6 @@
 export { Consume } from './consume'
 export { Enqueue } from './enqueue'
 export { Publish } from './publish'
-export { TpProducer, TpProducerToken } from './tp-producer'
-export { TpConsumer, TpConsumerToken } from './tp-consumer'
+export { TpProducer } from './tp-producer'
+export { TpConsumer } from './tp-consumer'
+export { TpRabbitMQToken } from './token'

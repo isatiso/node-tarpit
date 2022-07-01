@@ -31,8 +31,7 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
-        "test": "echo \"Error: run tests from root\" && exit 1"
+        "build": "rollup -c"
     },
     "dependencies": {
         "js-yaml": "^4.1.0",

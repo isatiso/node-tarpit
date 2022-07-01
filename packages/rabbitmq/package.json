@@ -31,12 +31,12 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
-        "test": "echo \"Error: run tests from root\" && exit 1"
+        "build": "rollup -c"
     },
     "dependencies": {
         "@tarpit/barbeque": "^0.3.5",
         "@tarpit/judge": "^0.3.5",
+        "@tarpit/error": "^0.3.5",
         "amqplib": "^0.10.0"
     },
     "devDependencies": {

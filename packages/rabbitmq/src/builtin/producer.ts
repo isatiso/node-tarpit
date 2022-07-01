@@ -21,20 +21,20 @@ function narrow_to_buffer(message: string | object | Buffer): Buffer {
     }
 }
 
-export class Producer {
+export class Producer<T extends string | object | Buffer> {
 
     public readonly session = RabbitProduceSession.create(this.injector)
-    private _cache = new Barbeque<[message: any, produce_options: Options.Publish | undefined, resolve: (data: any) => void, reject: (err: any) => void]>()
+    private _cache = new Barbeque<[message: Buffer, produce_options: Options.Publish | undefined, resolve: (data: any) => void, reject: (err: any) => void]>()
 
     constructor(
         private target: string,
         private routing_key: string | undefined,
         private injector: Injector,
     ) {
-        this.injector.on('rabbitmq-checked-out', () => this.flush())
+        this.session.on_create(() => this.flush())
     }
 
-    async send(message: string | object | Buffer, options?: Options.Publish): Promise<void> {
+    async send(message: T, options?: Options.Publish): Promise<void> {
         const buf = narrow_to_buffer(message)
         if (!this.session.channel) {
             return new Promise((resolve, reject) => {
@@ -46,7 +46,7 @@ export class Producer {
     }
 
     async flush() {
-        while (this._cache.length && this.session.channel) {
+        while (this._cache.length) {
             const [buf, options, resolve, reject] = this._cache.shift()!
             await this.session.send(this.target, this.routing_key, buf, options)
                 .then(() => resolve(null))

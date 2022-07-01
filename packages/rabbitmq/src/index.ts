@@ -84,7 +84,7 @@ declare module '@tarpit/core' {
     }
 }
 
-export { Publish, Enqueue, Consume, TpConsumer, TpProducer, TpConsumerToken, TpProducerToken } from './annotations'
+export { Publish, Enqueue, Consume, TpConsumer, TpProducer, TpRabbitMQToken } from './annotations'
 export {
     ack_message,
     Ack,
@@ -108,4 +108,4 @@ export {
 export { AbstractRabbitHooks } from './services/inner/abstract-rabbit-hooks'
 export { AbstractRabbitMessageReader } from './services/inner/abstract-rabbit-message-reader'
 export { RabbitDefine, ExchangeOptions, QueueOptions, DefaultRabbitmqExchange } from './services/rabbit-define'
-export { RabbitmqModule } from './rabbitmq.module'
+export { RabbitMQModule } from './rabbitmq.module'

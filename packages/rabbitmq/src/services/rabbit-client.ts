@@ -49,15 +49,11 @@ export class RabbitClient {
         if (this.loading || !this.connector.connection) {
             return
         }
-        if (!this.producers.length && !this.consumers.length) {
+        if (!this.consumers.length) {
             return
         }
         this.loading = true
-        this.producers.create_producers()
-        while (this.consumers.length) {
-            const [meta, units] = this.consumers.pop()!
-            await this.consumers.load(meta, units)
-        }
+        this.consumers.create_consumers()
         this.loading = false
     }
 

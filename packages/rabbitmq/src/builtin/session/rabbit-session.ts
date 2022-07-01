@@ -8,11 +8,13 @@
 
 import { Injector } from '@tarpit/core'
 import { ConfirmChannel, Connection } from 'amqplib'
+import { EventEmitter } from 'events'
 
 export class RabbitSession {
 
     public channel_error?: any
     public channel: ConfirmChannel | undefined
+    private emitter = new EventEmitter()
 
     constructor(protected injector: Injector) {
         this.injector.on('rabbitmq-checked-out', conn => this.init(conn))
@@ -28,7 +30,13 @@ export class RabbitSession {
         this.channel.on('error', err => {
             this.channel = undefined
             this.channel_error = err
+            this.init(connection)
         })
+        this.emitter.emit('channel-created', this.channel)
         return this.channel
+    }
+
+    on_create(callback: (channel: ConfirmChannel) => void) {
+        this.emitter.on('channel-created', callback)
     }
 }

@@ -58,7 +58,10 @@ export class RabbitConnector {
     }
 
     private async _try_connect_server(count: number = 0): Promise<Connection | number> {
-        return connect_rabbitmq(this.url, this.socket_options).catch(() => count + 1)
+        return connect_rabbitmq(this.url, this.socket_options).catch(err => {
+            console.log(err)
+            return count + 1
+        })
     }
 
     private async _sleep(ms: number) {

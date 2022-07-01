@@ -9,8 +9,8 @@
 import { Inject, Optional, TpInspector, TpRoot, TpService } from '@tarpit/core'
 import { BodyDetector, HttpServerModule, Post, TpRouter } from '@tarpit/http'
 import { Jtl } from '@tarpit/judge'
-import { TestService1 } from './test-service.1'
-import { SymbolToken, TestService2 } from './test-service.2'
+import { TestService1 } from './services/test-service.1'
+import { SymbolToken, TestService2 } from './services/test-service.2'
 
 @TpService()
 class TestService {

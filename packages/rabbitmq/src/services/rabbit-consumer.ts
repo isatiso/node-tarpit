@@ -29,13 +29,16 @@ export class RabbitConsumer extends Array<[meta: TpConsumer, units: ConsumeUnit[
         super()
     }
 
-    async load(meta: TpConsumer, units: ConsumeUnit[]): Promise<void> {
-        for (const unit of units) {
-            await this.put_consumer(meta.injector!, unit)
+    create_consumers() {
+        while (this.length) {
+            const [meta, units] = this.pop()!
+            for (const unit of units) {
+                this.put_consumer(meta.injector!, unit)
+            }
         }
     }
 
-    private async put_consumer(injector: Injector, unit: ConsumeUnit): Promise<void> {
+    private put_consumer(injector: Injector, unit: ConsumeUnit): void {
 
         const message_reader = this.message_reader
         const rabbit_hooks_provider = injector.get(AbstractRabbitHooks) ?? throw_native_error('No provider for AbstractRabbitHooks')
@@ -88,13 +91,13 @@ export class RabbitConsumer extends Array<[meta: TpConsumer, units: ConsumeUnit[
 
             if (handle_result instanceof Ack) {
                 await hooks.on_ack(msg, content)
-                session.channel?.ack(msg)
+                session.ack(msg)
             } else if (handle_result instanceof MessageRequeue) {
                 await hooks.on_requeue(msg, content, handle_result)
-                session.channel?.reject(msg)
+                session.requeue(msg)
             } else if (handle_result instanceof MessageDead) {
                 await hooks.on_dead(msg, content, handle_result)
-                session.channel?.reject(msg, false)
+                session.kill(msg)
             }
         }
 

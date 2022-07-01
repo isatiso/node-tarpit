@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
-import { TpLoader, TpLoaderType, TpModule } from '@tarpit/core'
+import { TpLoader, TpModule } from '@tarpit/core'
 import { TpRouter, TpRouterToken } from './annotations'
 import {
     AbstractAuthenticator,
@@ -51,7 +51,7 @@ export class HttpServerModule {
         private server: HttpServer,
         private routers: HttpRouters,
     ) {
-        const loader_obj: TpLoaderType = {
+        this.loader.register(TpRouterToken, {
             on_start: async () => this.server.start(this.routers.request_listener),
             on_terminate: async () => this.server.terminate(),
             on_load: async (meta: any) => {
@@ -59,7 +59,6 @@ export class HttpServerModule {
                     collect_routes(meta).forEach(f => this.routers.add_router(f, meta))
                 }
             },
-        }
-        this.loader.register(TpRouterToken, loader_obj)
+        })
     }
 }
