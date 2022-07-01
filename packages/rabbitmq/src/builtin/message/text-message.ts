@@ -6,4 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-export { TpError, TpErrorDescription, throw_native_error } from './tp-error'
+import { BaseMessage } from './base-message'
+
+export class TextMessage extends BaseMessage {
+
+    public readonly content = this.raw
+
+}

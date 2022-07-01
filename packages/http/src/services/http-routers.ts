@@ -8,12 +8,13 @@
 
 import { ConfigData } from '@tarpit/config'
 import { get_providers, Injector, TpService } from '@tarpit/core'
+import { throw_native_error } from '@tarpit/error'
 import { IncomingMessage, ServerResponse } from 'http'
 import { UrlWithParsedQuery } from 'url'
 import { ApiMethod, HttpHandler, HttpHandlerKey } from '../__types__'
 import { TpRouter } from '../annotations'
 import { BodyDetector, FormBody, Guardian, HttpContext, JsonBody, Params, RawBody, RequestHeader, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
-import { Finish, StandardError, throw_native_error, TpHttpError } from '../errors'
+import { Finish, StandardError, TpHttpError } from '../errors'
 import { RouteUnit } from '../tools/collect-routes'
 import { HTTP_STATUS } from '../tools/http-status'
 import { on_error } from '../tools/on-error'
@@ -98,7 +99,7 @@ export class HttpRouters {
 
     private make_router(injector: Injector, unit: RouteUnit) {
 
-        const provider_list = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
+        const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
         const proxy_config = this.proxy_config
         const body_reader = this.body_reader
         const cache_proxy_provider = injector.get(AbstractCacheProxy) ?? throw_native_error('No provider for AbstractCacheProxy')
@@ -125,21 +126,19 @@ export class HttpRouters {
 
                 const buf = await body_reader.read(req)
 
-                const auth_info = provider_list.includes(Guardian)
+                const auth_info = param_deps.find(d => d.token === Guardian)
                     ? await injector.get(AbstractAuthenticator)?.create().auth(request)
                     : undefined
 
-                const response_cache = provider_list.includes(ResponseCache)
+                const response_cache = param_deps.find(d => d.token === ResponseCache)
                     ? ResponseCache.create(cache_proxy, unit.cache_scope, unit.cache_expire_secs)
                     : undefined
 
-                return unit.handler(...provider_list.map((provider: any, index) => {
-                    if (!ALL_HANDLER_TOKEN_SET.has(provider)) {
-                        return provider?.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
+                return unit.handler(...param_deps.map(({ provider, token }, index) => {
+                    if (provider) {
+                        return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
                     }
-                    switch (provider) {
-                        case undefined:
-                            return undefined
+                    switch (token) {
                         case HttpContext:
                             return context
                         case TpRequest:
@@ -169,7 +168,7 @@ export class HttpRouters {
                         case ServerResponse:
                             return res
                         default:
-                            return provider?.create()
+                            return undefined
                     }
                 }))
             }

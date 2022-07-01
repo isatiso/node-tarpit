@@ -7,6 +7,7 @@
  */
 
 export { Consume } from './consume'
-export { Produce } from './produce'
+export { Enqueue } from './enqueue'
+export { Publish } from './publish'
 export { TpProducer, TpProducerToken } from './tp-producer'
 export { TpConsumer, TpConsumerToken } from './tp-consumer'

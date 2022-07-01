@@ -51,9 +51,9 @@ export class ClassProvider<M extends object> implements Provider<M> {
 
     private _get_instance(parents: ParentDesc[]) {
         const position = parents.map(p => `${stringify(p.token)}${p.index !== undefined ? `[${p.index}]` : ''}`).join(' -> ')
-        const providers = get_providers({ cls: this.cls, position }, this.injector)
+        const param_deps = get_providers({ cls: this.cls, position }, this.injector)
         const last = parents.pop()
-        const param_list = providers.map((provider, index) => provider?.create([...parents.map(p => ({ ...p })), { ...last, index }]))
+        const param_list = param_deps.map(({ provider }, index) => provider?.create([...parents.map(p => ({ ...p })), { ...last, index }]))
         const instance = new this.cls(...param_list)
 
         for (const [prop, decorators] of get_all_prop_decorator(this.cls) ?? []) {

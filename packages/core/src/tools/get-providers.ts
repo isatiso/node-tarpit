@@ -9,13 +9,15 @@
 import 'reflect-metadata'
 import { Inject, Optional } from '../annotations'
 import { Injector } from '../di'
-import { Constructor } from '../types'
+import { Constructor, Provider } from '../types'
 import { get_class_parameter_decorator, get_method_parameter_decorator, get_param_types } from './decorator'
 import { stringify } from './stringify'
 
 export interface ParamDepsMeta {
     token: any
     optional: boolean
+    decorators: any[]
+    provider?: Provider<any>
 }
 
 function get_param_deps(cls: Constructor<any>, prop?: string | symbol): ParamDepsMeta[] {
@@ -23,27 +25,31 @@ function get_param_deps(cls: Constructor<any>, prop?: string | symbol): ParamDep
         ? get_method_parameter_decorator(cls, prop)
         : get_class_parameter_decorator(cls)
     return get_param_types(cls, prop)?.map((p: any, index: number) => {
-        const desc = { token: p, optional: false }
+        const meta: ParamDepsMeta = { token: p, optional: false, decorators: [] }
         param_meta[index]?.forEach((d: any) => {
             if (d instanceof Optional) {
-                desc.optional = true
+                meta.optional = true
             } else if (d instanceof Inject) {
-                desc.token = d.token
+                meta.token = d.token
+            } else {
+                meta.decorators.push(d)
             }
         })
-        return desc
+        return meta
     }) ?? []
 }
 
-function figure_given_deps(deps?: any[]) {
+function figure_given_deps(deps?: any[]): ParamDepsMeta[] {
     return deps?.map((dep) => {
-        const meta: ParamDepsMeta = { token: null, optional: false }
+        const meta: ParamDepsMeta = { token: null, optional: false, decorators: [] }
         if (Array.isArray(dep)) {
-            dep.forEach(d => {
+            dep.forEach((d, index) => {
                 if (d instanceof Optional) {
                     meta.optional = true
                 } else if (d instanceof Inject) {
                     meta.token = d.token
+                } else if (index !== dep.length - 1) {
+                    meta.decorators.push(d)
                 } else {
                     meta.token = d
                 }
@@ -57,7 +63,7 @@ function figure_given_deps(deps?: any[]) {
 
 export type ProviderDescriptor = { cls: Constructor<any>, prop?: string | symbol, position: string } | { cls?: undefined, deps?: any[], position: string }
 
-export function get_providers(meta: ProviderDescriptor, injector: Injector, excepts?: Set<any>): any[] {
+export function get_providers(meta: ProviderDescriptor, injector: Injector, excepts?: Set<any>): ParamDepsMeta[] {
     const param_deps = meta.cls ? get_param_deps(meta.cls, meta.prop) : figure_given_deps(meta.deps)
     return param_deps.map((param_meta, i) => {
         /* istanbul ignore next */
@@ -65,12 +71,12 @@ export function get_providers(meta: ProviderDescriptor, injector: Injector, exce
             console.error(`type 'undefined' at ${meta.position}[${i}], if it's not specified, there maybe a circular import.`)
         }
         if (excepts?.has(param_meta.token)) {
-            return param_meta.token
+            return param_meta
         }
-        const provider = injector.get(param_meta.token)?.set_used()
-        if (!provider && !param_meta.optional) {
+        param_meta.provider = injector.get(param_meta.token)?.set_used()
+        if (!param_meta.provider && !param_meta.optional) {
             throw new Error(`Can't find provider of "${stringify(param_meta.token)}" at {${meta.position}[${i}]}`)
         }
-        return provider
+        return param_meta
     })
 }

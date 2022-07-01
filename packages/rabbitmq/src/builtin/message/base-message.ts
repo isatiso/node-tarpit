@@ -6,16 +6,17 @@
  * found in the LICENSE file at source root.
  */
 
-import { PureJSON } from '@tarpit/core'
-import { MessageFields, MessageProperties } from '../__types__'
+import { ConsumeMessageFields, MessageProperties } from 'amqplib'
 
-export const PURE_LETTER = 'PURE_LETTER'
+export class BaseMessage {
 
-export class Letter<T extends PureJSON> {
+    protected raw: string
+
     constructor(
-        public readonly content: T,
-        public readonly fields: Readonly<MessageFields>,
+        content: string,
+        public readonly fields: Readonly<ConsumeMessageFields>,
         public readonly properties: Readonly<MessageProperties>,
     ) {
+        this.raw = content
     }
 }

@@ -6,4 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-export { TpError, TpErrorDescription, throw_native_error } from './tp-error'
+export { JsonMessage, TextMessage, BaseMessage } from './message'
+export { RabbitSession, RabbitProduceSession, RabbitConsumeSession } from './session'
+export { Producer } from './producer'

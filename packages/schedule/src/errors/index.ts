@@ -11,7 +11,3 @@ export { TaskDone, mission_completed } from './task-done'
 export { TaskError, TaskErrorDescription } from './task-error'
 export { TaskIgnore, throw_task_ignore } from './task-ignore'
 export { TaskRetry, throw_task_retry } from './task-retry'
-
-export function throw_native_error(msg: string): never {
-    throw new Error(msg)
-}

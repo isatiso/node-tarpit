@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpRabbitmqOrg } from './services/tp-rabbitmq.org'
+import { Connection } from 'amqplib'
 
 export interface AMQPConnect {
     /**
@@ -77,10 +77,35 @@ declare module '@tarpit/config' {
     }
 }
 
-export { BindExchange, BindQueue, AssertQueue, AssertExchange } from './tools'
-export * from './annotations'
-export * from './__types__'
-export { Letter, PURE_LETTER } from './builtin/letter'
-export { TpRabbitmqOrg } from './services/tp-rabbitmq.org'
-export { ChannelWrapper } from './builtin/channel-wrapper'
-export { Dead, Requeue, Ack, requeue_message, kill_message, ack_message } from './error'
+declare module '@tarpit/core' {
+    export interface TpEventCollector {
+        'rabbitmq-connected': (connection: Connection) => void
+        'rabbitmq-checked-out': (connection: Connection) => void
+    }
+}
+
+export { Publish, Enqueue, Consume, TpConsumer, TpProducer, TpConsumerToken, TpProducerToken } from './annotations'
+export {
+    ack_message,
+    Ack,
+    requeue_message,
+    MessageRequeue,
+    MessageRequeueDesc,
+    kill_message,
+    MessageDead,
+    MessageDeadDesc,
+} from './errors'
+
+export {
+    JsonMessage,
+    TextMessage,
+    Producer,
+    RabbitProduceSession,
+    RabbitConsumeSession,
+    RabbitSession,
+} from './builtin'
+
+export { AbstractRabbitHooks } from './services/inner/abstract-rabbit-hooks'
+export { AbstractRabbitMessageReader } from './services/inner/abstract-rabbit-message-reader'
+export { RabbitDefine, ExchangeOptions, QueueOptions, DefaultRabbitmqExchange } from './services/rabbit-define'
+export { RabbitmqModule } from './rabbitmq.module'

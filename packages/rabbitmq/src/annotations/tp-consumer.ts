@@ -6,10 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { make_decorator, TpEntry } from '@tarpit/core'
-import { TpConsumerOptions } from '../__types__'
-import { ConsumeUnit } from './consume'
+import { ImportsAndProviders, make_decorator, TpEntry } from '@tarpit/core'
+
+export interface TpConsumerOptions extends ImportsAndProviders {
+}
 
 export const TpConsumerToken = Symbol.for('œœ.token.TpConsumer')
 export type TpConsumer = InstanceType<typeof TpConsumer>
-export const TpConsumer = make_decorator('TpConsumer', (options?: TpConsumerOptions) => ({ ...options, token: TpConsumerToken, units: [] as ConsumeUnit[] }), TpEntry)
+export const TpConsumer = make_decorator('TpConsumer', (options?: TpConsumerOptions) => ({ ...options, token: TpConsumerToken }), TpEntry)

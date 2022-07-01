@@ -6,9 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpService } from '@tarpit/core'
-
-@TpService({ inject_root: true })
-export class RabbitmqProducer {
-
-}
+export { BaseMessage } from './base-message'
+export { TextMessage } from './text-message'
+export { JsonMessage } from './json-message'

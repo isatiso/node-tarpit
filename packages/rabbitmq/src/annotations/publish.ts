@@ -9,6 +9,5 @@
 import { make_decorator } from '@tarpit/core'
 import { Options } from 'amqplib'
 
-export type ConsumeOptions = Options.Consume & { prefetch?: number }
-export type Consume = InstanceType<typeof Consume>
-export const Consume = make_decorator('Consume', (queue: string, options?: ConsumeOptions) => ({ options, queue }))
+export type Publish = InstanceType<typeof Publish>
+export const Publish = make_decorator('Publish', (exchange: string, routing_key: string, options?: Options.Publish) => ({ options, exchange, routing_key }))

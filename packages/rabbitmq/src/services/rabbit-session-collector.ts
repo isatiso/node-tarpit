@@ -5,5 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
+import { TpService } from '@tarpit/core'
+import { RabbitSession } from '../builtin'
 
-export { TpError, TpErrorDescription, throw_native_error } from './tp-error'
+@TpService({ inject_root: true })
+export class RabbitSessionCollector extends Set<RabbitSession> {
+
+}

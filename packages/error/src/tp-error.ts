@@ -47,3 +47,7 @@ export class TpError extends Error {
         return res
     }
 }
+
+export function throw_native_error(msg: string): never {
+    throw new Error(msg)
+}

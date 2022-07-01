@@ -7,7 +7,7 @@
  */
 
 import { detect_cycle_ref } from '../tools/detect-cycle-ref'
-import { get_providers } from '../tools/get-providers'
+import { get_providers, ParamDepsMeta } from '../tools/get-providers'
 import { stringify } from '../tools/stringify'
 import { FactoryProviderDef, ParentDesc, Provider } from '../types'
 import { Injector } from './injector'
@@ -15,7 +15,7 @@ import { Injector } from './injector'
 export class FactoryProvider<M> implements Provider<M> {
 
     public used = false
-    private providers?: Array<Provider<unknown> | undefined>
+    private param_deps?: ParamDepsMeta[]
 
     private constructor(
         public readonly injector: Injector,
@@ -45,12 +45,12 @@ export class FactoryProvider<M> implements Provider<M> {
     }
 
     private _get_instance(parents: ParentDesc[]) {
-        if (!this.providers) {
+        if (!this.param_deps) {
             const position = parents.map(p => `${stringify(p.token)}${p.index !== undefined ? `[${p.index}]` : ''}`).join(' -> ')
-            this.providers = get_providers({ position, deps: this.deps }, this.injector)
+            this.param_deps = get_providers({ position, deps: this.deps }, this.injector)
         }
         const last = parents.pop()
-        const param_list = this.providers.map((provider, index) => provider?.create([...parents.map(p => ({ ...p })), { ...last, index }]))
+        const param_list = this.param_deps.map(({ provider }, index) => provider?.create([...parents.map(p => ({ ...p })), { ...last, index }]))
         return this.factory(...param_list)
     }
 }

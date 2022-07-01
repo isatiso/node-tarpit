@@ -8,9 +8,10 @@
 
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
+import { throw_native_error } from '@tarpit/error'
 import { Bullet } from '../builtin/bullet'
 import { TriggerContext } from '../builtin/trigger-context'
-import { TaskCrash, TaskDone, TaskError, TaskRetry, throw_native_error } from '../errors'
+import { TaskCrash, TaskDone, TaskError, TaskRetry } from '../errors'
 
 import { TaskUnit } from '../tools'
 import { AbstractTriggerHooks } from './inner/abstract-trigger-hooks'
@@ -22,7 +23,7 @@ export class Clerk {
 
     make_task(injector: Injector, unit: TaskUnit): (execution: Dora, task: Bullet) => Promise<void> {
 
-        const provider_list = get_providers(unit, injector, ALL_TRIGGER_TOKEN_SET)
+        const param_deps = get_providers(unit, injector, ALL_TRIGGER_TOKEN_SET)
         const trigger_hooks_provider = injector.get(AbstractTriggerHooks) ?? throw_native_error('No provider for AbstractTriggerHooks')
 
         return async function(execution, task) {
@@ -33,17 +34,15 @@ export class Clerk {
             let handle_result: any
 
             async function handle() {
-                return unit.handler(...provider_list.map((provider: any, index) => {
-                    if (!ALL_TRIGGER_TOKEN_SET.has(provider)) {
-                        return provider?.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
+                return unit.handler(...param_deps.map(({ provider, token }, index) => {
+                    if (provider) {
+                        return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
                     }
-                    switch (provider) {
-                        case undefined:
-                            return undefined
+                    switch (token) {
                         case TriggerContext:
                             return context
                         default:
-                            return provider?.create()
+                            return undefined
                     }
                 }))
             }
