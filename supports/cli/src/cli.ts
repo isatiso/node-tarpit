@@ -22,7 +22,7 @@ export async function create_cli(package_json: PackageJson) {
     cli.command('cover')
         .option('-c, --clean', '清除缓存文件')
         .option('--no-clean', '不清除缓存文件')
-        .option('-r, --reporter <reporter>', '设置 reporter')
+        .option('-r, --reporter <reporter...>', '设置 reporter')
         .action(action_cover)
 
     const signal_handler = (signal: any, code: any) => {
