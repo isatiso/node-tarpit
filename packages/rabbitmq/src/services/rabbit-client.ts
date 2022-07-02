@@ -33,7 +33,9 @@ export class RabbitClient {
 
     async start() {
         this.injector.on('rabbitmq-connected', (conn: Connection) => {
-            this.assert_definition(conn).then(conn => this.injector.emit('rabbitmq-checked-out', conn))
+            this.assert_definition(conn)
+                .then(conn => this.injector.emit('rabbitmq-checked-out', conn))
+                // .catch(err => console.log('assert definition error', err))
         })
 
         await this.connector.connect()
@@ -42,17 +44,21 @@ export class RabbitClient {
     private async assert_definition(connection: Connection) {
         if (this.definition) {
             const channel = await connection.createChannel()
-            for (const assertion of this.definition.exchanges) {
-                await channel.assertExchange(...assertion)
-            }
-            for (const assertion of this.definition.queues) {
-                await channel.assertQueue(...assertion)
-            }
-            for (const binding of this.definition.exchange_bindings) {
-                await channel.bindExchange(...binding)
-            }
-            for (const binding of this.definition.queue_bindings) {
-                await channel.bindQueue(...binding)
+            try {
+                for (const assertion of this.definition.exchanges) {
+                    await channel.assertExchange(...assertion)
+                }
+                for (const assertion of this.definition.queues) {
+                    await channel.assertQueue(...assertion)
+                }
+                for (const binding of this.definition.exchange_bindings) {
+                    await channel.bindExchange(...binding)
+                }
+                for (const binding of this.definition.queue_bindings) {
+                    await channel.bindQueue(...binding)
+                }
+            } catch (err) {
+                throw err
             }
             await channel.close()
         }

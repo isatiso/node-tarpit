@@ -7,7 +7,7 @@
  */
 
 import { Inject, Optional, TpRoot, TpService } from '@tarpit/core'
-import { ScheduleModule, TaskCrash, TaskRetry, TpSchedule, Trigger, TriggerContext } from '@tarpit/schedule'
+import { ScheduleModule, TpSchedule, Trigger, TriggerContext } from '@tarpit/schedule'
 
 @TpService()
 class TestService {

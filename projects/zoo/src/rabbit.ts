@@ -48,6 +48,8 @@ export class TestSchedule {
 const definition = new RabbitDefine()
     .define_exchange('test.x.topic', 'topic')
     .define_exchange('test.x.direct', 'direct')
+    .define_exchange('test.x.delay', 'x-delayed-message', { arguments: { 'x-delayed-type': 'topic' } })
+    .define_exchange('test.x.delay.1', 'x-delayed-message')
     .define_queue('test.a')
     .define_queue('test.b')
     .bind_queue('test.x.topic', 'test.a', 'test.a.*')

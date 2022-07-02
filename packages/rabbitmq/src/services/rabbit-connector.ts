@@ -54,12 +54,17 @@ export class RabbitConnector {
             }
         }
         this.injector.emit('rabbitmq-connected', this._connection)
-        return this._connection.on('close', () => !this.closed && this.connect())
+        return this._connection
+            .on('close', () => !this.closed && this.connect())
+            .on('error', err => {
+                this.injector.emit('error', err)
+                !this.closed && this.connect()
+            })
     }
 
     private async _try_connect_server(count: number = 0): Promise<Connection | number> {
         return connect_rabbitmq(this.url, this.socket_options).catch(err => {
-            console.log(err)
+            this.injector.emit('error', err)
             return count + 1
         })
     }

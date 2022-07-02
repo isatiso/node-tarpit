@@ -6,12 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { RollupConfig } from "@tarpit/abraham"
+const { RollupConfig } = require('@tarpit/abraham')
 
 export const config = new RollupConfig({
-    dts_glob: ['src/**/*.d.ts', '!__dts/**/*.d.ts', '!lib/**/*.d.ts'],
-    externals: ['typescript'],
-    inputOptions: { cache: false }
+    dts_glob: ['src/**/*.d.ts', '!__dts/**/*.d.ts', '!lib/**/*.d.ts'], externals: ['typescript'], inputOptions: { cache: false }
 })
 
 export default config.create('./src/index.ts', true)

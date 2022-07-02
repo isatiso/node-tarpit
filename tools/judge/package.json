@@ -5,9 +5,9 @@
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
-    "main": "./lib/index.js",
+    "main": "lib/index.js",
     "types": "./lib/index.d.ts",
-    "module": "./lib/index.mjs",
+    "module": "lib/index.mjs",
     "files": [
         "lib"
     ],
@@ -32,7 +32,7 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "docs": "typedoc --tsconfig ./tsconfig.json --out ../../docs/judge --excludeTags license ./src/index.ts",
+        "docs": "typedoc --tsconfig tsconfig.json --out ../../docs/judge --excludeTags license ./src/index.ts",
         "test": "tp cover"
     }
 }

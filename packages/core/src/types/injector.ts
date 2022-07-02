@@ -10,6 +10,7 @@ import { Constructor } from './base'
 import { Provider } from './provider'
 
 export interface TpEventCollector {
+    'error': (...args: any[]) => void
     'start-time': (duration: number) => void
     'start': () => void
     'terminate-time': (duration: number) => void

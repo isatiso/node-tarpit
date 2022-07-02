@@ -1,13 +1,13 @@
 {
-    "name": "@tarpit/dora",
+    "name": "@tarpit/transformer",
     "version": "0.3.5",
     "description": "> TODO: description",
     "author": "Plankroot <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
-    "main": "./lib/index.js",
+    "main": "lib/index.js",
     "types": "./lib/index.d.ts",
-    "module": "./lib/index.mjs",
+    "module": "lib/index.mjs",
     "files": [
         "lib"
     ],
@@ -31,8 +31,15 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
-        "docs": "typedoc --tsconfig ./tsconfig.json --out ../../docs/dora --excludeTags license ./src/index.ts",
-        "test": "tp cover"
+        "build": "rollup -c"
+    },
+    "dependencies": {
+        "js-yaml": "^4.1.0",
+        "micromatch": "^4.0.5",
+        "ttypescript": "^1.5.13"
+    },
+    "devDependencies": {
+        "@types/js-yaml": "^4.0.5",
+        "@types/micromatch": "^4.0.2"
     }
 }
