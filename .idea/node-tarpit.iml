@@ -3,35 +3,35 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/packages/core/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/common/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/transformer/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/config/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/http/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/tora/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/schedule/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/rabbitmq/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/dora/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/judge/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/barbeque/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/error/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/common/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/http/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/schedule/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/tora/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/projects/zoo/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/supports/abraham/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/supports/cli/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tools/barbeque/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tools/dora/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tools/error/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tools/judge/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tools/transformer/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/tora/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/config/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/core/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/http/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/schedule/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/rabbitmq/lib" />
       <excludeFolder url="file://$MODULE_DIR$/projects/zoo/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/tools/barbeque/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/tools/dora/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/tools/error/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/tools/judge/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/tools/transformer/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/cli/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/abraham/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/rabbitmq/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/schedule/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/core/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/tora/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/http/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/dora/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/error/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/judge/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/barbeque/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/transformer/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/config/lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

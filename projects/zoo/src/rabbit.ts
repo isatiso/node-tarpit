@@ -7,13 +7,13 @@
  */
 
 import { Platform, TpInspector, TpRoot } from '@tarpit/core'
-import { Consume, JsonMessage, Producer, Publish, RabbitDefine, RabbitMQModule, TpConsumer, TpProducer } from '@tarpit/rabbitmq'
+import { ConfirmProducer, Consume, JsonMessage, Publish, RabbitDefine, RabbitMQModule, TpConsumer, TpProducer } from '@tarpit/rabbitmq'
 import { ScheduleModule, TpSchedule, Trigger } from '@tarpit/schedule'
 
 @TpProducer({})
 export class TestProducer {
 
-    @Publish('test.x.topic', 'test.a.topic') send_topic_message!: Producer<{ a: string, b: number }>
+    @Publish('test.x.topic', 'test.a.topic') send_topic_message!: ConfirmProducer<{ a: string, b: number }>
 
 }
 
@@ -35,13 +35,24 @@ export class TestSchedule {
     constructor(
         private producer: TestProducer,
     ) {
+        setTimeout(async () => {
+            const message = { a: 'task', b: Date.now() }
+            console.log(message)
+            // console.log(this.producer.send_topic_message)
+            for (let i = 0; i < 10000; i++) {
+                this.producer.send_topic_message.send(message, {}).catch(err => console.log(err))
+            }
+        }, 0)
     }
 
-    @Trigger('*/2 * * * * *', '定时任务')
+    @Trigger('*/2 * * * *', '定时任务')
     async task() {
-        const message = { a: 'task', b: Date.now() }
-        console.log(message)
-        await this.producer.send_topic_message.send(message)
+        // const message = { a: 'task', b: Date.now() }
+        // console.log(message)
+        // console.log(this.producer.send_topic_message)
+        // for (let i = 0; i < 10000; i++) {
+        //     this.producer.send_topic_message.send(message)
+        // }
     }
 }
 
@@ -49,7 +60,6 @@ const definition = new RabbitDefine()
     .define_exchange('test.x.topic', 'topic')
     .define_exchange('test.x.direct', 'direct')
     .define_exchange('test.x.delay', 'x-delayed-message', { arguments: { 'x-delayed-type': 'topic' } })
-    .define_exchange('test.x.delay.1', 'x-delayed-message')
     .define_queue('test.a')
     .define_queue('test.b')
     .bind_queue('test.x.topic', 'test.a', 'test.a.*')
@@ -67,7 +77,7 @@ const definition = new RabbitDefine()
     ],
     entries: [
         TestProducer,
-        TestConsumer,
+        // TestConsumer,
         TestSchedule,
     ],
 })

@@ -1,15 +1,15 @@
 {
     "name": "tarpit-root",
     "private": true,
-    "author": "Plankroot <sieglive@gmail.com>",
+    "author": "Cao Jiahang <sieglive@gmail.com>",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "workspaces": [
+        "modules/*",
         "packages/*",
         "projects/*",
-        "supports/*",
-        "tools/*"
+        "supports/*"
     ],
     "devDependencies": {
         "@types/node": "18",
