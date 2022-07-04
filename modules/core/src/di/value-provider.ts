@@ -36,7 +36,7 @@ export class ValueProvider<M> implements Provider<M> {
     }
 
     static set_value(provider: ValueProvider<any>, value: any, multi: boolean) {
-        if (provider.multi !== multi) {
+        if (Boolean(provider.multi) !== multi) {
             throw new Error('Cannot mix multi providers and regular providers')
         }
         if (provider.multi) {

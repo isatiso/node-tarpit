@@ -31,9 +31,7 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
-        "docs": "typedoc --tsconfig tsconfig.json --out ../../docs/content-parser --excludeTags license ./src/index.ts",
-        "test": "tp cover"
+        "build": "rollup -c"
     },
     "dependencies": {
         "iconv-lite": "^0.6.3",

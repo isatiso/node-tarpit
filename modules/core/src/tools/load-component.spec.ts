@@ -86,9 +86,19 @@ describe('load-component.ts', function() {
             expect(provider3).to.be.instanceof(FactoryProvider)
             expect(provider3?.create()).to.be.instanceof(Decorated)
             expect(provider3?.create()).to.not.equal(provider3?.create())
-            const provider4 = def_to_provider({ provide: Decorated, useValue: 'Decorated' }, injector)
+            const provider4 = def_to_provider({ provide: 'Decorated', useValue: 'Decorated' }, injector)
             expect(provider4).to.be.instanceof(ValueProvider)
             expect(provider4?.create()).to.equal('Decorated')
+
+            expect(() => def_to_provider({ provide: 'Decorated', useValue: 'Decorated', multi: true }, injector)).to.throw()
+
+            const provider5 = def_to_provider({ provide: 'Decorated multi', useValue: 'a', multi: true }, injector)
+            const provider6 = def_to_provider({ provide: 'Decorated multi', useValue: 'b', multi: true }, injector)
+            const provider7 = def_to_provider({ provide: 'Decorated multi', useValue: 'c', multi: true }, injector)
+            expect(provider5).to.be.instanceof(ValueProvider)
+            expect(provider6).to.equal(provider5)
+            expect(provider7).to.equal(provider5)
+            expect(provider5?.create()).to.eql(['a', 'b', 'c'])
         })
 
         it('should throw error if given useClass of Constructor is not a TpWorker', function() {
