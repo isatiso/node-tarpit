@@ -9,10 +9,10 @@
 import { TpService } from '@tarpit/core'
 import { Readable } from 'stream'
 import zlib from 'zlib'
-import { AbstractHttpDecompressor } from '../inner/abstract-http-decompressor'
+import { AbstractRabbitDecompressor } from '../inner/abstract-rabbit-decompressor'
 
 @TpService({ inject_root: true })
-export class TpHttpDecompressor extends AbstractHttpDecompressor {
+export class RabbitDecompressor extends AbstractRabbitDecompressor {
 
     private decompressors = new Map<string, (req: Readable) => Readable>()
 

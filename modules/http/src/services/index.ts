@@ -9,14 +9,12 @@
 export { AbstractAuthenticator } from './inner/abstract-authenticator'
 export { AbstractCacheProxy } from './inner/abstract-cache-proxy'
 export { AbstractErrorFormatter } from './inner/abstract-error-formatter'
-export { AbstractHttpDecompressor } from './inner/abstract-http-decompressor'
 export { AbstractHttpHooks } from './inner/abstract-http-hooks'
 export { AbstractResponseFormatter } from './inner/abstract-response-formatter'
 
 export { TpAuthenticator } from './impl/tp-authenticator'
 export { TpCacheProxy } from './impl/tp-cache-proxy'
 export { TpErrorFormatter } from './impl/tp-error-formatter'
-export { TpHttpDecompressor } from './impl/tp-http-decompressor'
 export { TpHttpHooks } from './impl/tp-http-hooks'
 export { TpResponseFormatter } from './impl/tp-response-formatter'
 

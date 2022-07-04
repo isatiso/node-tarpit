@@ -17,8 +17,6 @@ export class ConfirmProducer<T extends string | object | Buffer> extends RabbitS
     private channel_drain = true
     private readonly _cache = new Barbeque<[content: Buffer, options: Options.Publish, callback: (err: any, ok: Replies.Empty) => void]>()
     private readonly _send: (content: Buffer, options: Options.Publish, callback: (err: any, ok: Replies.Empty) => void) => void
-    private count = 0
-    private count_a = 0
 
     constructor(
         target: string,
@@ -32,12 +30,7 @@ export class ConfirmProducer<T extends string | object | Buffer> extends RabbitS
         })
 
         if (routing_key !== undefined) {
-            this._send = (content, options, callback) => {
-                this.channel_drain = this.channel!.publish(target, routing_key, content, options, callback)
-                if (!this.channel_drain) {
-                    console.log('wait buffer', this.count, this.count_a)
-                }
-            }
+            this._send = (content, options, callback) => this.channel_drain = this.channel!.publish(target, routing_key, content, options, callback)
         } else {
             this._send = (content, options, callback) => this.channel_drain = this.channel!.sendToQueue(target, content, options, callback)
         }

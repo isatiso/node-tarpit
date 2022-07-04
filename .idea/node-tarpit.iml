@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/packages/barbeque/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/error/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/common/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/content-type/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/core/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/http/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/src" isTestSource="false" />
@@ -32,6 +33,7 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/barbeque/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/transformer/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/config/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/content-type/lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

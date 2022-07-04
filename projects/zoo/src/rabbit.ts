@@ -76,9 +76,9 @@ const definition = new RabbitDefine()
         { provide: RabbitDefine, useValue: definition, root: true },
     ],
     entries: [
-        TestProducer,
-        // TestConsumer,
-        TestSchedule,
+        // TestProducer,
+        TestConsumer,
+        // TestSchedule,
     ],
 })
 export class TestRoot {

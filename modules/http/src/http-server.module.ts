@@ -5,13 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
+
+import { ContentTypeModule } from '@tarpit/content-type'
 import { TpLoader, TpModule } from '@tarpit/core'
 import { TpRouter, TpRouterToken } from './annotations'
 import {
     AbstractAuthenticator,
     AbstractCacheProxy,
     AbstractErrorFormatter,
-    AbstractHttpDecompressor,
     AbstractHttpHooks,
     AbstractResponseFormatter,
     HttpBodyReader,
@@ -22,7 +23,6 @@ import {
     TpAuthenticator,
     TpCacheProxy,
     TpErrorFormatter,
-    TpHttpDecompressor,
     TpHttpHooks,
     TpResponseFormatter
 } from './services'
@@ -30,13 +30,15 @@ import { collect_routes } from './tools/collect-routes'
 
 @TpModule({
     inject_root: true,
+    imports: [
+        ContentTypeModule,
+    ],
     providers: [
         HttpUrlParser,
         HttpBodyReader,
         HttpInspector,
         HttpRouters,
         HttpServer,
-        { provide: AbstractHttpDecompressor, useClass: TpHttpDecompressor, root: true },
         { provide: AbstractCacheProxy, useClass: TpCacheProxy, root: true },
         { provide: AbstractHttpHooks, useClass: TpHttpHooks, root: true },
         { provide: AbstractAuthenticator, useClass: TpAuthenticator, root: true },

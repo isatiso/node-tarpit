@@ -6,18 +6,15 @@
  * found in the LICENSE file at source root.
  */
 
+import { json_deserialize, MIMEContent } from '@tarpit/content-type'
 import { MismatchDescription } from '@tarpit/judge'
 import { StandardError, throw_bad_request } from '../../errors'
 import { ApiJudgement, OnJudgementError } from '../api-judgement'
 import { TpRequest } from '../tp-request'
-import { TextBody } from './text-body'
 
-function parse_json_body(str: string): JsonBody<any> {
-    if (!str) {
-        throw new StandardError(400, 'Request body is empty')
-    }
-    const json_res = JSON.parse(str)
-    if (typeof json_res !== 'object' || Array.isArray(json_res)) {
+function parse_json_body(content: MIMEContent<any>): JsonBody<any> {
+    const json_res = json_deserialize(content)
+    if (Object.prototype.toString.call(json_res) !== '[object Object]') {
         throw new StandardError(400, 'Invalid JSON, only supports object')
     }
     return new JsonBody(json_res)
@@ -25,10 +22,9 @@ function parse_json_body(str: string): JsonBody<any> {
 
 export class JsonBody<T> extends ApiJudgement<T> {
 
-    static parse(request: TpRequest, buf: Buffer): any {
-        const str = TextBody.parse(request, buf)
+    static parse(request: TpRequest, content: MIMEContent<any>): any {
         try {
-            return parse_json_body(str)
+            return parse_json_body(content)
         } catch (e) {
             if (!(e instanceof StandardError)) {
                 throw new StandardError(400, 'parse body error', { origin: e })

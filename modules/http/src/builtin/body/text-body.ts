@@ -6,18 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import iconv from 'iconv-lite'
-import { StandardError } from '../../errors'
+import { MIMEContent, text_deserialize } from '@tarpit/content-type'
 import { TpRequest } from '../tp-request'
 
 export class TextBody extends String {
 
-    static parse(request: TpRequest, buf: Buffer) {
-        const charset = request.charset || 'utf-8'
-        if (!iconv.encodingExists(charset)) {
-            throw new StandardError(415, 'specified charset unsupported',
-                { detail: { type: 'charset.unsupported', charset } })
-        }
-        return iconv.decode(buf, charset)
+    static parse(request: TpRequest, content: MIMEContent<any>) {
+        return text_deserialize(content)
     }
 }

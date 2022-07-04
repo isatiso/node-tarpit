@@ -10,6 +10,7 @@ import { InjectorType, Provider } from '../types'
 
 export class NullInjector implements InjectorType {
 
+    readonly id = 0
     readonly children: any[] = []
 
     has(_token: any) {

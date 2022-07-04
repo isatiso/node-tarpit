@@ -26,6 +26,7 @@ export class ClassProvider<M extends object> implements Provider<M> {
         private cls: Constructor<M>,
     ) {
         injector.set(token, this)
+        injector.emit('provider-change', token)
     }
 
     static create<M extends object>(injector: Injector, def: ClassProviderDef<M>): ClassProvider<M> {

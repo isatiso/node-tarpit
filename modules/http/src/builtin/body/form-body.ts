@@ -6,27 +6,16 @@
  * found in the LICENSE file at source root.
  */
 
+import { form_deserialize, MIMEContent } from '@tarpit/content-type'
 import { MismatchDescription } from '@tarpit/judge'
 import { throw_bad_request } from '../../errors'
 import { ApiJudgement, OnJudgementError } from '../api-judgement'
 import { TpRequest } from '../tp-request'
-import { TextBody } from './text-body'
 
 export class FormBody<T> extends ApiJudgement<T> {
 
-    static parse(request: TpRequest, buf: Buffer): FormBody<any> {
-        const str = TextBody.parse(request, buf)
-        const params: any = {}
-        new URLSearchParams(str).forEach((value, key) => {
-            if (params[key] === undefined) {
-                params[key] = value
-            } else if (typeof params[key] === 'string') {
-                params[key] = [params[key], value]
-            } else {
-                params[key].push(value)
-            }
-        })
-        return new FormBody(params)
+    static parse(request: TpRequest, content: MIMEContent<any>): FormBody<any> {
+        return new FormBody(form_deserialize(content))
     }
 
     protected override on_error(prop: string, desc: MismatchDescription, on_error?: OnJudgementError): never {

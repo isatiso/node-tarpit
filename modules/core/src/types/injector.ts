@@ -16,11 +16,14 @@ export interface TpEventCollector {
     'terminate-time': (duration: number) => void
     'terminate': () => void
     'unused-provider': (path: Constructor<any>[]) => void
+    'provider-change': (token: any) => void
 }
 
 export type TpEvent = keyof TpEventCollector
 
 export interface InjectorType {
+
+    id: number
 
     children: InjectorType[]
 

@@ -14,6 +14,7 @@ export interface ValueProviderDef<T> {
     provide: any
     useValue: T
     root?: boolean
+    multi?: boolean
 }
 
 export interface ClassProviderDef<T extends object> {

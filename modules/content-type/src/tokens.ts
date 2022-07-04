@@ -6,8 +6,5 @@
  * found in the LICENSE file at source root.
  */
 
-import { Readable } from 'stream'
-
-export abstract class AbstractHttpDecompressor {
-    abstract decompress(req: Readable, content_encoding: string): Readable
-}
+export const decompressor_token = Symbol.for('œœ.token.content-type.decompressor')
+export const deserializer_token = Symbol.for('œœ.token.content-type.deserializer')

@@ -6,52 +6,58 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpRequest } from '../tp-request'
-import { FormBody } from './form-body'
+import { ContentTypeService, MIMEContent } from '@tarpit/content-type'
 import { JsonBody } from './json-body'
-import { RawBody } from './raw-body'
-import { TextBody } from './text-body'
 
-export type DetectedBodyType<R> =
-    | { type: 'json', body: JsonBody<R> }
-    | { type: 'form', body: FormBody<R> }
+export type DetectedBodyType<T> =
+    | { type: 'json', body: JsonBody<T> }
     | { type: 'text', body: string }
     | { type: 'buffer', body: Buffer }
+    | { type: 'unknown', body: Buffer }
+    | { type: 'custom', body: any }
 
-export class BodyDetector {
+function is_object(value: any) {
+    return Object.prototype.toString.call(value) === '[object Object]'
+}
 
-    private static jsonTypes: [string, ...string[]] = ['application/json', 'application/json-patch+json', 'application/vnd.api+json', 'application/csp-report']
-    private static formTypes: [string, ...string[]] = ['application/x-www-form-urlencoded']
-    private static textTypes: [string, ...string[]] = ['text/plain', 'text/xml', 'application/xml', 'text/html']
+export class BodyDetector<R = unknown> {
 
-    private readonly type: 'json' | 'form' | 'text' | 'buffer'
-    private readonly body: any
+    private type: string | undefined
+    private charset: string | undefined
+    private readonly raw: Buffer
+    private text: string | undefined
+    private body: any
+    private resolved?: DetectedBodyType<any>
 
     constructor(
-        private request: TpRequest,
-        private buf: Buffer
+        private content_type: ContentTypeService,
+        private content: MIMEContent<any>
     ) {
-        if (this.request.is(...BodyDetector.jsonTypes)) {
-            this.type = 'json'
-            this.body = JsonBody.parse(this.request, this.buf)
-        } else if (this.request.is(...BodyDetector.formTypes)) {
-            this.type = 'form'
-            this.body = FormBody.parse(this.request, this.buf)
-        } else if (this.request.is(...BodyDetector.textTypes)) {
-            this.type = 'text'
-            this.body = TextBody.parse(this.request, this.buf) || ''
-        } else {
-            this.type = 'buffer'
-            this.body = RawBody.parse(this.request, this.buf)
+        this.type = this.content.type
+        this.charset = this.content.charset
+        this.raw = this.content.raw
+    }
+
+    async detect(): Promise<DetectedBodyType<R>> {
+
+        if (this.resolved) {
+            return this.resolved
         }
-    }
 
-    static parse(request: TpRequest, buf: Buffer) {
-        return new BodyDetector(request, buf)
-    }
+        await this.content_type.deserialize(this.content)
+        this.text = this.content.text
+        this.body = this.content.data
 
-    detect<R = unknown>(): DetectedBodyType<R> {
-        const { type, body } = this
-        return { type, body }
+        if (is_object(this.body)) {
+            return this.resolved = { type: 'json', body: new JsonBody<R>(this.body) }
+        } else if (typeof this.body === 'string') {
+            return this.resolved = { type: 'text', body: this.body }
+        } else if (Buffer.isBuffer(this.body)) {
+            return this.resolved = { type: 'buffer', body: this.body }
+        } else if (this.body) {
+            return this.resolved = { type: 'custom', body: this.body }
+        } else {
+            return this.resolved = { type: 'unknown', body: this.raw }
+        }
     }
 }

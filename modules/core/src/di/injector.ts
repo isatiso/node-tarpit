@@ -13,9 +13,12 @@ import { ValueProvider } from './value-provider'
 
 export class Injector implements InjectorType, InjectorEventEmitter {
 
+    static instance_count = 1
+
+    readonly id = Injector.instance_count++
     readonly children: Injector[] = []
+    readonly root: Injector
     protected providers: Map<any, Provider<any>> = new Map([])
-    public readonly root: Injector
 
     private constructor(
         protected parent: InjectorType,

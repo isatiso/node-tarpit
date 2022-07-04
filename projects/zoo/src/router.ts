@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Inject, Optional, TpInspector, TpRoot, TpService } from '@tarpit/core'
-import { BodyDetector, HttpServerModule, Post, TpRouter } from '@tarpit/http'
+import { Inject, Injector, Optional, Platform, TpInspector, TpRoot, TpService } from '@tarpit/core'
+import { BodyDetector, HttpServerModule, Post, TempToken, TpRouter } from '@tarpit/http'
 import { Jtl } from '@tarpit/judge'
 import { TestService1 } from './services/test-service.1'
 import { SymbolToken, TestService2 } from './services/test-service.2'
@@ -29,6 +29,7 @@ class TestService {
         TestService,
         TestService1,
         TestService2,
+
         {
             provide: SymbolToken,
             useFactory: (aaa: number) => {
@@ -52,7 +53,9 @@ class TestRouter {
         private aaa: number,
         // private producer: TestProducer,
         // private platform: Platform
+        private injector: Injector,
     ) {
+        console.log(this.injector.get(TempToken)?.create())
     }
 
     @Post('asd')
@@ -80,13 +83,37 @@ class TestRouter {
 }
 
 @TpRoot({
-    imports: [
-        HttpServerModule,
-    ],
     entries: [
         TestRouter
     ],
+    providers: [
+        { provide: TempToken, useValue: 'a', multi: true, root: true },
+        { provide: TempToken, useValue: 'b', multi: true, root: true },
+        { provide: TempToken, useValue: 'c', multi: true, root: true },
+        { provide: TempToken, useValue: 'd', multi: true, root: true },
+    ]
 })
 export class TestRoot {
 }
+
+(async () => {
+    const platform = new Platform({
+        http: {
+            port: 3000,
+        },
+        rabbitmq: {
+            url: 'amqp://plank:ChKNwziiY84DjUP@112.74.191.78:5672',
+            prefetch: 10,
+            socket_options: {}
+        }
+    }).import(HttpServerModule)
+    console.log('oppppp')
+    platform.bootstrap(TestRoot).start()
+    await platform.expose(TpInspector)?.wait_start()
+    // const producer = platform.expose(TestProducer)!
+    // console.log(producer)
+
+    // setInterval(() => producer.send_topic_message.send({ a: 'asd', b: Date.now() }), 500)
+})()
+
 

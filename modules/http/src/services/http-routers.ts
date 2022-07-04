@@ -7,6 +7,7 @@
  */
 
 import { ConfigData } from '@tarpit/config'
+import { ContentTypeService } from '@tarpit/content-type'
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { throw_native_error } from '@tarpit/error'
 import { IncomingMessage, ServerResponse } from 'http'
@@ -50,6 +51,7 @@ export class HttpRouters {
         private config_data: ConfigData,
         private url_parser: HttpUrlParser,
         private body_reader: HttpBodyReader,
+        private content_type: ContentTypeService,
     ) {
     }
 
@@ -102,6 +104,7 @@ export class HttpRouters {
         const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
         const proxy_config = this.proxy_config
         const body_reader = this.body_reader
+        const content_type_service = this.content_type
         const cache_proxy_provider = injector.get(AbstractCacheProxy) ?? throw_native_error('No provider for AbstractCacheProxy')
         const http_hooks_provider = injector.get(AbstractHttpHooks) ?? throw_native_error('No provider for AbstractHttpHooks')
         const response_formatter_provider = injector.get(AbstractResponseFormatter) ?? throw_native_error('No provider for AbstractResponseFormatter')
@@ -124,7 +127,7 @@ export class HttpRouters {
 
             async function handle() {
 
-                const buf = await body_reader.read(req)
+                const content = await body_reader.read(req)
 
                 const auth_info = param_deps.find(d => d.token === Guardian)
                     ? await injector.get(AbstractAuthenticator)?.create().auth(request)
@@ -148,15 +151,15 @@ export class HttpRouters {
                         case ResponseCache:
                             return response_cache
                         case BodyDetector:
-                            return BodyDetector.parse(request, buf)
+                            return new BodyDetector(content_type_service, content)
                         case FormBody:
-                            return FormBody.parse(request, buf)
+                            return FormBody.parse(request, content)
                         case JsonBody:
-                            return JsonBody.parse(request, buf)
+                            return JsonBody.parse(request, content)
                         case TextBody:
-                            return TextBody.parse(request, buf)
+                            return TextBody.parse(request, content)
                         case RawBody:
-                            return RawBody.parse(request, buf)
+                            return RawBody.parse(request, content)
                         case Guardian:
                             return new Guardian(auth_info)
                         case RequestHeader:
