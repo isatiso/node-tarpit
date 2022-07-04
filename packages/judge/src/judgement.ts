@@ -7,10 +7,11 @@
  */
 
 import { JudgementRule, Path, PathOfType, PathValue } from './__types__'
-import { Matcher } from './matcher'
+import { Matcher, MismatchDescription } from './matcher'
 import { Reference } from './reference'
 
 export type MatcherInferType<T extends Matcher<any> | RegExp> = T extends RegExp ? string : T extends Matcher<infer V> ? V : never
+export type OnJudgementError = (prop: string, desc: MismatchDescription) => string
 
 /**
  * 继承 Reference 增加值类型检查功能。
@@ -35,5 +36,26 @@ export class Judgement<T> extends Reference<T> {
             return res
         }
         return def
+    }
+
+    do_if<M extends (Matcher<any> | RegExp), P extends PathOfType<T, MatcherInferType<M>>>(prop: P, matcher: M, then: (res: PathValue<T, P>) => void): void {
+        const res = super.get(prop)
+        if (res === undefined) {
+            return
+        }
+        Matcher.if(res, matcher) && then(res)
+    }
+
+    ensure<M extends (Matcher<any> | RegExp), P extends PathOfType<T, MatcherInferType<M>>>(prop: P, matcher: M, on_error?: OnJudgementError): Exclude<PathValue<T, P>, undefined> {
+        const res = super.get(prop)
+        const mismatch_info = Matcher.mismatch(res, matcher)
+        if (mismatch_info) {
+            this.on_error(prop, mismatch_info, on_error)
+        }
+        return res as any
+    }
+
+    protected on_error(prop: string, desc: MismatchDescription, on_error?: (prop: string, desc: MismatchDescription) => string): never {
+        throw new Error(on_error?.(prop, desc) || `Value of [${prop}] is not match rule: [${desc.rule}]`)
     }
 }

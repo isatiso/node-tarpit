@@ -6,10 +6,14 @@
  * found in the LICENSE file at source root.
  */
 
-import { BaseMessage } from './base-message'
+import { ConsumeMessage } from 'amqplib'
 
-export class TextMessage extends BaseMessage {
+export class TextMessage extends String {
 
-    public readonly content = this.raw
-
+    constructor(
+        public readonly message: ConsumeMessage,
+        content: string,
+    ) {
+        super(content)
+    }
 }

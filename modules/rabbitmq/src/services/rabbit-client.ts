@@ -35,7 +35,7 @@ export class RabbitClient {
         this.injector.on('rabbitmq-connected', (conn: Connection) => {
             this.assert_definition(conn)
                 .then(conn => this.injector.emit('rabbitmq-checked-out', conn))
-                // .catch(err => console.log('assert definition error', err))
+                .catch(err => console.log('assert definition error', err))
         })
 
         await this.connector.connect()

@@ -209,12 +209,21 @@ describe('matcher.ts', function() {
             })
         })
 
-        describe('#isNull', function() {
+        describe('#is_null', function() {
             it('should check value is null', function() {
                 expect(Jtl.is_null.mismatch(null)).to.be.undefined
                 expect(Jtl.is_null.mismatch('asd')).to.have.property('rule')
                 expect(Jtl.is_null.mismatch([])).to.have.property('rule')
                 expect(Jtl.is_null.mismatch(['asd'])).to.have.property('rule')
+            })
+        })
+
+        describe('#is_void', function() {
+            it('should check value is null', function() {
+                expect(Jtl.is_void.mismatch(undefined)).to.be.undefined
+                expect(Jtl.is_void.mismatch('asd')).to.have.property('rule')
+                expect(Jtl.is_void.mismatch([])).to.have.property('rule')
+                expect(Jtl.is_void.mismatch(['asd'])).to.have.property('rule')
             })
         })
 

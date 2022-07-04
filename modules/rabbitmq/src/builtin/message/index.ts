@@ -6,6 +6,5 @@
  * found in the LICENSE file at source root.
  */
 
-export { BaseMessage } from './base-message'
 export { TextMessage } from './text-message'
 export { JsonMessage } from './json-message'

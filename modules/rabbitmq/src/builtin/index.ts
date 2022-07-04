@@ -6,5 +6,5 @@
  * found in the LICENSE file at source root.
  */
 
-export { JsonMessage, TextMessage, BaseMessage } from './message'
+export { JsonMessage, TextMessage } from './message'
 export { Consumer, ConfirmProducer, Producer, RabbitSession } from './session'

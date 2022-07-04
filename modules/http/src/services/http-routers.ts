@@ -14,7 +14,7 @@ import { IncomingMessage, ServerResponse } from 'http'
 import { UrlWithParsedQuery } from 'url'
 import { ApiMethod, HttpHandler, HttpHandlerKey } from '../__types__'
 import { TpRouter } from '../annotations'
-import { BodyDetector, FormBody, Guardian, HttpContext, JsonBody, Params, RawBody, RequestHeader, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
+import { FormBody, Guardian, HttpContext, JsonBody, MimeBody, Params, RawBody, RequestHeader, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
 import { Finish, StandardError, TpHttpError } from '../errors'
 import { RouteUnit } from '../tools/collect-routes'
 import { HTTP_STATUS } from '../tools/http-status'
@@ -29,7 +29,7 @@ import { AbstractErrorFormatter } from './inner/abstract-error-formatter'
 import { AbstractHttpHooks } from './inner/abstract-http-hooks'
 import { AbstractResponseFormatter } from './inner/abstract-response-formatter'
 
-const BODY_TOKEN: any[] = [BodyDetector, JsonBody, FormBody, TextBody, RawBody]
+const BODY_TOKEN: any[] = [MimeBody, JsonBody, FormBody, TextBody, RawBody]
 const REQUEST_TOKEN: any[] = [RequestHeader, Guardian, Params, IncomingMessage, TpRequest]
 const RESPONSE_TOKEN: any[] = [ServerResponse, TpResponse]
 const ALL_HANDLER_TOKEN: any[] = [HttpContext, ResponseCache].concat(BODY_TOKEN, REQUEST_TOKEN, RESPONSE_TOKEN)
@@ -128,6 +128,9 @@ export class HttpRouters {
             async function handle() {
 
                 const content = await body_reader.read(req)
+                if (param_deps.find(d => d.token === MimeBody)) {
+                    await content_type_service.deserialize(content)
+                }
 
                 const auth_info = param_deps.find(d => d.token === Guardian)
                     ? await injector.get(AbstractAuthenticator)?.create().auth(request)
@@ -150,8 +153,8 @@ export class HttpRouters {
                             return response
                         case ResponseCache:
                             return response_cache
-                        case BodyDetector:
-                            return new BodyDetector(content_type_service, content)
+                        case MimeBody:
+                            return new MimeBody(content)
                         case FormBody:
                             return FormBody.parse(request, content)
                         case JsonBody:

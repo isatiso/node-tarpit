@@ -6,12 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
+import { ContentTypeModule } from '@tarpit/content-type'
 import { TpLoader, TpModule } from '@tarpit/core'
 import { TpConsumer, TpProducer, TpRabbitMQToken } from './annotations'
 import { RabbitHooks } from './services/impl/rabbit-hooks'
-import { RabbitMessageReader } from './services/impl/rabbit-message-reader'
 import { AbstractRabbitHooks } from './services/inner/abstract-rabbit-hooks'
-import { AbstractRabbitMessageReader } from './services/inner/abstract-rabbit-message-reader'
 import { RabbitClient } from './services/rabbit-client'
 import { RabbitConnector } from './services/rabbit-connector'
 import { RabbitConsumer } from './services/rabbit-consumer'
@@ -21,6 +20,9 @@ import { collect_consumes, collect_produces } from './tools'
 
 @TpModule({
     inject_root: true,
+    imports: [
+        ContentTypeModule,
+    ],
     providers: [
         RabbitClient,
         RabbitConnector,
@@ -28,7 +30,6 @@ import { collect_consumes, collect_produces } from './tools'
         RabbitProducer,
         RabbitSessionCollector,
         { provide: AbstractRabbitHooks, useClass: RabbitHooks },
-        { provide: AbstractRabbitMessageReader, useClass: RabbitMessageReader },
     ],
 })
 export class RabbitMQModule {

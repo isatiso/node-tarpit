@@ -7,9 +7,9 @@
  */
 
 import { json_deserialize, MIMEContent } from '@tarpit/content-type'
-import { MismatchDescription } from '@tarpit/judge'
+import { MismatchDescription, OnJudgementError } from '@tarpit/judge'
 import { StandardError, throw_bad_request } from '../../errors'
-import { ApiJudgement, OnJudgementError } from '../api-judgement'
+import { ApiJudgement } from '../api-judgement'
 import { TpRequest } from '../tp-request'
 
 function parse_json_body(content: MIMEContent<any>): JsonBody<any> {

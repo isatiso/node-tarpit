@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-export { DetectedBodyType, BodyDetector } from './body-detector'
 export { FormBody } from './form-body'
 export { JsonBody } from './json-body'
 export { RawBody } from './raw-body'
 export { TextBody } from './text-body'
+export { MimeBody } from './mime-body'

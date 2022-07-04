@@ -7,9 +7,9 @@
  */
 
 import { form_deserialize, MIMEContent } from '@tarpit/content-type'
-import { MismatchDescription } from '@tarpit/judge'
+import { MismatchDescription, OnJudgementError } from '@tarpit/judge'
 import { throw_bad_request } from '../../errors'
-import { ApiJudgement, OnJudgementError } from '../api-judgement'
+import { ApiJudgement } from '../api-judgement'
 import { TpRequest } from '../tp-request'
 
 export class FormBody<T> extends ApiJudgement<T> {

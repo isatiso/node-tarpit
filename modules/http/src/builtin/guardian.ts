@@ -6,10 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { MismatchDescription } from '@tarpit/judge'
+import { MismatchDescription, OnJudgementError } from '@tarpit/judge'
 import { TpHttpAuthInfo } from '../__types__'
 import { throw_unauthorized } from '../errors'
-import { ApiJudgement, OnJudgementError } from './api-judgement'
+import { ApiJudgement } from './api-judgement'
 
 export class Guardian extends ApiJudgement<TpHttpAuthInfo> {
 

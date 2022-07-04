@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { ContentTypeService, MIMEContent } from '@tarpit/content-type'
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { throw_native_error } from '@tarpit/error'
 import { ConsumeMessage } from 'amqplib'
@@ -14,7 +15,6 @@ import { Consumer, JsonMessage, TextMessage } from '../builtin'
 import { Ack, ack_message, MessageDead, MessageError, MessageRequeue } from '../errors'
 import { ConsumeUnit } from '../tools'
 import { AbstractRabbitHooks } from './inner/abstract-rabbit-hooks'
-import { AbstractRabbitMessageReader } from './inner/abstract-rabbit-message-reader'
 
 const EXCEPT_TOKEN_SET = new Set([TextMessage, JsonMessage])
 
@@ -22,7 +22,7 @@ const EXCEPT_TOKEN_SET = new Set([TextMessage, JsonMessage])
 export class RabbitConsumer extends Array<[meta: TpConsumer, units: ConsumeUnit[]]> {
 
     constructor(
-        private message_reader: AbstractRabbitMessageReader,
+        private content_type_parser: ContentTypeService,
     ) {
         super()
     }
@@ -34,7 +34,7 @@ export class RabbitConsumer extends Array<[meta: TpConsumer, units: ConsumeUnit[
     }
 
     private put_consumer(injector: Injector, unit: ConsumeUnit): void {
-        const message_reader = this.message_reader
+        const content_type_parser = this.content_type_parser
         const consumer = new Consumer(injector)
         const rabbit_hooks_provider = injector.get(AbstractRabbitHooks) ?? throw_native_error('No provider for AbstractRabbitHooks')
         const param_deps = get_providers(unit, injector, EXCEPT_TOKEN_SET)
@@ -47,14 +47,19 @@ export class RabbitConsumer extends Array<[meta: TpConsumer, units: ConsumeUnit[
                 throw new Error('Channel closed by server.')
             }
 
-            let content = ''
+            let content: MIMEContent<any> | undefined = undefined
             let handle_result: any
 
             async function handle(msg: ConsumeMessage) {
 
                 await hooks.on_init(msg)
 
-                content = await message_reader.read(msg)
+                const content_type = msg.properties.contentType || 'application/json; charset=utf-8'
+                const content_encoding = msg.properties.contentEncoding || 'identity'
+
+                const content = await content_type_parser.parse(msg.content, { content_encoding, content_type })
+                const text = content.text ?? ''
+                const data = content.data
 
                 return unit.handler(...param_deps.map(({ provider, token }, index) => {
                     if (provider) {
@@ -62,9 +67,9 @@ export class RabbitConsumer extends Array<[meta: TpConsumer, units: ConsumeUnit[
                     }
                     switch (token) {
                         case TextMessage:
-                            return new TextMessage(content, msg.fields, msg.properties)
+                            return new TextMessage(msg, text)
                         case JsonMessage:
-                            return new JsonMessage(content, msg.fields, msg.properties)
+                            return new JsonMessage(msg, data)
                         default:
                             return undefined
                     }

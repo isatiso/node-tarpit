@@ -25,7 +25,7 @@ export class TestConsumer {
 
     @Consume('test.a')
     async listen_queue_a(msg: JsonMessage<{ a: string, b: string }>) {
-        console.log('json message', msg.content)
+        console.log('json message', msg.data)
     }
 }
 

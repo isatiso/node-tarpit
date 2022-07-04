@@ -169,7 +169,8 @@ export namespace Jtl {
     export const array = new Matcher<Array<any>>(`is array`, (target: any) => Array.isArray(target))
     export const non_empty_array = new Matcher<Array<any>>(`is non-empty array`, (target: any) => Array.isArray(target) && target.length !== 0)
 
-    export const is_null = new Matcher<string>(`is null`, (target: any) => target === null)
+    export const is_null = new Matcher<null>(`is null`, (target: any) => target === null)
+    export const is_void = new Matcher<undefined>(`is void`, (target: any) => target === undefined)
     export const string = new Matcher<string>(`is string`, (target: any) => typeof target === 'string')
     export const non_empty_string = new Matcher<string>(`is non-empty string`, (target: any) => typeof target === 'string' && target !== '')
     export const number = new Matcher<number>(`is number`, (target: any) => typeof target === 'number')

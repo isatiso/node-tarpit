@@ -32,7 +32,7 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "docs": "typedoc --tsconfig tsconfig.json --out ../../docs/error --excludeTags license ./src/index.ts",
+        "docs": "typedoc --tsconfig tsconfig.json --out ../../docs/$(basename $(pwd)) --excludeTags license ./src/index.ts",
         "test": "tp cover"
     }
 }
