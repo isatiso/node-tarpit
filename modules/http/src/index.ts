@@ -15,6 +15,7 @@ declare module '@tarpit/config' {
             port: number
             keepalive_timeout?: number
             proxy?: ProxyConfig
+            expose_error?: boolean
             cors?: {
                 allow_origin: string
                 allow_headers: string
@@ -64,13 +65,11 @@ export {
     TpResponseFormatter,
 } from './services'
 export {
-    ApiJudgement,
     FormBody,
     JsonBody,
     RawBody,
     TextBody,
     MimeBody,
-    ContentTypeMedia,
     Guardian,
     HttpContext,
     HttpDict,

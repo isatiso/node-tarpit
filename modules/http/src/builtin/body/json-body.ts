@@ -7,24 +7,22 @@
  */
 
 import { json_deserialize, MIMEContent } from '@tarpit/content-type'
-import { MismatchDescription, OnJudgementError } from '@tarpit/judge'
+import { Judgement, MismatchDescription, OnJudgementError } from '@tarpit/judge'
 import { StandardError, throw_bad_request } from '../../errors'
-import { ApiJudgement } from '../api-judgement'
-import { TpRequest } from '../tp-request'
 
-function parse_json_body(content: MIMEContent<any>): JsonBody<any> {
+function parse_json_body(content: MIMEContent<any>): any {
     const json_res = json_deserialize(content)
     if (Object.prototype.toString.call(json_res) !== '[object Object]') {
         throw new StandardError(400, 'Invalid JSON, only supports object')
     }
-    return new JsonBody(json_res)
+    return json_res
 }
 
-export class JsonBody<T> extends ApiJudgement<T> {
+export class JsonBody<T> extends Judgement<T> {
 
-    static parse(request: TpRequest, content: MIMEContent<any>): any {
+    constructor(content: MIMEContent<any>) {
         try {
-            return parse_json_body(content)
+            super(parse_json_body(content))
         } catch (e) {
             if (!(e instanceof StandardError)) {
                 throw new StandardError(400, 'parse body error', { origin: e })
@@ -35,6 +33,6 @@ export class JsonBody<T> extends ApiJudgement<T> {
     }
 
     protected override on_error(prop: string, desc: MismatchDescription, on_error?: OnJudgementError): never {
-        throw_bad_request(on_error?.(prop, desc) ?? `Body parameter of [${prop}] is not match rule: [${desc.rule}]`, { expose: this._expose })
+        throw_bad_request(on_error?.(prop, desc) ?? `Body parameter of [${prop}] is not match rule: [${desc.rule}]`)
     }
 }

@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-export { decompressor_token, deserializer_token, } from './tokens'
-export { ContentTypeService } from './content-type.service'
+export { decompressor_token, deserializer_token } from './tokens'
+export { ContentReaderService } from './services/content-reader.service'
 export { ContentTypeModule } from './content-type.module'
 export { MIMEContent } from './types'
 export { text_deserialize } from './builtin/text'

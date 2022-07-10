@@ -6,12 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { MismatchDescription, OnJudgementError } from '@tarpit/judge'
+import { Judgement, MismatchDescription, OnJudgementError } from '@tarpit/judge'
 import { TpHttpAuthInfo } from '../__types__'
 import { throw_unauthorized } from '../errors'
-import { ApiJudgement } from './api-judgement'
 
-export class Guardian extends ApiJudgement<TpHttpAuthInfo> {
+export class Guardian extends Judgement<TpHttpAuthInfo> {
 
     public readonly certified: boolean
 
@@ -21,6 +20,6 @@ export class Guardian extends ApiJudgement<TpHttpAuthInfo> {
     }
 
     protected override on_error(prop: string, desc: MismatchDescription, on_error?: OnJudgementError): never {
-        throw_unauthorized(on_error?.(prop, desc) ?? `Token field [${prop}] is not match rule: [${desc.rule}]`, { expose: this._expose })
+        throw_unauthorized(on_error?.(prop, desc) ?? `Token field [${prop}] is not match rule: [${desc.rule}]`)
     }
 }

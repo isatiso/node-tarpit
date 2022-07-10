@@ -6,4 +6,4 @@
  * found in the LICENSE file at source root.
  */
 
-export const TpRabbitMQToken = Symbol.for('œœ.token.TpRabbitMQ')
+export const TpRabbitMQToken = Symbol.for('œœ.token.rabbitmq.TpRabbitMQ')

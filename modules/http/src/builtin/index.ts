@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-export * from './api-judgement'
 export * from './body'
 export * from './dict'
 export * from './guardian'

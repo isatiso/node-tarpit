@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import assert from 'assert'
-import contentDisposition from 'content-disposition'
+import content_disposition from 'content-disposition'
 import destroy from 'destroy'
 import fresh from 'fresh'
 import { OutgoingHttpHeaders, ServerResponse } from 'http'
@@ -15,7 +14,8 @@ import LRU from 'lru-cache'
 import mime_types from 'mime-types'
 import { extname } from 'path'
 import { Stream } from 'stream'
-import { is as typeis } from 'type-is'
+import { is as type_is } from 'type-is'
+import { throw_crash } from '../errors'
 import { HTTP_STATUS } from '../tools/http-status'
 import { on_error } from '../tools/on-error'
 import { on_finish } from '../tools/on-finished'
@@ -23,7 +23,7 @@ import { TpRequest } from './tp-request'
 
 const type_lru_cache = new LRU({ max: 100 })
 
-function get_type(type: string): string {
+function lookup_content_type(type: string): string {
     let mime_type = type_lru_cache.get<string>(type)
     if (!mime_type) {
         mime_type = mime_types.contentType(type) || ''
@@ -70,19 +70,19 @@ export class TpResponse {
             this.status = 200
         }
 
-        const setType = !this.has('Content-Type')
+        const set_type = !this.has('Content-Type')
 
         if (typeof val === 'string') {
-            if (setType) {
-                this.type = 'text'
+            if (set_type) {
+                this.set_content_type('text')
             }
             this.length = Buffer.byteLength(val)
             return
         }
 
         if (Buffer.isBuffer(val)) {
-            if (setType) {
-                this.type = 'bin'
+            if (set_type) {
+                this.set_content_type('bin')
             }
             this.length = val.length
             return
@@ -97,47 +97,38 @@ export class TpResponse {
                     this.remove('Content-Length')
                 }
             }
-            if (setType) {
-                this.type = 'bin'
+            if (set_type) {
+                this.set_content_type('bin')
             }
             return
         }
 
         // json
         this.remove('Content-Length')
-        this.type = 'json'
-    }
-
-    get socket() {
-        return this.res.socket
-    }
-
-    get header(): OutgoingHttpHeaders {
-        return this.res.getHeaders()
-    }
-
-    get headers(): OutgoingHttpHeaders {
-        return this.header
+        this.set_content_type('json')
     }
 
     get status() {
         return this.res.statusCode
     }
 
-    set status(code: number) {
+    set status(status_code: number) {
         if (this.res.headersSent) {
             return
         }
 
-        assert(Number.isInteger(code), 'status code must be a number')
-        assert(code >= 100 && code <= 999, `invalid status code: ${code}`)
-
-        this._explicit_status = true
-        this.res.statusCode = code
-        if (this.req.httpVersionMajor < 2) {
-            this.res.statusMessage = HTTP_STATUS.message_of(code) ?? ''
+        if (Number.isInteger(status_code) && status_code >= 100 && status_code <= 999) {
+            this._explicit_status = true
+            this.res.statusCode = status_code
+        } else {
+            throw_crash('ERR.INVALID_STATUS_CODE', 'status code must be an integer and within range of [100, 999]')
         }
-        if (this.body && HTTP_STATUS.is_empty(code)) {
+
+        if (this.req.httpVersionMajor < 2) {
+            this.res.statusMessage = HTTP_STATUS.message_of(status_code) ?? ''
+        }
+
+        if (this.body && HTTP_STATUS.is_empty(status_code)) {
             this.body = null
         }
     }
@@ -150,51 +141,12 @@ export class TpResponse {
         this.res.statusMessage = msg
     }
 
-    get last_modified(): Date | string {
-        const date = this.get('Last-Modified') as string
-        if (date) {
-            return new Date(date)
-        }
-        return ''
+    get socket() {
+        return this.res.socket
     }
 
-    set last_modified(val: Date | string) {
-        if (typeof val === 'string') {
-            val = new Date(val)
-        }
-        this.set('Last-Modified', val.toUTCString())
-    }
-
-    get etag(): string | undefined {
-        return this.get('ETag') as string
-    }
-
-    set etag(val: string | undefined) {
-        if (!val) {
-            this.set('ETag', '')
-            return
-        }
-        if (!/^(W\/)?"/.test(val)) {
-            val = `"${val}"`
-        }
-        this.set('ETag', val)
-    }
-
-    get type() {
-        const type = this.get('Content-Type') as string
-        if (!type) {
-            return ''
-        }
-        return type.split(';', 1)[0]
-    }
-
-    set type(type) {
-        type = get_type(type)
-        if (type) {
-            this.set('Content-Type', type)
-        } else {
-            this.remove('Content-Type')
-        }
+    get headers(): OutgoingHttpHeaders {
+        return this.res.getHeaders()
     }
 
     get writable() {
@@ -212,7 +164,7 @@ export class TpResponse {
             return +(this.get('Content-Length') ?? 0)
         }
         if (!this.body || this.body instanceof Stream) {
-            return undefined
+            return
         }
         if (typeof this.body === 'string') {
             return Buffer.byteLength(this.body)
@@ -228,14 +180,6 @@ export class TpResponse {
             this.set('Content-Length', n + '')
         }
     }
-
-    // vary(field: string) {
-    //     if (this.res.headersSent) {
-    //         return
-    //     }
-    //
-    //     vary(this.res, field)
-    // }
 
     get fresh() {
         const method = this.req.method
@@ -258,6 +202,51 @@ export class TpResponse {
         return !this.fresh
     }
 
+    get content_type() {
+        const type = this.get('Content-Type') as string
+        return type?.split(';', 1)[0]
+    }
+
+    get etag(): string | undefined {
+        return this.get('ETag') as string
+    }
+
+    get last_modified(): Date | undefined {
+        const date = this.get('Last-Modified') as string
+        return date ? new Date(date) : undefined
+    }
+
+    set_content_type(type: string) {
+        type = lookup_content_type(type)
+        if (type) {
+            this.set('Content-Type', type)
+        } else {
+            this.remove('Content-Type')
+        }
+    }
+
+    set_etag(val: string | undefined) {
+        if (!val) {
+            this.set('ETag', '')
+            return
+        }
+        if (!/^(W\/)?"/.test(val)) {
+            val = `"${val}"`
+        }
+        this.set('ETag', val)
+    }
+
+    set_last_modified(val: Date) {
+        this.set('Last-Modified', val.toUTCString())
+    }
+
+    set_attachment(filename?: string, options?: content_disposition.Options) {
+        if (filename) {
+            this.set_content_type(extname(filename))
+        }
+        this.set('Content-Disposition', content_disposition(filename, options))
+    }
+
     redirect(url: string, alt?: string) {
 
         if ('back' === url) {
@@ -269,27 +258,20 @@ export class TpResponse {
             this.status = 302
         }
 
-        if (this.request.accepts('html')) {
+        if (this.request.accepts.types('html')) {
             url = encodeURI(url)
-            this.type = 'text/html; charset=utf-8'
+            this.set_content_type('html')
             this.body = `Redirecting to <a href="${url}">${url}</a>.`
             return
         }
 
         // text
-        this.type = 'text/plain; charset=utf-8'
+        this.set_content_type('txt')
         this.body = `Redirecting to ${url}.`
     }
 
-    attachment(filename?: string, options?: contentDisposition.Options) {
-        if (filename) {
-            this.type = extname(filename)
-        }
-        this.set('Content-Disposition', contentDisposition(filename, options))
-    }
-
     is(type: string, ...types: string[]) {
-        return typeis(this.type, type, ...types)
+        return type_is(this.content_type, type, ...types)
     }
 
     has(field: string): boolean {
@@ -297,7 +279,7 @@ export class TpResponse {
     }
 
     get(field: string): string | string[] {
-        return this.header[field.toLowerCase()] as string | string[] || ''
+        return this.headers[field.toLowerCase()] as string | string[] || ''
     }
 
     set(field: string, val: string | string[]): void {
@@ -336,7 +318,6 @@ export class TpResponse {
     }
 
     respond() {
-
         if (!this.writable) {
             return
         }
@@ -370,7 +351,7 @@ export class TpResponse {
                 this.body = this.message || String(code)
             }
             if (!res.headersSent) {
-                this.type = 'text'
+                this.set_content_type('txt')
                 this.length = Buffer.byteLength(this.body)
             }
             return res.end(this.body)

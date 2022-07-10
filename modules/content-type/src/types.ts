@@ -9,6 +9,7 @@
 export type MIMEContent<T> = {
     type: string | undefined
     charset: string | undefined
+    parameters: { [prop: string]: string }
     raw: Buffer
     text?: string
     data?: T

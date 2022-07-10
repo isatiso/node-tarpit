@@ -7,7 +7,7 @@
  */
 
 import { MIMEContent } from '@tarpit/content-type'
-import { JsonBody } from './json-body'
+import { Judgement } from '@tarpit/judge'
 
 export class MimeBody<T> {
 
@@ -17,7 +17,7 @@ export class MimeBody<T> {
     text?: string
     data?: T
 
-    checker?: JsonBody<T>
+    checker?: Judgement<T>
 
     constructor(content: MIMEContent<any>) {
         this.type = content.type
@@ -26,7 +26,7 @@ export class MimeBody<T> {
         this.text = content.text
         this.data = content.data
         if (Object.prototype.toString.call(this.data) === '[object Object]') {
-            this.checker = new JsonBody<T>(this.data)
+            this.checker = new Judgement<T>(this.data)
         }
     }
 }

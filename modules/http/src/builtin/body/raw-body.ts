@@ -7,11 +7,9 @@
  */
 
 import { MIMEContent } from '@tarpit/content-type'
-import { TpRequest } from '../tp-request'
 
 export class RawBody extends Buffer {
-
-    static parse(request: TpRequest, content: MIMEContent<any>) {
-        return content.raw
+    constructor(content: MIMEContent<any>) {
+        super(content.raw)
     }
 }

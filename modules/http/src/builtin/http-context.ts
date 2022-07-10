@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import Cookies from 'cookies'
 import { TpHttpSession } from '../__types__'
 import { RouteUnit } from '../tools/collect-routes'
 import { TpRequest } from './tp-request'
@@ -28,23 +27,6 @@ export class HttpContext {
         public readonly request: TpRequest,
         public readonly response: TpResponse,
     ) {
-    }
-
-    private _cookies?: Cookies
-
-    get cookies() {
-        if (!this._cookies) {
-            this._cookies = new Cookies(this.request.req, this.response.res, {
-                // TODO: options of Cookies
-                // keys: this.app.keys,
-                // secure: this.request.secure
-            })
-        }
-        return this._cookies
-    }
-
-    set cookies(_cookies) {
-        this._cookies = _cookies
     }
 
     /**

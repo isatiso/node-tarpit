@@ -15,7 +15,6 @@ import {
     AbstractErrorFormatter,
     AbstractHttpHooks,
     AbstractResponseFormatter,
-    HttpBodyReader,
     HttpInspector,
     HttpRouters,
     HttpServer,
@@ -35,7 +34,6 @@ import { collect_routes } from './tools/collect-routes'
     ],
     providers: [
         HttpUrlParser,
-        HttpBodyReader,
         HttpInspector,
         HttpRouters,
         HttpServer,

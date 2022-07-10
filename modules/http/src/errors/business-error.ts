@@ -20,6 +20,6 @@ export class BusinessError extends TpHttpError {
     }
 }
 
-export function throw_business(code: number, msg: string, options?: Desc): never {
+export function throw_business(code: string | number, msg: string, options?: Desc): never {
     throw new BusinessError(code, msg, options)
 }

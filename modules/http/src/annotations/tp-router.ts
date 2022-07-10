@@ -9,6 +9,6 @@
 import { make_decorator, TpEntry } from '@tarpit/core'
 import { TpRouterOptions } from '../__types__'
 
-export const TpRouterToken = Symbol.for('œœ.token.TpRouter')
+export const TpRouterToken = Symbol.for('œœ.token.http.TpRouter')
 export type TpRouter = InstanceType<typeof TpRouter>
 export const TpRouter = make_decorator('TpRouter', (path: `/${string}`, options?: TpRouterOptions) => ({ ...options, path, token: TpRouterToken, }), TpEntry)

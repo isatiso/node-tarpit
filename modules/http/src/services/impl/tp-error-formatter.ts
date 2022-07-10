@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { ConfigData } from '@tarpit/config'
 import { TpService } from '@tarpit/core'
 import { HttpResponseType } from '../../__types__'
 import { HttpContext } from '../../builtin'
@@ -16,12 +17,15 @@ import { AbstractResponseFormatter } from '../inner/abstract-response-formatter'
 @TpService({ inject_root: true })
 export class TpErrorFormatter extends AbstractResponseFormatter {
 
-    static format(context: HttpContext, err: TpHttpError): HttpResponseType {
-        return { error: err.expose ? err.jsonify() : { code: err.code, msg: HTTP_STATUS.message_of(err.status) } }
+    private expose = this.config_data.get('http.expose_error') ?? false
+
+    constructor(
+        private config_data: ConfigData,
+    ) {
+        super()
     }
 
     format(context: HttpContext, err: TpHttpError): HttpResponseType {
-        // return TpErrorFormatter.format(context, err)
-        return { error: err.jsonify() }
+        return { error: this.expose ? err.jsonify() : { code: err.code, msg: HTTP_STATUS.message_of(err.status) } }
     }
 }

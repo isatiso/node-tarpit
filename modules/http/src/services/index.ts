@@ -18,7 +18,6 @@ export { TpErrorFormatter } from './impl/tp-error-formatter'
 export { TpHttpHooks } from './impl/tp-http-hooks'
 export { TpResponseFormatter } from './impl/tp-response-formatter'
 
-export { HttpBodyReader } from './http-body-reader'
 export { HttpInspector } from './http-inspector'
 export { HttpRouters } from './http-routers'
 export { HttpServer } from './http-server'

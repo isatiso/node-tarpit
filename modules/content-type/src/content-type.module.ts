@@ -11,13 +11,17 @@ import zlib from 'zlib'
 import { form_deserialize } from './builtin/form'
 import { json_deserialize } from './builtin/json'
 import { text_deserialize } from './builtin/text'
-import { ContentTypeService } from './content-type.service'
+import { ContentDecompressorService } from './services/content-decompressor.service'
+import { ContentDeserializerService } from './services/content-deserializer.service'
+import { ContentReaderService } from './services/content-reader.service'
 import { decompressor_token, deserializer_token } from './tokens'
 import { MIMEContent } from './types'
 
 @TpModule({
     providers: [
-        ContentTypeService,
+        ContentDecompressorService,
+        ContentDeserializerService,
+        ContentReaderService,
         { provide: decompressor_token, useValue: ['br', (req: Readable) => req.pipe(zlib.createBrotliDecompress())], multi: true, root: true },
         { provide: decompressor_token, useValue: ['gzip', (req: Readable) => req.pipe(zlib.createGunzip())], multi: true, root: true },
         { provide: decompressor_token, useValue: ['deflate', (req: Readable) => req.pipe(zlib.createInflate())], multi: true, root: true },

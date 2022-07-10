@@ -7,7 +7,7 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { ContentTypeService } from '@tarpit/content-type'
+import { ContentReaderService } from '@tarpit/content-type'
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { throw_native_error } from '@tarpit/error'
 import { IncomingMessage, ServerResponse } from 'http'
@@ -20,7 +20,6 @@ import { RouteUnit } from '../tools/collect-routes'
 import { HTTP_STATUS } from '../tools/http-status'
 import { on_error } from '../tools/on-error'
 import { on_finish } from '../tools/on-finished'
-import { HttpBodyReader } from './http-body-reader'
 import { HttpServer } from './http-server'
 import { HttpUrlParser } from './http-url-parser'
 import { AbstractAuthenticator } from './inner/abstract-authenticator'
@@ -40,28 +39,28 @@ export class HttpRouters {
 
     public readonly handlers = new Map<HttpHandlerKey, HttpHandler>()
 
-    private readonly proxy_config = this.config_data.get('http.proxy')
-    private readonly allow_origin = this.config_data.get('http.cors.allow_origin') ?? ''
-    private readonly allow_headers = this.config_data.get('http.cors.allow_headers') ?? ''
-    private readonly allow_methods = this.config_data.get('http.cors.allow_methods') ?? ''
-    private readonly max_age = this.config_data.get('http.cors.max_age') ?? 0
+    private readonly c_allow_headers = this.config_data.get('http.cors.allow_headers') ?? ''
+    private readonly c_allow_methods = this.config_data.get('http.cors.allow_methods') ?? ''
+    private readonly c_allow_origin = this.config_data.get('http.cors.allow_origin') ?? ''
+    private readonly c_body_max_length = this.config_data.get('http.body.max_length') ?? 0
+    private readonly c_cors_max_age = this.config_data.get('http.cors.max_age') ?? 0
+    private readonly c_proxy = this.config_data.get('http.proxy')
 
     constructor(
         private server: HttpServer,
         private config_data: ConfigData,
         private url_parser: HttpUrlParser,
-        private body_reader: HttpBodyReader,
-        private content_type: ContentTypeService,
+        private reader: ContentReaderService,
     ) {
     }
 
     public readonly request_listener = async (req: IncomingMessage, res: ServerResponse) => {
         res.statusCode = 404
-        this.allow_origin && res.setHeader('Access-Control-Allow-Origin', this.allow_origin)
+        this.c_allow_origin && res.setHeader('Access-Control-Allow-Origin', this.c_allow_origin)
         if (req.method === 'OPTIONS') {
-            this.allow_headers && res.setHeader('Access-Control-Allow-Headers', this.allow_headers)
-            this.allow_methods && res.setHeader('Access-Control-Allow-Methods', this.allow_methods)
-            this.max_age && res.setHeader('Access-Control-Max-Age', this.max_age)
+            this.c_allow_headers && res.setHeader('Access-Control-Allow-Headers', this.c_allow_headers)
+            this.c_allow_methods && res.setHeader('Access-Control-Allow-Methods', this.c_allow_methods)
+            this.c_cors_max_age && res.setHeader('Access-Control-Max-Age', this.c_cors_max_age)
             res.statusCode = 204
             res.end('')
             return
@@ -102,20 +101,23 @@ export class HttpRouters {
     private make_router(injector: Injector, unit: RouteUnit) {
 
         const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
-        const proxy_config = this.proxy_config
-        const body_reader = this.body_reader
-        const content_type_service = this.content_type
-        const cache_proxy_provider = injector.get(AbstractCacheProxy) ?? throw_native_error('No provider for AbstractCacheProxy')
-        const http_hooks_provider = injector.get(AbstractHttpHooks) ?? throw_native_error('No provider for AbstractHttpHooks')
-        const response_formatter_provider = injector.get(AbstractResponseFormatter) ?? throw_native_error('No provider for AbstractResponseFormatter')
-        const error_formatter_provider = injector.get(AbstractErrorFormatter) ?? throw_native_error('No provider for AbstractErrorFormatter')
+        const body_max_length = this.c_body_max_length
+        const proxy_config = this.c_proxy
+        const reader = this.reader
+        const provider_cp = injector.get(AbstractCacheProxy) ?? throw_native_error('No provider for AbstractCacheProxy')
+        const provider_ef = injector.get(AbstractErrorFormatter) ?? throw_native_error('No provider for AbstractErrorFormatter')
+        const provider_hh = injector.get(AbstractHttpHooks) ?? throw_native_error('No provider for AbstractHttpHooks')
+        const provider_rf = injector.get(AbstractResponseFormatter) ?? throw_native_error('No provider for AbstractResponseFormatter')
 
         return async function(req: IncomingMessage, res: ServerResponse, parsed_url: UrlWithParsedQuery) {
 
-            const cache_proxy = cache_proxy_provider.create()
-            const http_hooks = http_hooks_provider.create()
-            const response_formatter = response_formatter_provider.create()
-            const error_formatter = error_formatter_provider.create()
+            const cache_proxy = provider_cp.create()
+            const error_formatter = provider_ef.create()
+            const http_hooks = provider_hh.create()
+            const response_formatter = provider_rf.create()
+
+            const content_type = req.headers['content-type'] || ''
+            const content_encoding = req.headers['content-encoding'] || 'identity'
 
             const request = new TpRequest(req, parsed_url, proxy_config)
             const response = new TpResponse(res, request)
@@ -125,11 +127,20 @@ export class HttpRouters {
 
             let handle_result: any
 
-            async function handle() {
+            try {
 
-                const content = await body_reader.read(req)
+                const content = await reader.read(req, {
+                    content_encoding,
+                    content_type,
+                    skip_deserialize: true,
+                    max_byte_length: body_max_length
+                })
+
+                request.type = content.type
+                request.charset = content.charset
+
                 if (param_deps.find(d => d.token === MimeBody)) {
-                    await content_type_service.deserialize(content)
+                    await reader.deserialize(content)
                 }
 
                 const auth_info = param_deps.find(d => d.token === Guardian)
@@ -140,7 +151,7 @@ export class HttpRouters {
                     ? ResponseCache.create(cache_proxy, unit.cache_scope, unit.cache_expire_secs)
                     : undefined
 
-                return unit.handler(...param_deps.map(({ provider, token }, index) => {
+                handle_result = await unit.handler(...param_deps.map(({ provider, token }, index) => {
                     if (provider) {
                         return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
                     }
@@ -156,13 +167,13 @@ export class HttpRouters {
                         case MimeBody:
                             return new MimeBody(content)
                         case FormBody:
-                            return FormBody.parse(request, content)
+                            return new FormBody(content)
                         case JsonBody:
-                            return JsonBody.parse(request, content)
+                            return new JsonBody(content)
                         case TextBody:
-                            return TextBody.parse(request, content)
+                            return new TextBody(content)
                         case RawBody:
-                            return RawBody.parse(request, content)
+                            return new RawBody(content)
                         case Guardian:
                             return new Guardian(auth_info)
                         case RequestHeader:
@@ -177,10 +188,6 @@ export class HttpRouters {
                             return undefined
                     }
                 }))
-            }
-
-            try {
-                handle_result = await handle()
             } catch (reason) {
                 if (reason instanceof Finish) {
                     handle_result = await reason.response

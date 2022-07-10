@@ -7,11 +7,9 @@
  */
 
 import { MIMEContent, text_deserialize } from '@tarpit/content-type'
-import { TpRequest } from '../tp-request'
 
 export class TextBody extends String {
-
-    static parse(request: TpRequest, content: MIMEContent<any>) {
-        return text_deserialize(content)
+    constructor(content: MIMEContent<any>) {
+        super(text_deserialize(content))
     }
 }

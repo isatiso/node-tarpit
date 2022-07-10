@@ -20,6 +20,6 @@ export class CrashError extends TpHttpError {
     }
 }
 
-export function throw_crash(code: number, msg: string, options?: Desc): never {
+export function throw_crash(code: string | number, msg: string, options?: Desc): never {
     throw new CrashError(code, msg, options)
 }

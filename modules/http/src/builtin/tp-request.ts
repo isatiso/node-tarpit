@@ -7,59 +7,28 @@
  */
 
 import { TpConfigSchema } from '@tarpit/config'
-import accepts from 'accepts'
-import content_type from 'content-type'
 import { IncomingHttpHeaders, IncomingMessage } from 'http'
 import net from 'net'
 import { ParsedUrlQuery } from 'querystring'
 import tls from 'tls'
 import type_is from 'type-is'
 import { UrlWithParsedQuery } from 'url'
-
-export interface ContentTypeMedia {
-    type?: string
-    charset?: string
-}
+import { AcceptParser } from '../tools/accept-parser'
 
 export class TpRequest {
 
-    private _content_type?: ContentTypeMedia
+    type: string | undefined
+    charset: string | undefined
 
     constructor(
         public readonly req: IncomingMessage,
         private readonly _url: UrlWithParsedQuery,
-        private proxy: TpConfigSchema['http']['proxy']
+        private proxy: TpConfigSchema['http']['proxy'],
     ) {
-    }
-
-    private _accept?: accepts.Accepts
-
-    get accept() {
-        return this._accept || (this._accept = accepts(this.req))
-    }
-
-    get header() {
-        return this.req.headers
-    }
-
-    get headers() {
-        return this.req.headers
-    }
-
-    get url() {
-        return this.req.url
-    }
-
-    get origin() {
-        return `${this.protocol}://${this.host}`
     }
 
     get href() {
         return this._url.href
-    }
-
-    get method() {
-        return this.req.method
     }
 
     get path() {
@@ -86,23 +55,6 @@ export class TpRequest {
         return this._url.hostname
     }
 
-    get socket(): (net.Socket & { encrypted: undefined }) | tls.TLSSocket {
-        return this.req.socket as any
-    }
-
-    get type() {
-        return this.parse_content_type()?.type ?? ''
-    }
-
-    get charset() {
-        return this.parse_content_type()?.charset ?? ''
-    }
-
-    get length(): number | undefined {
-        const len = this.get('Content-Length')
-        return len ? +len : undefined
-    }
-
     get protocol() {
         return this._url.protocol
     }
@@ -111,48 +63,69 @@ export class TpRequest {
         return this.protocol === 'https'
     }
 
+    get origin() {
+        return `${this.protocol}://${this.host}`
+    }
+
+    private _ips: string[] | undefined
     get ips() {
-        const proxy = this.proxy
-        const header = this.proxy?.ip_header ?? 'X-Forwarded-For'
-        const max_ips_count = this.proxy?.max_ips_count ?? 0
-        let val = this.get(header)
-        if (Array.isArray(val)) {
-            val = val[0]
+        if (!this._ips) {
+            const proxy = this.proxy
+            const header = this.proxy?.ip_header ?? 'X-Forwarded-For'
+            const max_ips_count = this.proxy?.max_ips_count ?? 0
+            let val = this.get(header)
+            if (Array.isArray(val)) {
+                val = val[0]
+            }
+            let ips = proxy && val ? val.split(/\s*,\s*/) : []
+            if (max_ips_count > 0) {
+                this._ips = ips.slice(-max_ips_count)
+            }
+            this._ips = this._ips ?? []
         }
-        let ips = proxy && val ? val.split(/\s*,\s*/) : []
-        if (max_ips_count > 0) {
-            ips = ips.slice(-max_ips_count)
-        }
-        return ips
+        return this._ips
     }
 
     get ip() {
-        return this.ips[0] || this.socket.remoteAddress || ''
+        return this.ips[0]
     }
 
-    get idempotent() {
-        const methods = ['GET', 'HEAD', 'PUT', 'DELETE', 'OPTIONS', 'TRACE']
-        return !!~methods.indexOf(this.req.method!)
+    get headers() {
+        return this.req.headers
     }
 
-    accepts(...args: string[]) {
-        return this.accept.types(...args)
+    get url() {
+        return this.req.url
     }
 
-    acceptsEncodings(...args: string[]) {
-        return this.accept.encodings(...args)
+    get method() {
+        return this.req.method
     }
 
-    acceptsCharsets(...args: string[]) {
-        return this.accept.charsets(...args)
+    get socket(): (net.Socket & { encrypted: undefined }) | tls.TLSSocket {
+        return this.req.socket as any
     }
 
-    acceptsLanguages(...args: string[]) {
-        return this.accept.languages(...args)
+    get length(): number | undefined {
+        const len = this.get('Content-Length')
+        return len ? +len : undefined
+    }
+
+    private _accepts?: AcceptParser
+    get accepts() {
+        if (!this._accepts) {
+            this._accepts = new AcceptParser(this.req)
+        }
+        return this._accepts
     }
 
     is(type: string, ...types: string[]) {
         return type_is(this.req, type, ...types)
+    }
+
+    is_idempotent() {
+        const methods = ['GET', 'HEAD', 'PUT', 'DELETE', 'OPTIONS', 'TRACE']
+        return !!~methods.indexOf(this.req.method!)
     }
 
     get<P extends (keyof IncomingHttpHeaders & string)>(field: P): IncomingHttpHeaders[Lowercase<P>] {
@@ -163,23 +136,6 @@ export class TpRequest {
                 return this.req.headers.referrer || this.req.headers.referer || ''
             default:
                 return this.req.headers[lower_field] || ''
-        }
-    }
-
-    private parse_content_type() {
-        if (this._content_type) {
-            return this._content_type
-        }
-        try {
-            const { type, parameters } = content_type.parse(this.req)
-            return this._content_type = { type, charset: parameters?.charset, }
-        } catch (e) {
-            const header = this.get('Content-Type')
-            if (header) {
-                return { type: header.split(';')[0] }
-            } else {
-                return {}
-            }
         }
     }
 }
