@@ -6,5 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
+// istanbul ignore file
 export { ConfigData, TpConfigSchema } from './config-data'
 export { load_config } from './config-tools'

@@ -8,7 +8,7 @@
 
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { TpError } from './tp-error'
+import { throw_native_error, TpError } from './tp-error'
 
 chai.use(cap)
 
@@ -31,6 +31,12 @@ describe('tp-error.ts', function() {
         it('should convert to pure object, with specified fields', function() {
             expect(new TpError({ code: 'err', msg: 'some message' }).jsonify(['code', 'msg']))
                 .to.eql({ code: 'err', msg: 'some message' })
+        })
+    })
+
+    describe('throw_native_error()', function() {
+        it('should throw native Error object', function() {
+            expect(() => throw_native_error('some message')).to.throw('some message')
         })
     })
 })

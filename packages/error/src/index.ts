@@ -6,4 +6,5 @@
  * found in the LICENSE file at source root.
  */
 
+// istanbul ignore file
 export { TpError, TpErrorDescription, throw_native_error } from './tp-error'

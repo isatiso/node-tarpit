@@ -6,4 +6,5 @@
  * found in the LICENSE file at source root.
  */
 
+// istanbul ignore file
 export { Dora } from './dora'

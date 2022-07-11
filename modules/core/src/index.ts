@@ -10,6 +10,7 @@ export * from './types'
 export * from './annotations'
 export * from './di'
 
+// istanbul ignore file
 export { TpInspector, STARTED_AT, START_TIME, TERMINATE_TIME, TERMINATED_AT } from './builtin/tp-inspector'
 export { TpLogger } from './builtin/tp-logger'
 export { TpLoader, TpLoaderType } from './builtin/tp-loader'
