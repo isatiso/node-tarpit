@@ -317,9 +317,14 @@ export class TpResponse {
         this.res.flushHeaders()
     }
 
-    respond() {
+    respond(status?: number, body?: string) {
         if (!this.writable) {
             return
+        }
+
+        if (status) {
+            this.status = status
+            this.body = body ?? HTTP_STATUS.message_of(status)
         }
 
         const res = this.res

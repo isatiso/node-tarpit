@@ -58,7 +58,6 @@ class TestRouter {
     @Post('asd')
     async test(
         ts: TestService,
-
         @Optional()
         @Inject('œœ-TpStartedAtaefaef')
             aaa: number,
@@ -90,6 +89,9 @@ export class TestRoot {
     const platform = new Platform({
         http: {
             port: 3000,
+            body: {
+                max_length: 177362
+            }
         },
         rabbitmq: {
             url: 'amqp://plank:ChKNwziiY84DjUP@112.74.191.78:5672',
@@ -97,7 +99,7 @@ export class TestRoot {
             socket_options: {}
         }
     }).import(HttpServerModule)
-    console.log('oppppp')
+
     platform.bootstrap(TestRoot).start()
     await platform.expose(TpInspector)?.wait_start()
     // const producer = platform.expose(TestProducer)!

@@ -22,6 +22,6 @@ export async function readable_to_buffer(stream: Readable): Promise<Buffer> {
         stream.on('end', () => finish(Buffer.concat(buffers)))
         stream.on('error', err => finish(err))
         stream.on('data', chunk => buffers.push(chunk))
-        stream.on('close', () => finish(new TpError({ code: 'Unexpected Close', msg: 'Accept close event before end' })))
+        stream.on('close', () => finish(new TpError({ code: 'ECONNABORTED', msg: 'Connection aborted' })))
     })
 }

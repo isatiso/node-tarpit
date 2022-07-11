@@ -127,13 +127,23 @@ export class HttpRouters {
 
             let handle_result: any
 
+            if (body_max_length) {
+                let received = 0
+                req.on('data', chunk => {
+                    received += chunk.byteLength
+                    if (received > body_max_length) {
+                        req.pause()
+                        response.respond(413)
+                    }
+                })
+            }
+
             try {
 
                 const content = await reader.read(req, {
                     content_encoding,
                     content_type,
                     skip_deserialize: true,
-                    max_byte_length: body_max_length
                 })
 
                 request.type = content.type

@@ -70,18 +70,15 @@ export class TpRequest {
     private _ips: string[] | undefined
     get ips() {
         if (!this._ips) {
-            const proxy = this.proxy
             const header = this.proxy?.ip_header ?? 'X-Forwarded-For'
             const max_ips_count = this.proxy?.max_ips_count ?? 0
-            let val = this.get(header)
+            let val = this.get(header) ?? this.req.socket.remoteAddress ?? ''
             if (Array.isArray(val)) {
                 val = val[0]
             }
-            let ips = proxy && val ? val.split(/\s*,\s*/) : []
-            if (max_ips_count > 0) {
-                this._ips = ips.slice(-max_ips_count)
-            }
-            this._ips = this._ips ?? []
+            this._ips = max_ips_count > 0
+                ? val.split(/\s*,\s*/).slice(-max_ips_count)
+                : val.split(/\s*,\s*/)
         }
         return this._ips
     }
