@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+// istanbul ignore file
 export { decompressor_token, deserializer_token } from './tokens'
 export { ContentReaderService } from './services/content-reader.service'
 export { ContentTypeModule } from './content-type.module'

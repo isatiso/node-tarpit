@@ -10,12 +10,18 @@ import { Injector, TpService } from '@tarpit/core'
 import mime_types from 'mime-types'
 import { Readable } from 'stream'
 import { parse_content_type } from '../tools/parse-content-type'
-import { MIMEContent, ParseContentOptions } from '../types'
+import { MIMEContent } from '../types'
 import { ContentDecompressorService } from './content-decompressor.service'
 import { ContentDeserializerService } from './content-deserializer.service'
 
-function get_default_charset(content_type: string | undefined) {
-    return content_type ? (mime_types.charset(content_type) || undefined) : undefined
+export function get_default_charset(content_type: string | undefined) {
+    return content_type && (mime_types.charset(content_type) || undefined)
+}
+
+export type ParseContentOptions = {
+    content_encoding: string
+    content_type: string
+    skip_deserialize?: boolean
 }
 
 @TpService({ inject_root: true })

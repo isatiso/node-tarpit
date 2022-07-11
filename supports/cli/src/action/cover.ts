@@ -14,7 +14,9 @@ import { make_action } from './__base__'
 export const action_cover = make_action('cover', async (cli_options: CliOptions['cover'], config) => {
 
     await deliver_shell(
-        `nyc --cache-dir=.cache -e='.ts' -n 'src/**/*.ts'` +
+        `nyc -a` +
+        ` --cache-dir=.cache` +
+        ` -n 'src/**/*.ts'` +
         ` -x 'src/**/*.spec.ts'` +
         ` -i source-map-support/register` +
         ` -i @tarpit/cli/script/register` +

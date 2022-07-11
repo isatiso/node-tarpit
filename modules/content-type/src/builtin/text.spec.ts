@@ -8,7 +8,6 @@
 
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import fs from 'fs'
 import { MIMEContent } from '../types'
 import { text_deserialize } from './text'
 
@@ -17,45 +16,48 @@ chai.use(cap)
 describe('text.ts', function() {
 
     const null_content: MIMEContent<any> = {
-        type: 'application/json',
+        type: 'text/plain',
         charset: undefined,
         parameters: {},
-        raw: fs.readFileSync('./assets/json-utf8.txt')
+        // {"a":"阿水淀粉","b":"起来，不愿做奴隶的人们"}
+        raw: Buffer.from('eyJhIjoi6Zi/5rC05reA57KJIiwiYiI6Iui1t+adpe+8jOS4jeaEv+WBmuWltOmatueahOS6uuS7rCJ9', 'base64')
     }
 
     const utf8_content: MIMEContent<any> = {
-        type: 'application/json',
+        type: 'text/plain',
         charset: 'utf-8',
         parameters: { charset: 'utf-8', },
-        raw: fs.readFileSync('./assets/json-utf8.txt')
+        // {"a":"阿水淀粉","b":"起来，不愿做奴隶的人们"}
+        raw: Buffer.from('eyJhIjoi6Zi/5rC05reA57KJIiwiYiI6Iui1t+adpe+8jOS4jeaEv+WBmuWltOmatueahOS6uuS7rCJ9', 'base64')
     }
 
     const gbk_content: MIMEContent<any> = {
-        type: 'application/json',
+        type: 'text/plain',
         charset: 'gbk',
         parameters: { charset: 'gbk', },
-        raw: fs.readFileSync('./assets/json-gbk.txt')
+        // a=阿水淀粉&b=起来，不愿做奴隶的人们&b=1&b=23
+        raw: Buffer.from('YT2wosuute232yZiPcbwwLSjrLK71LjX9sWrwaW1xMjLw8cmYj0xJmI9MjM=', 'base64')
     }
 
     const non_exists_encoding_content: MIMEContent<any> = {
-        type: 'application/json',
+        type: 'text/plain',
         charset: 'whatever',
         parameters: { charset: 'whatever', },
-        raw: fs.readFileSync('./assets/json-gbk.txt')
+        raw: Buffer.from('')
     }
 
-    describe('function text_deserialize()', function() {
-        it('should decode utf8 content in MIMEContent', function() {
+    describe('text_deserialize()', function() {
+        it('should decode utf8 content into text', function() {
             const text = text_deserialize(utf8_content)
             expect(text).to.equal('{"a":"阿水淀粉","b":"起来，不愿做奴隶的人们"}')
         })
 
-        it('should decode gbk content in MIMEContent', function() {
+        it('should decode gbk content into text', function() {
             const text = text_deserialize(gbk_content)
-            expect(text).to.equal('{"a":"阿水淀粉","b":"起来，不愿做奴隶的人们"}')
+            expect(text).to.equal('a=阿水淀粉&b=起来，不愿做奴隶的人们&b=1&b=23')
         })
 
-        it('should decode content default by utf8 in MIMEContent', function() {
+        it('should decode content default by utf8 into text', function() {
             const text = text_deserialize(null_content)
             expect(text).to.equal('{"a":"阿水淀粉","b":"起来，不愿做奴隶的人们"}')
         })
