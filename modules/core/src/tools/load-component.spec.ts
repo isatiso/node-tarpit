@@ -72,7 +72,7 @@ describe('load-component.ts', function() {
 
     const injector = Injector.create()
 
-    describe('def_to_provider()', function() {
+    describe('#def_to_provider()', function() {
         it('should parse ProviderDef to Provider', function() {
             const provider1 = def_to_provider({ provide: Decorated, useClass: Decorated }, injector)
             expect(provider1).to.be.instanceof(ClassProvider)
@@ -108,7 +108,7 @@ describe('load-component.ts', function() {
         })
     })
 
-    describe('load_component()', function() {
+    describe('#load_component()', function() {
 
         function set_inner_loader(injector: Injector) {
             ClassProvider.create(injector, { provide: TpLoader, useClass: TpLoader })

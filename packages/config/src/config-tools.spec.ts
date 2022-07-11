@@ -16,7 +16,7 @@ chai.use(cap)
 
 describe('config-tools.ts', function() {
 
-    describe('function load_config()', function() {
+    describe('#load_config()', function() {
 
         it('should load file if nothing given.', function() {
             const data = {

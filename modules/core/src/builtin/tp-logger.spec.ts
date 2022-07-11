@@ -17,6 +17,16 @@ chai.use(spies)
 
 describe('tp-logger.ts', function() {
 
+    let tmp: any
+    before(function() {
+        tmp = console.log
+        console.log = (..._args: any[]) => undefined
+    })
+
+    after(function() {
+        console.log = tmp
+    })
+
     describe('TpLogger', function() {
 
         it('should log after start and terminate event', async function() {

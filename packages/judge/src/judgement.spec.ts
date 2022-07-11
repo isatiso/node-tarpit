@@ -53,7 +53,7 @@ describe('judgement.ts', function() {
             expect(judge).to.be.instanceof(Judgement)
         })
 
-        describe('#get_if', function() {
+        describe('.get_if', function() {
             it('should get value of specified path if match given rule', function() {
                 expect(judge.get_if('a', Jtl.string)).not.to.be.undefined
                 expect(judge.get_if('a', Jtl.some(Jtl.string, /asd/))).not.to.be.undefined
@@ -71,7 +71,7 @@ describe('judgement.ts', function() {
             })
         })
 
-        describe('#ensure', function() {
+        describe('.ensure', function() {
             it('should get value of specified path if match given rule', function() {
                 expect(judge.ensure('a', Jtl.string)).not.to.be.undefined
                 expect(judge.ensure('a', Jtl.some(Jtl.string, /asd/))).not.to.be.undefined
@@ -91,7 +91,7 @@ describe('judgement.ts', function() {
             })
         })
 
-        describe('#do_if', function() {
+        describe('.do_if', function() {
             it('should get value of specified path if match given rule', function() {
                 let called = 0
 

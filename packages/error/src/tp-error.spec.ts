@@ -34,7 +34,7 @@ describe('tp-error.ts', function() {
         })
     })
 
-    describe('throw_native_error()', function() {
+    describe('#throw_native_error()', function() {
         it('should throw native Error object', function() {
             expect(() => throw_native_error('some message')).to.throw('some message')
         })

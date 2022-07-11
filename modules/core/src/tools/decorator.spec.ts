@@ -63,7 +63,7 @@ describe('decorator.ts', function() {
         d?: P = undefined
     }
 
-    describe('make_decorator()', function() {
+    describe('#make_decorator()', function() {
 
         it('should create decorator', function() {
             const D = make_decorator('D', (a: string, b: number) => ({ a, b }))
@@ -82,13 +82,13 @@ describe('decorator.ts', function() {
         })
     })
 
-    describe('make_abstract_decorator()', function() {
+    describe('#make_abstract_decorator()', function() {
         it('should not be called', function() {
             expect(() => (ParentDecorator as any)()).to.throw('Abstract decorator can\'t be called directly')
         })
     })
 
-    describe('get_class_decorator()', function() {
+    describe('#get_class_decorator()', function() {
         it('should get decorators of class', function() {
             const decorators = get_class_decorator(A)
             expect(decorators).to.have.length(2)
@@ -105,7 +105,7 @@ describe('decorator.ts', function() {
         })
     })
 
-    describe('get_class_parameter_decorator()', function() {
+    describe('#get_class_parameter_decorator()', function() {
         it('should get constructor parameter decorators of class', function() {
             const decorators = get_class_parameter_decorator(A)
             expect(decorators).to.have.length(2)
@@ -124,7 +124,7 @@ describe('decorator.ts', function() {
         })
     })
 
-    describe('get_all_prop_decorator()', function() {
+    describe('#get_all_prop_decorator()', function() {
         it('should get all decorators of class property', function() {
             const decorators = get_all_prop_decorator(A)
             expect(decorators?.size).to.equal(2)
@@ -137,7 +137,7 @@ describe('decorator.ts', function() {
         })
     })
 
-    describe('get_prop_decorator()', function() {
+    describe('#get_prop_decorator()', function() {
         it('should get decorators of specified property', function() {
             const decorators = get_prop_decorator(A, 'm')
             expect(decorators).to.have.length(2)
@@ -154,7 +154,7 @@ describe('decorator.ts', function() {
         })
     })
 
-    describe('get_method_parameter_decorator()', function() {
+    describe('#get_method_parameter_decorator()', function() {
         it('should get parameters decorators of specified property', function() {
             const decorators = get_method_parameter_decorator(A, 'm')
             expect(decorators).to.have.length(4)
@@ -174,7 +174,7 @@ describe('decorator.ts', function() {
         })
     })
 
-    describe('get_param_types()', function() {
+    describe('#get_param_types()', function() {
         it('should get types of constructor parameters', function() {
             expect(get_param_types(A)).to.eql([Number, String, P])
         })
@@ -184,7 +184,7 @@ describe('decorator.ts', function() {
         })
     })
 
-    describe('get_prop_types()', function() {
+    describe('#get_prop_types()', function() {
         it('should get types of property', function() {
             expect(get_prop_types(A, 'm')).to.equal(Function)
             expect(get_prop_types(A, 'd')).to.eql(P)

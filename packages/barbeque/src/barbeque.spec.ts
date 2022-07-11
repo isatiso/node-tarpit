@@ -14,13 +14,38 @@ chai.use(cap)
 
 describe('barbeque.ts', function() {
 
-    describe('class Barbeque()', function() {
+    describe('Barbeque', function() {
+
         it('could new instance', function() {
             expect(new Barbeque()).to.be.instanceof(Barbeque)
         })
+
+        it('should limit capacity of queue if provided', function() {
+            const q = new Barbeque(300)
+            const _temp_arr = []
+            for (let i = 0; i < 500; i++) {
+                _temp_arr.push(i)
+                q.push(i)
+            }
+            expect(q.length).to.equal(300)
+            for (let i = 0; i < 300; i++) {
+                expect(q.get(i)).to.equal(_temp_arr[200 + i])
+            }
+            const _shift_arr = []
+            for (let i = 0; i < 50; i++) {
+                _shift_arr.push(i)
+                q.unshift(i)
+            }
+            for (let i = 0; i < 50; i++) {
+                expect(q.get(i)).to.equal(_shift_arr[49 - i])
+            }
+            for (let i = 0; i < 150; i++) {
+                expect(q.get(i + 50)).to.equal(_temp_arr[200 + i])
+            }
+        })
     })
 
-    describe('Barbeque#push()', function() {
+    describe('.push()', function() {
         it('should push and pop item', function() {
             const q = new Barbeque()
             const _temp_arr = []
@@ -39,7 +64,7 @@ describe('barbeque.ts', function() {
         })
     })
 
-    describe('Barbeque#shift()', function() {
+    describe('.shift()', function() {
         it('should shift and unshift item', function() {
             const q = new Barbeque()
             const _temp_arr = []
@@ -58,7 +83,7 @@ describe('barbeque.ts', function() {
         })
     })
 
-    describe('Barbeque#get()', function() {
+    describe('.get()', function() {
         const q = new Barbeque()
         const _temp_arr: any[] = []
 
@@ -96,33 +121,7 @@ describe('barbeque.ts', function() {
         })
     })
 
-    describe('Barbeque#capacity', function() {
-        it('should limit capacity of queue if provided', function() {
-            const q = new Barbeque(300)
-            const _temp_arr = []
-            for (let i = 0; i < 500; i++) {
-                _temp_arr.push(i)
-                q.push(i)
-            }
-            expect(q.length).to.equal(300)
-            for (let i = 0; i < 300; i++) {
-                expect(q.get(i)).to.equal(_temp_arr[200 + i])
-            }
-            const _shift_arr = []
-            for (let i = 0; i < 50; i++) {
-                _shift_arr.push(i)
-                q.unshift(i)
-            }
-            for (let i = 0; i < 50; i++) {
-                expect(q.get(i)).to.equal(_shift_arr[49 - i])
-            }
-            for (let i = 0; i < 150; i++) {
-                expect(q.get(i + 50)).to.equal(_temp_arr[200 + i])
-            }
-        })
-    })
-
-    describe('Barbeque#size', function() {
+    describe('.size', function() {
         it('should show size of queue', function() {
             const q = new Barbeque()
             let c = 0
@@ -155,7 +154,7 @@ describe('barbeque.ts', function() {
         })
     })
 
-    describe('Barbeque#to_array', function() {
+    describe('.to_array()', function() {
         it('should show size of queue', function() {
             const q = new Barbeque()
             const arr: any[] = []
@@ -185,7 +184,7 @@ describe('barbeque.ts', function() {
         })
     })
 
-    describe('Barbeque#is_empty', function() {
+    describe('.is_empty()', function() {
         it('should show size of queue', function() {
             const q = new Barbeque()
             q.push(1)

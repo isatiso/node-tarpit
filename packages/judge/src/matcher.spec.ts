@@ -23,7 +23,7 @@ describe('matcher.ts', function() {
     after(async function() {
     })
 
-    describe('class Matcher', function() {
+    describe('Matcher', function() {
         it('could new instance', function() {
             expect(matcher).to.be.instanceof(Matcher)
         })
@@ -164,7 +164,7 @@ describe('matcher.ts', function() {
             })
         })
 
-        describe('#isFunction', function() {
+        describe('#is_function', function() {
             it('should check value if is a function', function() {
                 expect(Jtl.is_function.mismatch(null)).to.have.property('rule')
                 expect(Jtl.is_function.mismatch('asd')).to.have.property('rule')
@@ -201,7 +201,7 @@ describe('matcher.ts', function() {
             })
         })
 
-        describe('#nonEmptyArray', function() {
+        describe('#non_empty_array', function() {
             it('should check value is an array and not empty', function() {
                 expect(Jtl.non_empty_array.mismatch('asd')).to.have.property('rule')
                 expect(Jtl.non_empty_array.mismatch([])).to.have.property('rule')
@@ -237,7 +237,7 @@ describe('matcher.ts', function() {
             })
         })
 
-        describe('#nonEmptyString', function() {
+        describe('#non_empty_string', function() {
             it('should check value if is string and not empty', function() {
                 expect(Jtl.non_empty_string.mismatch(null)).to.have.property('rule')
                 expect(Jtl.non_empty_string.mismatch('asd')).to.be.undefined
@@ -257,7 +257,7 @@ describe('matcher.ts', function() {
             })
         })
 
-        describe('#nonZeroNumber', function() {
+        describe('#non_zero_number', function() {
             it('should check value if is number and not zero', function() {
                 expect(Jtl.non_zero_number.mismatch(null)).to.have.property('rule')
                 expect(Jtl.non_zero_number.mismatch('asd')).to.have.property('rule')
@@ -276,7 +276,7 @@ describe('matcher.ts', function() {
             })
         })
 
-        describe('#isTrue', function() {
+        describe('#is_true', function() {
             it('should check value is true', function() {
                 expect(Jtl.is_true.mismatch(true)).to.be.undefined
                 expect(Jtl.is_true.mismatch(false)).to.have.property('rule')
@@ -285,7 +285,7 @@ describe('matcher.ts', function() {
             })
         })
 
-        describe('#isFalse', function() {
+        describe('#is_false', function() {
             it('should check value is false', function() {
                 expect(Jtl.is_false.mismatch(true)).to.have.property('rule')
                 expect(Jtl.is_false.mismatch(false)).to.be.undefined

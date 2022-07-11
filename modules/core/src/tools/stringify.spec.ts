@@ -14,7 +14,7 @@ chai.use(cap)
 
 describe('stringify.ts', function() {
 
-    describe('stringify()', function() {
+    describe('#stringify()', function() {
 
         it('should stringify string value as itself', function() {
             const m = 'some string'

@@ -16,49 +16,53 @@ chai.use(cap)
 
 describe('content-reader.service.ts', function() {
 
-    describe('ContentDeserializerService.deserialize()', function() {
+    describe('ContentDeserializerService', function() {
 
-        const platform = new Platform({})
-            .import(ContentTypeModule)
+        describe('.deserialize()', function() {
 
-        const reader = platform.expose(ContentReaderService)!
+            const platform = new Platform({})
+                .import(ContentTypeModule)
 
-        it('should read raw content', async function() {
-            const raw = Buffer.from('H4sIAAAAAAAAE6tWSlSyUvowv2e/wou9u5/Nn/J8VouSjlKSkpWRoXEtALBm6nUeAAAA', 'base64')
-            const result = await reader.read(raw, { content_encoding: 'gzip', content_type: 'application/json' })
-            expect(result.text).to.equal('{"a":"🌿 轻柔的","b":213}')
-            expect(result.data).to.eql({ a: '🌿 轻柔的', b: 213 })
-        })
+            const reader = platform.expose(ContentReaderService)!
 
-        it('should skip deserialize if specified', async function() {
-            const raw = Buffer.from('H4sIAAAAAAAAE6tWSlSyUvowv2e/wou9u5/Nn/J8VouSjlKSkpWRoXEtALBm6nUeAAAA', 'base64')
-            const result = await reader.read(raw, { content_encoding: 'gzip', content_type: 'application/json', skip_deserialize: true })
-            expect(result.text).to.be.undefined
-            expect(result.data).to.be.undefined
-        })
+            it('should read raw content', async function() {
+                const raw = Buffer.from('H4sIAAAAAAAAE6tWSlSyUvowv2e/wou9u5/Nn/J8VouSjlKSkpWRoXEtALBm6nUeAAAA', 'base64')
+                const result = await reader.read(raw, { content_encoding: 'gzip', content_type: 'application/json' })
+                expect(result.text).to.equal('{"a":"🌿 轻柔的","b":213}')
+                expect(result.data).to.eql({ a: '🌿 轻柔的', b: 213 })
+            })
 
-        it('could deserialize directly', async function() {
-            const content = {
-                type: 'application/json',
-                parameters: {},
-                charset: 'UTF-8',
-                raw: Buffer.from('7b2261223a22f09f8cbf20e8bdbbe69f94e79a84222c2262223a3231337d', 'hex')
-            }
+            it('should skip deserialize if specified', async function() {
+                const raw = Buffer.from('H4sIAAAAAAAAE6tWSlSyUvowv2e/wou9u5/Nn/J8VouSjlKSkpWRoXEtALBm6nUeAAAA', 'base64')
+                const result = await reader.read(raw, { content_encoding: 'gzip', content_type: 'application/json', skip_deserialize: true })
+                expect(result.text).to.be.undefined
+                expect(result.data).to.be.undefined
+            })
 
-            const result = await reader.deserialize(content)
-            expect(result.text).to.equal('{"a":"🌿 轻柔的","b":213}')
-            expect(result.data).to.eql({ a: '🌿 轻柔的', b: 213 })
-        })
+            it('could deserialize directly', async function() {
+                const content = {
+                    type: 'application/json',
+                    parameters: {},
+                    charset: 'UTF-8',
+                    raw: Buffer.from('7b2261223a22f09f8cbf20e8bdbbe69f94e79a84222c2262223a3231337d', 'hex')
+                }
 
-        it('should use given charset if specified', async function() {
-            const raw = Buffer.from('H4sIAAAAAAAAE6tWSlSyUvowv2e/wou9u5/Nn/J8VouSjlKSkpWRoXEtALBm6nUeAAAA', 'base64')
-            const result = await reader.read(raw, { content_encoding: 'gzip', content_type: 'application/json; charset=utf-8' })
-            expect(result.text).to.equal('{"a":"🌿 轻柔的","b":213}')
-            expect(result.data).to.eql({ a: '🌿 轻柔的', b: 213 })
+                const result = await reader.deserialize(content)
+                expect(result.text).to.equal('{"a":"🌿 轻柔的","b":213}')
+                expect(result.data).to.eql({ a: '🌿 轻柔的', b: 213 })
+            })
+
+            it('should use given charset if specified', async function() {
+                const raw = Buffer.from('H4sIAAAAAAAAE6tWSlSyUvowv2e/wou9u5/Nn/J8VouSjlKSkpWRoXEtALBm6nUeAAAA', 'base64')
+                const result = await reader.read(raw, { content_encoding: 'gzip', content_type: 'application/json; charset=utf-8' })
+                expect(result.text).to.equal('{"a":"🌿 轻柔的","b":213}')
+                expect(result.data).to.eql({ a: '🌿 轻柔的', b: 213 })
+            })
         })
     })
 
-    describe('get_default_charset()', function() {
+    describe('#get_default_charset()', function() {
+
         it('could search default charset of specified MIME type', async function() {
             expect(get_default_charset('application/json')).to.equal('UTF-8')
         })

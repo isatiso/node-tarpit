@@ -41,7 +41,7 @@ describe('config-data.ts', function() {
     after(async function() {
     })
 
-    describe('new ConfigData()', function() {
+    describe('ConfigData', function() {
 
         it('should create ConfigData from object.', async function() {
 

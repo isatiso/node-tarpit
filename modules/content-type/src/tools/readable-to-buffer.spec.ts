@@ -15,7 +15,7 @@ chai.use(cap)
 
 describe('readable-to-buffer.ts', function() {
 
-    describe('readable_to_buffer()', function() {
+    describe('#readable_to_buffer()', function() {
 
         const raw_str = '5oGi5aSN56We57uP57O757uf8J+MvyDovbvmn5TnmoTpn7PkuZDvvIzplYfpnZnnpZ7nu4/ns7vnu5/vvIzmhInmgqblv4PngbU='
         const raw = Buffer.from(raw_str, 'base64')

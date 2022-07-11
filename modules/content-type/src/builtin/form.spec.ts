@@ -15,38 +15,38 @@ chai.use(cap)
 
 describe('form.ts', function() {
 
-    const null_content: MIMEContent<any> = {
-        type: 'application/x-www-form-urlencoded',
-        charset: undefined,
-        parameters: {},
-        // a=阿水淀粉&b=起来，不愿做奴隶的人们
-        raw: Buffer.from('YT3pmL/msLTmt4DnsokmYj3otbfmnaXvvIzkuI3mhL/lgZrlpbTpmrbnmoTkurrku6w=', 'base64')
-    }
+    describe('#form_deserialize()', function() {
 
-    const utf8_content: MIMEContent<any> = {
-        type: 'application/x-www-form-urlencoded',
-        charset: 'utf-8',
-        parameters: { charset: 'utf-8', },
-        // a=阿水淀粉&b=起来，不愿做奴隶的人们
-        raw: Buffer.from('YT3pmL/msLTmt4DnsokmYj3otbfmnaXvvIzkuI3mhL/lgZrlpbTpmrbnmoTkurrku6w=', 'base64')
-    }
+        const null_content: MIMEContent<any> = {
+            type: 'application/x-www-form-urlencoded',
+            charset: undefined,
+            parameters: {},
+            // a=阿水淀粉&b=起来，不愿做奴隶的人们
+            raw: Buffer.from('YT3pmL/msLTmt4DnsokmYj3otbfmnaXvvIzkuI3mhL/lgZrlpbTpmrbnmoTkurrku6w=', 'base64')
+        }
 
-    const gbk_content: MIMEContent<any> = {
-        type: 'application/x-www-form-urlencoded',
-        charset: 'gbk',
-        parameters: { charset: 'gbk', },
-        // a=阿水淀粉&b=起来，不愿做奴隶的人们&b=1&b=2
-        raw: Buffer.from('YT2wosuute232yZiPcbwwLSjrLK71LjX9sWrwaW1xMjLw8cmYj0xJmI9MjM=', 'base64')
-    }
+        const utf8_content: MIMEContent<any> = {
+            type: 'application/x-www-form-urlencoded',
+            charset: 'utf-8',
+            parameters: { charset: 'utf-8', },
+            // a=阿水淀粉&b=起来，不愿做奴隶的人们
+            raw: Buffer.from('YT3pmL/msLTmt4DnsokmYj3otbfmnaXvvIzkuI3mhL/lgZrlpbTpmrbnmoTkurrku6w=', 'base64')
+        }
 
-    const non_exists_encoding_content: MIMEContent<any> = {
-        type: 'application/x-www-form-urlencoded',
-        charset: 'whatever',
-        parameters: { charset: 'whatever', },
-        raw: Buffer.from('')
-    }
+        const gbk_content: MIMEContent<any> = {
+            type: 'application/x-www-form-urlencoded',
+            charset: 'gbk',
+            parameters: { charset: 'gbk', },
+            // a=阿水淀粉&b=起来，不愿做奴隶的人们&b=1&b=2
+            raw: Buffer.from('YT2wosuute232yZiPcbwwLSjrLK71LjX9sWrwaW1xMjLw8cmYj0xJmI9MjM=', 'base64')
+        }
 
-    describe('form_deserialize()', function() {
+        const non_exists_encoding_content: MIMEContent<any> = {
+            type: 'application/x-www-form-urlencoded',
+            charset: 'whatever',
+            parameters: { charset: 'whatever', },
+            raw: Buffer.from('')
+        }
 
         it('should decode utf8 urlencoded content into object', function() {
             const obj = form_deserialize(utf8_content)

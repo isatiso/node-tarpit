@@ -17,6 +17,16 @@ chai.use(spies)
 
 describe('tp-inspector.ts', function() {
 
+    let tmp: any
+    before(function() {
+        tmp = console.log
+        console.log = (..._args: any[]) => undefined
+    })
+
+    after(function() {
+        console.log = tmp
+    })
+
     describe('TpInspector', function() {
 
         const platform = new Platform({})

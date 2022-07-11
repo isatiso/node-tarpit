@@ -18,10 +18,15 @@ class Dep {
 }
 
 describe('debug.ts', function() {
-    describe('Debug', function() {
+
+    describe('@Debug', function() {
+
         it('should echo whole param types if put on the head of class', async function() {
 
-            const spy = chai.spy.on(Debug, 'log')
+            const log_history: any[][] = []
+            Debug.log = (...args: any[]) => {
+                log_history.push(args)
+            }
 
             @Debug()
             class Test {
@@ -29,28 +34,32 @@ describe('debug.ts', function() {
                 }
             }
 
-            expect(spy).to.have.been.called.with(`${Test.name} dependencies`, [Number, String, Dep])
-            expect(spy).to.have.been.called.once
-            chai.spy.restore(Debug, 'log')
+            expect(log_history[0]).to.eql([`${Test.name} dependencies`, [Number, String, Dep]])
+            expect(log_history[1]).to.be.undefined
         })
 
         it('should echo type of specified parameter if put on the head of constructor parameter', async function() {
 
-            const spy = chai.spy.on(Debug, 'log')
+            const log_history: any[][] = []
+            Debug.log = (...args: any[]) => {
+                log_history.push(args)
+            }
 
             class Test {
                 constructor(_a: number, _b: string, @Debug() c: Dep) {
                 }
             }
 
-            expect(spy).to.have.been.called.with(`${Test.name}.args[2] type`, Dep)
-            expect(spy).to.have.been.called.once
-            chai.spy.restore(Debug, 'log')
+            expect(log_history[0]).to.eql([`${Test.name}.args[2] type`, Dep])
+            expect(log_history[1]).to.be.undefined
         })
 
         it('should echo whole param types of method if put on the head of class method', async function() {
 
-            const spy = chai.spy.on(Debug, 'log')
+            const log_history: any[][] = []
+            Debug.log = (...args: any[]) => {
+                log_history.push(args)
+            }
 
             class Test {
                 @Debug()
@@ -58,36 +67,39 @@ describe('debug.ts', function() {
                 }
             }
 
-            expect(spy).to.have.been.called.with(`${Test.name}.method dependencies`, [Number, String, Dep])
-            expect(spy).to.have.been.called.once
-            chai.spy.restore(Debug, 'log')
+            expect(log_history[0]).to.eql([`${Test.name}.method dependencies`, [Number, String, Dep]])
+            expect(log_history[1]).to.be.undefined
         })
 
         it('should echo type of specified parameter of method if put on the head of method parameter', async function() {
 
-            const spy = chai.spy.on(Debug, 'log')
+            const log_history: any[][] = []
+            Debug.log = (...args: any[]) => {
+                log_history.push(args)
+            }
 
             class Test {
                 method(_a: number, @Debug() c: Dep, _b: string) {
                 }
             }
 
-            expect(spy).to.have.been.called.with(`${Test.name}.method.args[1] type`, Dep)
-            expect(spy).to.have.been.called.once
-            chai.spy.restore(Debug, 'log')
+            expect(log_history[0]).to.eql([`${Test.name}.method.args[1] type`, Dep])
+            expect(log_history[1]).to.be.undefined
         })
 
         it('should echo type of specified property if put on the head of property', async function() {
 
-            const spy = chai.spy.on(Debug, 'log')
+            const log_history: any[][] = []
+            Debug.log = (...args: any[]) => {
+                log_history.push(args)
+            }
 
             class Test {
                 @Debug() prop?: Dep
             }
 
-            expect(spy).to.have.been.called.with(`${Test.name}.prop type`, Dep)
-            expect(spy).to.have.been.called.once
-            chai.spy.restore(Debug, 'log')
+            expect(log_history[0]).to.eql([`${Test.name}.prop type`, Dep])
+            expect(log_history[1]).to.be.undefined
         })
     })
 })

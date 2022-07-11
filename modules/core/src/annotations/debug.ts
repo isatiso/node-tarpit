@@ -29,4 +29,4 @@ export function Debug() {
     }
 }
 
-Debug.log = (...args: any[]) => console.log(...args)
+Debug.log = console.log

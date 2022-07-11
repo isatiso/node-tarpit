@@ -14,7 +14,7 @@ chai.use(cap)
 
 describe('parse-content-type.ts', function() {
 
-    describe('parse_content_type()', function() {
+    describe('#parse_content_type()', function() {
 
         it('should parse content type with charset', function() {
             expect(parse_content_type('application/json; charset=utf8')).to.eql({ type: 'application/json', parameters: { charset: 'utf8' } })

@@ -21,7 +21,7 @@ describe('dora.ts', function() {
             expect(date).to.be.instanceof(Dora)
         })
 
-        describe('Dora.guess_timezone()', function() {
+        describe('#guess_timezone()', function() {
 
             it('should return timezone of current area', function() {
                 const m = Dora.guess_timezone()
@@ -29,7 +29,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('Dora.now()', function() {
+        describe('#now()', function() {
 
             it('should return Dora object of current timestamp', function() {
                 const m = Dora.now()
@@ -37,7 +37,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('Dora.from()', function() {
+        describe('#from()', function() {
 
             it('should return Dora as DateTimeArray specified', function() {
                 const time_arr: DateTimeArray = [2020, 9, 8, 14, 32, 1, 332]
@@ -53,7 +53,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('Dora.parse()', function() {
+        describe('#parse()', function() {
 
             it('should return Dora as TimeString specified', function() {
                 const time_string = '2020-10-08 15:32:01.158'
@@ -83,7 +83,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#format()', function() {
+        describe('.format()', function() {
             it('should return time string as specified format', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
                 const n = new Dora(1652686708000, 'America/Inuvik')
@@ -104,21 +104,21 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#toString()', function() {
+        describe('.toString()', function() {
             it('should return time string as specified format with no parameters.', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
                 expect(m.format()).to.equal(m.toString())
             })
         })
 
-        describe('#daysInMonth()', function() {
+        describe('.daysInMonth()', function() {
             it('should return total days of current month.', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
                 expect(m.daysInMonth()).to.equal(31)
             })
         })
 
-        describe('#clone()', function() {
+        describe('.clone()', function() {
             it('should return new Dora as same as current one.', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
                 const n = m.clone()
@@ -127,7 +127,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#year()', function() {
+        describe('.year()', function() {
 
             it('should return year of Dora object', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
@@ -143,7 +143,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#month()', function() {
+        describe('.month()', function() {
 
             it('should return month of Dora object', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
@@ -159,7 +159,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#date()', function() {
+        describe('.date()', function() {
 
             it('should return date of Dora object', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
@@ -175,7 +175,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#day()', function() {
+        describe('.day()', function() {
 
             it('should return day of Dora object', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
@@ -189,7 +189,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#hour()', function() {
+        describe('.hour()', function() {
 
             it('should return hour of Dora object', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
@@ -203,7 +203,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#minute()', function() {
+        describe('.minute()', function() {
 
             it('should return minute of Dora object', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
@@ -217,7 +217,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#second()', function() {
+        describe('.second()', function() {
 
             it('should return second of Dora object', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
@@ -231,7 +231,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#millisecond()', function() {
+        describe('.millisecond()', function() {
 
             it('should return millisecond of Dora object', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
@@ -245,7 +245,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#add()', function() {
+        describe('.add()', function() {
 
             it('should return Dora of 1 millisecond increased', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
@@ -303,7 +303,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#add()', function() {
+        describe('.get()', function() {
 
             const m = new Dora(1652686708168, 'Asia/Shanghai')
             // const m = '2022-05-16T15:38:28.000+08:00'
@@ -341,7 +341,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#startOf()', function() {
+        describe('.startOf()', function() {
 
             const m = new Dora(1652686708168, 'Asia/Shanghai')
             // const m = '2022-05-16T15:38:28.000+08:00'
@@ -384,7 +384,7 @@ describe('dora.ts', function() {
             })
         })
 
-        describe('#endOf()', function(){
+        describe('.endOf()', function() {
 
             const m = new Dora(1652686708168, 'Asia/Shanghai')
 

@@ -54,7 +54,7 @@ describe('reference.ts', function() {
             expect(ref_m).to.be.instanceof(Reference)
         })
 
-        describe('#get', function() {
+        describe('.get', function() {
             it('should get value of specified path', function() {
                 expect(ref.get('a')).to.equal('some string')
                 expect(ref.get('b')).to.equal(123)

@@ -17,7 +17,19 @@ import { get_class_decorator, make_decorator } from './tools/decorator'
 
 chai.use(cap)
 
+Debug.log = (..._args: any[]) => undefined
+
 describe('platform.ts', function() {
+
+    let tmp: any
+    before(function() {
+        tmp = console.log
+        console.log = (..._args: any[]) => undefined
+    })
+
+    after(function() {
+        console.log = tmp
+    })
 
     @Debug()
     class Noop {
@@ -41,7 +53,7 @@ describe('platform.ts', function() {
         })
     })
 
-    describe('Platform#import()', function() {
+    describe('.import()', function() {
         it('should import ClassProviderDef to Platform', function() {
             const platform = new Platform({})
             platform.import({ provide: Service1, useClass: Service1 })
@@ -79,7 +91,7 @@ describe('platform.ts', function() {
         })
     })
 
-    describe('Platform#bootstrap()', function() {
+    describe('.bootstrap()', function() {
         it('should bootstrap TpRoot to Platform', function() {
             const platform = new Platform({})
             platform.bootstrap(Root1)
@@ -96,7 +108,7 @@ describe('platform.ts', function() {
         })
     })
 
-    describe('Platform#expose()', function() {
+    describe('.expose()', function() {
         it('should expose things from root injector', function() {
             const platform = new Platform({})
             const inspector = platform.expose(TpInspector)
@@ -110,7 +122,7 @@ describe('platform.ts', function() {
         })
     })
 
-    describe('Platform start && terminate', function() {
+    describe('.start() && .terminate()', function() {
 
         const some_module_token = Symbol.for('œœ.token.SomeModule')
 

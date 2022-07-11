@@ -82,7 +82,7 @@ describe('get-providers.ts', function() {
     const provider_a = ClassProvider.create(injector, { provide: A, useClass: A })
     const provider_b = ClassProvider.create(injector, { provide: B, useClass: B })
 
-    describe('get_providers()', function() {
+    describe('#get_providers()', function() {
         it('should get providers of specified parameters at constructor', function() {
             const providers = get_providers({ cls: C, position: 'C' }, injector)
             expect(providers[0].token).to.equal(O)
