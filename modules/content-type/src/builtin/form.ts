@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { url_encode } from '../tools/urlencode'
+import { URLEncoding } from '../tools/url-encoding'
 import { MIMEContent } from '../types'
 import { decode } from './common'
 
@@ -16,6 +16,6 @@ export const form_deserialize = (content: MIMEContent<any>): any => {
     if (!content.text) {
         return
     }
-    return content.data = url_encode.parse(content.text, { charset })
+    return content.data = URLEncoding.parse(content.text, { charset })
 }
 

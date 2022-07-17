@@ -75,7 +75,7 @@ export function make_decorator<ARGS extends any[], T, PR>(
 
             if (is_constructor) {
                 decorator_instance.cls = target
-                // istanbul ignore if
+                // istanbul ignore else
                 if (!prop) {
                     if (is_parameter) {
                         // DecoratorType.ClassParameter
@@ -96,7 +96,7 @@ export function make_decorator<ARGS extends any[], T, PR>(
                 const cls = target.constructor
                 decorator_instance.cls = cls
 
-                // istanbul ignore if
+                // istanbul ignore else
                 if (prop) {
                     decorator_instance.prop = prop
                     if (is_parameter) {
