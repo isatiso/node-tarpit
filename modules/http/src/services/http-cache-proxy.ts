@@ -8,16 +8,14 @@
 
 import { TpService } from '@tarpit/core'
 import LRUCache from 'lru-cache'
-import { AbstractCacheProxy } from '../inner/abstract-cache-proxy'
 
 @TpService({ inject_root: true })
-export class TpCacheProxy extends AbstractCacheProxy {
+export class HttpCacheProxy {
 
     private _cache = new LRUCache<string, string | object | Buffer>({ max: 5000 })
 
     async clear(scope: string, key: string): Promise<void> {
         this._cache.delete(`${scope}-${key}`)
-        return
     }
 
     async get(scope: string, key: string): Promise<string | object | Buffer | null> {
@@ -26,6 +24,5 @@ export class TpCacheProxy extends AbstractCacheProxy {
 
     async set(scope: string, key: string, value: string | object | Buffer, expire_secs: number): Promise<void> {
         this._cache.set(`${scope}-${key}`, value, { ttl: expire_secs * 1000 })
-        return
     }
 }

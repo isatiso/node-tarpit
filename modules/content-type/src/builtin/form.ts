@@ -6,23 +6,16 @@
  * found in the LICENSE file at source root.
  */
 
+import { url_encode } from '../tools/urlencode'
 import { MIMEContent } from '../types'
 import { decode } from './common'
 
 export const form_deserialize = (content: MIMEContent<any>): any => {
-    content.text = decode(content.raw, content.charset ?? 'utf-8')
+    const charset = content.charset ?? 'utf-8'
+    content.text = decode(content.raw, charset)
     if (!content.text) {
         return
     }
-    const params: any = {}
-    new URLSearchParams(content.text).forEach((value, key) => {
-        if (params[key] === undefined) {
-            params[key] = value
-        } else if (typeof params[key] === 'string') {
-            params[key] = [params[key], value]
-        } else {
-            params[key].push(value)
-        }
-    })
-    return params
+    return content.data = url_encode.parse(content.text, { charset })
 }
+

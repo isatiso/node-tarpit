@@ -3,7 +3,8 @@
     "private": true,
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "setup": "bash -c \"PATH=$PATH:\\\"$(pwd)/node_modules/.bin\\\"\""
     },
     "workspaces": [
         "modules/*",

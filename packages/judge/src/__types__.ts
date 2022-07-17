@@ -76,7 +76,7 @@ export type PathValueMap<T> = {
  * ```
  */
 export type PathOfType<T, M> = {
-    [P in Path<T>]: Exclude<PathValue<T, P>, undefined> extends M ? P : never
+    [P in Path<T>]: M extends Exclude<PathValue<T, P>, undefined> ? P : never
 }[Path<T>]
 
 /**

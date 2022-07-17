@@ -8,7 +8,7 @@
 
 export * from './body'
 export * from './dict'
-export * from './guardian'
+export * from './guard'
 export * from './http-context'
 export * from './response-cache'
 export * from './tp-request'

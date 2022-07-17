@@ -7,12 +7,11 @@
  */
 
 import { TpService } from '@tarpit/core'
-import { HttpResponseType } from '../../__types__'
-import { HttpContext } from '../../builtin'
-import { AbstractResponseFormatter } from '../inner/abstract-response-formatter'
+import { HttpResponseType } from '../__types__'
+import { HttpContext } from '../builtin'
 
 @TpService({ inject_root: true })
-export class TpResponseFormatter extends AbstractResponseFormatter {
+export class HttpResponseFormatter {
 
     format(context: HttpContext, result: any): HttpResponseType {
         return result

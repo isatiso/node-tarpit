@@ -20,13 +20,14 @@ type ExType = {
     c: {
         c1: string
         c2: number
-        c3: boolean
+        c3?: boolean
     }
     ci?: {
         c1: string
         c2: number
         c3: boolean
-    }
+    },
+    cross: string | number
 }
 
 describe('judgement.ts', function() {
@@ -49,6 +50,7 @@ describe('judgement.ts', function() {
                     c2: 9,
                     c3: false,
                 },
+                cross: 'lkj'
             })
             expect(judge).to.be.instanceof(Judgement)
         })

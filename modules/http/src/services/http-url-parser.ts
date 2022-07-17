@@ -8,9 +8,20 @@
 
 import { ConfigData } from '@tarpit/config'
 import { TpService } from '@tarpit/core'
-import { IncomingMessage } from 'http'
-import { TLSSocket } from 'tls'
 import url, { UrlWithParsedQuery } from 'url'
+
+export type RequestInfo = {
+    url: string | undefined
+    headers: NodeJS.Dict<string | string[]>
+}
+
+export function get_first(value: string | string[] | undefined) {
+    if (Array.isArray(value)) {
+        return value[0]
+    } else {
+        return value
+    }
+}
 
 @TpService({ inject_root: true })
 export class HttpUrlParser {
@@ -22,50 +33,30 @@ export class HttpUrlParser {
     ) {
     }
 
-    parse(req: IncomingMessage): UrlWithParsedQuery | undefined {
+    parse(request_info: RequestInfo): UrlWithParsedQuery | undefined {
         try {
-            const req_url = req.url ?? '/'
-            if (/^https?:\/\//i.test(req_url)) {
-                return url.parse(req_url, true)
+            const request_url = request_info.url ?? '/'
+            if (/^https?:\/\//i.test(request_url)) {
+                return url.parse(request_url, true)
             } else {
-                return url.parse(this.figure_origin(req) + req_url, true)
+                return url.parse(this.figure_origin(request_info) + request_url, true)
             }
         } catch (e: any) {
             return
         }
     }
 
-    private figure_origin(req: IncomingMessage) {
-        return `${this.figure_protocol(req)}://${this.figure_host(req)}`
+    private figure_origin(info: RequestInfo) {
+        return `http://${this.figure_host(info.headers)}`
     }
 
-    private figure_protocol(req: IncomingMessage) {
-        if ((req.socket as TLSSocket).encrypted) {
-            return 'https'
-        }
-        if (!this.proxy_config?.enable) {
-            return 'http'
-        }
-        let proto = req.headers['x-forwarded-proto']
-        if (Array.isArray(proto)) {
-            proto = proto[0]
-        }
-        return proto ? proto.split(/\s*,\s*/, 1)[0] : 'http'
-    }
-
-    private figure_host(req: IncomingMessage): string {
-        let host = this.proxy_config?.enable ? req.headers['x-forwarded-host'] as string : ''
-        if (!host) {
-            if (req.httpVersionMajor >= 2) {
-                host = req.headers[':authority'] as string ?? ''
-            }
-            if (!host) {
-                host = req.headers['host'] as string ?? ''
+    private figure_host(headers: NodeJS.Dict<string | string[]>): string {
+        if (this.proxy_config?.enable) {
+            const forwarded_host = get_first(headers['x-forwarded-host'])
+            if (forwarded_host) {
+                return forwarded_host.split(/\s*,\s*/, 1)[0]
             }
         }
-        if (!host) {
-            return ''
-        }
-        return host.split(/\s*,\s*/, 1)[0]
+        return get_first(headers['host']) ?? 'localhost'
     }
 }

@@ -11,19 +11,13 @@ import { throw_bad_request } from '../../errors'
 
 export class HttpDict<T extends NodeJS.Dict<string | string[]> = NodeJS.Dict<string | string[]>> {
 
-    protected _expose = false
-
     constructor(
-        private dict: T
+        public readonly data: T
     ) {
     }
 
-    expose_error(value?: boolean) {
-        this._expose = value !== false
-    }
-
     get_first(key: keyof T): string | undefined {
-        const item = this.dict[key]
+        const item = this.data[key]
         if (Array.isArray(item)) {
             return item[0]
         } else {
@@ -41,6 +35,6 @@ export class HttpDict<T extends NodeJS.Dict<string | string[]> = NodeJS.Dict<str
     }
 
     protected on_error(prop: keyof T, desc: MismatchDescription): never {
-        throw_bad_request(`Value of [${prop as string}] is not match rule: [${desc.rule}]`, { expose: this._expose })
+        throw_bad_request(`Value of [${prop as string}] does not match the rule: [${desc.rule}]`)
     }
 }

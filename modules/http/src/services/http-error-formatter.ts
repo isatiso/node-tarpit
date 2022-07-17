@@ -8,21 +8,19 @@
 
 import { ConfigData } from '@tarpit/config'
 import { TpService } from '@tarpit/core'
-import { HttpResponseType } from '../../__types__'
-import { HttpContext } from '../../builtin'
-import { TpHttpError } from '../../errors'
-import { HTTP_STATUS } from '../../tools/http-status'
-import { AbstractResponseFormatter } from '../inner/abstract-response-formatter'
+import { HttpResponseType } from '../__types__'
+import { HttpContext } from '../builtin'
+import { TpHttpError } from '../errors'
+import { HTTP_STATUS } from '../tools/http-status'
 
 @TpService({ inject_root: true })
-export class TpErrorFormatter extends AbstractResponseFormatter {
+export class HttpErrorFormatter {
 
     private expose = this.config_data.get('http.expose_error') ?? false
 
     constructor(
         private config_data: ConfigData,
     ) {
-        super()
     }
 
     format(context: HttpContext, err: TpHttpError): HttpResponseType {

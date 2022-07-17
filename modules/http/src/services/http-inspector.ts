@@ -17,27 +17,11 @@ export class HttpInspector {
     ) {
     }
 
-    list_router(): Omit<HttpHandlerDescriptor, 'handler'>[]
-    list_router(need_handler: false): Omit<HttpHandlerDescriptor, 'handler'>[]
-    list_router(need_handler: true): HttpHandlerDescriptor[]
-    list_router(need_handler?: boolean): HttpHandlerDescriptor[] | Omit<HttpHandlerDescriptor, 'handler'>[] {
-        return Array.from(this._routers.handlers.keys()).sort().map(mp => {
-            const [, method, path] = /^(GET|POST|PUT|DELETE)-(.+)$/.exec(mp) ?? []
-            return {
-                path,
-                method: method as ApiMethod,
-                handler: need_handler ? this._routers.handlers.get(mp) : undefined
-            }
-        })
+    list_router(): Omit<HttpHandlerDescriptor, 'handler'>[] {
+        return this._routers.handler_book.list()
     }
 
-    bind(method: ApiMethod, path: string | string[], handler: HttpHandler): void {
-        if (Array.isArray(path)) {
-            for (const p of path) {
-                this._routers.handlers.set(`${method}-${p}`, handler)
-            }
-        } else {
-            this._routers.handlers.set(`${method}-${path}`, handler)
-        }
+    bind(method: ApiMethod, path: string, handler: HttpHandler): void {
+        this._routers.handler_book.record(method, path, handler)
     }
 }

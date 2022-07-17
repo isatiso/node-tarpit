@@ -17,6 +17,6 @@ export class FormBody<T> extends Judgement<T> {
     }
 
     protected override on_error(prop: string, desc: MismatchDescription, on_error?: OnJudgementError): never {
-        throw_bad_request(on_error?.(prop, desc) ?? `Body parameter of [${prop}] is not match rule: [${desc.rule}]`)
+        throw_bad_request(on_error ? on_error(prop, desc) : `Body parameter of [${prop}] does not match the rule: [${desc.rule}]`)
     }
 }

@@ -13,12 +13,10 @@ import { UrlWithParsedQuery } from 'url'
 
 export type HttpResponseType = null | string | Buffer | Stream | object
 export type HttpHandler = (req: IncomingMessage, res: ServerResponse, url: UrlWithParsedQuery) => Promise<void>
-export type HttpHandlerKey = `${ApiMethod}-${string}`
 
 export interface HttpHandlerDescriptor {
     method: ApiMethod,
     path: string
-    handler: HttpHandler
 }
 
 export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
@@ -29,11 +27,13 @@ export type ProxyConfig = {
     max_ips_count?: number
 }
 
-export interface TpHttpSession {
+export interface HttpSession {
     process_start?: number
 }
 
-export interface TpHttpAuthInfo {
+export interface HttpCredentials {
+    type: string
+    credentials: string
 }
 
 export interface TpRouterOptions extends ImportsAndProviders {

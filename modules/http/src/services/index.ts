@@ -6,18 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-export { AbstractAuthenticator } from './inner/abstract-authenticator'
-export { AbstractCacheProxy } from './inner/abstract-cache-proxy'
-export { AbstractErrorFormatter } from './inner/abstract-error-formatter'
-export { AbstractHttpHooks } from './inner/abstract-http-hooks'
-export { AbstractResponseFormatter } from './inner/abstract-response-formatter'
-
-export { TpAuthenticator } from './impl/tp-authenticator'
-export { TpCacheProxy } from './impl/tp-cache-proxy'
-export { TpErrorFormatter } from './impl/tp-error-formatter'
-export { TpHttpHooks } from './impl/tp-http-hooks'
-export { TpResponseFormatter } from './impl/tp-response-formatter'
-
+export { HttpAuthenticator } from './http-authenticator'
+export { HttpCacheProxy } from './http-cache-proxy'
+export { HttpErrorFormatter } from './http-error-formatter'
+export { HttpHooks } from './http-hooks'
+export { HttpResponseFormatter } from './http-response-formatter'
 export { HttpInspector } from './http-inspector'
 export { HttpRouters } from './http-routers'
 export { HttpServer } from './http-server'

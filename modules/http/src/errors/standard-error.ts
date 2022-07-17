@@ -21,15 +21,25 @@ export class StandardError extends TpHttpError {
     }
 }
 
-export function throw_standard_error(status: number, msg?: string, desc?: Desc): never {
-    const improved_msg = msg ?? HTTP_STATUS.message_of(status) ?? HTTP_STATUS.message_of(500)
+export function throw_standard_error(status: number, desc?: Desc & { msg?: string }): never {
+    const improved_msg = desc?.msg ?? HTTP_STATUS.message_of(status) ?? HTTP_STATUS.message_of(500)
     throw new StandardError(status, improved_msg, desc)
 }
 
-export function throw_bad_request(msg?: string, desc?: Desc): never {
-    throw_standard_error(400, msg, desc)
+export type ThrowStandardError = (desc?: (string | (Desc & { msg?: string }))) => never
+
+function create_tools(name: string, status: number): ThrowStandardError {
+    return {
+        [name]: function(desc?: string | (Desc & { msg?: string })): never {
+            if (typeof desc === 'string') {
+                throw_standard_error(status, { msg: desc })
+            } else {
+                throw_standard_error(status, desc)
+            }
+        }
+    }[name]
 }
 
-export function throw_unauthorized(msg?: string, desc?: Desc): never {
-    throw_standard_error(401, msg, desc)
-}
+export const throw_bad_request: ThrowStandardError = create_tools('throw_bad_request', 400)
+export const throw_unauthorized: ThrowStandardError = create_tools('throw_unauthorized', 401)
+export const throw_forbidden: ThrowStandardError = create_tools('throw_forbidden', 403)

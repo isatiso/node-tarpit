@@ -6,14 +6,19 @@
  * found in the LICENSE file at source root.
  */
 
-import { IncomingMessage } from 'http'
 import mime from 'mime-types'
 import Negotiator from 'negotiator'
 
-function ext_to_mime(type: string): string | undefined {
+export function ext_to_mime(type: string): string | undefined {
     return type.indexOf('/') === -1
         ? (mime.lookup(type) || undefined)
         : type
+}
+
+export type IncomingMessageLike = {
+    headers: {
+        [key: string]: string | string[] | undefined;
+    }
 }
 
 export class AcceptParser {
@@ -21,7 +26,7 @@ export class AcceptParser {
     private headers = this.req.headers
     private negotiator = new Negotiator(this.req)
 
-    constructor(private req: IncomingMessage) {
+    constructor(private req: IncomingMessageLike) {
     }
 
     types(): string[]

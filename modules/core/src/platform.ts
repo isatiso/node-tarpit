@@ -85,9 +85,6 @@ export class Platform {
         return this
     }
 
-    /**
-     * 向外暴露指定 TpService，一般用于测试
-     */
     expose<T>(target: AbstractConstructor<T> | Constructor<T> | string | symbol): T | undefined {
         return this.root_injector.get(target as any)?.create() as any
     }

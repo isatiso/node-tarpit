@@ -7,7 +7,7 @@
  */
 
 import { Injector, TpService } from '@tarpit/core'
-import { Readable } from 'stream'
+import { PassThrough, Readable } from 'stream'
 import { decompressor_token } from '../tokens'
 import { filter_provider } from '../tools/filter-provider'
 import { readable_to_buffer } from '../tools/readable-to-buffer'
@@ -36,12 +36,8 @@ export class ContentDecompressorService {
         const content_encoding = options.content_encoding
 
         let stream = Buffer.isBuffer(raw) ? Readable.from(raw) : raw
-        if (content_encoding.indexOf(',') !== -1) {
-            for (const encoding of content_encoding.split(',').reverse()) {
-                stream = this._decompressor.get(encoding)?.(stream) ?? stream
-            }
-        } else {
-            stream = this._decompressor.get(content_encoding)?.(stream) ?? stream
+        for (const encoding of content_encoding.split(',').reverse()) {
+            stream = this._decompressor.get(encoding)?.(stream) ?? stream.pipe(new PassThrough())
         }
         return readable_to_buffer(stream)
     }

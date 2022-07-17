@@ -7,37 +7,48 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { ContentReaderService } from '@tarpit/content-type'
+import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
 import { get_providers, Injector, TpService } from '@tarpit/core'
-import { throw_native_error } from '@tarpit/error'
 import { IncomingMessage, ServerResponse } from 'http'
+import { Readable, Transform, TransformCallback } from 'stream'
 import { UrlWithParsedQuery } from 'url'
-import { ApiMethod, HttpHandler, HttpHandlerKey } from '../__types__'
 import { TpRouter } from '../annotations'
-import { FormBody, Guardian, HttpContext, JsonBody, MimeBody, Params, RawBody, RequestHeader, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
+import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
 import { Finish, StandardError, TpHttpError } from '../errors'
 import { RouteUnit } from '../tools/collect-routes'
-import { HTTP_STATUS } from '../tools/http-status'
-import { on_error } from '../tools/on-error'
-import { on_finish } from '../tools/on-finished'
+import { flush_response } from '../tools/flush-response'
+import { HandlerBook } from '../tools/handler-book'
+import { CODES_KEY, HTTP_STATUS } from '../tools/http-status'
+import { HttpAuthenticator } from './http-authenticator'
+import { HttpCacheProxy } from './http-cache-proxy'
+import { HttpErrorFormatter } from './http-error-formatter'
+import { HttpHooks } from './http-hooks'
+import { HttpResponseFormatter } from './http-response-formatter'
 import { HttpServer } from './http-server'
 import { HttpUrlParser } from './http-url-parser'
-import { AbstractAuthenticator } from './inner/abstract-authenticator'
-import { AbstractCacheProxy } from './inner/abstract-cache-proxy'
-import { AbstractErrorFormatter } from './inner/abstract-error-formatter'
-import { AbstractHttpHooks } from './inner/abstract-http-hooks'
-import { AbstractResponseFormatter } from './inner/abstract-response-formatter'
 
 const BODY_TOKEN: any[] = [MimeBody, JsonBody, FormBody, TextBody, RawBody]
-const REQUEST_TOKEN: any[] = [RequestHeader, Guardian, Params, IncomingMessage, TpRequest]
+const REQUEST_TOKEN: any[] = [RequestHeaders, Guard, Params, IncomingMessage, TpRequest]
 const RESPONSE_TOKEN: any[] = [ServerResponse, TpResponse]
 const ALL_HANDLER_TOKEN: any[] = [HttpContext, ResponseCache].concat(BODY_TOKEN, REQUEST_TOKEN, RESPONSE_TOKEN)
 const ALL_HANDLER_TOKEN_SET = new Set(ALL_HANDLER_TOKEN)
 
+export function reply(res: ServerResponse, status: CODES_KEY) {
+    res.statusCode = status
+    res.statusMessage = HTTP_STATUS.message_of(status)
+    if (!HTTP_STATUS.is_empty(status) && res.statusMessage) {
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+        res.setHeader('Content-Length', Buffer.byteLength(res.statusMessage))
+        res.end(res.statusMessage)
+    } else {
+        res.end()
+    }
+}
+
 @TpService({ inject_root: true })
 export class HttpRouters {
 
-    public readonly handlers = new Map<HttpHandlerKey, HttpHandler>()
+    public readonly handler_book = new HandlerBook()
 
     private readonly c_allow_headers = this.config_data.get('http.cors.allow_headers') ?? ''
     private readonly c_allow_methods = this.config_data.get('http.cors.allow_methods') ?? ''
@@ -55,17 +66,38 @@ export class HttpRouters {
     }
 
     public readonly request_listener = async (req: IncomingMessage, res: ServerResponse) => {
-        res.statusCode = 404
+        const parsed_url = this.url_parser.parse({ url: req.url, headers: req.headers })
+        // istanbul ignore if
+        if (!parsed_url || !req.method) {
+            return reply(res, 400)
+        }
+        // istanbul ignore next
+        parsed_url.pathname = parsed_url.pathname || '/'
+        const allow = this.handler_book.get_allow(parsed_url.pathname)
+        if (!allow) {
+            return reply(res, 404)
+        }
+        if (!allow.includes(req.method)) {
+            return reply(res, 405)
+        }
         this.c_allow_origin && res.setHeader('Access-Control-Allow-Origin', this.c_allow_origin)
         if (req.method === 'OPTIONS') {
-            this.c_allow_headers && res.setHeader('Access-Control-Allow-Headers', this.c_allow_headers)
-            this.c_allow_methods && res.setHeader('Access-Control-Allow-Methods', this.c_allow_methods)
-            this.c_cors_max_age && res.setHeader('Access-Control-Max-Age', this.c_cors_max_age)
-            res.statusCode = 204
-            res.end('')
-            return
+            // istanbul ignore if
+            if (req.url === '*') {
+                res.setHeader('Allow', 'OPTIONS,HEAD,GET,POST,PUT,DELETE')
+            } else {
+                res.setHeader('Allow', allow.join(','))
+                this.c_allow_methods && res.setHeader('Access-Control-Allow-Methods', this.c_allow_methods)
+                this.c_allow_headers && res.setHeader('Access-Control-Allow-Headers', this.c_allow_headers)
+                this.c_cors_max_age && res.setHeader('Access-Control-Max-Age', this.c_cors_max_age)
+            }
+            return reply(res, 204)
+        } else {
+            res.statusCode = 400
+            res.statusMessage = HTTP_STATUS.message_of(400)
+            const handler = this.handler_book.find(req.method as any, parsed_url.pathname)!
+            return handler(req, res, parsed_url)
         }
-        return this.common_handler(req, res)
     }
 
     add_router(unit: RouteUnit, meta: TpRouter): void {
@@ -74,28 +106,7 @@ export class HttpRouters {
         const suffix = unit.path_tail.replace(/(^\/|\/$)/g, '')
         const full_path = prefix + '/' + suffix
 
-        unit.get && this.handlers.set(`GET-${full_path}`, router)
-        unit.post && this.handlers.set(`POST-${full_path}`, router)
-        unit.put && this.handlers.set(`PUT-${full_path}`, router)
-        unit.delete && this.handlers.set(`DELETE-${full_path}`, router)
-    }
-
-    private async common_handler(req: IncomingMessage, res: ServerResponse): Promise<void> {
-        on_finish(res, err => on_error(err, req, res))
-        const parsed_url = this.url_parser.parse(req)
-        if (parsed_url) {
-            const method: ApiMethod = req.method === 'HEAD' ? 'GET' : req.method as ApiMethod
-            const handler = this.handlers.get(`${method}-${parsed_url.pathname}`)
-            if (handler) {
-                return handler(req, res, parsed_url)
-            }
-        }
-        res.getHeaderNames().forEach(name => res.removeHeader(name))
-        res.statusCode = 404
-        const msg = HTTP_STATUS.message_of(404)
-        res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-        res.setHeader('Content-Length', Buffer.byteLength(msg))
-        res.end(msg)
+        unit.methods.forEach(m => this.handler_book.record(m, full_path, router))
     }
 
     private make_router(injector: Injector, unit: RouteUnit) {
@@ -104,10 +115,13 @@ export class HttpRouters {
         const body_max_length = this.c_body_max_length
         const proxy_config = this.c_proxy
         const reader = this.reader
-        const provider_cp = injector.get(AbstractCacheProxy) ?? throw_native_error('No provider for AbstractCacheProxy')
-        const provider_ef = injector.get(AbstractErrorFormatter) ?? throw_native_error('No provider for AbstractErrorFormatter')
-        const provider_hh = injector.get(AbstractHttpHooks) ?? throw_native_error('No provider for AbstractHttpHooks')
-        const provider_rf = injector.get(AbstractResponseFormatter) ?? throw_native_error('No provider for AbstractResponseFormatter')
+        const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
+
+        const provider_au = injector.get(HttpAuthenticator)!
+        const provider_cp = injector.get(HttpCacheProxy)!
+        const provider_ef = injector.get(HttpErrorFormatter)!
+        const provider_hh = injector.get(HttpHooks)!
+        const provider_rf = injector.get(HttpResponseFormatter)!
 
         return async function(req: IncomingMessage, res: ServerResponse, parsed_url: UrlWithParsedQuery) {
 
@@ -115,34 +129,37 @@ export class HttpRouters {
             const error_formatter = provider_ef.create()
             const http_hooks = provider_hh.create()
             const response_formatter = provider_rf.create()
-
-            const content_type = req.headers['content-type'] || ''
-            const content_encoding = req.headers['content-encoding'] || 'identity'
+            const authenticator = provider_au.create()
 
             const request = new TpRequest(req, parsed_url, proxy_config)
             const response = new TpResponse(res, request)
-            const context = new HttpContext(unit, request, response)
-
-            await http_hooks?.on_init(context)
+            const context = new HttpContext(request, response)
 
             let handle_result: any
-
+            let stream: Readable = req
             if (body_max_length) {
                 let received = 0
-                req.on('data', chunk => {
-                    received += chunk.byteLength
-                    if (received > body_max_length) {
-                        req.pause()
-                        response.respond(413)
+                stream = stream.pipe(new Transform({
+                    transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
+                        received += chunk.byteLength
+                        if (received > body_max_length) {
+                            stream.pause()
+                            response.status = 413
+                            flush_response(response)
+                        } else {
+                            callback(null, chunk)
+                        }
                     }
-                })
+                }))
             }
 
             try {
 
-                const content = await reader.read(req, {
-                    content_encoding,
-                    content_type,
+                await http_hooks.on_init(context)
+
+                const content = await reader.read(stream, {
+                    content_type: req.headers['content-type'] || '',
+                    content_encoding: req.headers['content-encoding'] || 'identity',
                     skip_deserialize: true,
                 })
 
@@ -153,9 +170,10 @@ export class HttpRouters {
                     await reader.deserialize(content)
                 }
 
-                const auth_info = param_deps.find(d => d.token === Guardian)
-                    ? await injector.get(AbstractAuthenticator)?.create().auth(request)
-                    : undefined
+                const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined
+                if (unit.auth) {
+                    await authenticator.authenticate(guard!)
+                }
 
                 const response_cache = param_deps.find(d => d.token === ResponseCache)
                     ? ResponseCache.create(cache_proxy, unit.cache_scope, unit.cache_expire_secs)
@@ -181,21 +199,19 @@ export class HttpRouters {
                         case JsonBody:
                             return new JsonBody(content)
                         case TextBody:
-                            return new TextBody(content)
+                            return text_deserialize(content)
                         case RawBody:
-                            return new RawBody(content)
-                        case Guardian:
-                            return new Guardian(auth_info)
-                        case RequestHeader:
-                            return new RequestHeader(req.headers)
+                            return Buffer.from(content.raw)
+                        case Guard:
+                            return guard
+                        case RequestHeaders:
+                            return new RequestHeaders(req.headers)
                         case Params:
                             return new Params(parsed_url.query)
                         case IncomingMessage:
                             return req
                         case ServerResponse:
                             return res
-                        default:
-                            return undefined
                     }
                 }))
             } catch (reason) {
@@ -209,15 +225,16 @@ export class HttpRouters {
             }
 
             if (handle_result instanceof TpHttpError) {
-                await http_hooks?.on_error(context, handle_result)
+                Object.entries(handle_result.headers).forEach(([k, v]) => response.set(k, v))
                 response.status = handle_result.status
                 response.body = error_formatter.format(context, handle_result)
+                await http_hooks.on_error(context, handle_result).catch()
             } else {
-                await http_hooks?.on_finish(context, handle_result)
-                response.status = 200
                 response.body = response_formatter.format(context, handle_result)
+                await http_hooks.on_finish(context, handle_result).catch()
             }
-            response.respond()
+
+            flush_response(response)
         }
     }
 }

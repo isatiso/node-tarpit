@@ -13,7 +13,6 @@ export type TpHttpErrorHeader = { [key: string]: string }
 
 export interface TpHttpErrorDescription extends TpErrorDescription {
     readonly status: number
-    readonly expose?: boolean
     readonly headers?: TpHttpErrorHeader
     readonly body?: undefined | string | object | Array<any> | Buffer | Stream
 }
@@ -21,9 +20,8 @@ export interface TpHttpErrorDescription extends TpErrorDescription {
 export class TpHttpError extends TpError {
 
     public readonly status: number
-    public readonly expose?: boolean
-    public readonly headers?: TpHttpErrorHeader
-    public readonly body?: undefined | string | object | Array<any> | Buffer | Stream
+    public readonly headers: TpHttpErrorHeader
+    public readonly body: undefined | string | object | Array<any> | Buffer | Stream
 
     override jsonify_fields: Array<keyof this> = ['code', 'msg', 'status', 'headers', 'body', 'detail', 'stack']
 
@@ -31,8 +29,11 @@ export class TpHttpError extends TpError {
         desc: TpHttpErrorDescription,
     ) {
         super(desc)
-        this.status = desc.status ?? 500
-        this.expose = desc.expose ?? false
+        if (Number.isInteger(desc.status) && 100 <= desc.status && desc.status <= 999) {
+            this.status = desc.status
+        } else {
+            this.status = 500
+        }
         this.headers = desc.headers ?? {}
         this.body = desc.body ?? ''
     }

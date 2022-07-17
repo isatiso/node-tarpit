@@ -40,7 +40,7 @@ export class TpRequest {
     }
 
     get query_string(): string {
-        return this._url.search?.replace(/^\?/, '') ?? ''
+        return this.search.replace(/^\?/, '')
     }
 
     get search() {
@@ -56,7 +56,7 @@ export class TpRequest {
     }
 
     get protocol() {
-        return this._url.protocol
+        return this._url.protocol?.replace(/:\s*$/, '')
     }
 
     get secure() {
@@ -72,13 +72,17 @@ export class TpRequest {
         if (!this._ips) {
             const header = this.proxy?.ip_header ?? 'X-Forwarded-For'
             const max_ips_count = this.proxy?.max_ips_count ?? 0
-            let val = this.get(header) ?? this.req.socket.remoteAddress ?? ''
-            if (Array.isArray(val)) {
-                val = val[0]
+            let val = this.get(header) ?? this.req.socket.remoteAddress
+            if (val) {
+                if (Array.isArray(val)) {
+                    val = val[0]
+                }
+                this._ips = max_ips_count > 0
+                    ? val.split(/\s*,\s*/).slice(-max_ips_count)
+                    : val.split(/\s*,\s*/)
+            } else {
+                this._ips = []
             }
-            this._ips = max_ips_count > 0
-                ? val.split(/\s*,\s*/).slice(-max_ips_count)
-                : val.split(/\s*,\s*/)
         }
         return this._ips
     }
@@ -97,6 +101,14 @@ export class TpRequest {
 
     get method() {
         return this.req.method
+    }
+
+    get version_major() {
+        return this.req.httpVersionMajor
+    }
+
+    get version() {
+        return this.req.httpVersion
     }
 
     get socket(): (net.Socket & { encrypted: undefined }) | tls.TLSSocket {
@@ -130,9 +142,9 @@ export class TpRequest {
         switch (lower_field) {
             case 'referer':
             case 'referrer':
-                return this.req.headers.referrer || this.req.headers.referer || ''
+                return this.req.headers.referrer || this.req.headers.referer
             default:
-                return this.req.headers[lower_field] || ''
+                return this.req.headers[lower_field]
         }
     }
 }

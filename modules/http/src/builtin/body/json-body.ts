@@ -6,16 +6,20 @@
  * found in the LICENSE file at source root.
  */
 
-import { json_deserialize, MIMEContent } from '@tarpit/content-type'
+import { decode, MIMEContent } from '@tarpit/content-type'
 import { Judgement, MismatchDescription, OnJudgementError } from '@tarpit/judge'
-import { StandardError, throw_bad_request } from '../../errors'
+import { StandardError, throw_bad_request, TpHttpError } from '../../errors'
 
 function parse_json_body(content: MIMEContent<any>): any {
-    const json_res = json_deserialize(content)
-    if (Object.prototype.toString.call(json_res) !== '[object Object]') {
+    content.text = decode(content.raw, content.charset ?? 'utf-8')
+    if (typeof content.text !== 'string') {
+        throw new StandardError(400, 'Fail to decode content')
+    }
+    content.data = JSON.parse(content.text)
+    if (Object.prototype.toString.call(content.data) !== '[object Object]') {
         throw new StandardError(400, 'Invalid JSON, only supports object')
     }
-    return json_res
+    return content.data
 }
 
 export class JsonBody<T> extends Judgement<T> {
@@ -24,15 +28,15 @@ export class JsonBody<T> extends Judgement<T> {
         try {
             super(parse_json_body(content))
         } catch (e) {
-            if (!(e instanceof StandardError)) {
-                throw new StandardError(400, 'parse body error', { origin: e })
-            } else {
+            if (e instanceof TpHttpError) {
                 throw e
+            } else {
+                throw new StandardError(400, 'Fail to parse body in JSON format', { origin: e })
             }
         }
     }
 
     protected override on_error(prop: string, desc: MismatchDescription, on_error?: OnJudgementError): never {
-        throw_bad_request(on_error?.(prop, desc) ?? `Body parameter of [${prop}] is not match rule: [${desc.rule}]`)
+        throw_bad_request(on_error ? on_error(prop, desc) : `Body parameter of [${prop}] does not match the rule: [${desc.rule}]`)
     }
 }

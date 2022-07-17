@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpHttpSession } from '../__types__'
-import { RouteUnit } from '../tools/collect-routes'
+import { HttpSession } from '../__types__'
 import { TpRequest } from './tp-request'
 import { TpResponse } from './tp-response'
 
@@ -20,10 +19,9 @@ export class HttpContext {
 
     public readonly req = this.request.req
     public readonly res = this.response.res
-    private _custom_data: Partial<TpHttpSession> = {}
+    private _custom_data: Partial<HttpSession> = {}
 
     constructor(
-        private readonly _desc: RouteUnit,
         public readonly request: TpRequest,
         public readonly response: TpResponse,
     ) {
@@ -36,7 +34,7 @@ export class HttpContext {
      * @param key
      * @param value
      */
-    set<M extends keyof TpHttpSession>(key: M, value: TpHttpSession[M]) {
+    set<M extends keyof HttpSession>(key: M, value: HttpSession[M]) {
         this._custom_data[key] = value
     }
 
@@ -46,7 +44,7 @@ export class HttpContext {
      *
      * @param key
      */
-    get<M extends keyof TpHttpSession>(key: M): TpHttpSession[M] | undefined {
+    get<M extends keyof HttpSession>(key: M): HttpSession[M] | undefined {
         return this._custom_data[key]
     }
 }

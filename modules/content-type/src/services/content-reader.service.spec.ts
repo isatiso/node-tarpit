@@ -43,7 +43,7 @@ describe('content-reader.service.ts', function() {
                 const content = {
                     type: 'application/json',
                     parameters: {},
-                    charset: 'UTF-8',
+                    charset: 'utf-8',
                     raw: Buffer.from('7b2261223a22f09f8cbf20e8bdbbe69f94e79a84222c2262223a3231337d', 'hex')
                 }
 
@@ -64,7 +64,7 @@ describe('content-reader.service.ts', function() {
     describe('#get_default_charset()', function() {
 
         it('could search default charset of specified MIME type', async function() {
-            expect(get_default_charset('application/json')).to.equal('UTF-8')
+            expect(get_default_charset('application/json')).to.equal('utf-8')
         })
 
         it('should return undefined if given type is undefined', async function() {

@@ -15,7 +15,7 @@ import { ContentDecompressorService } from './content-decompressor.service'
 import { ContentDeserializerService } from './content-deserializer.service'
 
 export function get_default_charset(content_type: string | undefined) {
-    return content_type && (mime_types.charset(content_type) || undefined)
+    return (content_type && mime_types.charset(content_type) || undefined)?.toLowerCase()
 }
 
 export type ParseContentOptions = {

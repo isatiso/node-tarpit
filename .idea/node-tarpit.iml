@@ -19,6 +19,7 @@
       <sourceFolder url="file://$MODULE_DIR$/projects/zoo/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/supports/abraham/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/supports/cli/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/http/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/projects/zoo/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/cli/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/abraham/lib" />

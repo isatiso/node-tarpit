@@ -66,7 +66,7 @@ export type ProviderDescriptor = { cls: Constructor<any>, prop?: string | symbol
 export function get_providers(meta: ProviderDescriptor, injector: Injector, excepts?: Set<any>): ParamDepsMeta[] {
     const param_deps = meta.cls ? get_param_deps(meta.cls, meta.prop) : figure_given_deps(meta.deps)
     return param_deps.map((param_meta, i) => {
-        /* istanbul ignore next */
+        // istanbul ignore if
         if (param_meta.token === null || param_meta.token === undefined) {
             console.error(`type 'undefined' at ${meta.position}[${i}], if it's not specified, there maybe a circular import.`)
         }

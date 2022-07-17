@@ -6,10 +6,5 @@
  * found in the LICENSE file at source root.
  */
 
-import { MIMEContent } from '@tarpit/content-type'
-
 export class RawBody extends Buffer {
-    constructor(content: MIMEContent<any>) {
-        super(content.raw)
-    }
 }

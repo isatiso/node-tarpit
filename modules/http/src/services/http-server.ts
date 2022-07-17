@@ -15,12 +15,13 @@ import { TLSSocket } from 'tls'
 @TpService({ inject_root: true })
 export class HttpServer {
 
-    private _server?: Server
-    private _terminating: Promise<void> | undefined
-    private _sockets = new Set<Socket | TLSSocket>()
+    public sockets = new Set<Socket | TLSSocket>()
+    public readonly port = this.config_data.get('http.port')
+    public readonly keepalive_timeout = this.config_data.get('http.server.keepalive_timeout')
+    public readonly terminate_timeout = this.config_data.get('http.server.terminate_timeout') ?? 4000
 
-    private readonly port = this.config_data.get('http.port')
-    private readonly keepalive_timeout = this.config_data.get('http.keepalive_timeout')
+    public starting: Promise<void> | undefined = undefined
+    public terminating: Promise<void> | undefined = undefined
 
     constructor(
         private injector: Injector,
@@ -28,10 +29,16 @@ export class HttpServer {
     ) {
     }
 
-    async start(request_listener: (req: IncomingMessage, res: ServerResponse) => Promise<void>): Promise<void> {
-        return new Promise(resolve => {
+    private _server?: Server
+    get server(): Server | undefined {
+        return this._server
+    }
+
+    start(request_listener: (req: IncomingMessage, res: ServerResponse) => Promise<void>): Promise<void> {
+        return this.starting = this.starting ?? new Promise(resolve => {
             this._server = http.createServer((req, res) => {
-                if (this._terminating) {
+                // istanbul ignore if
+                if (this.terminating) {
                     res.setHeader('Connection', 'close')
                 }
                 request_listener(req, res)
@@ -39,21 +46,24 @@ export class HttpServer {
             if (this.keepalive_timeout) {
                 this._server.keepAliveTimeout = this.keepalive_timeout
             }
-            this._server.on('connection', socket => this.record_socket(socket))
+            this._server.on('connection', socket => {
+                this.sockets.add(socket)
+                socket.once('close', () => this.sockets.delete(socket))
+            })
         })
     }
 
-    async terminate() {
-        if (!this._server) {
-            return
+    terminate(): Promise<void> {
+        if (!this.starting) {
+            return new Promise(resolve => resolve())
         }
-        return this._terminating = this._terminating ?? new Promise((resolve, reject) => {
-            this._server?.close(error => error ? reject(error) : resolve())
+        return this.terminating = this.terminating ?? new Promise((resolve, reject) => {
+            this._server!.close(error => error ? reject(error) : resolve())
             let start = Date.now()
             const interval = setInterval(() => {
-                if (this._sockets.size === 0 || Date.now() - start > 4000) {
+                if (this.sockets.size === 0 || Date.now() - start > this.terminate_timeout) {
                     clearInterval(interval)
-                    for (const socket of this._sockets) {
+                    for (const socket of this.sockets) {
                         this.destroy_socket(socket)
                     }
                 }
@@ -63,15 +73,6 @@ export class HttpServer {
 
     private destroy_socket(socket: Socket | TLSSocket) {
         socket.destroy()
-        this._sockets.delete(socket)
-    }
-
-    private record_socket(socket: Socket | TLSSocket) {
-        if (this._terminating) {
-            socket.destroy()
-        } else {
-            this._sockets.add(socket)
-            socket.once('close', () => this._sockets.delete(socket))
-        }
+        this.sockets.delete(socket)
     }
 }

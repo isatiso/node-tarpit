@@ -7,7 +7,7 @@
  */
 
 import { Inject, Optional, Platform, TpInspector, TpRoot, TpService } from '@tarpit/core'
-import { HttpServerModule, Post, TpRouter } from '@tarpit/http'
+import { HttpServerModule, Post, RawBody, TpRouter } from '@tarpit/http'
 import { TestService1 } from './services/test-service.1'
 import { SymbolToken, TestService2 } from './services/test-service.2'
 
@@ -58,12 +58,16 @@ class TestRouter {
     @Post('asd')
     async test(
         ts: TestService,
+        buf: RawBody,
         @Optional()
         @Inject('œœ-TpStartedAtaefaef')
             aaa: number,
     ) {
-        console.log(this.inspector.started_at)
-        console.log(this.aaa, aaa)
+        await new Promise(resolve => {
+            setTimeout(() => resolve(null), 2000)
+        })
+        return {}
+
         // const detect_result = await detector.detect<{ name: string, email: string, count: number }>()
         // if (detect_result.type === 'json') {
         //     const body = detect_result.body
@@ -90,7 +94,7 @@ export class TestRoot {
         http: {
             port: 3000,
             body: {
-                max_length: 177362
+                max_length: 1000000
             }
         },
         rabbitmq: {

@@ -9,22 +9,7 @@
 import { ContentTypeModule } from '@tarpit/content-type'
 import { TpLoader, TpModule } from '@tarpit/core'
 import { TpRouter, TpRouterToken } from './annotations'
-import {
-    AbstractAuthenticator,
-    AbstractCacheProxy,
-    AbstractErrorFormatter,
-    AbstractHttpHooks,
-    AbstractResponseFormatter,
-    HttpInspector,
-    HttpRouters,
-    HttpServer,
-    HttpUrlParser,
-    TpAuthenticator,
-    TpCacheProxy,
-    TpErrorFormatter,
-    TpHttpHooks,
-    TpResponseFormatter
-} from './services'
+import { HttpAuthenticator, HttpCacheProxy, HttpErrorFormatter, HttpHooks, HttpInspector, HttpResponseFormatter, HttpRouters, HttpServer, HttpUrlParser, } from './services'
 import { collect_routes } from './tools/collect-routes'
 
 @TpModule({
@@ -37,11 +22,11 @@ import { collect_routes } from './tools/collect-routes'
         HttpInspector,
         HttpRouters,
         HttpServer,
-        { provide: AbstractCacheProxy, useClass: TpCacheProxy, root: true },
-        { provide: AbstractHttpHooks, useClass: TpHttpHooks, root: true },
-        { provide: AbstractAuthenticator, useClass: TpAuthenticator, root: true },
-        { provide: AbstractResponseFormatter, useClass: TpResponseFormatter, root: true },
-        { provide: AbstractErrorFormatter, useClass: TpErrorFormatter, root: true },
+        HttpCacheProxy,
+        HttpHooks,
+        HttpAuthenticator,
+        HttpResponseFormatter,
+        HttpErrorFormatter,
     ]
 })
 export class HttpServerModule {
@@ -54,11 +39,7 @@ export class HttpServerModule {
         this.loader.register(TpRouterToken, {
             on_start: async () => this.server.start(this.routers.request_listener),
             on_terminate: async () => this.server.terminate(),
-            on_load: async (meta: any) => {
-                if (meta instanceof TpRouter) {
-                    collect_routes(meta).forEach(f => this.routers.add_router(f, meta))
-                }
-            },
+            on_load: async (meta: TpRouter) => collect_routes(meta).forEach(f => this.routers.add_router(f, meta)),
         })
     }
 }

@@ -9,6 +9,6 @@
 import { IncomingHttpHeaders } from 'http'
 import { HttpDict } from './http-dict'
 
-export class RequestHeader extends HttpDict<IncomingHttpHeaders> {
+export class RequestHeaders extends HttpDict<IncomingHttpHeaders> {
 
 }

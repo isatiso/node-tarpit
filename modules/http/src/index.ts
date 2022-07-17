@@ -13,9 +13,12 @@ declare module '@tarpit/config' {
     export interface TpConfigSchema {
         http: {
             port: number
-            keepalive_timeout?: number
             proxy?: ProxyConfig
             expose_error?: boolean
+            server?: {
+                keepalive_timeout?: number
+                terminate_timeout?: number
+            }
             cors?: {
                 allow_origin: string
                 allow_headers: string
@@ -32,12 +35,12 @@ declare module '@tarpit/config' {
 export * from './__types__'
 export {
     TpRouter,
-    TpRouterToken,
-    Cache,
+    CacheUnder,
     Get,
     Delete,
     Put,
     Post,
+    Auth,
     Route,
     RouteProps,
 } from './annotations'
@@ -52,17 +55,12 @@ export {
     throw_unauthorized
 } from './errors'
 export {
-    AbstractAuthenticator,
-    AbstractCacheProxy,
-    AbstractErrorFormatter,
-    AbstractHttpHooks,
-    AbstractResponseFormatter,
     HttpInspector,
-    TpAuthenticator,
-    TpCacheProxy,
-    TpErrorFormatter,
-    TpHttpHooks,
-    TpResponseFormatter,
+    HttpAuthenticator,
+    HttpCacheProxy,
+    HttpErrorFormatter,
+    HttpHooks,
+    HttpResponseFormatter,
 } from './services'
 export {
     FormBody,
@@ -70,13 +68,13 @@ export {
     RawBody,
     TextBody,
     MimeBody,
-    Guardian,
+    Guard,
     HttpContext,
-    HttpDict,
     Params,
-    RequestHeader,
+    RequestHeaders,
     ResponseCache,
     TpRequest,
     TpResponse,
+    MergeCredentials,
 } from './builtin'
 export { HttpServerModule } from './http-server.module'

@@ -6,6 +6,5 @@
  * found in the LICENSE file at source root.
  */
 
-export { HttpDict } from './http-dict'
-export { RequestHeader } from './header'
+export { RequestHeaders } from './header'
 export { Params } from './params'

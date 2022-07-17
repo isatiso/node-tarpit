@@ -7,21 +7,21 @@
  */
 
 import { finish } from '../errors'
-import { AbstractCacheProxy } from '../services'
+import { HttpCacheProxy } from '../services'
 
 export class ResponseCache {
 
     private cache_key?: string
 
     constructor(
-        private cache_proxy: AbstractCacheProxy,
+        private cache_proxy: HttpCacheProxy,
         private scope: string,
         private expire_secs: number,
     ) {
     }
 
-    static create(cache_proxy: AbstractCacheProxy, scope?: string, expire_secs?: number) {
-        return new ResponseCache(cache_proxy, scope ?? '', expire_secs ?? 3600)
+    static create(cache_proxy: HttpCacheProxy, scope?: string, expire_secs?: number) {
+        return new ResponseCache(cache_proxy, scope ?? '@', expire_secs ?? 3600)
     }
 
     /**
@@ -30,7 +30,7 @@ export class ResponseCache {
      * @param key
      */
     async clear(key: string): Promise<void> {
-        return this.cache_proxy.clear(key, this.scope)
+        return this.cache_proxy.clear(this.scope, key)
     }
 
     /**
@@ -39,10 +39,11 @@ export class ResponseCache {
      * @param key
      */
     async get(key: string): Promise<string | Buffer | object | null> {
-        if (!this.cache_key) {
-            this.cache_key = key
+        if (!key) {
+            return null
         }
-        return key && await this.cache_proxy.get(this.scope, key)
+        this.cache_key = key
+        return this.cache_proxy.get(this.scope, key)
     }
 
     /**
