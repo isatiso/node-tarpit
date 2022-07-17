@@ -51,7 +51,7 @@
         "chai-as-promised": "^7.1.1",
         "chai-http": "^4.3.0",
         "chai-spies": "^1.0.0",
-        "commander": "^9.3.0",
+        "commander": "^9.4.0",
         "mocha": "^10.0.0",
         "nyc": "^15.1.0"
     }

@@ -43,6 +43,6 @@
         "@tarpit/rabbitmq": "^0.4.0",
         "@tarpit/schedule": "^0.4.0",
         "@types/cookies": "^0.7.7",
-        "typescript-json-schema": "^0.53.1"
+        "typescript-json-schema": "^0.54.0"
     }
 }
