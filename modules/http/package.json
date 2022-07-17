@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/http",
-    "version": "0.3.5",
+    "version": "0.4.0",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -36,8 +36,8 @@
         "test": "tp cover"
     },
     "dependencies": {
-        "@tarpit/dora": "^0.3.5",
-        "@tarpit/judge": "^0.3.5",
+        "@tarpit/dora": "^0.4.0",
+        "@tarpit/judge": "^0.4.0",
         "content-disposition": "^0.5.4",
         "fresh": "^0.5.2",
         "lru-cache": "^7.10.1",
@@ -46,10 +46,10 @@
         "type-is": "^1.6.18"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.3.5",
-        "@tarpit/content-type": "^0.3.5",
-        "@tarpit/core": "^0.3.5",
-        "@tarpit/error": "^0.3.5",
+        "@tarpit/config": "^0.4.0",
+        "@tarpit/content-type": "^0.4.0",
+        "@tarpit/core": "^0.4.0",
+        "@tarpit/error": "^0.4.0",
         "@types/content-disposition": "^0.5.5",
         "@types/fresh": "^0.5.0",
         "@types/mime-types": "^2.1.1",
