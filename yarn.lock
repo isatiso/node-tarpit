@@ -1307,6 +1307,27 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
+"@tarpit/cli@latest":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@tarpit/cli/-/cli-0.5.1.tgz#89c9781f7c345fa5b1dca683dfdc1f83a4dff755"
+  integrity sha512-QqfDKVbFWLOboCMWqYrS/VX6lwqXSffpAyyDVTn9asXOYrji9mSxVef6jUXSAvX5LS3Q9jwBPwALv0hz8mofTA==
+  dependencies:
+    "@istanbuljs/nyc-config-typescript" "^1.0.2"
+    "@tarpit/judge" "^0.5.1"
+    "@types/chai" "^4.3.1"
+    "@types/chai-as-promised" "^7.1.5"
+    "@types/chai-http" "^4.2.0"
+    "@types/chai-spies" "^1.0.3"
+    "@types/mocha" "^9.1.1"
+    axios "^0.27.2"
+    chai "^4.3.6"
+    chai-as-promised "^7.1.1"
+    chai-http "^4.3.0"
+    chai-spies "^1.0.0"
+    commander "^9.4.0"
+    mocha "^10.0.0"
+    nyc "^15.1.0"
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.npmmirror.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
