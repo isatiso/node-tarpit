@@ -11,18 +11,15 @@ import { Jtl } from '@tarpit/judge'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import chai_http from 'chai-http'
 import crypto from 'crypto'
 import iconv_lite from 'iconv-lite'
 import { FormBody, HttpServerModule, JsonBody, MimeBody, Post, RawBody, TextBody, TpRequest, TpRouter } from '../src'
 import { throw_bad_request } from '../src/errors'
-import { HttpServer } from '../src/services'
 
 chai.use(cap)
-chai.use(chai_http)
 
 @TpRouter('/user', { imports: [HttpServerModule] })
-class TempRouter {
+class RequestBodyRouter {
 
     @Post('json')
     async add_user_by_json(body: JsonBody<{
@@ -75,10 +72,9 @@ class TempRouter {
 describe('request body case', function() {
 
     const platform = new Platform({ http: { port: 31260, expose_error: true } })
-        .bootstrap(TempRouter)
+        .bootstrap(RequestBodyRouter)
 
     const inspector = platform.expose(TpInspector)!
-    const http_server = platform.expose(HttpServer)!
 
     const tmp = console.log
 
@@ -119,52 +115,43 @@ describe('request body case', function() {
     })
 
     it('should parse request body as json', async function() {
-        await chai.request(http_server.server)
-            .post('/user/json')
-            .set('Content-Type', 'application/json; charset=utf-8')
-            .send({ name: 'Leonard', nick: 'Leo' })
-            .then(function(res) {
-                expect(res).to.have.status(200)
-                expect(res.body).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/json', charset: 'utf-8' })
-                expect(res.body).to.have.property('id').which.is.a('string').of.length(36)
+        await axios.post('http://localhost:31260/user/text', { name: 'Leonard', nick: 'Leo' }, { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
+            .then(res => {
+                expect(res.status).to.equal(200)
+                expect(res.data).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/json', charset: 'utf-8' })
+                expect(res.data).to.have.property('id').which.is.a('string').of.length(36)
             })
     })
 
     it('should parse request body as form', async function() {
-        await chai.request(http_server.server)
-            .post('/user/form')
-            .type('form')
-            .set('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8')
-            .send({ name: 'Leonard', nick: 'Leo' })
-            .then(function(res) {
-                expect(res).to.have.status(200)
-                expect(res.body).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/x-www-form-urlencoded', charset: 'utf-8' })
-                expect(res.body).to.have.property('id').which.is.a('string').of.length(36)
+        const params = new URLSearchParams()
+        params.append('name', 'Leonard')
+        params.append('nick', 'Leo')
+        await axios.post('http://localhost:31260/user/form', params, { headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' } })
+            .then(res => {
+                expect(res.status).to.equal(200)
+                expect(res.data).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/x-www-form-urlencoded', charset: 'utf-8' })
+                expect(res.data).to.have.property('id').which.is.a('string').of.length(36)
             })
     })
 
     it('should parse request body as text', async function() {
-        await chai.request(http_server.server)
-            .post('/user/text')
-            .type('text')
-            .set('Content-Type', 'text/plain; charset=utf-8')
-            .send(JSON.stringify({ name: 'Leonard', nick: 'Leo' }))
-            .then(function(res) {
-                expect(res).to.have.status(200)
-                expect(res.body).to.include({ name: 'Leonard', nick: 'Leo', type: 'text/plain', charset: 'utf-8' })
-                expect(res.body).to.have.property('id').which.is.a('string').of.length(36)
+        await axios.post('http://localhost:31260/user/text', Buffer.from(JSON.stringify({ name: 'Leonard', nick: 'Leo' })),
+            { headers: { 'Content-Type': 'text/plain; charset=utf-8' } })
+            .then(res => {
+                expect(res.status).to.equal(200)
+                expect(res.data).to.include({ name: 'Leonard', nick: 'Leo', type: 'text/plain', charset: 'utf-8' })
+                expect(res.data).to.have.property('id').which.is.a('string').of.length(36)
             })
     })
 
     it('should read request as buffer', async function() {
-        await chai.request(http_server.server)
-            .post('/user/buffer')
-            .type('buffer')
-            .send(Buffer.from(JSON.stringify({ name: 'Leonard', nick: 'Leo' })))
-            .then(function(res) {
-                expect(res).to.have.status(200)
-                expect(res.body).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/octet-stream' })
-                expect(res.body).to.have.property('id').which.is.a('string').of.length(36)
+        await axios.post('http://localhost:31260/user/buffer', Buffer.from(JSON.stringify({ name: 'Leonard', nick: 'Leo' })),
+            { headers: { 'Content-Type': 'application/octet-stream' } })
+            .then(res => {
+                expect(res.status).to.equal(200)
+                expect(res.data).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/octet-stream' })
+                expect(res.data).to.have.property('id').which.is.a('string').of.length(36)
             })
     })
 

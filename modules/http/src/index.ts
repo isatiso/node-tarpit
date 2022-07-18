@@ -54,14 +54,12 @@ export {
     throw_standard_error,
     throw_unauthorized
 } from './errors'
-export {
-    HttpInspector,
-    HttpAuthenticator,
-    HttpCacheProxy,
-    HttpErrorFormatter,
-    HttpHooks,
-    HttpResponseFormatter,
-} from './services'
+export { HttpAuthenticator } from './services/http-authenticator'
+export { HttpCacheProxy } from './services/http-cache-proxy'
+export { HttpErrorFormatter } from './services/http-error-formatter'
+export { HttpHooks } from './services/http-hooks'
+export { HttpInspector } from './services/http-inspector'
+export { HttpResponseFormatter } from './services/http-response-formatter'
 export {
     FormBody,
     JsonBody,

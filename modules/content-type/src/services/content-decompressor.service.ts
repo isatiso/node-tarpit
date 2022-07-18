@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, TpService } from '@tarpit/core'
+import { Injector, SymbolToken, TpService } from '@tarpit/core'
 import { PassThrough, Readable } from 'stream'
 import { decompressor_token } from '../tokens'
 import { filter_provider } from '../tools/filter-provider'
@@ -16,6 +16,7 @@ export type DecompressContentOptions = {
     content_encoding: string
 }
 
+@SymbolToken('content-type')
 @TpService({ inject_root: true })
 export class ContentDecompressorService {
 

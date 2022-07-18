@@ -8,7 +8,7 @@
 
 import { ConfigData } from '@tarpit/config'
 import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
-import { get_providers, Injector, TpService } from '@tarpit/core'
+import { get_providers, Injector, SymbolToken, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Readable, Transform, TransformCallback } from 'stream'
 import { UrlWithParsedQuery } from 'url'
@@ -45,6 +45,7 @@ export function reply(res: ServerResponse, status: CODES_KEY) {
     }
 }
 
+@SymbolToken('http')
 @TpService({ inject_root: true })
 export class HttpRouters {
 
@@ -110,7 +111,6 @@ export class HttpRouters {
     }
 
     private make_router(injector: Injector, unit: RouteUnit) {
-
         const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
         const body_max_length = this.c_body_max_length
         const proxy_config = this.c_proxy

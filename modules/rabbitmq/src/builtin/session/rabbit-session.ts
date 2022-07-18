@@ -6,9 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector } from '@tarpit/core'
+import { Injector, SymbolToken } from '@tarpit/core'
 import { Channel, ConfirmChannel, Connection } from 'amqplib'
 
+@SymbolToken('rabbitmq')
 export class RabbitSession<CH extends Channel | ConfirmChannel> {
 
     public channel: CH | undefined

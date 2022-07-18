@@ -11,7 +11,7 @@ import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
 import { ResponseCache } from '../builtin'
 import { Finish } from '../errors'
-import { HttpCacheProxy } from '../services'
+import { HttpCacheProxy } from '../services/http-cache-proxy'
 
 chai.use(cap)
 chai.use(chai_spies)

@@ -6,12 +6,14 @@
  * found in the LICENSE file at source root.
  */
 
+import { SymbolToken } from '@tarpit/core'
 import { Judgement, MismatchDescription, OnJudgementError } from '@tarpit/judge'
 import { HttpCredentials } from '../__types__'
 import { throw_forbidden } from '../errors/standard-error'
 
 export type MergeCredentials<T> = Omit<T, 'type' | 'credentials'> & HttpCredentials
 
+@SymbolToken('http')
 export class Guard<T extends {} = {}> extends Judgement<MergeCredentials<T>> {
 
     constructor(data: MergeCredentials<T> | undefined) {

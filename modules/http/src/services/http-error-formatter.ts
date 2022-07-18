@@ -7,12 +7,13 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { TpService } from '@tarpit/core'
+import { SymbolToken, TpService } from '@tarpit/core'
 import { HttpResponseType } from '../__types__'
 import { HttpContext } from '../builtin'
 import { TpHttpError } from '../errors'
 import { HTTP_STATUS } from '../tools/http-status'
 
+@SymbolToken('http')
 @TpService({ inject_root: true })
 export class HttpErrorFormatter {
 

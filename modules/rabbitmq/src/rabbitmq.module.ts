@@ -7,7 +7,7 @@
  */
 
 import { ContentTypeModule } from '@tarpit/content-type'
-import { TpLoader, TpModule } from '@tarpit/core'
+import { SymbolToken, TpLoader, TpModule } from '@tarpit/core'
 import { TpConsumer, TpProducer, TpRabbitMQToken } from './annotations'
 import { RabbitHooks } from './services/impl/rabbit-hooks'
 import { AbstractRabbitHooks } from './services/inner/abstract-rabbit-hooks'
@@ -18,6 +18,7 @@ import { RabbitProducer } from './services/rabbit-producer'
 import { RabbitSessionCollector } from './services/rabbit-session-collector'
 import { collect_consumes, collect_produces } from './tools'
 
+@SymbolToken('rabbitmq')
 @TpModule({
     inject_root: true,
     imports: [

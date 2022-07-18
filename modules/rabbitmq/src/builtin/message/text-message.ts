@@ -6,8 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
+import { SymbolToken } from '@tarpit/core'
 import { ConsumeMessage } from 'amqplib'
 
+@SymbolToken('rabbitmq')
 export class TextMessage extends String {
 
     constructor(

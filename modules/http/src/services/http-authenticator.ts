@@ -6,11 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpService } from '@tarpit/core'
+import { SymbolToken, TpService } from '@tarpit/core'
 import { Jtl } from '@tarpit/judge'
 import { Guard, TpRequest } from '../builtin'
 import { throw_unauthorized } from '../errors'
 
+@SymbolToken('http')
 @TpService({ inject_root: true })
 export class HttpAuthenticator {
 

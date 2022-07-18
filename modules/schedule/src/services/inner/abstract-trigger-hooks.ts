@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { SymbolToken } from '@tarpit/core'
 import { TriggerContext } from '../../builtin/trigger-context'
 
 /**
@@ -20,6 +21,7 @@ import { TriggerContext } from '../../builtin/trigger-context'
  *
  * @category Abstract Service
  */
+@SymbolToken('schedule')
 export abstract class AbstractTriggerHooks {
 
     /**

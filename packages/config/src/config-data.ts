@@ -59,3 +59,4 @@ export class ConfigData extends Reference<TpConfigSchema> {
     }
 }
 
+Object.defineProperty(ConfigData, Symbol.for('œœ.decorator.token'), { enumerable: false, writable: false, value: Symbol.for(`œœ.replaced.token.config.ConfigData`) })

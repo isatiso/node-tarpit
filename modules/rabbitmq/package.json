@@ -35,17 +35,13 @@
     },
     "dependencies": {
         "@tarpit/barbeque": "^0.4.0",
+        "@tarpit/config": "^0.4.0",
+        "@tarpit/core": "^0.4.2",
         "@tarpit/error": "^0.4.0",
         "@tarpit/judge": "^0.4.0",
         "amqplib": "^0.10.0"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.4.0",
-        "@tarpit/core": "^0.4.2",
         "@types/amqplib": "^0.8.2"
-    },
-    "peerDependencies": {
-        "@tarpit/config": "~0",
-        "@tarpit/core": "~0"
     }
 }

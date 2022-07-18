@@ -7,9 +7,11 @@
  */
 
 import { form_deserialize, MIMEContent } from '@tarpit/content-type'
+import { SymbolToken } from '@tarpit/core'
 import { Judgement, MismatchDescription, OnJudgementError } from '@tarpit/judge'
 import { throw_bad_request } from '../../errors'
 
+@SymbolToken('http')
 export class FormBody<T> extends Judgement<T> {
 
     constructor(content: MIMEContent<any>) {

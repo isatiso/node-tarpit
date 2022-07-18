@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpService } from '@tarpit/core'
+import { SymbolToken, TpService } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
 import { HttpContext, TpRequest } from '../builtin'
 import { BusinessError, CrashError, StandardError, TpHttpError } from '../errors'
@@ -41,6 +41,7 @@ export function create_log(request: TpRequest, duration: number, err?: TpHttpErr
     }
 }
 
+@SymbolToken('http')
 @TpService({ inject_root: true })
 export class HttpHooks {
 

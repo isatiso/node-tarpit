@@ -12,7 +12,7 @@ import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import chai_http from 'chai-http'
 import { Auth, Guard, HttpServerModule, Post, TpRouter } from '../src'
-import { HttpServer } from '../src/services'
+import { HttpServer } from '../src/services/http-server'
 
 chai.use(cap)
 chai.use(chai_http)

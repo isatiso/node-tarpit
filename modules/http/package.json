@@ -36,7 +36,11 @@
         "test": "tp cover"
     },
     "dependencies": {
+        "@tarpit/config": "^0.4.0",
+        "@tarpit/content-type": "^0.4.2",
+        "@tarpit/core": "^0.4.2",
         "@tarpit/dora": "^0.4.0",
+        "@tarpit/error": "^0.4.0",
         "@tarpit/judge": "^0.4.0",
         "content-disposition": "^0.5.4",
         "fresh": "^0.5.2",
@@ -46,20 +50,10 @@
         "type-is": "^1.6.18"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.4.0",
-        "@tarpit/content-type": "^0.4.2",
-        "@tarpit/core": "^0.4.2",
-        "@tarpit/error": "^0.4.0",
         "@types/content-disposition": "^0.5.5",
         "@types/fresh": "^0.5.0",
         "@types/mime-types": "^2.1.1",
         "@types/negotiator": "^0.6.1",
         "@types/type-is": "^1.6.3"
-    },
-    "peerDependencies": {
-        "@tarpit/config": "~0",
-        "@tarpit/content-type": "~0",
-        "@tarpit/core": "~0",
-        "@tarpit/error": "~0"
     }
 }

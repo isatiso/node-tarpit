@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { SymbolToken } from '@tarpit/core'
 import { HttpSession } from '../__types__'
 import { TpRequest } from './tp-request'
 import { TpResponse } from './tp-response'
@@ -15,6 +16,7 @@ import { TpResponse } from './tp-response'
  *
  * @category Builtin
  */
+@SymbolToken('http')
 export class HttpContext {
 
     public readonly req = this.request.req

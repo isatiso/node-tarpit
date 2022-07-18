@@ -7,13 +7,14 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { Injector, Optional, TpService } from '@tarpit/core'
+import { Injector, Optional, SymbolToken, TpService } from '@tarpit/core'
 import { Connection } from 'amqplib'
 import { RabbitConnector } from './rabbit-connector'
 import { RabbitConsumer } from './rabbit-consumer'
 import { RabbitDefine } from './rabbit-define'
 import { RabbitProducer } from './rabbit-producer'
 
+@SymbolToken('rabbitmq')
 @TpService({ inject_root: true })
 export class RabbitClient {
 

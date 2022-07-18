@@ -6,9 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
+import { SymbolToken } from '@tarpit/core'
 import { finish } from '../errors'
-import { HttpCacheProxy } from '../services'
+import { HttpCacheProxy } from '../services/http-cache-proxy'
 
+@SymbolToken('http')
 export class ResponseCache {
 
     private cache_key?: string

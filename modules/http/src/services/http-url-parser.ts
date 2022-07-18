@@ -7,7 +7,7 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { TpService } from '@tarpit/core'
+import { SymbolToken, TpService } from '@tarpit/core'
 import url, { UrlWithParsedQuery } from 'url'
 
 export type RequestInfo = {
@@ -23,6 +23,7 @@ export function get_first(value: string | string[] | undefined) {
     }
 }
 
+@SymbolToken('http')
 @TpService({ inject_root: true })
 export class HttpUrlParser {
 

@@ -7,7 +7,7 @@
  */
 
 import { ContentReaderService, MIMEContent } from '@tarpit/content-type'
-import { get_providers, Injector, TpService } from '@tarpit/core'
+import { get_providers, Injector, SymbolToken, TpService } from '@tarpit/core'
 import { throw_native_error } from '@tarpit/error'
 import { ConsumeMessage } from 'amqplib'
 import { TpConsumer } from '../annotations'
@@ -18,6 +18,7 @@ import { AbstractRabbitHooks } from './inner/abstract-rabbit-hooks'
 
 const EXCEPT_TOKEN_SET = new Set([TextMessage, JsonMessage])
 
+@SymbolToken('rabbitmq')
 @TpService({ inject_root: true })
 export class RabbitConsumer extends Array<[meta: TpConsumer, units: ConsumeUnit[]]> {
 

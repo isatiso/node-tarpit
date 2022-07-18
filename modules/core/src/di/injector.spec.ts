@@ -43,6 +43,13 @@ describe('injector.ts', function() {
             expect(injector.has('b')).to.be.true
             expect(injector.has('c')).to.be.false
         })
+
+        it('should return undefined if given null value', function() {
+            expect(injector.get(undefined as any)).to.be.undefined
+            expect(injector.get(null as any)).to.be.undefined
+            expect(injector.has(undefined as any)).to.be.false
+            expect(injector.has(null as any)).to.be.false
+        })
     })
 
     describe('Injector as EventEmitter', function() {

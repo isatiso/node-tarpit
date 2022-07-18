@@ -7,11 +7,12 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { Injector, TpService } from '@tarpit/core'
+import { Injector, SymbolToken, TpService } from '@tarpit/core'
 import http, { IncomingMessage, Server, ServerResponse } from 'http'
 import { Socket } from 'net'
 import { TLSSocket } from 'tls'
 
+@SymbolToken('http')
 @TpService({ inject_root: true })
 export class HttpServer {
 

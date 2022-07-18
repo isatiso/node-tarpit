@@ -7,9 +7,11 @@
  */
 
 import { MIMEContent } from '@tarpit/content-type'
+import { SymbolToken } from '@tarpit/core'
 import { ConsumeMessage } from 'amqplib'
 import { MessageDead, MessageRequeue } from '../../errors'
 
+@SymbolToken('rabbitmq')
 export abstract class AbstractRabbitHooks {
 
     abstract on_init(message: ConsumeMessage): Promise<void>

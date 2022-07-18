@@ -7,7 +7,7 @@
  */
 
 import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
-import { TpEntry } from './annotations'
+import { SymbolToken, TpEntry } from './annotations'
 import { TpInspector } from './builtin/tp-inspector'
 import { TpLoader } from './builtin/tp-loader'
 import { BuiltinTpLogger, TpLogger } from './builtin/tp-logger'
@@ -17,6 +17,7 @@ import { check_usage, def_to_provider, load_component } from './tools/load-compo
 import { stringify } from './tools/stringify'
 import { AbstractConstructor, Constructor, ProviderDef } from './types'
 
+@SymbolToken('core')
 export class Platform {
 
     protected root_injector = Injector.create()

@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { SymbolToken } from '@tarpit/core'
 import { OutgoingHttpHeaders, ServerResponse } from 'http'
 import LRU from 'lru-cache'
 import mime_types from 'mime-types'
@@ -27,6 +28,7 @@ export function lookup_content_type(type: string): string {
     return mime_type
 }
 
+@SymbolToken('http')
 export class TpResponse {
 
     private _explicit_status = false

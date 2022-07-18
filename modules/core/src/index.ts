@@ -6,11 +6,29 @@
  * found in the LICENSE file at source root.
  */
 
+// istanbul ignore file
+
 export * from './types'
-export * from './annotations'
 export * from './di'
 
-// istanbul ignore file
+export {
+    Debug,
+    Disabled,
+    Inject,
+    OnTerminate,
+    Optional,
+    SymbolToken,
+    TpAssembly,
+    TpComponent,
+    TpComponentProps,
+    TpEntry,
+    TpModule,
+    TpRoot,
+    TpService,
+    TpUnit,
+    TpWorker,
+} from './annotations'
+
 export { TpInspector, STARTED_AT, START_TIME, TERMINATE_TIME, TERMINATED_AT } from './builtin/tp-inspector'
 export { TpLogger } from './builtin/tp-logger'
 export { TpLoader, TpLoaderType } from './builtin/tp-loader'

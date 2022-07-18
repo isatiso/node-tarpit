@@ -36,16 +36,12 @@
         "test": "tp cover"
     },
     "dependencies": {
+        "@tarpit/core": "^0.4.2",
+        "@tarpit/error": "^0.4.0",
         "iconv-lite": "^0.6.3",
         "mime-types": "^2.1.35"
     },
     "devDependencies": {
-        "@tarpit/core": "^0.4.2",
-        "@tarpit/error": "^0.4.0",
         "@types/mime-types": "^2.1.1"
-    },
-    "peerDependencies": {
-        "@tarpit/core": "~0",
-        "@tarpit/error": "~0"
     }
 }

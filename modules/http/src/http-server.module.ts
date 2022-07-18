@@ -7,11 +7,20 @@
  */
 
 import { ContentTypeModule } from '@tarpit/content-type'
-import { TpLoader, TpModule } from '@tarpit/core'
+import { SymbolToken, TpLoader, TpModule } from '@tarpit/core'
 import { TpRouter, TpRouterToken } from './annotations'
-import { HttpAuthenticator, HttpCacheProxy, HttpErrorFormatter, HttpHooks, HttpInspector, HttpResponseFormatter, HttpRouters, HttpServer, HttpUrlParser, } from './services'
+import { HttpAuthenticator } from './services/http-authenticator'
+import { HttpCacheProxy } from './services/http-cache-proxy'
+import { HttpErrorFormatter } from './services/http-error-formatter'
+import { HttpHooks } from './services/http-hooks'
+import { HttpInspector } from './services/http-inspector'
+import { HttpResponseFormatter } from './services/http-response-formatter'
+import { HttpRouters } from './services/http-routers'
+import { HttpServer } from './services/http-server'
+import { HttpUrlParser } from './services/http-url-parser'
 import { collect_routes } from './tools/collect-routes'
 
+@SymbolToken('http')
 @TpModule({
     inject_root: true,
     imports: [

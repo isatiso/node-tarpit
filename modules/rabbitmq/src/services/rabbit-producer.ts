@@ -6,12 +6,13 @@
  * found in the LICENSE file at source root.
  */
 
-import { get_prop_types, TpService } from '@tarpit/core'
+import { get_prop_types, SymbolToken, TpService } from '@tarpit/core'
 import { TpProducer } from '../annotations'
 import { ConfirmProducer, Producer } from '../builtin'
 import { ProduceUnit } from '../tools'
 import { RabbitSessionCollector } from './rabbit-session-collector'
 
+@SymbolToken('rabbitmq')
 @TpService({ inject_root: true })
 export class RabbitProducer {
 

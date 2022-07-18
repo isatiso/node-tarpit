@@ -7,8 +7,10 @@
  */
 
 import { MIMEContent } from '@tarpit/content-type'
+import { SymbolToken } from '@tarpit/core'
 import { Judgement } from '@tarpit/judge'
 
+@SymbolToken('http')
 export class MimeBody<T> {
 
     type: string | undefined

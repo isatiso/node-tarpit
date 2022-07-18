@@ -34,14 +34,8 @@
         "build": "rollup -c"
     },
     "dependencies": {
-        "@tarpit/dora": "^0.4.0"
-    },
-    "devDependencies": {
         "@tarpit/config": "^0.4.0",
-        "@tarpit/core": "^0.4.2"
-    },
-    "peerDependencies": {
-        "@tarpit/config": "~0",
-        "@tarpit/core": "~0"
+        "@tarpit/core": "^0.4.2",
+        "@tarpit/dora": "^0.4.0"
     }
 }

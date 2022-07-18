@@ -21,6 +21,7 @@ export class HandlerBook {
     private book = new Map<string, HttpHandlerMap>()
 
     record(method: ApiMethod, path: string, handler: HttpHandler) {
+        // console.log(method, path, handler)
         const regular_method = method.toUpperCase() as ApiMethod
         if (!this.book.has(path)) {
             this.book.set(path, { _allows: ['OPTIONS'] })

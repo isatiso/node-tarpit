@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, TpService } from '@tarpit/core'
+import { Injector, SymbolToken, TpService } from '@tarpit/core'
 import mime_types from 'mime-types'
 import { Readable } from 'stream'
 import { parse_content_type } from '../tools/parse-content-type'
@@ -24,6 +24,7 @@ export type ParseContentOptions = {
     skip_deserialize?: boolean
 }
 
+@SymbolToken('content-type')
 @TpService({ inject_root: true })
 export class ContentReaderService {
 

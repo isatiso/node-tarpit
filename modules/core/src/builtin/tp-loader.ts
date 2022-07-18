@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpService } from '../annotations'
+import { SymbolToken, TpService } from '../annotations'
 
 export type TpLoaderType = {
     on_start: () => Promise<void>,
@@ -14,6 +14,7 @@ export type TpLoaderType = {
     on_load: (meta: any) => void
 }
 
+@SymbolToken('core')
 @TpService()
 export class TpLoader {
 

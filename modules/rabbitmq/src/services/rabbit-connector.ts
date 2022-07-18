@@ -7,10 +7,11 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { Injector, TpService } from '@tarpit/core'
+import { Injector, SymbolToken, TpService } from '@tarpit/core'
 import { connect as connect_rabbitmq, Connection } from 'amqplib'
 import { RabbitSessionCollector } from './rabbit-session-collector'
 
+@SymbolToken('rabbitmq')
 @TpService({ inject_root: true })
 export class RabbitConnector {
 

@@ -6,10 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
+import { SymbolToken } from '@tarpit/core'
 import { Judgement, MismatchDescription } from '@tarpit/judge'
 import { ConsumeMessage } from 'amqplib'
 import { kill_message } from '../../errors'
 
+@SymbolToken('rabbitmq')
 export class JsonMessage<T extends object> extends Judgement<any> {
 
     constructor(

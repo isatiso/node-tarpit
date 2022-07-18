@@ -6,9 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
+import { SymbolToken } from '@tarpit/core'
 import { Matcher, MismatchDescription } from '@tarpit/judge'
 import { throw_bad_request } from '../../errors'
 
+@SymbolToken('http')
 export class HttpDict<T extends NodeJS.Dict<string | string[]> = NodeJS.Dict<string | string[]>> {
 
     constructor(

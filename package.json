@@ -18,6 +18,7 @@
         "lerna": "^5.1.8",
         "normalize-package-data": "^4.0.0",
         "npm-check-updates": "^15.3.4",
-        "typedoc": "^0.23.7"
+        "typedoc": "^0.23.7",
+        "ts-node": "^10.9.1"
     }
 }
