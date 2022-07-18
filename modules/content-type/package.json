@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/content-type",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -40,7 +40,7 @@
         "mime-types": "^2.1.35"
     },
     "devDependencies": {
-        "@tarpit/core": "^0.4.0",
+        "@tarpit/core": "^0.4.1",
         "@tarpit/error": "^0.4.0",
         "@types/mime-types": "^2.1.1"
     },
