@@ -5,6 +5,7 @@
 **/lib
 **/coverage
 
+
 **/src/test.*
 
 test.ts
