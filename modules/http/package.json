@@ -34,7 +34,7 @@
         "build": "rollup -c",
         "prepublishOnly": "yarn build",
         "docs": "typedoc --tsconfig tsconfig.json --out ../../docs/$(basename $(pwd)) --excludeTags license ./src/index.ts",
-        "test": "tp cover --reporter=json"
+        "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
         "@tarpit/config": "^0.5.2",
