@@ -37,13 +37,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          files: |
-            ./packages/barbeque/coverage/coverage-final.json,
-            ./packages/config/coverage/coverage-final.json,
-            ./packages/dora/coverage/coverage-final.json,
-            ./packages/error/coverage/coverage-final.json,
-            ./packages/judge/coverage/coverage-final.json,
-            ./modules/content-type/coverage/coverage-final.json,
-            ./modules/core/coverage/coverage-final.json,
-            ./modules/http/coverage/coverage-final.json
-
+          files: ./packages/barbeque/coverage/coverage-final.json,./packages/config/coverage/coverage-final.json,./packages/dora/coverage/coverage-final.json,./packages/error/coverage/coverage-final.json,./packages/judge/coverage/coverage-final.json,./modules/content-type/coverage/coverage-final.json,./modules/core/coverage/coverage-final.json,./modules/http/coverage/coverage-final.json
