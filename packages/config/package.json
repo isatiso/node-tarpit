@@ -33,7 +33,7 @@
     "scripts": {
         "build": "rollup -c",
         "docs": "typedoc --tsconfig tsconfig.json --out ../../docs/$(basename $(pwd)) --excludeTags license ./src/index.ts",
-        "test": "tp cover"
+        "test": "tp cover --reporter=json"
     },
     "dependencies": {
         "@tarpit/judge": "^0.5.0"

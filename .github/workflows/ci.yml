@@ -1,0 +1,79 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: yarn install
+      - run: yarn lerna run test
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./packages/barbeque/coverage/coverage-final.json
+          flags: @tarpit/barbeque
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./packages/config/coverage/coverage-final.json
+          flags: @tarpit/config
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./packages/dora/coverage/coverage-final.json
+          flags: @tarpit/dora
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./packages/error/coverage/coverage-final.json
+          flags: @tarpit/error
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./packages/judge/coverage/coverage-final.json
+          flags: @tarpit/judge
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./modules/content-type/coverage/coverage-final.json
+          flags: @tarpit/content-type
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./modules/core/coverage/coverage-final.json
+          flags: @tarpit/core
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./modules/http/coverage/coverage-final.json
+          flags: @tarpit/http
+          token: ${{ secrets.CODECOV_TOKEN }}
