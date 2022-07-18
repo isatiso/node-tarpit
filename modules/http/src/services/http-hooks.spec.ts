@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { Dora } from '@tarpit/dora'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
@@ -29,6 +30,7 @@ describe('http-hooks.ts', function() {
     }
 
     const fake_now = 1657960791441
+    const time_str = new Dora(fake_now).format('YYYY-MM-DDTHH:mm:ssZZ')
     let spy_date_now: any
     let spy_console_log: any
 
@@ -65,34 +67,34 @@ describe('http-hooks.ts', function() {
         it('should create log message by assemble prop of request object', function() {
             const mock_request = { ip: '127.0.0.1', method: 'GET', path: '/some/path' }
             create_log(mock_request as any, 996)
-            expect(spy_console_log).to.have.been.first.called.with('[2022-07-16T16:39:51+0800]127.0.0.1             996ms GET     success  ', '/some/path')
+            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]127.0.0.1             996ms GET     success  `, '/some/path')
         })
 
         it('should set method as "-" if method is undefined', function() {
             const mock_request = { ip: '127.0.0.1', path: '/some/path' }
             create_log(mock_request as any, 996)
-            expect(spy_console_log).to.have.been.first.called.with('[2022-07-16T16:39:51+0800]127.0.0.1             996ms -       success  ', '/some/path')
+            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]127.0.0.1             996ms -       success  `, '/some/path')
         })
 
         it('should log detail of BusinessError', function() {
             const mock_request = { ip: '39.62.45.2', method: 'GET', path: '/some/path' }
             const err = new BusinessError('ERR.NOT_FOUND', 'resource not exists')
             create_log(mock_request as any, 996, err)
-            expect(spy_console_log).to.have.been.first.called.with('[2022-07-16T16:39:51+0800]39.62.45.2            996ms GET     business ', '/some/path', '<ERR.NOT_FOUND resource not exists>')
+            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.62.45.2            996ms GET     business `, '/some/path', '<ERR.NOT_FOUND resource not exists>')
         })
 
         it('should log detail of CrashError', function() {
             const mock_request = { ip: '39.88.125.6', method: 'POST', path: '/some/path' }
             const err = new CrashError('ERR.CRASH', 'server crashed')
             create_log(mock_request as any, 996, err)
-            expect(spy_console_log).to.have.been.first.called.with('[2022-07-16T16:39:51+0800]39.88.125.6           996ms POST    crash    ', '/some/path', '<ERR.CRASH server crashed>')
+            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    crash    `, '/some/path', '<ERR.CRASH server crashed>')
         })
 
         it('should log detail of StandardError', function() {
             const mock_request = { ip: '39.88.125.6', method: 'POST', path: '/some/path' }
             const err = new StandardError(401, 'Unauthorized')
             create_log(mock_request as any, 996, err)
-            expect(spy_console_log).to.have.been.first.called.with('[2022-07-16T16:39:51+0800]39.88.125.6           996ms POST    standard ', '/some/path', '<401 Unauthorized>')
+            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    standard `, '/some/path', '<401 Unauthorized>')
         })
     })
 
@@ -113,7 +115,7 @@ describe('http-hooks.ts', function() {
                 const { context } = mock()
                 context.set('process_start', fake_now - 996)
                 await new HttpHooks().on_finish(context, null as any)
-                expect(spy_console_log).to.have.been.first.called.with('[2022-07-16T16:39:51+0800]39.88.125.6           996ms POST    success  ', '/some/path')
+                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    success  `, '/some/path')
             })
         })
 
@@ -124,7 +126,7 @@ describe('http-hooks.ts', function() {
                 context.set('process_start', fake_now - 996)
                 const err = new BusinessError('ERR.NOT_FOUND', 'resource not exists')
                 await new HttpHooks().on_error(context, err)
-                expect(spy_console_log).to.have.been.first.called.with('[2022-07-16T16:39:51+0800]39.88.125.6           996ms POST    business ', '/some/path', '<ERR.NOT_FOUND resource not exists>')
+                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    business `, '/some/path', '<ERR.NOT_FOUND resource not exists>')
             })
         })
     })
