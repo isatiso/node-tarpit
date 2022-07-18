@@ -40,7 +40,7 @@ export async function deliver_shell(cmd_line: string, options?: {
 
         const stdio = options?.no_stderr || options?.no_stdout ? 'pipe' : 'inherit'
 
-        const child = spawn(cmd_line, { shell: '/bin/zsh', stdio, })
+        const child = spawn(cmd_line, { shell: '/bin/sh', stdio, })
 
         stdio === 'pipe' && !options?.no_stdout && child.stdout?.pipe(process.stdout)
         stdio === 'pipe' && !options?.no_stderr && child.stderr?.pipe(process.stderr)
