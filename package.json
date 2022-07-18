@@ -13,6 +13,7 @@
         "supports/*"
     ],
     "devDependencies": {
+        "@tarpit/cli": "latest",
         "@types/node": "18",
         "jsonwebtoken": "^8.5.1",
         "lerna": "^5.1.8",
