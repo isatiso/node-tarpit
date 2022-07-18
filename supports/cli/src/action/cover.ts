@@ -21,7 +21,7 @@ export const action_cover = make_action('cover', async (cli_options: CliOptions[
         ` -i source-map-support/register` +
         ` -i @tarpit/cli/script/register` +
         ` ${get_reporter(config)}` +
-        ` mocha ./**/*.spec.ts`
+        ` mocha 'yarn./**/*.spec.ts'`
     ).catch(err => console.log(err))
 
     if (config.get('cover.clean')) {

@@ -11,11 +11,11 @@ import { Jtl } from '@tarpit/judge'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import chai_http from 'chai-http'
+import chai_spies from 'chai-spies'
 import { CacheUnder, HttpServerModule, JsonBody, Post, ResponseCache, TpRouter } from '../src'
 
 chai.use(cap)
-chai.use(chai_http)
+chai.use(chai_spies)
 
 const mongo_query = chai.spy()
 
