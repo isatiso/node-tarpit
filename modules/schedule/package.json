@@ -31,7 +31,8 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c"
+        "build": "rollup -c",
+        "prepublishOnly": "yarn build"
     },
     "dependencies": {
         "@tarpit/config": "^0.5.1",

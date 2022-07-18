@@ -36,7 +36,8 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c"
+        "build": "rollup -c",
+        "prepublishOnly": "yarn build"
     },
     "dependencies": {
         "@istanbuljs/nyc-config-typescript": "^1.0.2",

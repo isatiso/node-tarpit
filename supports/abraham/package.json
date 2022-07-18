@@ -34,7 +34,8 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "node_modules/.bin/tsc && rollup -c && rm -rf ./out"
+        "build": "node_modules/.bin/tsc && rollup -c && rm -rf ./out",
+        "prepublishOnly": "yarn build"
     },
     "dependencies": {
         "@rollup/plugin-json": "^4.1.0",
