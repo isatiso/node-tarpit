@@ -57,9 +57,9 @@
         "@types/type-is": "^1.6.3"
     },
     "peerDependencies": {
-        "@tarpit/config": "^0.4.0",
-        "@tarpit/content-type": "^0.4.0",
-        "@tarpit/core": "^0.4.0",
-        "@tarpit/error": "^0.4.0"
+        "@tarpit/config": "~0",
+        "@tarpit/content-type": "~0",
+        "@tarpit/core": "~0",
+        "@tarpit/error": "~0"
     }
 }

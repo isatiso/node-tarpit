@@ -45,7 +45,7 @@
         "@types/amqplib": "^0.8.2"
     },
     "peerDependencies": {
-        "@tarpit/config": "^0.4.0",
-        "@tarpit/core": "^0.4.0"
+        "@tarpit/config": "~0",
+        "@tarpit/core": "~0"
     }
 }

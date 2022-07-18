@@ -45,7 +45,7 @@
         "@types/mime-types": "^2.1.1"
     },
     "peerDependencies": {
-        "@tarpit/core": "^0.4.0",
-        "@tarpit/error": "^0.4.0"
+        "@tarpit/core": "~0",
+        "@tarpit/error": "~0"
     }
 }
