@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/rabbitmq",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -41,7 +41,7 @@
     },
     "devDependencies": {
         "@tarpit/config": "^0.4.0",
-        "@tarpit/core": "^0.4.1",
+        "@tarpit/core": "^0.4.2",
         "@types/amqplib": "^0.8.2"
     },
     "peerDependencies": {
