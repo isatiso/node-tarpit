@@ -30,50 +30,14 @@ jobs:
       - run: yarn install
       - run: yarn lerna run test
 
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3
         with:
-          files: ./packages/barbeque/coverage/coverage-final.json
-          flags: "@tarpit/barbeque"
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: codecov/codecov-action@v2
-        with:
-          files: ./packages/config/coverage/coverage-final.json
-          flags: "@tarpit/config"
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: codecov/codecov-action@v2
-        with:
-          files: ./packages/dora/coverage/coverage-final.json
-          flags: "@tarpit/dora"
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: codecov/codecov-action@v2
-        with:
-          files: ./packages/error/coverage/coverage-final.json
-          flags: "@tarpit/error"
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: codecov/codecov-action@v2
-        with:
-          files: ./packages/judge/coverage/coverage-final.json
-          flags: "@tarpit/judge"
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: codecov/codecov-action@v2
-        with:
-          files: ./modules/content-type/coverage/coverage-final.json
-          flags: "@tarpit/content-type"
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: codecov/codecov-action@v2
-        with:
-          files: ./modules/core/coverage/coverage-final.json
-          flags: "@tarpit/core"
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: codecov/codecov-action@v2
-        with:
-          files: ./modules/http/coverage/coverage-final.json
-          flags: "@tarpit/http"
-          token: ${{ secrets.CODECOV_TOKEN }}
+          files: |
+            ./packages/barbeque/coverage/coverage-final.json,
+            ./packages/config/coverage/coverage-final.json,
+            ./packages/dora/coverage/coverage-final.json,
+            ./packages/error/coverage/coverage-final.json,
+            ./packages/judge/coverage/coverage-final.json,
+            ./modules/content-type/coverage/coverage-final.json,
+            ./modules/core/coverage/coverage-final.json,
+            ./modules/http/coverage/coverage-final.json,
