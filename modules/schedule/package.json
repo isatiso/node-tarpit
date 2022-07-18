@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/schedule",
-    "version": "0.5.2",
+    "version": "0.5.4",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -36,7 +36,7 @@
     },
     "dependencies": {
         "@tarpit/config": "^0.5.2",
-        "@tarpit/core": "^0.5.2",
+        "@tarpit/core": "^0.5.4",
         "@tarpit/dora": "^0.5.2"
     }
 }

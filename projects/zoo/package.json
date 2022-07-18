@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/zoo",
-    "version": "0.5.3",
+    "version": "0.5.4",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -38,10 +38,10 @@
     },
     "dependencies": {
         "@tarpit/config": "^0.5.2",
-        "@tarpit/core": "^0.5.2",
-        "@tarpit/http": "^0.5.3",
+        "@tarpit/core": "^0.5.4",
+        "@tarpit/http": "^0.5.4",
         "@tarpit/judge": "^0.5.2",
-        "@tarpit/rabbitmq": "^0.5.3",
-        "@tarpit/schedule": "^0.5.2"
+        "@tarpit/rabbitmq": "^0.5.4",
+        "@tarpit/schedule": "^0.5.4"
     }
 }
