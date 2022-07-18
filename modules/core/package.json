@@ -39,5 +39,8 @@
     "dependencies": {
         "@tarpit/config": "^0.5.2",
         "reflect-metadata": "^0.1.13"
+    },
+    "devDependencies": {
+        "@tarpit/cli": "^0.5.3"
     }
 }
