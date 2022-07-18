@@ -22,7 +22,7 @@ export const action_cover = make_action('cover', async (cli_options: CliOptions[
         ` -i @tarpit/cli/script/register` +
         ` ${get_reporter(config)}` +
         ` mocha './**/*.spec.ts'`
-    ).catch(err => console.log(err))
+    )
 
     if (config.get('cover.clean')) {
         register_clean_files('./.nyc_output')
