@@ -30,11 +30,61 @@ jobs:
       - run: yarn install
       - run: yarn lerna bootstrap
       - run: "yarn lerna run build --scope \"@tarpit/abraham\""
-      - run: yarn lerna run build
+      - run: "yarn lerna run build --ignore \"@tarpit/abraham\""
       - run: yarn lerna run test
 
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          tags: "@tarpit/barbeque"
           fail_ci_if_error: true
-          files: ./packages/barbeque/coverage/coverage-final.json,./packages/config/coverage/coverage-final.json,./packages/dora/coverage/coverage-final.json,./packages/error/coverage/coverage-final.json,./packages/judge/coverage/coverage-final.json,./modules/content-type/coverage/coverage-final.json,./modules/core/coverage/coverage-final.json,./modules/http/coverage/coverage-final.json
+          files: ./packages/barbeque/coverage/coverage-final.json
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          tags: "@tarpit/config"
+          fail_ci_if_error: true
+          files: ./packages/config/coverage/coverage-final.json
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          tags: "@tarpit/dora"
+          fail_ci_if_error: true
+          files: ./packages/dora/coverage/coverage-final.json
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          tags: "@tarpit/error"
+          fail_ci_if_error: true
+          files: ./packages/error/coverage/coverage-final.json,
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          tags: "@tarpit/judge"
+          fail_ci_if_error: true
+          files: ./packages/judge/coverage/coverage-final.json
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          tags: "@tarpit/content-type"
+          fail_ci_if_error: true
+          files: ./modules/content-type/coverage/coverage-final.json
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          tags: "@tarpit/core"
+          fail_ci_if_error: true
+          files: ./modules/core/coverage/coverage-final.json
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          tags: "@tarpit/http"
+          fail_ci_if_error: true
+          files: ./modules/http/coverage/coverage-final.json
