@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { get_providers, Injector, SymbolToken, TpService } from '@tarpit/core'
+import { get_providers, Injector, TpService } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
 import { throw_native_error } from '@tarpit/error'
 import { Bullet } from '../builtin/bullet'
@@ -18,7 +18,6 @@ import { AbstractTriggerHooks } from './inner/abstract-trigger-hooks'
 
 const ALL_TRIGGER_TOKEN_SET = new Set([TriggerContext])
 
-@SymbolToken('schedule')
 @TpService({ inject_root: true })
 export class Clerk {
 

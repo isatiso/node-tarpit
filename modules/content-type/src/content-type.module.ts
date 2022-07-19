@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken, TpModule } from '@tarpit/core'
+import { TpModule } from '@tarpit/core'
 import { Readable } from 'stream'
 import zlib from 'zlib'
 import { form_deserialize } from './builtin/form'
@@ -18,7 +18,6 @@ import { ContentReaderService } from './services/content-reader.service'
 import { decompressor_token, deserializer_token } from './tokens'
 import { MIMEContent } from './types'
 
-@SymbolToken('content-type')
 @TpModule({
     providers: [
         ContentDecompressorService,

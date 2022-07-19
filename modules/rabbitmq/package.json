@@ -36,14 +36,20 @@
     },
     "dependencies": {
         "@tarpit/barbeque": "^0.5.7",
-        "@tarpit/config": "^0.5.7",
-        "@tarpit/content-type": "^0.5.7",
-        "@tarpit/core": "^0.5.7",
-        "@tarpit/error": "^0.5.7",
         "@tarpit/judge": "^0.5.7",
         "amqplib": "^0.10.0"
     },
     "devDependencies": {
+        "@tarpit/config": "^0.5.7",
+        "@tarpit/content-type": "^0.5.7",
+        "@tarpit/core": "^0.5.7",
+        "@tarpit/error": "^0.5.7",
         "@types/amqplib": "^0.8.2"
+    },
+    "peerDependencies": {
+        "@tarpit/config": "0.x",
+        "@tarpit/content-type": "0.x",
+        "@tarpit/core": "0.x",
+        "@tarpit/error": "0.x"
     }
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken, TpService } from '../annotations'
+import { TpService } from '../annotations'
 import { Injector } from '../di'
 
 export const STARTED_AT = Symbol('started_at')
@@ -14,7 +14,6 @@ export const START_TIME = Symbol('start_time')
 export const TERMINATED_AT = Symbol('terminated_at')
 export const TERMINATE_TIME = Symbol('terminate_time')
 
-@SymbolToken('core')
 @TpService()
 export class TpInspector {
 

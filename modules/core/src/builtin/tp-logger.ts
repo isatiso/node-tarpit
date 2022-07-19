@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken, TpService } from '../annotations'
+import { TpService } from '../annotations'
 import { Injector } from '../di'
 
 export abstract class TpLogger {
@@ -22,7 +22,6 @@ export abstract class TpLogger {
 
 }
 
-@SymbolToken('core')
 @TpService()
 export class BuiltinTpLogger extends TpLogger {
 

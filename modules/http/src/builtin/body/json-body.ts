@@ -7,7 +7,6 @@
  */
 
 import { decode, MIMEContent } from '@tarpit/content-type'
-import { SymbolToken } from '@tarpit/core'
 import { Judgement, MismatchDescription, OnJudgementError } from '@tarpit/judge'
 import { StandardError, throw_bad_request, TpHttpError } from '../../errors'
 
@@ -23,7 +22,6 @@ function parse_json_body(content: MIMEContent<any>): any {
     return content.data
 }
 
-@SymbolToken('http')
 export class JsonBody<T> extends Judgement<T> {
 
     constructor(content: MIMEContent<any>) {

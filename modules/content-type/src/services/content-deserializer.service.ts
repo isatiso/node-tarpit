@@ -6,12 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, SymbolToken, TpService } from '@tarpit/core'
+import { Injector, TpService } from '@tarpit/core'
 import { decompressor_token, deserializer_token } from '../tokens'
 import { filter_provider } from '../tools/filter-provider'
 import { MIMEContent } from '../types'
 
-@SymbolToken('content-type')
 @TpService({ inject_root: true })
 export class ContentDeserializerService {
 

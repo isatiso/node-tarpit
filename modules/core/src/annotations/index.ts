@@ -8,7 +8,6 @@
 
 export { Disabled } from './disabled'
 export { Debug } from './debug'
-export { SymbolToken, symbol_token } from './symbol-token'
 export { Inject } from './inject'
 export { OnTerminate } from './on-terminate'
 export { Optional } from './optional'

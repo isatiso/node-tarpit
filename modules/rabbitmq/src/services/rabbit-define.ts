@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken, TpService } from '@tarpit/core'
+import { TpService } from '@tarpit/core'
 import { Channel } from 'amqplib'
 
 export type DefaultRabbitmqExchange = 'amq.direct' | 'amq.topic' | 'amq.headers' | 'amq.fanout'
@@ -32,7 +32,6 @@ export interface QueueOptions {
     arguments?: any
 }
 
-@SymbolToken('rabbitmq')
 @TpService({ inject_root: true })
 export class RabbitDefine<Exchange extends string = DefaultRabbitmqExchange, Queue extends string = never> {
 

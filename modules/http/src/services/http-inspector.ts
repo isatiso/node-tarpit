@@ -6,11 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken, TpService } from '@tarpit/core'
+import { TpService } from '@tarpit/core'
 import { ApiMethod, HttpHandler, HttpHandlerDescriptor } from '../__types__'
 import { HttpRouters } from './http-routers'
 
-@SymbolToken('http')
 @TpService({ inject_root: true })
 export class HttpInspector {
 

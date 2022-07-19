@@ -17,7 +17,6 @@ export {
     Inject,
     OnTerminate,
     Optional,
-    SymbolToken,
     TpAssembly,
     TpComponent,
     TpComponentProps,

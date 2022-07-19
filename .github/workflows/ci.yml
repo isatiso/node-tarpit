@@ -35,11 +35,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: yarn install
-      - run: yarn lerna bootstrap
-      - run: "yarn lerna run build --scope \"@tarpit/abraham\""
-      - run: "yarn lerna run build --ignore \"@tarpit/abraham\""
-      - run: yarn lerna run test
+      - run: |
+          yarn install
+          yarn lerna bootstrap
+          yarn lerna run build --scope "@tarpit/abraham"
+          yarn lerna run build --ignore "@tarpit/abraham"
+          yarn lerna run test
 
       - name: Upload coverage barbeque
         uses: codecov/codecov-action@v3

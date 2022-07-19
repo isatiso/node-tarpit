@@ -6,12 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
 import { Crontab } from '../crontab'
 import { TaskUnit } from '../tools'
 
-@SymbolToken('schedule')
 export class Bullet {
 
     public crontab: Crontab

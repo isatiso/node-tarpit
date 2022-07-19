@@ -6,11 +6,9 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken } from '@tarpit/core'
 import { IncomingHttpHeaders } from 'http'
 import { HttpDict } from './http-dict'
 
-@SymbolToken('http')
 export class RequestHeaders extends HttpDict<IncomingHttpHeaders> {
 
 }

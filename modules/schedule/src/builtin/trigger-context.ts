@@ -6,12 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
 import { TaskUnit } from '../tools'
 import { Bullet } from './bullet'
 
-@SymbolToken('schedule')
 export class TriggerContext {
 
     private retry_is_set = false

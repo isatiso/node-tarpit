@@ -6,12 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken, TpLoader, TpModule } from '@tarpit/core'
+import { TpLoader, TpModule } from '@tarpit/core'
 import { TpSchedule, TpScheduleToken } from './annotations'
 import { AbstractTriggerHooks, Clerk, Schedule, ScheduleInspector, TaskHub, TpTriggerHooks } from './services'
 import { collect_tasks } from './tools'
 
-@SymbolToken('schedule')
 @TpModule({
     providers: [
         Clerk,

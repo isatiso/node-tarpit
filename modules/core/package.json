@@ -37,10 +37,13 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.7",
         "reflect-metadata": "^0.1.13"
     },
     "devDependencies": {
-        "@tarpit/cli": "^0.5.7"
+        "@tarpit/cli": "^0.5.7",
+        "@tarpit/config": "^0.5.7"
+    },
+    "peerDependencies": {
+        "@tarpit/config": "0.x"
     }
 }

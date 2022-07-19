@@ -7,12 +7,10 @@
  */
 
 import { EventEmitter } from 'events'
-import { symbol_token, SymbolToken } from '../annotations'
 import { AbstractConstructor, Constructor, InjectorEventEmitter, InjectorType, Provider, TpEvent, TpEventCollector } from '../types'
 import { NullInjector } from './null-injector'
 import { ValueProvider } from './value-provider'
 
-@SymbolToken('core')
 export class Injector implements InjectorType, InjectorEventEmitter {
 
     static instance_count = 1
@@ -42,8 +40,7 @@ export class Injector implements InjectorType, InjectorEventEmitter {
     }
 
     set<T>(token: any, provider: Provider<T>): Provider<T> {
-        const real_token = token[symbol_token] || token
-        this.providers.set(real_token, provider)
+        this.providers.set(token, provider)
         return provider
     }
 
@@ -54,14 +51,14 @@ export class Injector implements InjectorType, InjectorEventEmitter {
         if (!token) {
             return
         }
-        return this.providers.get(token[symbol_token] || token) ?? this.parent.get(token)
+        return this.providers.get(token) ?? this.parent.get(token)
     }
 
     has(token: any): boolean {
         if (!token) {
             return false
         }
-        return this.providers.has(token[symbol_token] || token) || this.parent.has(token)
+        return this.providers.has(token) || this.parent.has(token)
     }
 
     /**

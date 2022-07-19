@@ -7,12 +7,11 @@
  */
 
 import { Barbeque } from '@tarpit/barbeque'
-import { Injector, SymbolToken } from '@tarpit/core'
+import { Injector } from '@tarpit/core'
 import { ConfirmChannel, Options, Replies } from 'amqplib'
 import { narrow_to_buffer } from '../__tools__'
 import { RabbitSession } from './rabbit-session'
 
-@SymbolToken('rabbitmq')
 export class ConfirmProducer<T extends string | object | Buffer> extends RabbitSession<ConfirmChannel> {
 
     private channel_drain = true

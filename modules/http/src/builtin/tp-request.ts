@@ -7,7 +7,6 @@
  */
 
 import { TpConfigSchema } from '@tarpit/config'
-import { SymbolToken } from '@tarpit/core'
 import { IncomingHttpHeaders, IncomingMessage } from 'http'
 import net from 'net'
 import { ParsedUrlQuery } from 'querystring'
@@ -16,7 +15,6 @@ import type_is from 'type-is'
 import { UrlWithParsedQuery } from 'url'
 import { AcceptParser } from '../tools/accept-parser'
 
-@SymbolToken('http')
 export class TpRequest {
 
     type: string | undefined

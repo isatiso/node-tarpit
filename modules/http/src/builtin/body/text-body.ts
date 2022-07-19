@@ -1,5 +1,3 @@
-import { SymbolToken } from '@tarpit/core'
-
 /**
  * @license
  * Copyright Cao Jiahang All Rights Reserved.
@@ -8,6 +6,5 @@ import { SymbolToken } from '@tarpit/core'
  * found in the LICENSE file at source root.
  */
 
-@SymbolToken('http')
 export class TextBody extends String {
 }

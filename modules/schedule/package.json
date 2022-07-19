@@ -35,8 +35,14 @@
         "prepublishOnly": "yarn build"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.7",
-        "@tarpit/core": "^0.5.7",
         "@tarpit/dora": "^0.5.7"
+    },
+    "devDependencies": {
+        "@tarpit/config": "^0.5.7",
+        "@tarpit/core": "^0.5.7"
+    },
+    "peerDependencies": {
+        "@tarpit/config": "0.x",
+        "@tarpit/core": "0.x"
     }
 }

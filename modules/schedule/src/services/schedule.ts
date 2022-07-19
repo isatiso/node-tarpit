@@ -6,10 +6,9 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken, TpService } from '@tarpit/core'
+import { TpService } from '@tarpit/core'
 import { TaskHub } from './task-hub'
 
-@SymbolToken('schedule')
 @TpService({ inject_root: true })
 export class Schedule {
 

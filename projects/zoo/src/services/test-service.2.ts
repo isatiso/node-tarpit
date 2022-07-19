@@ -8,8 +8,6 @@
 
 import { Inject, Optional, TpService } from '@tarpit/core'
 
-export const SymbolToken = Symbol('TestblablbaService2')
-
 @TpService()
 export class TestService2 {
     constructor(

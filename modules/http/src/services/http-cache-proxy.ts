@@ -6,10 +6,9 @@
  * found in the LICENSE file at source root.
  */
 
-import { SymbolToken, TpService } from '@tarpit/core'
+import { TpService } from '@tarpit/core'
 import LRUCache from 'lru-cache'
 
-@SymbolToken('http')
 @TpService({ inject_root: true })
 export class HttpCacheProxy {
 

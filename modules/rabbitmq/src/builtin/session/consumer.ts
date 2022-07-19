@@ -7,14 +7,13 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { Injector, SymbolToken } from '@tarpit/core'
+import { Injector } from '@tarpit/core'
 import { Channel, ConsumeMessage } from 'amqplib'
 import { ConsumeOptions } from '../../annotations/consume'
 import { RabbitSession } from './rabbit-session'
 
 type ConsumeArguments = [queue: string, on_message: (msg: ConsumeMessage | null) => void, options: ConsumeOptions]
 
-@SymbolToken('rabbitmq')
 export class Consumer extends RabbitSession<Channel> {
 
     private config = this.injector.get(ConfigData)!.create()
