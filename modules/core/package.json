@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/core",
-    "version": "0.5.7",
+    "version": "0.5.8",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -40,8 +40,8 @@
         "reflect-metadata": "^0.1.13"
     },
     "devDependencies": {
-        "@tarpit/cli": "^0.5.7",
-        "@tarpit/config": "^0.5.7"
+        "@tarpit/cli": "^0.5.8",
+        "@tarpit/config": "^0.5.8"
     },
     "peerDependencies": {
         "@tarpit/config": "0.x"
