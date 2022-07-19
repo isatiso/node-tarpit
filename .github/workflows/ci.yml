@@ -33,58 +33,65 @@ jobs:
       - run: "yarn lerna run build --ignore \"@tarpit/abraham\""
       - run: yarn lerna run test
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage barbeque
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: "@tarpit/barbeque"
+          tags: barbeque
           fail_ci_if_error: true
           files: ./packages/barbeque/coverage/coverage-final.json
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage config
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: "@tarpit/config"
+          tags: config
           fail_ci_if_error: true
           files: ./packages/config/coverage/coverage-final.json
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage dora
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: "@tarpit/dora"
+          tags: dora
           fail_ci_if_error: true
           files: ./packages/dora/coverage/coverage-final.json
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage error
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: "@tarpit/error"
+          tags: error
           fail_ci_if_error: true
           files: ./packages/error/coverage/coverage-final.json,
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage judge
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: "@tarpit/judge"
+          tags: judge
           fail_ci_if_error: true
           files: ./packages/judge/coverage/coverage-final.json
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage content-type
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: "@tarpit/content-type"
+          tags: content-type
           fail_ci_if_error: true
           files: ./modules/content-type/coverage/coverage-final.json
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage core
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: "@tarpit/core"
+          tags: core
           fail_ci_if_error: true
           files: ./modules/core/coverage/coverage-final.json
 
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: "@tarpit/http"
+          tags: http
           fail_ci_if_error: true
           files: ./modules/http/coverage/coverage-final.json
