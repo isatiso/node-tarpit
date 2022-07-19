@@ -20,14 +20,15 @@ jobs:
           - 16.x
 
     steps:
-      - name: Configure CI Git User
-        run: |
-          git config --global user.name 'Plank'
-          git config --global user.email 'sieglive@gmail.com'
-          git remote set-url origin https://isatiso:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
 
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Configure CI Git User
+        run: |
+          git config --global user.name isatiso
+          git config --global user.email sieglive@gmail.com
+          git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
 
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
