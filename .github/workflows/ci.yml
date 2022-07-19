@@ -20,6 +20,12 @@ jobs:
           - 16.x
 
     steps:
+      - name: Configure CI Git User
+        run: |
+          git config --global user.name 'Plank'
+          git config --global user.email 'sieglive@gmail.com'
+          git remote set-url origin https://isatiso:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -111,5 +117,4 @@ jobs:
       - name: Publish package
         run: "lerna publish patch --yes"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
