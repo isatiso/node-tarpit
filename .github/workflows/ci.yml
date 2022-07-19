@@ -37,7 +37,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: barbeque
+          flags: barbeque
           fail_ci_if_error: true
           files: ./packages/barbeque/coverage/coverage-final.json
 
@@ -45,7 +45,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: config
+          flags: config
           fail_ci_if_error: true
           files: ./packages/config/coverage/coverage-final.json
 
@@ -53,7 +53,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: dora
+          flags: dora
           fail_ci_if_error: true
           files: ./packages/dora/coverage/coverage-final.json
 
@@ -61,7 +61,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: error
+          flags: error
           fail_ci_if_error: true
           files: ./packages/error/coverage/coverage-final.json,
 
@@ -69,7 +69,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: judge
+          flags: judge
           fail_ci_if_error: true
           files: ./packages/judge/coverage/coverage-final.json
 
@@ -77,7 +77,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: content-type
+          flags: content-type
           fail_ci_if_error: true
           files: ./modules/content-type/coverage/coverage-final.json
 
@@ -85,13 +85,13 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: core
+          flags: core
           fail_ci_if_error: true
           files: ./modules/core/coverage/coverage-final.json
 
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          tags: http
+          flags: http
           fail_ci_if_error: true
           files: ./modules/http/coverage/coverage-final.json
