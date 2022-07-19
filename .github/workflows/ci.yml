@@ -1,12 +1,12 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
   workflow_dispatch:
 
@@ -16,7 +16,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 16.x ]
+        node-version:
+          - 16.x
 
     steps:
       - name: Checkout repository
@@ -89,9 +90,26 @@ jobs:
           fail_ci_if_error: true
           files: ./modules/core/coverage/coverage-final.json
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage http
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: http
           fail_ci_if_error: true
           files: ./modules/http/coverage/coverage-final.json
+
+      - name: Authenticate with Registry
+        run: |
+          yarn logout
+          echo "@tarpit:registry=http://registry.npmjs.org/" > .npmrc
+          echo "registry=http://registry.npmjs.org/" >> .npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
+          npm whoami
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish package
+        run: "lerna publish patch --yes"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
