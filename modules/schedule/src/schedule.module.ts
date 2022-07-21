@@ -7,34 +7,32 @@
  */
 
 import { TpLoader, TpModule } from '@tarpit/core'
-import { TpSchedule, TpScheduleToken } from './annotations'
-import { AbstractTriggerHooks, Clerk, Schedule, ScheduleInspector, TaskHub, TpTriggerHooks } from './services'
-import { collect_tasks } from './tools'
+import { TpScheduleToken } from './annotations'
+import { ScheduleHooks } from './services/schedule-hooks'
+import { ScheduleHub } from './services/schedule-hub'
+import { ScheduleInspector } from './services/schedule-inspector'
+import { ScheduleTick } from './services/schedule-tick'
+import { collect_tasks } from './tools/collect-tasks'
 
 @TpModule({
     providers: [
-        Clerk,
-        Schedule,
+        ScheduleHooks,
+        ScheduleHub,
         ScheduleInspector,
-        TaskHub,
-        { provide: AbstractTriggerHooks, useClass: TpTriggerHooks, root: true },
+        ScheduleTick,
     ]
 })
 export class ScheduleModule {
 
     constructor(
         private loader: TpLoader,
-        private task_hub: TaskHub,
-        private schedule: Schedule,
+        private hub: ScheduleHub,
+        private tick: ScheduleTick,
     ) {
         this.loader.register(TpScheduleToken, {
-            on_start: async () => this.schedule.start(),
-            on_terminate: async () => this.schedule.terminate(),
-            on_load: (meta: any) => {
-                if (meta instanceof TpSchedule) {
-                    collect_tasks(meta).forEach(f => this.task_hub.load(f, meta))
-                }
-            },
+            on_start: async () => this.tick.start(),
+            on_terminate: async () => this.tick.terminate(),
+            on_load: (meta: any) => collect_tasks(meta).forEach(f => this.hub.load(f, meta)),
         })
     }
 }

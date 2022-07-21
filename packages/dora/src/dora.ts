@@ -17,8 +17,8 @@ export type DateTimeArray = [year: number, month: number, date?: number, hours?:
 // noinspection SpellCheckingInspection
 const DEFAULT_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
 
-function formatUTCOffset(dora: Dora, format: 'Z' | 'ZZ') {
-    const negMinutes = dora.utcOffset()
+function format_utc_offset(dora: Dora, format: 'Z' | 'ZZ') {
+    const negMinutes = dora.utc_offset()
     const minutes = Math.abs(negMinutes)
     const hourOffset = Math.floor(minutes / 60)
     const minuteOffset = minutes % 60
@@ -54,8 +54,8 @@ export class Dora {
         s: dora => String(dora.$s),
         ss: dora => String(dora.$s).padStart(2, '0'),
         SSS: dora => String(dora.$ms).padStart(3, '0'),
-        Z: dora => formatUTCOffset(dora, 'Z'),
-        ZZ: dora => formatUTCOffset(dora, 'ZZ'),
+        Z: dora => format_utc_offset(dora, 'Z'),
+        ZZ: dora => format_utc_offset(dora, 'ZZ'),
     }
 
     public readonly $d: Date
@@ -169,7 +169,7 @@ export class Dora {
      *
      * @param unit
      */
-    startOf(unit: DateTimeUnit | 'week' | 'isoWeek'): Dora {
+    start_of(unit: DateTimeUnit | 'week' | 'isoWeek'): Dora {
         switch (unit) {
             case 'year': {
                 const d = new Date(this.$d)
@@ -184,19 +184,19 @@ export class Dora {
                 return new Dora(d.setUTCMinutes(this.$utcOffset), this.$z)
             }
             case 'isoWeek': {
-                return this.subtract((this.$W + 6) % 7, 'day').startOf('day')
+                return this.subtract((this.$W + 6) % 7, 'day').start_of('day')
             }
             case 'week': {
-                return this.subtract(this.$W, 'day').startOf('day')
+                return this.subtract(this.$W, 'day').start_of('day')
             }
             case 'day': {
-                return this.subtract(this.$H, 'hour').startOf('hour')
+                return this.subtract(this.$H, 'hour').start_of('hour')
             }
             case 'date': {
-                return this.subtract(this.$H, 'hour').startOf('hour')
+                return this.subtract(this.$H, 'hour').start_of('hour')
             }
             case 'hour': {
-                return this.subtract(this.$m, 'minute').startOf('minute')
+                return this.subtract(this.$m, 'minute').start_of('minute')
             }
             case 'minute': {
                 return new Dora(new Date(this.$d).setUTCSeconds(0, 0), this.$z)
@@ -214,11 +214,11 @@ export class Dora {
      *
      * @param unit
      */
-    endOf(unit: Exclude<DateTimeUnit, 'millisecond'> | 'week' | 'isoWeek'): Dora {
+    end_of(unit: Exclude<DateTimeUnit, 'millisecond'> | 'week' | 'isoWeek'): Dora {
         if (unit === 'week' || unit === 'isoWeek') {
-            return this.add(7, 'day').startOf(unit).subtract(1, 'millisecond')
+            return this.add(7, 'day').start_of(unit).subtract(1, 'millisecond')
         } else {
-            return this.add(1, unit).startOf(unit).subtract(1, 'millisecond')
+            return this.add(1, unit).start_of(unit).subtract(1, 'millisecond')
         }
     }
 
@@ -474,14 +474,14 @@ export class Dora {
     /**
      * 获取当前月总共多少天
      */
-    daysInMonth() {
-        return this.endOf('month').$D
+    days_in_month() {
+        return this.end_of('month').$D
     }
 
     /**
      * 获取当前时区距离 UTC 时间偏移的分钟数
      */
-    utcOffset() {
+    utc_offset() {
         return this.$utcOffset
     }
 

@@ -7,7 +7,7 @@
  */
 
 import { Inject, Optional, TpRoot, TpService } from '@tarpit/core'
-import { ScheduleModule, TpSchedule, Trigger, TriggerContext } from '@tarpit/schedule'
+import { ScheduleModule, Task, TaskContext, TpSchedule } from '@tarpit/schedule'
 
 @TpService()
 class TestService {
@@ -29,8 +29,8 @@ class TestTrigger {
     ) {
     }
 
-    @Trigger('*/5 * * * * *', '测试任务')
-    async test(context: TriggerContext) {
+    @Task('*/5 * * * * *', '测试任务')
+    async test(context: TaskContext) {
         console.log('test', context.count, context.retry_limit, new Date().toISOString())
         // return await new Promise((resolve, reject) => {
         //

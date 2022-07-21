@@ -7,7 +7,7 @@
  */
 
 import { make_decorator } from '@tarpit/core'
-import { TriggerOptions } from '../__types__'
+import { TaskOptions } from '../__types__'
 
-export type Trigger = InstanceType<typeof Trigger>
-export const Trigger = make_decorator('Trigger', (crontab: string, name: string, options?: TriggerOptions) => ({ crontab, name, options }))
+export type Task = InstanceType<typeof Task>
+export const Task = make_decorator('Task', (crontab: string, name: string, options?: TaskOptions) => ({ crontab, name, options }))

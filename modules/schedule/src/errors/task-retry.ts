@@ -10,7 +10,7 @@ import { TaskError } from './task-error'
 
 export class TaskRetry extends TaskError {
     constructor(public readonly retry_times: number, origin?: any) {
-        super({ code: 'ERR.Retry', msg: `Retry ${retry_times} times`, origin })
+        super({ code: 'ERR.Retry', msg: `try again`, origin })
     }
 }
 

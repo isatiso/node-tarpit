@@ -45,6 +45,10 @@ export function reply(res: ServerResponse, status: CODES_KEY) {
     }
 }
 
+function wrap_error(err: any) {
+    return new StandardError(500, 'Internal Server Error', { origin: err })
+}
+
 @TpService({ inject_root: true })
 export class HttpRouters {
 
@@ -152,9 +156,9 @@ export class HttpRouters {
                 }))
             }
 
-            try {
+            await http_hooks.on_init(context).catch(() => undefined)
 
-                await http_hooks.on_init(context)
+            try {
 
                 const content = await reader.read(stream, {
                     content_type: req.headers['content-type'] || '',
@@ -215,11 +219,12 @@ export class HttpRouters {
                 }))
             } catch (reason) {
                 if (reason instanceof Finish) {
-                    handle_result = await reason.response
+                    handle_result = await Promise.resolve(reason.response)
+                        .catch((err: any) => err instanceof TpHttpError ? err : wrap_error(err))
                 } else if (reason instanceof TpHttpError) {
                     handle_result = reason
                 } else {
-                    handle_result = new StandardError(500, 'Internal Server Error', { origin: reason })
+                    handle_result = wrap_error(reason)
                 }
             }
 
@@ -227,10 +232,10 @@ export class HttpRouters {
                 Object.entries(handle_result.headers).forEach(([k, v]) => response.set(k, v))
                 response.status = handle_result.status
                 response.body = error_formatter.format(context, handle_result)
-                await http_hooks.on_error(context, handle_result).catch()
+                await http_hooks.on_error(context, handle_result).catch(() => undefined)
             } else {
                 response.body = response_formatter.format(context, handle_result)
-                await http_hooks.on_finish(context, handle_result).catch()
+                await http_hooks.on_finish(context, handle_result).catch(() => undefined)
             }
 
             flush_response(response)

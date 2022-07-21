@@ -11,8 +11,7 @@ import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import chai_http from 'chai-http'
-import { Auth, CacheUnder, Delete, Get, HttpServerModule, Params, Post, Put, Route, TpRouter } from '../src'
-import { HttpServer } from '../src/services/http-server'
+import { Auth, CacheUnder, Delete, finish, Get, HttpServerModule, Params, Post, Put, Route, TpHttpError, TpRouter } from '../src'
 
 chai.use(cap)
 chai.use(chai_http)
@@ -55,6 +54,20 @@ class TestRouter {
         })
         return { a: 123 }
     }
+
+    @Post('finish-with-custom-error')
+    async finish_custom() {
+        finish((async () => {
+            throw new Error('custom something')
+        })())
+    }
+
+    @Post('finish-with-http-error')
+    async finish_http_error() {
+        finish((async () => {
+            throw new TpHttpError({ code: 'ERR', msg: 'custom something', status: 504 })
+        })())
+    }
 }
 
 describe('HttpServerModule', function() {
@@ -63,7 +76,8 @@ describe('HttpServerModule', function() {
         .bootstrap(TestRouter)
 
     const inspector = platform.expose(TpInspector)!
-    const http_server = platform.expose(HttpServer)!
+
+    const r = axios.create({ baseURL: 'http://localhost:31254' })
 
     const tmp = console.log
 
@@ -80,41 +94,61 @@ describe('HttpServerModule', function() {
         console.log = tmp
     })
 
-    it('should ', async function() {
-        await chai.request(http_server.server)
-            .get('/user')
-            .query({ id: 123 })
-            .then(function(res) {
-                expect(res).to.have.status(200)
-                expect(res.text).to.equal('{"id":"123"}')
-                expect(res.body).to.eql({ id: '123' })
+    it('should response as normal', async function() {
+        await r.get('/user', { params: { id: 123 } })
+            .then(res => {
+                expect(res.status).to.equal(200)
+                expect(res.data).to.eql({ id: '123' })
             })
     })
 
     it('should reply 404 if handler not found', async function() {
-        await chai.request(http_server.server)
-            .get('/not/found')
-            .then(function(res) {
-                expect(res).to.have.status(404)
-                expect(res.text).to.equal('Not Found')
+        await r.get('/not/found', { params: { id: 123 }, responseType: 'text' })
+            .catch(err => {
+                expect(err.response.status).to.equal(404)
+                expect(err.response.data).to.equal('Not Found')
             })
     })
 
     it('should reply 405 if method not allowed', async function() {
-        await chai.request(http_server.server)
-            .post('/user')
-            .then(function(res) {
-                expect(res).to.have.status(405)
-                expect(res.text).to.equal('Method Not Allowed')
+        await r.post('/user', {}, { params: { id: 123 }, responseType: 'text' })
+            .catch(err => {
+                expect(err.response.status).to.equal(405)
+                expect(err.response.data).to.equal('Method Not Allowed')
             })
     })
 
     it('should reply 204 to OPTIONS request', async function() {
-        await chai.request(http_server.server)
-            .options('/user')
-            .then(function(res) {
-                expect(res).to.have.status(204)
-                expect(res.text).to.equal('')
+        await r.options('/user', { params: { id: 123 }, responseType: 'text' })
+            .then(res => {
+                expect(res.status).to.equal(204)
+                expect(res.data).to.equal('')
+            })
+    })
+
+    it('should catch custom error from finish function', async function() {
+        await r.post('/finish-with-custom-error', {})
+            .catch(err => {
+                expect(err.response.status).to.equal(500)
+                expect(err.response.data).to.eql({
+                    error: {
+                        code: 'STANDARD_HTTP_ERROR',
+                        msg: 'Internal Server Error'
+                    }
+                })
+            })
+    })
+
+    it('should catch http error from finish function', async function() {
+        await r.post('/finish-with-http-error', {})
+            .catch(err => {
+                expect(err.response.status).to.equal(504)
+                expect(err.response.data).to.eql({
+                    error: {
+                        code: 'ERR',
+                        msg: 'Gateway Timeout',
+                    }
+                })
             })
     })
 })

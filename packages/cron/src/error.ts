@@ -6,5 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-export { Task } from './task'
-export { TpSchedule, TpScheduleToken } from './tp-schedule'
+export class ParseCronError extends Error {
+}
+
+export class ConstraintError extends ParseCronError {
+}

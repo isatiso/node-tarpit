@@ -8,9 +8,13 @@
 
 import { Dora } from '@tarpit/dora'
 
-export class CronMonth {
+export interface Schedule {
+    next(): Dora | undefined
+}
 
-    private _field_name: ('date' | 'hour' | 'minute' | 'second')[] = ['date', 'hour', 'minute', 'second']
+export class MonthlySchedule implements Schedule {
+
+    private _field_name: ['date', 'hour', 'minute', 'second'] = ['date', 'hour', 'minute', 'second']
     private _cur: [number, number, number, number] = [0, 0, 0, 0]
     private _current?: [number, number, number, number]
     private _has_next = true
@@ -87,16 +91,15 @@ export class CronMonth {
                 return direct_return
             }
             this._cur[i]++
-            if (i + 1 < this._cur.length) {
-                this._cur[i + 1] = 0
-            }
+            this._cur[i + 1] = 0
             return this._cur[i] < this._schedule[i].length
         }
         return false
     }
 
     private _align() {
-        if (!this._walk_schedule(0)) {
+        const walk_result = this._walk_schedule(0)
+        if (!walk_result) {
             this._has_next = false
         }
     }

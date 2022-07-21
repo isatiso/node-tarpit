@@ -7,10 +7,10 @@
  */
 
 export class TaskDone {
-    constructor(public readonly res: any | Promise<any>) {
+    constructor(public readonly res?: any | Promise<any>) {
     }
 }
 
-export function mission_completed(response: any): never {
+export function mission_completed(response?: any): never {
     throw new TaskDone(response)
 }

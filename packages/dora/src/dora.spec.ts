@@ -114,7 +114,7 @@ describe('dora.ts', function() {
         describe('.daysInMonth()', function() {
             it('should return total days of current month.', function() {
                 const m = new Dora(1652686708000, 'Asia/Shanghai')
-                expect(m.daysInMonth()).to.equal(31)
+                expect(m.days_in_month()).to.equal(31)
             })
         })
 
@@ -347,40 +347,40 @@ describe('dora.ts', function() {
             // const m = '2022-05-16T15:38:28.000+08:00'
 
             it('should return given Dora self if specified millisecond.', function() {
-                expect(m.startOf('millisecond').format()).to.equal('2022-05-16T15:38:28.168+08:00')
+                expect(m.start_of('millisecond').format()).to.equal('2022-05-16T15:38:28.168+08:00')
             })
 
             it('should get start of second of given Dora', function() {
-                expect(m.startOf('second').format()).to.equal('2022-05-16T15:38:28.000+08:00')
+                expect(m.start_of('second').format()).to.equal('2022-05-16T15:38:28.000+08:00')
             })
 
             it('should get start of minute of given Dora', function() {
-                expect(m.startOf('minute').format()).to.equal('2022-05-16T15:38:00.000+08:00')
-                expect(Dora.parse('2022-10-08T14:02:25+05:45').timezone('Asia/Kathmandu').startOf('hour').format()).to.equal('2022-10-08T14:00:00.000+05:45')
+                expect(m.start_of('minute').format()).to.equal('2022-05-16T15:38:00.000+08:00')
+                expect(Dora.parse('2022-10-08T14:02:25+05:45').timezone('Asia/Kathmandu').start_of('hour').format()).to.equal('2022-10-08T14:00:00.000+05:45')
             })
 
             it('should get start of hour of given Dora', function() {
-                expect(m.startOf('hour').format()).to.equal('2022-05-16T15:00:00.000+08:00')
+                expect(m.start_of('hour').format()).to.equal('2022-05-16T15:00:00.000+08:00')
             })
 
             it('should get start of date of given Dora', function() {
-                expect(m.startOf('date').format()).to.equal('2022-05-16T00:00:00.000+08:00')
+                expect(m.start_of('date').format()).to.equal('2022-05-16T00:00:00.000+08:00')
             })
 
             it('should get start of week of given Dora', function() {
-                expect(m.startOf('week').format()).to.equal('2022-05-15T00:00:00.000+08:00')
+                expect(m.start_of('week').format()).to.equal('2022-05-15T00:00:00.000+08:00')
             })
 
             it('should get start of isoWeek of given Dora', function() {
-                expect(m.startOf('isoWeek').format()).to.equal('2022-05-16T00:00:00.000+08:00')
+                expect(m.start_of('isoWeek').format()).to.equal('2022-05-16T00:00:00.000+08:00')
             })
 
             it('should get start of month of given Dora', function() {
-                expect(m.startOf('month').format()).to.equal('2022-05-01T00:00:00.000+08:00')
+                expect(m.start_of('month').format()).to.equal('2022-05-01T00:00:00.000+08:00')
             })
 
             it('should get start of year of given Dora', function() {
-                expect(m.startOf('year').format()).to.equal('2022-01-01T00:00:00.000+08:00')
+                expect(m.start_of('year').format()).to.equal('2022-01-01T00:00:00.000+08:00')
             })
         })
 
@@ -389,11 +389,11 @@ describe('dora.ts', function() {
             const m = new Dora(1652686708168, 'Asia/Shanghai')
 
             it('should get end of week of given Dora', function() {
-                expect(m.endOf('week').format()).to.equal('2022-05-21T23:59:59.999+08:00')
+                expect(m.end_of('week').format()).to.equal('2022-05-21T23:59:59.999+08:00')
             })
 
             it('should get end of isoWeek of given Dora', function() {
-                expect(m.endOf('isoWeek').format()).to.equal('2022-05-22T23:59:59.999+08:00')
+                expect(m.end_of('isoWeek').format()).to.equal('2022-05-22T23:59:59.999+08:00')
             })
         })
     })

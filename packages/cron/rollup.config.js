@@ -6,5 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-export { Task } from './task'
-export { TpSchedule, TpScheduleToken } from './tp-schedule'
+const { RollupConfig } = require('@tarpit/abraham')
+
+export default new RollupConfig({}).create('./src/index.ts', true)

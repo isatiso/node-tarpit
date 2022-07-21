@@ -1,13 +1,13 @@
 {
-    "name": "@tarpit/schedule",
+    "name": "@tarpit/cron",
     "version": "0.5.8",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
-    "main": "./lib/index.js",
+    "main": "lib/index.js",
     "types": "./lib/index.d.ts",
-    "module": "./lib/index.mjs",
+    "module": "lib/index.mjs",
     "files": [
         "lib"
     ],
@@ -38,15 +38,5 @@
     },
     "dependencies": {
         "@tarpit/dora": "^0.5.8"
-    },
-    "devDependencies": {
-        "@tarpit/config": "^0.5.8",
-        "@tarpit/core": "^0.5.8",
-        "@tarpit/cron": "^0.5.8"
-    },
-    "peerDependencies": {
-        "@tarpit/config": "0.x",
-        "@tarpit/core": "0.x",
-        "@tarpit/cron": "0.x"
     }
 }

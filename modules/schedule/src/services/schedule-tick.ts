@@ -7,25 +7,23 @@
  */
 
 import { TpService } from '@tarpit/core'
-import { TaskHub } from './task-hub'
+import { ScheduleHub } from './schedule-hub'
 
 @TpService({ inject_root: true })
-export class Schedule {
+export class ScheduleTick {
 
     private _interval: NodeJS.Timeout | undefined
 
     constructor(
-        private task_hub: TaskHub,
+        private hub: ScheduleHub,
     ) {
     }
 
     async start(): Promise<void> {
-        this._interval = setInterval(() => this.task_hub.shoot(Date.now()), 100)
+        this._interval = setInterval(() => this.hub.shoot(Date.now()), 100)
     }
 
     async terminate() {
-        if (this._interval) {
-            clearInterval(this._interval)
-        }
+        this._interval && clearInterval(this._interval)
     }
 }

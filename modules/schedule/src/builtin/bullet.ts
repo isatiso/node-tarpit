@@ -6,25 +6,19 @@
  * found in the LICENSE file at source root.
  */
 
-import { Dora } from '@tarpit/dora'
-import { Crontab } from '../crontab'
-import { TaskUnit } from '../tools'
+import { Cron } from '@tarpit/cron'
+import { TaskUnit } from '../tools/collect-tasks'
 
 export class Bullet {
 
-    public crontab: Crontab
-    public execution: Dora
+    public crontab = Cron.parse(this.unit.crontab_str, this.unit.options)
+    public execution = this.crontab.next()
     public next_bullet: Bullet | undefined = undefined
 
     constructor(
-        public id: string,
-        public handler: (execution: Dora, current: Bullet) => Promise<void>,
-        public unit: TaskUnit,
+        public readonly id: string,
+        public readonly unit: TaskUnit,
+        public readonly handler: (current: Bullet) => Promise<void>,
     ) {
-        if (!unit.crontab_str) {
-            throw new Error()
-        }
-        this.crontab = Crontab.parse(unit.crontab_str, unit.options)
-        this.execution = this.crontab.next()
     }
 }

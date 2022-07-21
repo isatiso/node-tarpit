@@ -8,7 +8,8 @@
 
 export * from './__types__'
 
-export { Trigger, TpSchedule } from './annotations'
+export { Task, TpSchedule } from './annotations'
+export { TaskContext } from './builtin/task-context'
 export {
     TaskCrash,
     TaskDone,
@@ -21,9 +22,7 @@ export {
     throw_task_ignore,
     throw_task_retry,
 } from './errors'
-export { AbstractTriggerHooks, ScheduleInspector } from './services'
 
-export { Bullet } from './builtin/bullet'
-export { TriggerContext } from './builtin/trigger-context'
-export { InnerOptions, FieldType, Crontab } from './crontab'
+export { ScheduleHooks } from './services/schedule-hooks'
+export { ScheduleInspector } from './services/schedule-inspector'
 export { ScheduleModule } from './schedule.module'

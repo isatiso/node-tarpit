@@ -8,7 +8,7 @@
 
 import { Platform, TpInspector, TpRoot } from '@tarpit/core'
 import { ConfirmProducer, Consume, JsonMessage, Publish, RabbitDefine, RabbitMQModule, TpConsumer, TpProducer } from '@tarpit/rabbitmq'
-import { ScheduleModule, TpSchedule, Trigger } from '@tarpit/schedule'
+import { ScheduleModule, Task, TpSchedule } from '@tarpit/schedule'
 
 @TpProducer({})
 export class TestProducer {
@@ -45,7 +45,7 @@ export class TestSchedule {
         }, 0)
     }
 
-    @Trigger('*/2 * * * *', '定时任务')
+    @Task('*/2 * * * *', '定时任务')
     async task() {
         // const message = { a: 'task', b: Date.now() }
         // console.log(message)

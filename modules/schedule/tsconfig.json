@@ -8,14 +8,20 @@
                 "../core/src"
             ],
             "@tarpit/config": [
-                "../config/src"
+                "../../packages/config/src"
             ],
             "@tarpit/dora": [
-                "../dora/src"
+                "../../packages/dora/src"
             ],
+            "@tarpit/cron": [
+                "../../packages/cron/src"
+            ]
         }
     },
     "include": [
         "src/**/*.ts"
+    ],
+    "exclude": [
+        "src/**/*.spec.ts"
     ]
 }

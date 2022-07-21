@@ -38,7 +38,7 @@ export interface TaskDesc {
     next_exec_date_string: string
 }
 
-export interface TriggerOptions {
+export interface TaskOptions {
     utc?: boolean
     tz?: string
 }

@@ -68,6 +68,6 @@ export class ResponseCache {
         if (this.cache_key) {
             await this.cache_proxy.set(this.scope, this.cache_key, info, this.expire_secs)
         }
-        return finish(info)
+        finish(info)
     }
 }

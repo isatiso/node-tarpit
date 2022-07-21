@@ -41,7 +41,7 @@ class TempRouter {
 
         await cache.respond_if_cache(Math.floor(age / 4) + '')
 
-        return cache.cache_and_respond(mongo.query())
+        await cache.cache_and_respond(mongo.query())
     }
 }
 
