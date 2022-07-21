@@ -1,4 +1,4 @@
-name: node-tarpit-publish
+name: node-tarpit-main
 
 on:
   push:
