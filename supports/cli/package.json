@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/cli",
-    "version": "0.5.9",
+    "version": "0.5.10",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -41,7 +41,7 @@
     },
     "dependencies": {
         "@istanbuljs/nyc-config-typescript": "^1.0.2",
-        "@tarpit/judge": "^0.5.9",
+        "@tarpit/judge": "^0.5.10",
         "@types/chai": "^4.3.1",
         "@types/chai-as-promised": "^7.1.5",
         "@types/chai-http": "^4.2.0",
