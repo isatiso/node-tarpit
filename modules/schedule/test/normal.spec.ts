@@ -25,7 +25,7 @@ describe('normal case', function() {
     @TpSchedule({ imports: [ScheduleModule], providers: [TempService] })
     class TempSchedule {
 
-        @Task('15 6 * * *', '发通知')
+        @Task('15 6 * * *', '发通知', { tz: 'Asia/Shanghai' })
         async do_something(
             context: TaskContext,
             service: TempService,

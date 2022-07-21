@@ -20,7 +20,7 @@ describe('collect-tasks.ts', function() {
             @TpSchedule()
             class TempSchedule {
 
-                @Task('15 * * * *', '清除缓存')
+                @Task('15 * * * *', '清除缓存', { tz: 'Asia/Shanghai' })
                 async clear_cache() {
 
                 }
@@ -31,7 +31,7 @@ describe('collect-tasks.ts', function() {
                 }
 
                 @Disabled()
-                @Task('15 6 */2 * *', '检查订单（暂时禁用）')
+                @Task('15 6 */2 * *', '检查订单（暂时禁用）', { tz: 'Asia/Shanghai' })
                 async temp_check_order() {
 
                 }
@@ -60,7 +60,7 @@ describe('collect-tasks.ts', function() {
             @TpSchedule()
             class TestSchedule {
 
-                @Task('15 6 */2 * *', '检查订单（暂时禁用）')
+                @Task('15 6 */2 * *', '检查订单（暂时禁用）', { tz: 'Asia/Shanghai' })
                 m: string = 'asd'
             }
 

@@ -19,11 +19,11 @@ describe('schedule-inspector.ts', function() {
         @TpSchedule({ imports: [ScheduleModule] })
         class TempSchedule {
 
-            @Task('15 6 * * *', '发通知')
+            @Task('15 6 * * *', '发通知', { tz: 'Asia/Shanghai' })
             async do_something() {
             }
 
-            @Task('15 9 * * *', '发通知')
+            @Task('15 9 * * *', '发通知', { tz: 'Asia/Shanghai' })
             async do_something_else() {
             }
         }

@@ -33,16 +33,16 @@ describe('hooks case', function() {
     @TpSchedule({ imports: [ScheduleModule], providers: [{ provide: ScheduleHooks, useClass: CustomHooks }] })
     class TempSchedule {
 
-        @Task('15 6 * * *', '发通知')
+        @Task('15 6 * * *', '发通知', { tz: 'Asia/Shanghai' })
         async normal_task() {
         }
 
-        @Task('15 6 * * *', '发通知')
+        @Task('15 6 * * *', '发通知', { tz: 'Asia/Shanghai' })
         async error_task() {
             throw new Error()
         }
 
-        @Task('15 6 * * *', '发通知')
+        @Task('15 6 * * *', '发通知', { tz: 'Asia/Shanghai' })
         async retry_task() {
             throw_task_retry(2)
         }

@@ -20,13 +20,13 @@ describe('retry case', function() {
     @TpSchedule({ imports: [ScheduleModule] })
     class TempSchedule {
 
-        @Task('15 6 * * *', '发通知')
+        @Task('15 6 * * *', '发通知', { tz: 'Asia/Shanghai' })
         async throw_retry_error() {
             retry_exec++
             throw_task_retry(4)
         }
 
-        @Task('15 6 * * *', '发通知')
+        @Task('15 6 * * *', '发通知', { tz: 'Asia/Shanghai' })
         async throw_retry() {
             throw new TaskRetry(4)
         }
