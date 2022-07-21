@@ -34,7 +34,7 @@ describe('cron.ts', function() {
 
             it('should generate date object according to "15 * * * *"', function() {
                 chai.spy.on(Date, 'now', () => 1658328606790)
-                const cron = Cron.parse('15 * * * *')
+                const cron = Cron.parse('15 * * * *', { tz: 'Asia/Shanghai' })
                 expect(cron.next().format()).to.equal('2022-07-20T23:15:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-07-21T00:15:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-07-21T01:15:00.000+08:00')
@@ -42,7 +42,7 @@ describe('cron.ts', function() {
 
             it('should generate date object according to "@monthly"', function() {
                 chai.spy.on(Date, 'now', () => 1658328606790)
-                const cron = Cron.parse('@monthly')
+                const cron = Cron.parse('@monthly', { tz: 'Asia/Shanghai' })
                 expect(cron.next().format()).to.equal('2022-08-01T00:00:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-09-01T00:00:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-10-01T00:00:00.000+08:00')
@@ -53,7 +53,7 @@ describe('cron.ts', function() {
 
             it('should generate date object according to "15 6 l * *"', function() {
                 chai.spy.on(Date, 'now', () => 1658328606790)
-                const cron = Cron.parse('15 6 l * *')
+                const cron = Cron.parse('15 6 l * *', { tz: 'Asia/Shanghai' })
                 expect(cron.next().format()).to.equal('2022-07-31T06:15:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-08-31T06:15:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-09-30T06:15:00.000+08:00')
@@ -63,7 +63,7 @@ describe('cron.ts', function() {
 
             it('should generate date object according to "*/30 * * OCT-DEC FRI"', function() {
                 chai.spy.on(Date, 'now', () => 1658828606790)
-                const cron = Cron.parse('*/30 * * OCT-DEC FRI')
+                const cron = Cron.parse('*/30 * * OCT-DEC FRI', { tz: 'Asia/Shanghai' })
                 expect(cron.next().format()).to.equal('2022-10-28T00:00:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-10-28T00:30:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-10-28T01:00:00.000+08:00')
@@ -72,7 +72,7 @@ describe('cron.ts', function() {
 
             it('should generate date object according to "10 6 1w,5w,6w,lw,32w * *"', function() {
                 chai.spy.on(Date, 'now', () => 1658328606790)
-                const cron = Cron.parse('10 6 1w,5w,6w,lw,32w * *')
+                const cron = Cron.parse('10 6 1w,5w,6w,lw,32w * *', { tz: 'Asia/Shanghai' })
                 expect(cron.next().format()).to.equal('2022-07-29T06:10:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-08-01T06:10:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-08-05T06:10:00.000+08:00')
@@ -91,7 +91,7 @@ describe('cron.ts', function() {
 
             it('should generate date object according to "45 23 * * 3#4,6#1,5L"', function() {
                 chai.spy.on(Date, 'now', () => 1658828606790)
-                const cron = Cron.parse('45 23 * * 3#4,6#5,5L')
+                const cron = Cron.parse('45 23 * * 3#4,6#5,5L', { tz: 'Asia/Shanghai' })
                 expect(cron.next().format()).to.equal('2022-07-27T23:45:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-07-29T23:45:00.000+08:00')
                 expect(cron.next().format()).to.equal('2022-07-30T23:45:00.000+08:00')

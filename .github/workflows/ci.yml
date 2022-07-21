@@ -106,6 +106,14 @@ jobs:
           fail_ci_if_error: true
           files: ./modules/http/coverage/coverage-final.json
 
+      - name: Upload coverage schedule
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: schedule
+          fail_ci_if_error: true
+          files: ./modules/http/coverage/coverage-final.json
+
       - name: Authenticate with Registry
         run: |
           yarn logout
