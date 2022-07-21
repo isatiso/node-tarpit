@@ -1,4 +1,4 @@
-name: CI
+name: node-tarpit-publish
 
 on:
   push:
