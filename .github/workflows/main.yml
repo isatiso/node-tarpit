@@ -152,5 +152,6 @@ jobs:
       - run: "yarn lerna run docs"
 
       - run: |
-          git commit -m "generate docs"
+          git add ./docs
+          git commit -am "generate docs"
           git push
