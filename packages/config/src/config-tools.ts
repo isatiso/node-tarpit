@@ -18,24 +18,9 @@ function read_json(file: string) {
     return res
 }
 
-/**
- * 加载配置文件，读文件方式。
- */
 export function load_config(): ConfigData
-/**
- * 加载配置文件，读文件方式。
- * @param file_path
- */
 export function load_config(file_path: string | undefined): ConfigData
-/**
- * 加载配置文件，JSON 对象方式。
- * @param data
- */
 export function load_config(data: TpConfigSchema): ConfigData
-/**
- * 加载配置文件，函数方式。
- * @param data
- */
 export function load_config(data: () => TpConfigSchema): ConfigData
 export function load_config(data?: string | TpConfigSchema | (() => TpConfigSchema)): ConfigData
 export function load_config(data?: string | TpConfigSchema | (() => TpConfigSchema)): ConfigData {

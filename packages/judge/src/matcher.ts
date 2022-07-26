@@ -9,21 +9,10 @@
 import { JudgementRule } from './__types__'
 import { MatcherInferType } from './judgement'
 
-/**
- * @license
- * Copyright Cao Jiahang All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at source root.
- */
-
 export type MismatchDescription = {
     rule: string,
 }
 
-/**
- * 提供针对 Judgement 的检查工具
- */
 export class Matcher<ReturnType> {
 
     constructor(
@@ -32,12 +21,6 @@ export class Matcher<ReturnType> {
     ) {
     }
 
-    /**
-     * 检查一个字段的值是否匹配指定规则。
-     *
-     * @param value
-     * @param rule
-     */
     static if(value: any, rule: JudgementRule): boolean {
         if (rule instanceof RegExp) {
             return typeof value === 'string' && rule.test(value)
@@ -46,12 +29,6 @@ export class Matcher<ReturnType> {
         }
     }
 
-    /**
-     * 规则测试，当不匹配时返回错误信息。
-     *
-     * @param value
-     * @param rule
-     */
     static mismatch(value: any, rule: JudgementRule): undefined | MismatchDescription {
         if (rule instanceof RegExp) {
             if (typeof value !== 'string' || !rule.test(value)) {
@@ -64,11 +41,6 @@ export class Matcher<ReturnType> {
         }
     }
 
-    /**
-     * 检查目标对象是否匹配规则，不匹配时返回错误信息
-     *
-     * @param target
-     */
     mismatch(target: any): MismatchDescription | undefined {
         if (this.check(target)) {
             return
@@ -84,9 +56,6 @@ function get_rule(r: JudgementRule) {
 
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
 
-/**
- * 预设的 Matcher
- */
 export namespace Jtl {
 
     export function some<T extends (Matcher<T> | RegExp)[]>(...rules: T): Matcher<MatcherInferType<T[number]>> {

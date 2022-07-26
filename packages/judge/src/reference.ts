@@ -8,13 +8,6 @@
 
 import { Path, PathValue } from './__types__'
 
-/**
- * 提供只读 JSON 查询，根据指定路径查询字段内容
- * ```typescript
- * const ref = new Reference({ a: 'abc', b: 123, c: { c1: 'abc', c2: 123 } })
- * ref.get('c.c1') // 'abc'
- * ```
- */
 export class Reference<T> {
 
     private _cache: {

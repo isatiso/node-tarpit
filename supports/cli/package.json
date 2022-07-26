@@ -12,6 +12,9 @@
         "lib",
         "script"
     ],
+    "engines": {
+        "node": ">=14.0.0"
+    },
     "exports": {
         ".": {
             "require": "./lib/index.js",

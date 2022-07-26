@@ -44,24 +44,15 @@ export function create_log(request: TpRequest, duration: number, err?: TpHttpErr
 @TpService({ inject_root: true })
 export class HttpHooks {
 
-    /**
-     * 请求到达 API 处理函数时触发
-     */
     async on_init(context: HttpContext): Promise<void> {
         context.set('process_start', Date.now())
     }
 
-    /**
-     * API 处理结束时触发
-     */
     async on_finish(context: HttpContext, res: any): Promise<void> {
         const duration = assemble_duration(context)
         create_log(context.request, duration)
     }
 
-    /**
-     * API 处理异常时触发
-     */
     async on_error(context: HttpContext, err: TpHttpError): Promise<void> {
         const duration = assemble_duration(context)
         create_log(context.request, duration, err)

@@ -10,10 +10,6 @@ import { Matcher } from './matcher'
 
 export type JudgementRule = RegExp | Matcher<any>
 
-/**
- * 推断配置对象的合法路径。
- * **注意**：类型中不能出现 any，对于未知类型请使用 unknown。
- */
 export type Path<T, Key extends keyof T = keyof T> =
     Key extends string
         ?
@@ -29,9 +25,6 @@ export type Path<T, Key extends keyof T = keyof T> =
         :
         never;
 
-/**
- * 根据 Path 推断的路径返回对应值类型。
- */
 export type PathValue<T extends Object, P extends Path<T>> =
     P extends `${infer Key}.${infer Rest}`
         ?
@@ -51,44 +44,14 @@ export type PathValue<T extends Object, P extends Path<T>> =
             :
             never;
 
-/**
- * 例如：
- * ```typescript
- * type A = { a: string, b: number, c: { c1: string, c2: number } }
- * type B = PathValueMap<A> => {
- *      'a': string
- *      'b': number
- *      'c': { c1: string, c2: number }
- *      'c.c1': string
- *      'c.c2': number
- * }
- * ```
- */
 export type PathValueMap<T> = {
     [P in Path<T>]: PathValue<T, P>
 }
 
-/**
- * 过滤值为指定类型的 Path
- * ```typescript
- * type A = { a: string, b: number, c: { c1: string, c2: number } }
- * type B = PathOfType<A, string> => 'a' | 'c.c1'
- * ```
- */
 export type PathOfType<T, M> = {
     [P in Path<T>]: M extends Exclude<PathValue<T, P>, undefined> ? P : never
 }[Path<T>]
 
-/**
- * PathValueMap 中保留值为指定类型的字段
- * ```typescript
- * type A = { a: string, b: number, c: { c1: string, c2: number } }
- * type B = PathValueMapOfType<A, string> => {
- *      'a': string
- *      'c.c1': string
- * }
- * ```
- */
 export type PathValueMapOfType<T, M> = {
     [P in PathOfType<T, M>]: PathValue<T, P>
 }

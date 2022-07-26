@@ -61,24 +61,15 @@ export class Injector implements InjectorType, InjectorEventEmitter {
         return this.providers.has(token) || this.parent.has(token)
     }
 
-    /**
-     * See [[EventEmitter.emit]]
-     */
     emit<Event extends TpEvent>(event: Event, ...args: Parameters<TpEventCollector[Event]>) {
         return this.emitter.emit(event, ...args)
     }
 
-    /**
-     * See [[EventEmitter.on]]
-     */
     on<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
         this.emitter.on(event, callback)
         return this
     }
 
-    /**
-     * See [[EventEmitter.once]]
-     */
     once<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
         this.emitter.once(event, callback)
         return this

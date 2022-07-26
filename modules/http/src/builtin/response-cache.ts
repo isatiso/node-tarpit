@@ -24,20 +24,10 @@ export class ResponseCache {
         return new ResponseCache(cache_proxy, scope ?? '@', expire_secs ?? 3600)
     }
 
-    /**
-     * 清除缓存，参考 [[CacheProxy.clear]]。
-     *
-     * @param key
-     */
     async clear(key: string): Promise<void> {
         return this.cache_proxy.clear(this.scope, key)
     }
 
-    /**
-     * 查询缓存，如果缓存存在则直接返回结果。参考 [[CacheProxy.get]]。
-     *
-     * @param key
-     */
     async get(key: string): Promise<string | Buffer | object | null> {
         if (!key) {
             return null
@@ -46,11 +36,6 @@ export class ResponseCache {
         return this.cache_proxy.get(this.scope, key)
     }
 
-    /**
-     * 查询缓存，如果缓存存在则直接响应结果。参考 [[CacheProxy.get]]。
-     *
-     * @param key
-     */
     async respond_if_cache(key: string): Promise<void> {
         const cache = await this.get(key)
         if (cache) {
@@ -58,11 +43,6 @@ export class ResponseCache {
         }
     }
 
-    /**
-     * 设置缓存并返回请求处理结果。参考 [[CacheProxy.set]]。
-     *
-     * @param may_be_promised
-     */
     async cache_and_respond<T extends string | object | Buffer>(may_be_promised: Promise<T> | T): Promise<never> {
         const info = await may_be_promised
         if (this.cache_key) {

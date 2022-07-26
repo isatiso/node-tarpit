@@ -36,20 +36,11 @@ export class Platform {
         this.root_injector.on('terminate', this.on_terminate)
     }
 
-    /**
-     * 直接加载 TpModule 到 [[Platform.root_injector]] 的接口。
-     * @param def
-     */
     import(def: ProviderDef<any> | Constructor<any>) {
         def_to_provider(def, this.root_injector)
         return this
     }
 
-    /**
-     * 直接加载一个包含 routers 的 TpModule。
-     *
-     * @param tp_entry
-     */
     bootstrap(tp_entry: Constructor<any>) {
         const meta = get_class_decorator(tp_entry).find(d => d instanceof TpEntry)
         if (!meta) {
@@ -60,9 +51,6 @@ export class Platform {
         return this
     }
 
-    /**
-     * 开始监听请求。
-     */
     start() {
         if (this.started) {
             console.log('Tarpit server is started.')

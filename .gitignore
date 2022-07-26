@@ -8,7 +8,7 @@
 
 **/src/test.*
 
-test.ts
+**/test.*
 
 .DS_Store
 package-lock.json
