@@ -7,7 +7,7 @@
  */
 
 import { Platform, TpInspector, TpRoot } from '@tarpit/core'
-import { ConfirmProducer, Consume, JsonMessage, Publish, RabbitDefine, RabbitMQModule, TpConsumer, TpProducer } from '@tarpit/rabbitmq'
+import { ConfirmProducer, Consume, Publish, RabbitDefine, RabbitMessage, RabbitmqModule, TpConsumer, TpProducer } from '@tarpit/rabbitmq'
 import { ScheduleModule, Task, TpSchedule } from '@tarpit/schedule'
 
 @TpProducer({})
@@ -24,7 +24,7 @@ export class TestConsumer {
     }
 
     @Consume('test.a')
-    async listen_queue_a(msg: JsonMessage<{ a: string, b: string }>) {
+    async listen_queue_a(msg: RabbitMessage<{ a: string, b: string }>) {
         console.log('json message', msg.data)
     }
 }
@@ -69,7 +69,7 @@ const definition = new RabbitDefine()
 
 @TpRoot({
     imports: [
-        RabbitMQModule,
+        RabbitmqModule,
         ScheduleModule,
     ],
     providers: [

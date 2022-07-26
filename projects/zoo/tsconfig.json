@@ -2,7 +2,15 @@
     "extends": "@tarpit/abraham/assets/common-tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./",
-        "outDir": "./lib"
+        "outDir": "./lib",
+        "paths": {
+            "@tarpit/rabbitmq": [
+                "../../modules/rabbitmq/src"
+            ],
+            "@tarpit/schedule": [
+                "../../modules/schedule/src"
+            ]
+        }
     },
     "include": [
         "src/**/*.ts"
