@@ -123,4 +123,12 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: schedule
           fail_ci_if_error: true
-          files: ./modules/http/coverage/coverage-final.json
+          files: ./modules/schedule/coverage/coverage-final.json
+
+      - name: Upload coverage schedule
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: rabbitmq
+          fail_ci_if_error: true
+          files: ./modules/rabbitmq/coverage/coverage-final.json

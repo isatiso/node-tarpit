@@ -19,6 +19,16 @@ jobs:
         node-version:
           - 16.x
 
+    services:
+      rabbitmq:
+        image: rabbitmq:3.9
+        env:
+          RABBITMQ_DEFAULT_USER: admin
+          RABBITMQ_DEFAULT_PASS: admin_password
+        ports:
+          - 5672/tcp
+        options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
 
       - name: Checkout repository
@@ -35,7 +45,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: |
+      - env:
+          RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
+        run: |
           yarn install
           yarn lerna bootstrap
           yarn lerna run build --scope "@tarpit/abraham"
@@ -112,7 +124,15 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: schedule
           fail_ci_if_error: true
-          files: ./modules/http/coverage/coverage-final.json
+          files: ./modules/schedule/coverage/coverage-final.json
+
+      - name: Upload coverage schedule
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: rabbitmq
+          fail_ci_if_error: true
+          files: ./modules/rabbitmq/coverage/coverage-final.json
 
       - name: Authenticate with Registry
         run: |
