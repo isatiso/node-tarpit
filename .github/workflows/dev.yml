@@ -19,8 +19,16 @@ jobs:
         node-version:
           - 16.x
 
-    steps:
+    services:
+      rabbitmq:
+        image: rabbitmq:3.9
+        env:
+          RABBITMQ_DEFAULT_USER: admin
+          RABBITMQ_DEFAULT_PASS: admin_password
+        ports:
+          - 5672
 
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -35,7 +43,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: |
+      - env:
+          RABBITMQ_USER: admin
+          RABBITMQ_PASSWORD: admin_password
+          RABBITMQ_HOST: 127.0.0.1
+        run: |
           yarn install
           yarn lerna bootstrap
           yarn lerna run build --scope "@tarpit/abraham"
