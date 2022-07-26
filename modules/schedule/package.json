@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/schedule",
-    "version": "0.5.19",
+    "version": "0.5.20",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -40,12 +40,12 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "@tarpit/dora": "^0.5.19"
+        "@tarpit/dora": "^0.5.20"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.5.19",
-        "@tarpit/core": "^0.5.19",
-        "@tarpit/cron": "^0.5.19"
+        "@tarpit/config": "^0.5.20",
+        "@tarpit/core": "^0.5.20",
+        "@tarpit/cron": "^0.5.20"
     },
     "peerDependencies": {
         "@tarpit/config": "0.x",
