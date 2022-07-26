@@ -30,5 +30,6 @@ export interface CliOptions {
             | 'teamcity'
             | 'text-lcov'
             | 'text-summary'
-    }
+    },
+    docs?: {}
 }

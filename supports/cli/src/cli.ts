@@ -11,6 +11,7 @@ import { do_clean_mission } from './__tools__'
 
 import { PackageJson } from './__types__'
 import { action_cover } from './action/cover'
+import { action_docs } from './action/docs'
 
 export async function create_cli(package_json: PackageJson) {
 
@@ -24,6 +25,9 @@ export async function create_cli(package_json: PackageJson) {
         .option('--no-clean', '不清除缓存文件')
         .option('-r, --reporter <reporter...>', '设置 reporter')
         .action(action_cover)
+
+    cli.command('docs')
+        .action(action_docs)
 
     const signal_handler = (signal: any, code: any) => {
         console.log(`Stopped by signal ${signal}(${code}).`)

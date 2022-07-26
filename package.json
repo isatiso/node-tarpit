@@ -20,6 +20,7 @@
         "normalize-package-data": "^4.0.0",
         "npm-check-updates": "^15.3.4",
         "ts-node": "^10.9.1",
-        "typedoc": "^0.23.7"
+        "typedoc": "^0.23.7",
+        "typedoc-theme-hierarchy": "^3.0.0"
     }
 }
