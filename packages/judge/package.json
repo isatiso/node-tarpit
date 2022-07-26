@@ -36,7 +36,7 @@
     "scripts": {
         "build": "rollup -c",
         "prepublishOnly": "yarn build",
-        "docs": "typedoc --tsconfig tsconfig.json --out ../../docs/$(basename $(pwd)) --excludeTags license ./src/index.ts",
+        "docs": "tp docs",
         "test": "tp cover --reporter=json --reporter=text"
     }
 }
