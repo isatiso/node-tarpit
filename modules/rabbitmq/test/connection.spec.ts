@@ -33,7 +33,7 @@ describe('connection case', function() {
 
         it('should tell whether given port is open', async function() {
             await expect(is_reachable('amqp://4.4.4.4:41231', 200)).to.be.rejected
-            await expect(is_reachable(`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}:5672`, 200)).not.to.be.rejected
+            await expect(is_reachable(process.env.RABBITMQ_URL ?? '', 200)).not.to.be.rejected
         })
 
         it('should tell whether default port is open', async function() {
@@ -107,7 +107,7 @@ describe('connection case', function() {
     describe('error occurred with after connected', function() {
 
         it('should mark connector closed if error occurred with code 320 or 200', async function() {
-            const url = `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}:5672`
+            const url = process.env.RABBITMQ_URL ?? ''
             const platform = new Platform({ rabbitmq: { url, timeout: 200 } }).import(RabbitmqModule)
             const injector = platform.expose(Injector)!
             injector.on('error', ({ type, error }) => console.log(type, error))

@@ -97,7 +97,7 @@ describe('consume case', function() {
         }
     }
 
-    const url = `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}:5672`
+    const url = process.env.RABBITMQ_URL ?? ''
     let connection: Connection
     let platform: Platform
     let inspector: TpInspector

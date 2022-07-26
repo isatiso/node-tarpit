@@ -19,7 +19,7 @@ describe('assert definition case', function() {
     this.slow(200)
     this.timeout(8000)
 
-    const url = `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}:5672`
+    const url = process.env.RABBITMQ_URL ?? ''
 
     const tmp = console.log
     before(async function() {

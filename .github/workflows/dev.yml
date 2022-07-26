@@ -44,9 +44,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - env:
-          RABBITMQ_USER: admin
-          RABBITMQ_PASSWORD: admin_password
-          RABBITMQ_HOST: rabbitmq
+          RABBITMQ_URL: amqp://admin:admin_password@rabbitmq:${{ job.services.rabbitmq.ports[5672] }}
         run: |
           yarn install
           yarn lerna bootstrap

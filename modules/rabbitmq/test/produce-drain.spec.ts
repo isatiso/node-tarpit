@@ -44,7 +44,7 @@ describe('produce drain case', function() {
     this.timeout(10000)
     this.slow(1500)
 
-    const url = `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}:5672`
+    const url = process.env.RABBITMQ_URL ?? ''
     const buf = Buffer.from(`Stops the server from accepting new connections and keeps existing connections. This function is asynchronous, the server is finally closed when all connections are ended and the server emits a 'close' event. The optional callback will be called once the 'close' event occurs. Unlike that event, it will be called with an Error as its only argument if the server was not open when it was closed.`)
     let connection: Connection
     let platform: Platform
