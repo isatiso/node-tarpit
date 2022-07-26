@@ -26,7 +26,8 @@ jobs:
           RABBITMQ_DEFAULT_USER: admin
           RABBITMQ_DEFAULT_PASS: admin_password
         ports:
-          - 5672
+          - 5672/tcp
+        options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -44,7 +45,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - env:
-          RABBITMQ_URL: amqp://admin:admin_password@rabbitmq:${{ job.services.rabbitmq.ports[5672] }}
+          RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
         run: |
           yarn install
           yarn lerna bootstrap
