@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/rabbitmq",
-    "version": "0.5.10",
+    "version": "0.5.11",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -37,15 +37,15 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "@tarpit/barbeque": "^0.5.10",
-        "@tarpit/judge": "^0.5.10",
+        "@tarpit/barbeque": "^0.5.11",
+        "@tarpit/judge": "^0.5.11",
         "amqplib": "^0.10.0"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.5.10",
-        "@tarpit/content-type": "^0.5.10",
-        "@tarpit/core": "^0.5.10",
-        "@tarpit/error": "^0.5.10",
+        "@tarpit/config": "^0.5.11",
+        "@tarpit/content-type": "^0.5.11",
+        "@tarpit/core": "^0.5.11",
+        "@tarpit/error": "^0.5.11",
         "@types/amqplib": "^0.8.2"
     },
     "peerDependencies": {
