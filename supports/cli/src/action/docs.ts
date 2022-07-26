@@ -13,6 +13,6 @@ import { make_action } from './__base__'
 export const action_docs = make_action('docs', async (cli_options: CliOptions['docs'], config) => {
 
     await deliver_shell(
-        `typedoc --tsconfig tsconfig.json --out ../../docs/$(basename $(pwd)) --plugin typedoc-theme-hierarchy --theme hierarchy ./src/index.ts`
+        `typedoc --tsconfig tsconfig.json --out ../../docs/apis/$(basename $(pwd)) --plugin typedoc-theme-hierarchy --theme hierarchy ./src/index.ts`
     )
 })
