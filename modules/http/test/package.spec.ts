@@ -10,11 +10,9 @@ import { Platform, TpInspector } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import chai_http from 'chai-http'
 import { Auth, CacheUnder, Delete, finish, Get, HttpServerModule, Params, Post, Put, Route, TpHttpError, TpRouter } from '../src'
 
 chai.use(cap)
-chai.use(chai_http)
 
 @TpRouter('/', { imports: [HttpServerModule] })
 class TestRouter {
@@ -50,7 +48,7 @@ class TestRouter {
     @Get()
     async delay() {
         await new Promise(resolve => {
-            setTimeout(() => resolve(null), 600)
+            setTimeout(() => resolve(null), 1000)
         })
         return { a: 123 }
     }
@@ -71,6 +69,8 @@ class TestRouter {
 }
 
 describe('HttpServerModule', function() {
+
+    this.timeout(8000)
 
     const platform = new Platform({ http: { port: 31254, server: { keepalive_timeout: 3000, terminate_timeout: 300 } } })
         .bootstrap(TestRouter)

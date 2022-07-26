@@ -9,7 +9,7 @@
 import { Barbeque } from '@tarpit/barbeque'
 import { Injector } from '@tarpit/core'
 import { ConfirmChannel, Options, Replies } from 'amqplib'
-import { narrow_to_buffer } from '../__tools__'
+import { narrow_to_buffer } from '../tools/narrow-to-buffer'
 import { RabbitSession } from './rabbit-session'
 
 export class ConfirmProducer<T extends string | object | Buffer> extends RabbitSession<ConfirmChannel> {

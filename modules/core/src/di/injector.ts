@@ -20,7 +20,7 @@ export class Injector implements InjectorType, InjectorEventEmitter {
     readonly root: Injector
     protected providers: Map<any, Provider<any>> = new Map([])
 
-    private constructor(
+    constructor(
         protected parent: InjectorType,
         protected readonly emitter: EventEmitter,
         root?: Injector,

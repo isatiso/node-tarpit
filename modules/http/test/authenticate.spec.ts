@@ -8,14 +8,12 @@
 
 import { Platform, TpInspector } from '@tarpit/core'
 import { Jtl } from '@tarpit/judge'
+import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import chai_http from 'chai-http'
 import { Auth, Guard, HttpServerModule, Post, TpRouter } from '../src'
-import { HttpServer } from '../src/services/http-server'
 
 chai.use(cap)
-chai.use(chai_http)
 
 @TpRouter('/user', { imports: [HttpServerModule] })
 class TempRouter {
@@ -42,7 +40,8 @@ describe('authenticate case', function() {
         .bootstrap(TempRouter)
 
     const inspector = platform.expose(TpInspector)!
-    const http_server = platform.expose(HttpServer)!
+
+    const r = axios.create({ baseURL: 'http://localhost:31254/user' })
 
     const tmp = console.log
 
@@ -59,40 +58,22 @@ describe('authenticate case', function() {
     })
 
     it('should authenticate request in simple way if route under @Auth()', async function() {
-        await chai.request(http_server.server)
-            .post('/user/need-auth')
-            .auth('admin', 'admin_password')
-            .send({ a: 1 })
-            .then(function(res) {
-                expect(res).to.have.status(200)
-                expect(res.body).to.eql({ type: 'Basic', credentials: Buffer.from('admin:admin_password').toString('base64') })
-            })
+        const res = await r.post('/need-auth', { a: 1 }, { auth: { username: 'admin', password: 'admin_password' } })
+        expect(res.status).to.equal(200)
+        expect(res.data).to.eql({ type: 'Basic', credentials: Buffer.from('admin:admin_password').toString('base64') })
     })
 
     it('should throw 401 when header Authorization not found if route under @Auth()', async function() {
-        await chai.request(http_server.server)
-            .post('/user/need-auth')
-            .send({ a: 1 })
-            .then(function(res) {
-                expect(res).to.have.status(401)
-            })
+        const res = await r.post('/need-auth', { a: 1 }).catch(err => err)
+        expect(res.response.status).to.equal(401)
     })
 
     it('should extract credentials if no @Auth() over the route but Guard is required', async function() {
-        await chai.request(http_server.server)
-            .post('/user/no-need')
-            .auth('admin', 'admin_password')
-            .send({ a: 1 })
-            .then(function(res) {
-                expect(res).to.have.status(200)
-                expect(res.body).to.eql({ type: 'Basic', credentials: Buffer.from('admin:admin_password').toString('base64') })
-            })
-        await chai.request(http_server.server)
-            .post('/user/no-need')
-            .send({ a: 1 })
-            .then(function(res) {
-                expect(res).to.have.status(200)
-                expect(res.body).to.eql({ type: null, credentials: null })
-            })
+        const res_with_auth = await r.post('/no-need', { a: 1 }, { auth: { username: 'admin', password: 'admin_password' } })
+        expect(res_with_auth.status).to.equal(200)
+        expect(res_with_auth.data).to.eql({ type: 'Basic', credentials: Buffer.from('admin:admin_password').toString('base64') })
+        const res_without_auth = await r.post('/no-need', { a: 1 })
+        expect(res_without_auth.status).to.equal(200)
+        expect(res_without_auth.data).to.eql({ type: null, credentials: null })
     })
 })

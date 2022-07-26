@@ -15,7 +15,7 @@ export class MessageError extends TpError {
 
     override jsonify_fields: Array<keyof this> = ['code', 'message', 'detail', 'stack']
 
-    constructor(desc: MessageErrorDesc) {
+    protected constructor(desc: MessageErrorDesc) {
         super(desc)
     }
 }

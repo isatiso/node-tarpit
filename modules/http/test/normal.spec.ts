@@ -10,11 +10,9 @@ import { Platform, TpInspector } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import chai_http from 'chai-http'
 import { Delete, Get, HttpInspector, HttpServerModule, Params, Post, Put, TpRouter } from '../src'
 
 chai.use(cap)
-chai.use(chai_http)
 
 @TpRouter('/', { imports: [HttpServerModule] })
 class NormalRouter {

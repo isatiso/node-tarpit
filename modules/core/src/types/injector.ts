@@ -9,8 +9,13 @@
 import { Constructor } from './base'
 import { Provider } from './provider'
 
+export type TpError = {
+    type: string
+    error: any
+}
+
 export interface TpEventCollector {
-    'error': (...args: any[]) => void
+    'error': (desc: TpError) => void
     'start-time': (duration: number) => void
     'start': () => void
     'terminate-time': (duration: number) => void

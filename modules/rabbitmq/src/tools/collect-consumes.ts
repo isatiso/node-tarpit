@@ -23,11 +23,15 @@ export type ConsumeUnit = {
 export function collect_consumes(meta: TpConsumer): ConsumeUnit[] {
     const units: ConsumeUnit[] = []
     iterate_prop: for (const [prop, decorators] of get_all_prop_decorator(meta.cls) ?? []) {
+        const descriptor = Reflect.getOwnPropertyDescriptor(meta.cls.prototype, prop)
+        if (!descriptor) {
+            continue
+        }
         const prop_meta: ConsumeUnit = {
             queue: '',
             options: {},
             position: `${meta.cls.name}.${prop.toString()}`,
-            handler: Reflect.getOwnPropertyDescriptor(meta.cls.prototype, prop)?.value.bind(meta.instance),
+            handler: descriptor.value.bind(meta.instance),
             cls: meta.cls,
             prop: prop,
         }
@@ -39,6 +43,7 @@ export function collect_consumes(meta: TpConsumer): ConsumeUnit[] {
                 continue iterate_prop
             }
         }
+        // istanbul ignore else
         if (prop_meta.queue) {
             units.push(prop_meta)
         }

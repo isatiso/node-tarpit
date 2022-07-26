@@ -71,6 +71,7 @@ declare module '@tarpit/config' {
     export interface TpConfigSchema {
         rabbitmq: {
             url: string | AMQPConnect
+            timeout?: number
             prefetch?: number
             socket_options?: unknown
         }
@@ -79,12 +80,14 @@ declare module '@tarpit/config' {
 
 declare module '@tarpit/core' {
     export interface TpEventCollector {
+        'rabbitmq-channel-error': (err: any) => void
+        'rabbitmq-connecting-failed': (err: any) => void
         'rabbitmq-connected': (connection: Connection) => void
         'rabbitmq-checked-out': (connection: Connection) => void
     }
 }
 
-export { Publish, Enqueue, Consume, TpConsumer, TpProducer, TpRabbitMQToken } from './annotations'
+export { Publish, Enqueue, Consume, TpConsumer, TpProducer } from './annotations'
 export {
     ack_message,
     Ack,
@@ -96,15 +99,9 @@ export {
     MessageDeadDesc,
 } from './errors'
 
-export {
-    JsonMessage,
-    TextMessage,
-    ConfirmProducer,
-    Consumer,
-    Producer,
-    RabbitSession,
-} from './builtin'
-
-export { AbstractRabbitHooks } from './services/inner/abstract-rabbit-hooks'
-export { RabbitDefine, ExchangeOptions, QueueOptions, DefaultRabbitmqExchange } from './services/rabbit-define'
-export { RabbitMQModule } from './rabbitmq.module'
+export { ConfirmProducer } from './builtin/confirm-producer'
+export { RabbitMessage } from './builtin/rabbit-message'
+export { Producer } from './builtin/producer'
+export { RabbitRetryStrategy } from './services/rabbit-retry-strategy'
+export { RabbitDefine, ExchangeOptions, QueueOptions, DefaultRabbitmqExchange, RabbitDefineToken } from './services/rabbit-define'
+export { RabbitmqModule } from './rabbitmq-module'

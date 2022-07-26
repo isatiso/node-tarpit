@@ -12,11 +12,12 @@ export type MessageDeadDesc = Partial<MessageErrorDesc>
 
 export class MessageDead extends MessageError {
     constructor(desc?: MessageDeadDesc) {
+        desc = desc ?? {}
         super({
-            code: desc?.code ?? 'ERR.Kill',
-            msg: desc?.msg ?? 'message is actively killed',
-            origin: desc?.origin,
-            detail: desc?.detail,
+            code: desc.code ?? 'ERR.Kill',
+            msg: desc.msg ?? 'message is actively killed',
+            origin: desc.origin,
+            detail: desc.detail,
         })
     }
 }

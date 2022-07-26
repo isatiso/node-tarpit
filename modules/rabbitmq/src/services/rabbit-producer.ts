@@ -6,11 +6,21 @@
  * found in the LICENSE file at source root.
  */
 
-import { get_prop_types, TpService } from '@tarpit/core'
+import { TpService } from '@tarpit/core'
 import { TpProducer } from '../annotations'
-import { ConfirmProducer, Producer } from '../builtin'
-import { ProduceUnit } from '../tools'
+import { ConfirmProducer } from '../builtin/confirm-producer'
+import { Producer } from '../builtin/producer'
+import { ProduceUnit } from '../tools/collect-produces'
 import { RabbitSessionCollector } from './rabbit-session-collector'
+
+function define_property(prototype: any, prop: string | symbol, value: Producer<any> | ConfirmProducer<any>) {
+    Object.defineProperty(prototype, prop, {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value
+    })
+}
 
 @TpService({ inject_root: true })
 export class RabbitProducer {
@@ -22,22 +32,16 @@ export class RabbitProducer {
 
     add(meta: TpProducer, units: ProduceUnit[]) {
         for (const unit of units) {
-            const type = get_prop_types(unit.cls, unit.prop)
-            let producer: Producer<any> | ConfirmProducer<any>
-            if (type === Producer) {
-                producer = new Producer(unit.target, unit.routing_key, meta.injector!)
-            } else if (type === ConfirmProducer) {
-                producer = new ConfirmProducer(unit.target, unit.routing_key, meta.injector!)
-                this.sessions.add(producer)
-            } else {
-                throw new Error(`Unknown producer type ${type} at ${unit.position}`)
+            switch (unit.producer_type) {
+                case Producer:
+                    define_property(unit.cls.prototype, unit.prop, new Producer(unit.target, unit.routing_key, meta.injector!))
+                    break
+                case ConfirmProducer:
+                    const producer = new ConfirmProducer(unit.target, unit.routing_key, meta.injector!)
+                    this.sessions.add(producer)
+                    define_property(unit.cls.prototype, unit.prop, producer)
+                    break
             }
-            Object.defineProperty(unit.cls.prototype, unit.prop, {
-                writable: true,
-                enumerable: true,
-                configurable: true,
-                value: producer
-            })
         }
     }
 }

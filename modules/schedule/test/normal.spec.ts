@@ -36,14 +36,17 @@ describe('normal case', function() {
     }
 
     let fake_time = 1658395732508
-    let platform = new Platform({}).bootstrap(TempSchedule)
-    const inspector = platform.expose(TpInspector)!
-    const schedule_inspector = platform.expose(ScheduleInspector)!
+    let platform: Platform
+    let inspector: TpInspector
+    let schedule_inspector: ScheduleInspector
     const tmp = console.log
 
     before(async function() {
         console.log = (..._args: any[]) => undefined
         chai.spy.on(Date, 'now', () => fake_time)
+        platform = new Platform({}).bootstrap(TempSchedule)
+        inspector = platform.expose(TpInspector)!
+        schedule_inspector = platform.expose(ScheduleInspector)!
         platform.start()
         await inspector.wait_start()
     })

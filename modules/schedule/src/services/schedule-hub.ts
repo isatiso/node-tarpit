@@ -15,19 +15,12 @@ import { make_task } from '../tools/make-task'
 @TpService({ inject_root: true })
 export class ScheduleHub {
 
-    private static id_cursor = 1
-
     public next_bullet: Bullet | undefined
     public suspended = new Map<string, Bullet>()
-
-    private static get_id(): string {
-        const id = ScheduleHub.id_cursor
-        ScheduleHub.id_cursor++
-        return `bullet-${id}`
-    }
+    private id_cursor = 1
 
     load(unit: TaskUnit, meta: TpSchedule) {
-        this._insert(new Bullet(ScheduleHub.get_id(), unit, make_task(meta.injector!, unit)))
+        this._insert(new Bullet(this._get_id(), unit, make_task(meta.injector!, unit)))
     }
 
     shoot(timestamp: number) {
@@ -65,6 +58,12 @@ export class ScheduleHub {
                 .then(() => this.reload(task.id))
         }
         return Promise.resolve()
+    }
+
+    private _get_id(): string {
+        const id = this.id_cursor
+        this.id_cursor++
+        return `bullet-${id}`
     }
 
     private _insert(task: Bullet): Bullet {

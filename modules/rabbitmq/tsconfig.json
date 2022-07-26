@@ -4,15 +4,24 @@
         "baseUrl": "./",
         "outDir": "./lib",
         "paths": {
+            "@tarpit/content-type": [
+                "../content-type/src"
+            ],
             "@tarpit/core": [
                 "../core/src"
             ],
             "@tarpit/config": [
-                "../config/src"
+                "../../packages/config/src"
+            ],
+            "@tarpit/error": [
+                "../../packages/error/src"
             ]
         }
     },
     "include": [
         "src/**/*.ts"
+    ],
+    "exclude": [
+        "src/**/*.spec.ts"
     ]
 }

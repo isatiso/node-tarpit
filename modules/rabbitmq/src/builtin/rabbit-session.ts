@@ -18,15 +18,13 @@ export class RabbitSession<CH extends Channel | ConfirmChannel> {
         this.injector.on('rabbitmq-checked-out', conn => this.init(conn))
     }
 
-    async init(connection: Connection, err?: any): Promise<CH> {
-        // TODO: deal with this error
-        err && console.log(err)
+    async init(connection: Connection): Promise<CH> {
         this.channel = undefined
         this.channel = this.confirm
             ? await connection.createConfirmChannel() as CH
             : await connection.createChannel() as CH
-        this.channel.on('close', () => this.channel = undefined)
-        this.channel.on('error', err => this.init(connection, err))
+        this.channel.once('close', () => this.init(connection))
+        this.channel.once('error', err => this.injector.emit('rabbitmq-channel-error', err))
         this._on_channel_create?.(this.channel)
         return this.channel
     }

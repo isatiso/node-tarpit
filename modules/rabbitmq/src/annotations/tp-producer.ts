@@ -7,10 +7,10 @@
  */
 
 import { ImportsAndProviders, make_decorator, TpEntry } from '@tarpit/core'
-import { TpRabbitMQToken } from './__token__'
+import { TpRabbitmqToken } from './__token__'
 
 export interface TpProducerOptions extends ImportsAndProviders {
 }
 
 export type TpProducer = InstanceType<typeof TpProducer>
-export const TpProducer = make_decorator('TpProducer', (options?: TpProducerOptions) => ({ ...options, token: TpRabbitMQToken }), TpEntry)
+export const TpProducer = make_decorator('TpProducer', (options?: TpProducerOptions) => ({ ...options, token: TpRabbitmqToken }), TpEntry)

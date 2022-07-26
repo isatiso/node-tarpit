@@ -7,14 +7,12 @@
  */
 
 import { Platform, TpInspector } from '@tarpit/core'
+import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import chai_http from 'chai-http'
 import { HttpServerModule, Post, RawBody, TpRouter } from '../src'
-import { HttpServer } from '../src/services/http-server'
 
 chai.use(cap)
-chai.use(chai_http)
 
 @TpRouter('/user', { imports: [HttpServerModule] })
 class TempRouter {
@@ -31,7 +29,7 @@ describe('max-byte-length case', function() {
         .bootstrap(TempRouter)
 
     const inspector = platform.expose(TpInspector)!
-    const http_server = platform.expose(HttpServer)!
+    const r = axios.create({ baseURL: 'http://localhost:31254/user' })
 
     const tmp = console.log
 
@@ -48,24 +46,14 @@ describe('max-byte-length case', function() {
     })
 
     it('should get error of 413', async function() {
-        await chai.request(http_server.server)
-            .post('/user/buffer')
-            .type('buffer')
-            .send('abc12345678')
-            .then(function(res) {
-                expect(res).to.have.status(413)
-                expect(res.text).to.equal('Payload Too Large')
-            })
+        const res = await r.post('/buffer', 'abc12345678').catch(err => err)
+        expect(res.response.status).to.equal(413)
+        expect(res.response.data).to.equal('Payload Too Large')
     })
 
     it('should act as normal if body not too large', async function() {
-        await chai.request(http_server.server)
-            .post('/user/buffer')
-            .type('buffer')
-            .send(Buffer.from('abc1234567'))
-            .then(function(res) {
-                expect(res).to.have.status(200)
-                expect(res.body).to.eql({ length: 10 })
-            })
+        const res = await r.post('/buffer', 'abc1234567')
+        expect(res.status).to.equal(200)
+        expect(res.data).to.eql({ length: 10 })
     })
 })

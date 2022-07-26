@@ -49,14 +49,17 @@ describe('hooks case', function() {
     }
 
     let fake_time = 1658395732508
-    let platform = new Platform({}).bootstrap(TempSchedule)
-    const inspector = platform.expose(TpInspector)!
-    const hooks = platform.expose(ScheduleHooks)!
+    let platform: Platform
+    let inspector: TpInspector
+    let hooks: ScheduleHooks
     const tmp = console.log
 
     before(async function() {
         console.log = (..._args: any[]) => undefined
         chai.spy.on(Date, 'now', () => fake_time)
+        platform = new Platform({}).bootstrap(TempSchedule)
+        inspector = platform.expose(TpInspector)!
+        hooks = platform.expose(ScheduleHooks)!
         chai.spy.on(hooks, 'on_init')
         chai.spy.on(hooks, 'on_error')
         chai.spy.on(hooks, 'on_finish')

@@ -9,6 +9,7 @@
 import { Platform } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
+import { Server } from 'net'
 import { HttpServerModule } from '../http-server.module'
 import { HttpServer } from './http-server'
 
@@ -28,6 +29,7 @@ describe('http-server.ts', function() {
             expect(http_server).to.have.property('starting').which.equals(starting)
             expect(http_server).to.have.property('terminating').which.is.undefined
             await starting
+            expect(http_server.server).to.be.instanceof(Server)
             const terminating = http_server.terminate()
             expect(http_server).to.have.property('terminating').which.equals(terminating)
             await terminating

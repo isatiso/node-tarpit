@@ -10,11 +10,9 @@ import { Platform, TpInspector, TpService } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import chai_http from 'chai-http'
 import { HttpContext, HttpHooks, HttpServerModule, Post, RawBody, TpHttpError, TpRouter } from '../src'
 
 chai.use(cap)
-chai.use(chai_http)
 
 @TpService()
 class CustomHooks extends HttpHooks {

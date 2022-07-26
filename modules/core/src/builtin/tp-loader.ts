@@ -41,11 +41,11 @@ export class TpLoader {
         loader(meta)
     }
 
-    start(): Promise<void> {
-        return Promise.all(this._on_starts.map(f => f())).catch(() => undefined).then(() => undefined)
+    start(): Promise<void[]> {
+        return Promise.all(this._on_starts.map(f => f()))
     }
 
-    terminate(): Promise<void> {
-        return Promise.all(this._on_terminates.map(f => f())).catch(() => undefined).then(() => undefined)
+    terminate(): Promise<void[]> {
+        return Promise.all(this._on_terminates.map(f => f()))
     }
 }

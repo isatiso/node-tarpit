@@ -8,13 +8,47 @@
 
 import { ConfigData } from '@tarpit/config'
 import { Injector, TpService } from '@tarpit/core'
-import { connect as connect_rabbitmq, Connection } from 'amqplib'
+import { connect as connect_rabbitmq, Connection, Options } from 'amqplib'
+import net from 'net'
+import url from 'url'
+import { RabbitRetryStrategy } from './rabbit-retry-strategy'
 import { RabbitSessionCollector } from './rabbit-session-collector'
+
+export function parse_amqp(value: string | { port?: number | string | null, hostname?: string | null }): [number, string] {
+    if (typeof value === 'string') {
+        value = url.parse(value)
+    }
+    return [
+        +(value.port ?? 5672),
+        value.hostname ?? 'localhost'
+    ]
+}
+
+export function is_reachable(url: string | Options.Connect, timeout_ms: number) {
+    const [port, hostname] = parse_amqp(url)
+    return new Promise((resolve, reject) => {
+        const socket = new net.Socket()
+        socket.setTimeout(timeout_ms)
+        socket.on('error', err => {
+            socket.destroy()
+            reject(err)
+        })
+        socket.on('timeout', () => {
+            socket.destroy()
+            reject(new Error(`connect ${url} exceed ${timeout_ms}ms`))
+        })
+        socket.connect(port, hostname, () => {
+            socket.end()
+            resolve(true)
+        })
+    })
+}
 
 @TpService({ inject_root: true })
 export class RabbitConnector {
 
     private readonly url = this.config.get('rabbitmq.url')
+    private readonly timeout = this.config.get('rabbitmq.timeout') ?? 1000
     private readonly socket_options = this.config.get('rabbitmq.socket_options')
 
     private closed = false
@@ -23,6 +57,7 @@ export class RabbitConnector {
         private config: ConfigData,
         private sessions: RabbitSessionCollector,
         private injector: Injector,
+        private retry_strategy: RabbitRetryStrategy,
     ) {
     }
 
@@ -32,44 +67,49 @@ export class RabbitConnector {
     }
 
     async close(): Promise<void> {
-        this.closed = true
-        await Promise.all(
-            Array.from(this.sessions).map(ch => ch.channel?.waitForConfirms())
-        )
-        await this.connection?.close()
+        if (!this.closed) {
+            this.closed = true
+            await Promise.all(
+                Array.from(this.sessions).map(ch => ch.channel?.waitForConfirms())
+            )
+            await this.connection?.close()
+        }
     }
 
     async connect(): Promise<Connection> {
-        this._connection = undefined
-        while (true) {
-            const conn = await this._try_connect_server()
-            if (typeof conn !== 'number') {
-                this._connection = conn
-                break
-            } else if (conn > 48) {
-                // TODO: 定义具体异常
-                throw new Error('重试次数过多')
-            } else {
-                await this._sleep(2500)
-            }
+        if (this.closed) {
+            throw new Error('connector is closed')
         }
-        this.injector.emit('rabbitmq-connected', this._connection)
-        return this._connection
-            .on('close', () => !this.closed && this.connect())
+        this._connection = undefined
+        let count = 0
+        do {
+            try {
+                this._connection = await this._try_connect_server()
+                this.injector.emit('rabbitmq-connected', this._connection)
+                return this._connection
+            } catch (err) {
+                await this.retry_strategy.on_failed(err).catch(err => {
+                    this.closed = true
+                    throw err
+                })
+                count++
+            }
+        } while (count < this.retry_strategy.max_retries)
+        throw new Error('The number of retries exceeded the limit')
+    }
+
+    private async _try_connect_server(): Promise<Connection> {
+        await is_reachable(this.url, this.timeout)
+        const connection = await connect_rabbitmq(this.url, this.socket_options)
+        return connection
+            .on('close', () => this.connect())
             .on('error', err => {
-                this.injector.emit('error', err)
-                !this.closed && this.connect()
+                const code = err && err.code
+                if (code !== 200 && code !== 320) {
+                    this._connection = undefined
+                    this.closed = true
+                }
+                this.injector.emit('error', { type: 'rabbitmq.connection.error', error: err })
             })
-    }
-
-    private async _try_connect_server(count: number = 0): Promise<Connection | number> {
-        return connect_rabbitmq(this.url, this.socket_options).catch(err => {
-            this.injector.emit('error', err)
-            return count + 1
-        })
-    }
-
-    private async _sleep(ms: number) {
-        return new Promise(resolve => setTimeout(() => resolve(undefined), ms))
     }
 }

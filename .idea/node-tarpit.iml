@@ -23,6 +23,7 @@
       <sourceFolder url="file://$MODULE_DIR$/packages/cron/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/schedule/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/packages/cron/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/projects/zoo/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/cli/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/abraham/lib" />

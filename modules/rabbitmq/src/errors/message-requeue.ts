@@ -12,11 +12,12 @@ export type MessageRequeueDesc = Partial<MessageErrorDesc>
 
 export class MessageRequeue extends MessageError {
     constructor(desc?: MessageRequeueDesc) {
+        desc = desc ?? {}
         super({
-            code: desc?.code ?? 'ERR.Kill',
-            msg: desc?.msg ?? 'message is actively killed',
-            origin: desc?.origin,
-            detail: desc?.detail,
+            code: desc.code ?? 'ERR.Requeue',
+            msg: desc.msg ?? 'message need to requeue',
+            origin: desc.origin,
+            detail: desc.detail,
         })
     }
 }

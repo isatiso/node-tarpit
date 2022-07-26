@@ -1,7 +1,3 @@
-import { Stream } from 'stream'
-import { TpResponse } from '../builtin'
-import { HTTP_STATUS } from './http-status'
-
 /**
  * @license
  * Copyright Cao Jiahang All Rights Reserved.
@@ -9,6 +5,10 @@ import { HTTP_STATUS } from './http-status'
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
+
+import { Stream } from 'stream'
+import { TpResponse } from '../builtin'
+import { HTTP_STATUS } from './http-status'
 
 export function flush_response(response: TpResponse) {
     if (!response.writable) {

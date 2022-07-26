@@ -9,11 +9,10 @@
 import { MIMEContent } from '@tarpit/content-type'
 import { TpService } from '@tarpit/core'
 import { ConsumeMessage } from 'amqplib'
-import { MessageDead, MessageRequeue } from '../../errors'
-import { AbstractRabbitHooks } from '../inner/abstract-rabbit-hooks'
+import { MessageDead, MessageRequeue } from '../errors'
 
 @TpService({ inject_root: true })
-export class RabbitHooks extends AbstractRabbitHooks {
+export class RabbitHooks {
 
     on_init(message: ConsumeMessage): Promise<void> {
         return Promise.resolve(undefined)

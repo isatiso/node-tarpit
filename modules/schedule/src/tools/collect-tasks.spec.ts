@@ -31,7 +31,7 @@ describe('collect-tasks.ts', function() {
                 }
 
                 @Disabled()
-                @Task('15 6 */2 * *', '检查订单（暂时禁用）', { tz: 'Asia/Shanghai' })
+                @Task('15 6 */2 * *', '检查订单（暂时禁用）')
                 async temp_check_order() {
 
                 }

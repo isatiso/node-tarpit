@@ -9,7 +9,7 @@
 import { Barbeque } from '@tarpit/barbeque'
 import { Injector } from '@tarpit/core'
 import { Channel, Options } from 'amqplib'
-import { narrow_to_buffer } from '../__tools__'
+import { narrow_to_buffer } from '../tools/narrow-to-buffer'
 import { RabbitSession } from './rabbit-session'
 
 export class Producer<T extends string | object | Buffer> extends RabbitSession<Channel> {

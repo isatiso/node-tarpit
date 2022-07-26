@@ -41,7 +41,7 @@ export class HttpServer {
                 if (this.terminating) {
                     res.setHeader('Connection', 'close')
                 }
-                request_listener(req, res)
+                request_listener(req, res).then()
             }).listen(this.port, () => resolve())
             if (this.keepalive_timeout) {
                 this._server.keepAliveTimeout = this.keepalive_timeout
@@ -57,8 +57,9 @@ export class HttpServer {
         if (!this.starting) {
             return new Promise(resolve => resolve())
         }
-        return this.terminating = this.terminating ?? new Promise((resolve, reject) => {
-            this._server!.close(error => error ? reject(error) : resolve())
+        return this.terminating = this.terminating ?? new Promise(resolve => {
+            this._server!.on('close', resolve)
+            this._server!.close()
             let start = Date.now()
             const interval = setInterval(() => {
                 if (this.sockets.size === 0 || Date.now() - start > this.terminate_timeout) {

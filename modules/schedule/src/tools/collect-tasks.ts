@@ -47,7 +47,10 @@ export function collect_tasks(meta: TpSchedule): TaskUnit[] {
                 continue iterate_prop
             }
         }
-        units.push(prop_meta)
+        // istanbul ignore else
+        if (prop_meta.task_name) {
+            units.push(prop_meta)
+        }
     }
     return units
 }

@@ -8,15 +8,17 @@
 
 import { ContentTypeModule } from '@tarpit/content-type'
 import { TpLoader, TpModule } from '@tarpit/core'
-import { TpConsumer, TpProducer, TpRabbitMQToken } from './annotations'
-import { RabbitHooks } from './services/impl/rabbit-hooks'
-import { AbstractRabbitHooks } from './services/inner/abstract-rabbit-hooks'
+import { TpConsumer, TpProducer, TpRabbitmqToken } from './annotations'
 import { RabbitClient } from './services/rabbit-client'
 import { RabbitConnector } from './services/rabbit-connector'
 import { RabbitConsumer } from './services/rabbit-consumer'
+import { RabbitDefine, RabbitDefineToken } from './services/rabbit-define'
+import { RabbitHooks } from './services/rabbit-hooks'
 import { RabbitProducer } from './services/rabbit-producer'
+import { RabbitRetryStrategy } from './services/rabbit-retry-strategy'
 import { RabbitSessionCollector } from './services/rabbit-session-collector'
-import { collect_consumes, collect_produces } from './tools'
+import { collect_consumes } from './tools/collect-consumes'
+import { collect_produces } from './tools/collect-produces'
 
 @TpModule({
     inject_root: true,
@@ -27,28 +29,27 @@ import { collect_consumes, collect_produces } from './tools'
         RabbitClient,
         RabbitConnector,
         RabbitConsumer,
+        RabbitHooks,
         RabbitProducer,
+        RabbitRetryStrategy,
         RabbitSessionCollector,
-        { provide: AbstractRabbitHooks, useClass: RabbitHooks },
+        { provide: RabbitDefineToken, useValue: new RabbitDefine(), multi: true, root: true },
     ],
 })
-export class RabbitMQModule {
+export class RabbitmqModule {
 
     constructor(
-        private rabbit: RabbitClient,
+        private client: RabbitClient,
         private loader: TpLoader,
         private consumers: RabbitConsumer,
         private producers: RabbitProducer,
     ) {
-        this.loader.register(TpRabbitMQToken, {
-            on_start: async () => this.rabbit.start(),
-            on_terminate: async () => this.rabbit.terminate(),
-            on_load: (meta: any) => {
-                if (meta instanceof TpConsumer) {
-                    this.consumers.add(meta, collect_consumes(meta))
-                } else if (meta instanceof TpProducer) {
-                    this.producers.add(meta, collect_produces(meta))
-                }
+        this.loader.register(TpRabbitmqToken, {
+            on_start: async () => this.client.start(),
+            on_terminate: async () => this.client.terminate(),
+            on_load: (meta: TpConsumer | TpProducer) => {
+                meta instanceof TpConsumer && this.consumers.add(meta, collect_consumes(meta))
+                meta instanceof TpProducer && this.producers.add(meta, collect_produces(meta))
             },
         })
     }

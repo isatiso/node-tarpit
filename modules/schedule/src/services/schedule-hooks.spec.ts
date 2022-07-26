@@ -49,7 +49,7 @@ describe('schedule-hooks.ts', function() {
 
     describe('#assemble_duration()', function() {
 
-        it('should get start time from context and figure out duration and set to response header X-Duration', function() {
+        it('should get start time from context and figure out duration and return it', function() {
             const { context, spy_get } = mock()
             context.set('process_start', fake_now - 1000)
             expect(assemble_duration(context)).to.equal(1000)

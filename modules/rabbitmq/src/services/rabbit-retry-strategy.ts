@@ -7,9 +7,13 @@
  */
 
 import { TpService } from '@tarpit/core'
-import { ConfirmProducer } from '../builtin/confirm-producer'
 
 @TpService({ inject_root: true })
-export class RabbitSessionCollector extends Set<ConfirmProducer<any>> {
+export class RabbitRetryStrategy {
 
+    max_retries = 5
+
+    async on_failed(err: any): Promise<void> {
+        throw err
+    }
 }

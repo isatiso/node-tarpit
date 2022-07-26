@@ -8,9 +8,12 @@
 
 import { Platform, TpInspector } from '@tarpit/core'
 import chai, { expect } from 'chai'
+import chai_spies from 'chai-spies'
 import { Task, TpSchedule } from '../annotations'
 import { ScheduleModule } from '../schedule.module'
 import { ScheduleInspector } from './schedule-inspector'
+
+chai.use(chai_spies)
 
 describe('schedule-inspector.ts', function() {
 
@@ -29,14 +32,17 @@ describe('schedule-inspector.ts', function() {
         }
 
         let fake_time = 1658395732508
-        let platform = new Platform({}).bootstrap(TempSchedule)
-        const inspector = platform.expose(TpInspector)!
-        const schedule_inspector = platform.expose(ScheduleInspector)!
+        let platform: Platform
+        let inspector: TpInspector
+        let schedule_inspector: ScheduleInspector
         const tmp = console.log
 
         before(async function() {
-            // console.log = (..._args: any[]) => undefined
+            console.log = (..._args: any[]) => undefined
             chai.spy.on(Date, 'now', () => fake_time)
+            platform = new Platform({}).bootstrap(TempSchedule)
+            inspector = platform.expose(TpInspector)!
+            schedule_inspector = platform.expose(ScheduleInspector)!
             platform.start()
             await inspector.wait_start()
         })
