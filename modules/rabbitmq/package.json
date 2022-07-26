@@ -32,7 +32,9 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "prepublishOnly": "yarn build"
+        "prepublishOnly": "yarn build",
+        "docs": "typedoc --tsconfig tsconfig.json --out ../../docs/$(basename $(pwd)) --excludeTags license ./src/index.ts",
+        "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
         "@tarpit/barbeque": "^0.5.10",
