@@ -148,3 +148,9 @@ jobs:
         run: "lerna publish patch --yes"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - run: "yarn lerna run docs"
+
+      - run: |
+        git commit -m "generate docs"
+        git push
