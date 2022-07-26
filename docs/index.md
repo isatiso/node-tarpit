@@ -1,3 +1,8 @@
+---
+layout: home
+title: Home
+---
+
 <p align="center">
     <img style="height: 300px;" src="https://github.com/isatiso/node-tarpit/blob/main/assets/tarpit.svg?raw=true" alt="Tarpit DI framework">
 </p>
