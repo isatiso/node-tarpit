@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - dev
+    paths:
+      - "!docs/**"
   pull_request:
     branches:
       - dev
+    paths:
+      - "!docs/**"
 
   workflow_dispatch:
 

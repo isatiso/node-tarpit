@@ -10,20 +10,20 @@
         {% endif %}
     {% endunless %}
 
+    <link rel="icon" href="/assets/tarpit-logo.svg" type="image/svg">
+
     <link rel="stylesheet" href="{{ '/assets/css/just-the-docs-default.css' | relative_url }}">
 
-    {% if site.ga_tracking %}
+    {% if site.ga_tracking != nil %}
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.ga_tracking }}"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
-
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-
+            function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '{{ site.ga_tracking }}'{% unless site.ga_tracking_anonymize_ip %}, {'anonymize_ip': true}{% endunless %});
+
+            gtag('config', '{{ site.ga_tracking }}'{% unless site.ga_tracking_anonymize_ip == nil %}, { 'anonymize_ip': true }{% endunless %});
         </script>
+
     {% endif %}
 
     {% if site.search_enabled != false %}
