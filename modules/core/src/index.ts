@@ -9,7 +9,8 @@
 // istanbul ignore file
 
 export * from './types'
-export * from './di'
+
+export { Injector, ClassProvider, ValueProvider, FactoryProvider } from './di'
 
 export {
     Debug,
@@ -28,11 +29,11 @@ export {
     TpWorker,
 } from './annotations'
 
-export { TpInspector, STARTED_AT, START_TIME, TERMINATE_TIME, TERMINATED_AT } from './builtin/tp-inspector'
+export { TpInspector } from './builtin/tp-inspector'
 export { TpLogger } from './builtin/tp-logger'
 export { TpLoader, TpLoaderType } from './builtin/tp-loader'
-export { stringify } from './tools/stringify'
 export { get_providers } from './tools/get-providers'
+
 export {
     DecoratorInnerField,
     AbstractDecoratorFactory,

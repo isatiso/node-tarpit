@@ -9,11 +9,6 @@
 import { TpService } from '../annotations'
 import { Injector } from '../di'
 
-export const STARTED_AT = Symbol('started_at')
-export const START_TIME = Symbol('start_time')
-export const TERMINATED_AT = Symbol('terminated_at')
-export const TERMINATE_TIME = Symbol('terminate_time')
-
 @TpService()
 export class TpInspector {
 

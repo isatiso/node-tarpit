@@ -51,17 +51,18 @@ export class Platform {
         return this
     }
 
-    start() {
+    start(after_start?: () => void) {
         if (this.started) {
             console.log('Tarpit server is started.')
             return this
         }
         this.started = true
         this.root_injector.emit('start')
+        this.inspector.wait_start().then(() => after_start?.())
         return this
     }
 
-    terminate() {
+    terminate(after_terminate?: () => void) {
         if (this.terminated) {
             console.log('Tarpit server is terminated.')
             return this
@@ -69,6 +70,7 @@ export class Platform {
         this.terminated = true
         this.inspector.wait_start().then(() => {
             this.root_injector.emit('terminate')
+            this.inspector.wait_terminate().then(() => after_terminate?.())
         })
         return this
     }

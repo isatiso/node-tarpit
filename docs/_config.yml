@@ -8,3 +8,20 @@ description: >-
 logo: /assets/tarpit.svg
 remote_theme: just-the-docs/just-the-docs
 color_scheme: foo
+theme: just-the-docs
+
+footer_content: "Copyright &copy; 2022 Cao Jiahang. Distributed by an <a href=\"https://raw.githubusercontent.com/isatiso/node-tarpit/main/LICENSE\">MIT license.</a>"
+aux_links_new_tab: true
+aux_links:
+  "Tarpit on GitHub":
+    - "//github.com/isatiso/node-tarpit"
+
+gh_edit_link: true
+gh_edit_link_text: "Edit this page on GitHub."
+gh_edit_repository: https://github.com/isatiso/node-tarpit
+gh_edit_branch: main
+gh_edit_source: docs
+gh_edit_view_mode: tree
+
+back_to_top: true
+back_to_top_text: 'Back to top'

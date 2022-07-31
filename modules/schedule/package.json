@@ -40,16 +40,15 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "@tarpit/dora": "^0.5.21"
+        "@tarpit/dora": "^0.5.21",
+        "@tarpit/cron": "^0.5.21"
     },
     "devDependencies": {
         "@tarpit/config": "^0.5.21",
-        "@tarpit/core": "^0.5.21",
-        "@tarpit/cron": "^0.5.21"
+        "@tarpit/core": "^0.5.21"
     },
     "peerDependencies": {
         "@tarpit/config": "0.x",
-        "@tarpit/core": "0.x",
-        "@tarpit/cron": "0.x"
+        "@tarpit/core": "0.x"
     }
 }
