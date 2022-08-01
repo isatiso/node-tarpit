@@ -52,16 +52,18 @@ const root_injector = Injector.create()
 const child_injector = Injector.create(root_injector)
 
 
+// Assume that FirstProvider is a ClassProvider of FirstService
+root_injector.set(FirstService, FirstProvider) 
 // Assume that SecondProvider is a ClassProvider of SecondService
 child_injector.set(SecondService, SecondProvider) 
 
 child_injector.has(SecondService) 
 // true  ===> check child itself, exist -> return true
 
-
+child_injector.has(FirstService) 
 // true  ===> check child itself, not exist -> check parent(root_injector), exist -> return true
 
-
+root_injector.has(FirstService) 
 // true  ===> check root itself, exist -> return true
 
 root_injector.has(SecondService) 
