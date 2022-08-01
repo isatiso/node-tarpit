@@ -121,7 +121,10 @@ You can define a ClassProvider as below
 ```typescript
 @TpModule({
     providers: [
-    providers: [
+        { provide: FirstService, useClass: ModifiedFirstService, root: true },
+        { provide: FirstService, useClass: FirstService, root: true },
+        { provide: FirstService, useClass: FirstService },
+        FirstService // short for above
     ]
 })
 class SomeModule {
@@ -147,11 +150,13 @@ Here are the properties of the FactoryProvider definition.
 You can define a FactoryProvider as below
 
 ```typescript
-```typescript
+const pre_created = new FirstService()
 
 @TpModule({
     providers: [
-    providers: [
+        { provide: FirstService, useFactory: (a: AnotherService) => new FirstService(), deps: [ AnotherService ] },
+        { provide: FirstService, useFactory: () => new FirstService() },
+        { provide: FirstService, useFactory: () => pre_created },
     ]
 })
 class SomeModule {
