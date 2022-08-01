@@ -5,16 +5,16 @@ nav_order: 1
 parent: Core
 ---
 
+# Concepts
+{:.mb-5.no_toc}
+
 <details open markdown="block">
   <summary>Table of contents</summary>{: .text-delta }
-1. TOC
+- TOC
 {:toc}
 </details>
 
----
-
-# Dependency Injection
-
+## Dependency Injection
 {:.mb-5}
 
 As a DI Framework, there should be a mechanism to match dependencies and inject them into the place.
@@ -53,11 +53,11 @@ Usually, a process of dependency injection is as follows:
 
 It is a simplified process but contains all essentials.
 
-## Where to Inject
-
+### Where to Inject
 {:.mb-5}
 
 In Tarpit, we called the place to inject dependencies an Injection Point.
+You can annotate dependencies at the Injection Point, and Tarpit will search them and put the result in place.
 
 In the above example, the Injection Point is the parameter first of the constructor of SecondService.
 With package reflect-metadata, Tarpit can get the type of first parameter which is FirstService.
@@ -65,8 +65,7 @@ Then, Tarpit search and found the Provider of FirstService, created an instance 
 
 Going further, a Injection Point could be a parameter of the TpComponent constructor or a TpUnit function.
 
-## What to Inject
-
+### What to Inject
 {:.mb-5}
 
 There are two ways to mark dependencies:
@@ -78,12 +77,12 @@ There are two ways to mark dependencies:
     @TpService()
     class SecondService {
         constructor(
+            // @Inject(MaxInstance) means this parameter needs the value of MaxInstance,
+            // which is a number.
             @Inject(MaxInstance) public max_instance: number
         ) {}
     }
     ```
-
-   `@Inject(MaxInstance)` means this parameter needs the value of MaxInstance, which is a number.
 
 We called the mark of dependency Injection Token. Tarpit uses Injection Token to find the matched Provider.
 `FirstService` and `@Inject(MaxInstance)` mark each dependencies as FirstService and MaxInstance.
@@ -91,8 +90,7 @@ We called the mark of dependency Injection Token. Tarpit uses Injection Token to
 Injection Token should have a certain uniqueness, which could let you know what to offer by the given single value.
 It's like you can't just say you need a number. No one knows what you actually need.
 
-## Inject by Type Annotation
-
+### Inject by Type Annotation
 {:.mb-5}
 
 This way usually uses the class as the Injection Token for reasons as follows.
@@ -139,8 +137,7 @@ Only type of parameter **a** indicates the exact value to provide which should b
 
 Class is the only choice.
 
-## Inject by Decorator
-
+### Inject by Decorator
 {:.mb-5}
 
 In this situation, we put the token directly on the Injection Point with barely a limit to the token.
@@ -161,8 +158,7 @@ class XXService {
 
 ---
 
-# Decorator
-
+## Decorator
 {:.mb-5}
 
 There are five types of decorators：
@@ -200,8 +196,7 @@ class Temp {
 }
 ```
 
-## Abstract Decorators
-
+### Abstract Decorators
 {:.mb-5}
 
 Tarpit use decorator to mark the way to use class, and there are five abstract decorators:
@@ -231,11 +226,11 @@ Tarpit use decorator to mark the way to use class, and there are five abstract d
    A TpUnit is a most basic abstract method decorator.
    It is used to mark the entry point of the class.
 
-## Implements
+### Implements
 
 {:.mb-5}
 
-Based on the above concepts, let's see what tools Tarpit provided.
+Based on the above concepts, there are some implements:
 
 1. **TpService**
 
@@ -249,16 +244,17 @@ Based on the above concepts, let's see what tools Tarpit provided.
 
    It is an implement of TpEntry, as same as TpEntry.
 
+See [Decorator](/1-core/2-decorators.html).
+
 ---
 
-# Provider
-
+## Provider
 {:.mb-5}
 
 A Provider is a wrapper of dependency which generate value as defined.
 There are three types of Providers:
 
-1. **ClassProvider**
+1. **[ClassProvider](/1-core/3-injector-and-provider.html#classprovider)**
 
    It provides the instance of the given class.
 
@@ -270,7 +266,7 @@ There are three types of Providers:
     platform.import({ provide: FirstService, useClass: FirstService })
     ```
 
-1. **FactoryProvider**
+1. **[FactoryProvider](/1-core/3-injector-and-provider.html#factoryprovider)**
 
    It provides the result of the given function.
 
@@ -278,7 +274,7 @@ There are three types of Providers:
     platform.import({ provide: FirstService, useFactory: () => new FirstService() })
     ```
 
-1. **ValueProvider**
+1. **[ValueProvider](/1-core/3-injector-and-provider.html#valueprovider)**
 
    It provides the given value.
 
@@ -286,10 +282,11 @@ There are three types of Providers:
     platform.import({ provide: 'locale', useValue: 'zh-CN' })
     ```
 
+See [Provider](/1-core/3-injector-and-provider.html#provider).
+
 ---
 
-# Injector
-
+## Injector
 {:.mb-5}
 
 An injector is the record of Tokens and Providers, which provides the method to search dependencies.
@@ -306,10 +303,11 @@ When you request a dependency from Injector, the injector searches itself first,
 
 As a special case, you always got the injector itself if you are searching for an injector.
 
+See [Injector](/1-core/3-injector-and-provider.html#injector).
+
 ---
 
-# Platform
-
+## Platform
 {:.mb-5}
 
 The class Platform is a runtime container which provide several method to interact with framework.
@@ -341,3 +339,5 @@ platform.expose(FirstService)!
 ### As Application Controller
 
 It provides methods `start` and `terminate` to control the Application.
+
+See [Platform](/1-core/4-platform.md)
