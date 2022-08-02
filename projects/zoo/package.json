@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/zoo",
-    "version": "0.5.22",
+    "version": "0.5.23",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -37,11 +37,11 @@
         "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.21",
-        "@tarpit/core": "^0.5.22",
-        "@tarpit/http": "^0.5.22",
-        "@tarpit/judge": "^0.5.21",
-        "@tarpit/rabbitmq": "^0.5.22",
-        "@tarpit/schedule": "^0.5.22"
+        "@tarpit/config": "^0.5.23",
+        "@tarpit/core": "^0.5.23",
+        "@tarpit/http": "^0.5.23",
+        "@tarpit/judge": "^0.5.23",
+        "@tarpit/rabbitmq": "^0.5.23",
+        "@tarpit/schedule": "^0.5.23"
     }
 }
