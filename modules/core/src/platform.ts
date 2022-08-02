@@ -10,7 +10,7 @@ import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
 import { TpEntry } from './annotations'
 import { TpInspector } from './builtin/tp-inspector'
 import { TpLoader } from './builtin/tp-loader'
-import { BuiltinTpLogger, TpLogger } from './builtin/tp-logger'
+import { TpLogger } from './builtin/tp-logger'
 import { ClassProvider, Injector, ValueProvider } from './di'
 import { get_class_decorator } from './tools/decorator'
 import { check_usage, def_to_provider, load_component } from './tools/load-component'
@@ -25,13 +25,13 @@ export class Platform {
     private started = false
     private terminated = false
 
-    constructor(file_path ?: string)
+    constructor(file_path?: string)
     constructor(data: TpConfigSchema)
     constructor(data: () => TpConfigSchema)
     constructor(data?: string | TpConfigSchema | (() => TpConfigSchema)) {
         ValueProvider.create(this.root_injector, { provide: ConfigData, useValue: load_config(data) })
         ValueProvider.create(this.root_injector, { provide: Platform, useValue: this })
-        ClassProvider.create(this.root_injector, { provide: TpLogger, useClass: BuiltinTpLogger }).create()
+        ClassProvider.create(this.root_injector, { provide: TpLogger, useClass: TpLogger }).create()
         this.root_injector.on('start', this.on_start)
         this.root_injector.on('terminate', this.on_terminate)
     }

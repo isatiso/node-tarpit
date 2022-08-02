@@ -1,11 +1,11 @@
-# `schedule`
+<p>
+    <img src="https://www.tarpit.cc/assets/tarpit.svg" alt="tarpit" height="60">
+</p>
 
-> TODO: description
+---
 
-## Usage
+# Schedule
 
-```
-const schedule = require('schedule');
+Just like the package name, it implements a Schedule as Crontab-Style.
 
-// TODO: DEMONSTRATE API
-```
+See [Schedule](https://www.tarpit.cc/4-schedule)

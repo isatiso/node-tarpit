@@ -19,7 +19,7 @@ Such as [TpService](#tpservice), [TpModule](#tpmodule), [TpRoot](#tproot), and s
 
 ### TpService
 
-TpService is a decorator to mark the class as a [TpWorker](/1-core/1-concepts.html#abstract-decorators) prepared to inject. 
+TpService is a decorator to mark the class as a [TpWorker](/1-core/#abstract-decorators) prepared to inject. 
 The constructor of a TpService is an Injection Point. You can annotate dependencies here.
 
 ```typescript
@@ -48,7 +48,7 @@ class SomeOtherService {
 
 ### TpModule
 
-TpModule is a decorator to mark the class as a [TpAssembly](/1-core/1-concepts.html#abstract-decorators) wrapped TpServices and other TpModules.
+TpModule is a decorator to mark the class as a [TpAssembly](/1-core/#abstract-decorators) wrapped TpServices and other TpModules.
 
 ```typescript
 @TpModule({
@@ -70,7 +70,7 @@ class SomeModule {
 
 ### TpRoot
 
-TpRoot is a TpModule with a list of TpEntrys. A [TpEntry](/1-core/1-concepts.html#abstract-decorators) maybe a router, a schedule and so on.
+TpRoot is a TpModule with a list of TpEntrys. A [TpEntry](/1-core/#abstract-decorators) maybe a router, a schedule and so on.
 
 ```typescript
 @TpRoot({
@@ -97,7 +97,7 @@ class AppRoot {
 ## Unit Decorator
 {:.mb-5}
 
-Unit Decorator is to mark metadata of a [TpUnit](/1-core/1-concepts.html#abstract-decorators).
+Unit Decorator is to mark metadata of a [TpUnit](/1-core/#abstract-decorators).
 
 ### Disabled
 

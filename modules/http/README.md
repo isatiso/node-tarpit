@@ -1,11 +1,11 @@
-# `http`
+<p>
+    <img src="https://www.tarpit.cc/assets/tarpit.svg" alt="tarpit" height="60">
+</p>
 
-> TODO: description
+---
 
-## Usage
+# HTTP Server
 
-```
-const http = require('http');
+Just like the package name, it implements an HTTP Server.
 
-// TODO: DEMONSTRATE API
-```
+See [HTTP Server](https://www.tarpit.cc/2-http-server)

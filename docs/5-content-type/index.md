@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Content Negotiation
+title: Content Type
 nav_order: 6
 has_children: true
 ---

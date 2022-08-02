@@ -1,11 +1,11 @@
-# `content-parser`
+<p>
+    <img src="https://www.tarpit.cc/assets/tarpit.svg" alt="tarpit" height="60">
+</p>
 
-> TODO: description
+---
 
-## Usage
+# Content Type
 
-```
-const content_parser = require('content-parser');
+It is a module to process content negotiation by metadata.
 
-// TODO: DEMONSTRATE API
-```
+See [Content Type](https://www.tarpit.cc/5-content-type)

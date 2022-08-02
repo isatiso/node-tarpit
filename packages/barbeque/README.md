@@ -1,11 +1,11 @@
-# `barbeque`
+<p>
+    <img src="https://www.tarpit.cc/assets/tarpit.svg" alt="tarpit" height="60">
+</p>
 
-> TODO: description
+---
 
-## Usage
+# Barbeque
 
-```
-const barbeque = require('barbeque');
+It is a queue implementation based on the Array with improved performance.
 
-// TODO: DEMONSTRATE API
-```
+See [@tarpit/barbeque](https://www.tarpit.cc/apis/barbeque)

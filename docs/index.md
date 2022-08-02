@@ -135,27 +135,18 @@ $ curl -X GET 'http://localhost:3000/hello'
 
 Guess you want to know about these things
 
-- [Get more about DI mechanism and core concepts](/1-platform/)
+- [Get more about DI mechanism and core concepts](/1-core/)
 - [Dig deep into HTTP Server](/2-http-server/)
 - [Make crontab-style Schedule](/3-rabbitmq-client/)
 - [Create Producer and Consumer base-on RabbitMQ](/4-schedule/)
 
 [build badge]: https://img.shields.io/github/workflow/status/isatiso/node-tarpit/node-tarpit-main?style=flat-square
-
 [build link]: https://github.com/isatiso/node-tarpit/actions/workflows/main.yml
-
 [coverage badge]: https://img.shields.io/codecov/c/github/isatiso/node-tarpit?style=flat-square
-
 [coverage link]: https://app.codecov.io/gh/isatiso/node-tarpit
-
 [license badge]: https://img.shields.io/npm/l/@tarpit/core?style=flat-square
-
 [license link]: https://github.com/isatiso/node-tarpit/blob/main/LICENSE
-
 [downloads badge]: https://img.shields.io/npm/dm/@tarpit/core?style=flat-square
-
 [downloads link]: https://www.npmjs.com/package/@tarpit/core
-
 [node badge]: https://img.shields.io/node/v-lts/@tarpit/core?style=flat-square
-
 [node link]: https://www.npmjs.com/package/@tarpit/core

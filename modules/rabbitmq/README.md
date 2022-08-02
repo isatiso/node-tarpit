@@ -1,11 +1,11 @@
-# `rabbitmq`
+<p>
+    <img src="https://www.tarpit.cc/assets/tarpit.svg" alt="tarpit" height="60">
+</p>
 
-> TODO: description
+---
 
-## Usage
+# RabbitMQ Client
 
-```
-const rabbitmq = require('rabbitmq');
+Just like the package name, it implements an RabbitMQ Client.
 
-// TODO: DEMONSTRATE API
-```
+See [RabbitMQ Client](https://www.tarpit.cc/3-rabbitmq-client)
