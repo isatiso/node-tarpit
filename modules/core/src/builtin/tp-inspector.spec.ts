@@ -29,7 +29,7 @@ describe('tp-inspector.ts', function() {
 
     describe('TpInspector', function() {
 
-        const platform = new Platform()
+        const platform = new Platform({})
         const inspector = platform.expose(TpInspector)
 
         it('should show start and terminate thing as -1', function() {

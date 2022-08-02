@@ -10,7 +10,7 @@ import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import spies from 'chai-spies'
 import { Injector } from '../di'
-import { BuiltinTpLogger, TpLogger } from './tp-logger'
+import { TpLogger } from './tp-logger'
 
 chai.use(cap)
 chai.use(spies)
@@ -31,7 +31,7 @@ describe('tp-logger.ts', function() {
 
         it('should log after start and terminate event', async function() {
             const injector = Injector.create()
-            const logger = new BuiltinTpLogger(injector)
+            const logger = new TpLogger(injector)
             const spy_after_start = chai.spy.on(logger, 'after_start')
             const spy_after_terminate = chai.spy.on(logger, 'after_terminate')
 
