@@ -1,11 +1,13 @@
-# `error`
+<p>
+    <a href="https://www.tarpit.cc">
+        <img src="https://www.tarpit.cc/assets/tarpit.svg" alt="tarpit" height="60">
+    </a>
+</p>
 
-> TODO: description
+---
 
-## Usage
+# Error
 
-```
-const error = require('error');
+It is the base Error of Tarpit.
 
-// TODO: DEMONSTRATE API
-```
+See [@tarpit/error](https://www.tarpit.cc/apis/error)

@@ -1,11 +1,13 @@
 <p>
-    <img src="https://www.tarpit.cc/assets/tarpit.svg" alt="tarpit" height="60">
+    <a href="https://www.tarpit.cc">
+        <img src="https://www.tarpit.cc/assets/tarpit.svg" alt="tarpit" height="60">
+    </a>
 </p>
 
 ---
 
-# Barbeque
+# Config
 
-It is a queue implementation based on the Array with improved performance.
+It is a configuration management module for Tarpit.
 
-See [@tarpit/barbeque](https://www.tarpit.cc/apis/barbeque)
+See [@tarpit/config](https://www.tarpit.cc/apis/config)
