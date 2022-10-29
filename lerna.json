@@ -1,6 +1,6 @@
 {
     "version": "0.5.24",
-    "npmClient": "yarn",
+    "npmClient": "pnpm",
     "useWorkspaces": true,
     "command": {
         "publish": {

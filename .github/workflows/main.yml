@@ -56,11 +56,11 @@ jobs:
       - env:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
         run: |
-          yarn install
-          yarn lerna bootstrap
-          yarn lerna run build --scope "@tarpit/abraham"
-          yarn lerna run build --ignore "@tarpit/abraham"
-          yarn lerna run test
+          pnpm install
+          lerna bootstrap
+          lerna run build --scope "@tarpit/abraham"
+          lerna run build --ignore "@tarpit/abraham"
+          lerna run test
 
       - name: Upload coverage barbeque
         uses: codecov/codecov-action@v3
@@ -144,7 +144,7 @@ jobs:
 
       - name: Authenticate with Registry
         run: |
-          yarn logout
+          pnpm logout
           echo "@tarpit:registry=https://registry.npmjs.org/" > .npmrc
           echo "registry=https://registry.npmjs.org/" >> .npmrc
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
@@ -157,7 +157,7 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - run: "yarn lerna run docs"
+      - run: "lerna run docs"
 
       - run: |
           git add ./docs/apis

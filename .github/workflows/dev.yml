@@ -51,11 +51,11 @@ jobs:
       - env:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
         run: |
-          yarn install
-          yarn lerna bootstrap
-          yarn lerna run build --scope "@tarpit/abraham"
-          yarn lerna run build --ignore "@tarpit/abraham"
-          yarn lerna run test
+          pnpm install
+          npx lerna bootstrap
+          npx lerna run build --scope "@tarpit/abraham"
+          npx lerna run build --ignore "@tarpit/abraham"
+          npx lerna run test
 
       - name: Upload coverage barbeque
         uses: codecov/codecov-action@v3

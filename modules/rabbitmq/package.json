@@ -35,14 +35,14 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "prepublishOnly": "yarn build",
+        "prepublishOnly": "npm run build",
         "docs": "tp docs",
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
         "@tarpit/barbeque": "^0.5.24",
         "@tarpit/judge": "^0.5.24",
-        "amqplib": "^0.10.0"
+        "amqplib": "^0.10.3"
     },
     "devDependencies": {
         "@tarpit/config": "^0.5.24",

@@ -35,7 +35,7 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "prepublishOnly": "yarn build",
+        "prepublishOnly": "npm run build",
         "docs": "tp docs",
         "test": "tp cover --reporter=json --reporter=text"
     },
@@ -44,7 +44,7 @@
         "@tarpit/judge": "^0.5.24",
         "content-disposition": "^0.5.4",
         "fresh": "^0.5.2",
-        "lru-cache": "^7.13.1",
+        "lru-cache": "^7.14.0",
         "mime-types": "^2.1.35",
         "negotiator": "^0.6.3",
         "type-is": "^1.6.18"

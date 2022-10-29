@@ -35,7 +35,7 @@
     },
     "scripts": {
         "build": "rm -rf lib && rollup -c",
-        "prepublishOnly": "yarn build"
+        "prepublishOnly": "npm run build"
     },
     "dependencies": {
         "@rollup/plugin-json": "^5.0.1",
@@ -45,8 +45,6 @@
         "fast-glob": "^3.2.12",
         "rollup": "^3.2.3",
         "rollup-plugin-dts": "^5.0.0",
-        "rollup-plugin-terser": "^7.0.2",
-        "rollup-plugin-typescript2": "^0.34.1",
         "ts-node": "^10.9.1",
         "ttypescript": "^1.5.13",
         "typescript": "^4.8.4"
