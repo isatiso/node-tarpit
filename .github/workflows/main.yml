@@ -52,10 +52,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
       - env:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
         run: |
+          npm install -g pnpm
           pnpm install
           lerna bootstrap
           lerna run build --scope "@tarpit/abraham"
