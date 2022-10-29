@@ -4,15 +4,9 @@ on:
   push:
     branches:
       - dev
-    paths:
-      - "!docs/**"
   pull_request:
     branches:
       - dev
-    paths:
-      - "!docs/**"
-
-  workflow_dispatch:
 
 jobs:
   build:
@@ -60,7 +54,6 @@ jobs:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
         run: |
           pnpm install
-          npx lerna bootstrap
           npx lerna run build --scope "@tarpit/abraham"
           npx lerna run build --ignore "@tarpit/abraham"
           npx lerna run test
