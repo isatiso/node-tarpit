@@ -6,11 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-// noinspection JSFileReferences
-// const r = require('./out')
-//
-// exports.default = new r.RollupConfig({ outDir: './lib' }).create('./src/index.ts', true)
-
 import typescript from '@rollup/plugin-typescript'
 import builtinModules from 'builtin-modules'
 import fs from 'fs'
@@ -25,11 +20,11 @@ const external = [
     ...Object.keys(pkg.peerDependencies || {}),
 ]
 
+// noinspection JSUnusedGlobalSymbols
 export default [
     {
         input: 'src/index.ts',
         output: [
-            { file: 'lib/index.js', format: 'cjs', interop: 'auto' },
             { file: 'lib/index.mjs', format: 'es', interop: 'auto' },
         ],
         external,
@@ -44,7 +39,6 @@ export default [
         ],
         external,
         plugins: [
-            typescript({ removeComments: true }),
             dts({ compilerOptions: { removeComments: true, paths: {}, module: ts.ModuleKind.ESNext } }),
         ]
     },

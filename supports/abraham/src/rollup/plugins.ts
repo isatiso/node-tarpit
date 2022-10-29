@@ -7,40 +7,20 @@
  */
 
 import _rpt from '@rollup/plugin-typescript'
-import { execSync, spawnSync } from 'child_process'
 import fs from 'fs'
 import { Plugin } from 'rollup'
 import _dts from 'rollup-plugin-dts'
 import ts, { CompilerOptions } from 'typescript'
 
-export function clean(dir: string): Plugin {
-    return {
-        name: 'clean temp files',
-        buildEnd() {
-            if (fs.existsSync(dir)) {
-                fs.rmSync(dir, { recursive: true })
-            }
-        }
+export const rpt = (): Plugin => _rpt({ removeComments: true, paths: {} })
+
+export const dts = (options: CompilerOptions): Plugin => _dts({
+    compilerOptions: { ...options, declaration: true, removeComments: true, paths: {}, module: ts.ModuleKind.ESNext }
+})
+
+export const clean = (dir: string): Plugin => ({
+    name: 'clean temp files',
+    buildEnd: () => {
+        fs.existsSync(dir) && fs.rmSync(dir, { recursive: true })
     }
-}
-
-export function gen_dts(dir: string): Plugin {
-    return {
-        name: 'generate .d.ts files',
-        buildStart() {
-            // const start = Date.now()
-            // spawnSync(`tsc --declaration --emitDeclarationOnly --declarationDir ${dir}`)
-            // console.log(Date.now() - start)
-
-        }
-    }
-}
-
-export function rpt(declarationDir?: string) {
-    return _rpt({ removeComments: true, paths: {} })
-}
-
-export function dts(options: CompilerOptions) {
-    options.declaration = true
-    return _dts({ compilerOptions: { ...options, removeComments: true, paths: {}, module: ts.ModuleKind.ESNext } })
-}
+})
