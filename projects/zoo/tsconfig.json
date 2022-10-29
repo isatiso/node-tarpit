@@ -3,14 +3,17 @@
     "compilerOptions": {
         "baseUrl": "./",
         "outDir": "./lib",
-        "paths": {
-            "@tarpit/rabbitmq": [
-                "../../modules/rabbitmq/src"
-            ],
-            "@tarpit/schedule": [
-                "../../modules/schedule/src"
-            ]
-        }
+//        "paths": {
+//            "@tarpit/rabbitmq": [
+//                "../../modules/rabbitmq/src"
+//            ],
+//            "@tarpit/schedule": [
+//                "../../modules/schedule/src"
+//            ],
+//            "@tarpit/http": [
+//                "../../modules/http/src"
+//            ]
+//        }
     },
     "include": [
         "src/**/*.ts"

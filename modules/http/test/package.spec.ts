@@ -77,7 +77,7 @@ describe('HttpServerModule', function() {
 
     const inspector = platform.expose(TpInspector)!
 
-    const r = axios.create({ baseURL: 'http://localhost:31254' })
+    const r = axios.create({ baseURL: 'http://127.0.0.1:31254', proxy: false })
 
     const tmp = console.log
 
@@ -85,7 +85,7 @@ describe('HttpServerModule', function() {
         console.log = (..._args: any[]) => undefined
         platform.start()
         await inspector.wait_start()
-        axios.get('http://localhost:31254/delay').then()
+        axios.get('http://127.0.0.1:31254/delay', { proxy: false }).then()
     })
 
     after(async function() {

@@ -25,7 +25,7 @@ export type Path<T, Key extends keyof T = keyof T> =
         :
         never;
 
-export type PathValue<T extends Object, P extends Path<T>> =
+export type PathValue<T, P extends Path<T>> =
     P extends `${infer Key}.${infer Rest}`
         ?
         Key extends keyof T

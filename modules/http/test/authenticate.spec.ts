@@ -41,7 +41,7 @@ describe('authenticate case', function() {
 
     const inspector = platform.expose(TpInspector)!
 
-    const r = axios.create({ baseURL: 'http://localhost:31254/user' })
+    const r = axios.create({ baseURL: 'http://localhost:31254/user', proxy: false })
 
     const tmp = console.log
 

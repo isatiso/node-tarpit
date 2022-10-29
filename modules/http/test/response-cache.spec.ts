@@ -69,7 +69,7 @@ describe('response cache case', function() {
 
     it('should use cache if exists', async function() {
 
-        const r = axios.create({ baseURL: 'http://localhost:31260' })
+        const r = axios.create({ baseURL: 'http://localhost:31260', proxy: false })
 
         await r.post('/user/job', { name: 'leo', age: 28 }).then(res => {
             expect(res.status).to.equal(200)

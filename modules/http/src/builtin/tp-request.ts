@@ -137,12 +137,12 @@ export class TpRequest {
         return !!~methods.indexOf(this.req.method!)
     }
 
-    get<P extends (keyof IncomingHttpHeaders & string)>(field: P): IncomingHttpHeaders[Lowercase<P>] {
-        const lower_field = field.toLowerCase()
+    get<P extends string>(field: P): (IncomingHttpHeaders & { referrer?: string | undefined })[Lowercase<P>] {
+        const lower_field = field.toLowerCase() as Lowercase<P>
         switch (lower_field) {
             case 'referer':
             case 'referrer':
-                return this.req.headers.referrer || this.req.headers.referer
+                return this.req.headers.referrer as any || this.req.headers.referer
             default:
                 return this.req.headers[lower_field]
         }

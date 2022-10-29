@@ -78,6 +78,6 @@ describe('service replace case', function() {
     })
 
     it('should throw business error', async function() {
-        await axios.get('http://localhost:31254/service/test')
+        await axios.get('http://localhost:31254/service/test', { proxy: false })
     })
 })

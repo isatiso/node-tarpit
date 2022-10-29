@@ -92,13 +92,13 @@ describe('request body case', function() {
 
     it('should parse body according to Content-Type', async function() {
         await axios.post('http://localhost:31260/user/mime', iconv_lite.encode(JSON.stringify({ name: '秦始皇', nick: '嬴政' }), 'gbk'),
-            { headers: { 'Content-Type': 'application/json; charset=gbk' } })
+            { headers: { 'Content-Type': 'application/json; charset=gbk' }, proxy: false })
             .then(res => {
                 expect(res.status).to.equal(200)
                 expect(res.data).to.include({ name: '秦始皇', nick: '嬴政', type: 'application/json', charset: 'gbk' })
             })
         await axios.post('http://localhost:31260/user/mime', iconv_lite.encode(JSON.stringify({ name: '秦始皇', nick: '嬴政' }), 'utf-8'),
-            { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
+            { headers: { 'Content-Type': 'application/json; charset=utf-8' }, proxy: false })
             .then(res => {
                 expect(res.status).to.equal(200)
                 expect(res.data).to.include({ name: '秦始皇', nick: '嬴政', type: 'application/json', charset: 'utf-8' })
@@ -107,7 +107,7 @@ describe('request body case', function() {
         params.append('name', '秦始皇')
         params.append('nick', '嬴政')
         await axios.post('http://localhost:31260/user/mime', params,
-            { headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' } })
+            { headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }, proxy: false })
             .then(res => {
                 expect(res.status).to.equal(200)
                 expect(res.data).to.include({ name: '秦始皇', nick: '嬴政', type: 'application/x-www-form-urlencoded', charset: 'utf-8' })
@@ -115,7 +115,7 @@ describe('request body case', function() {
     })
 
     it('should parse request body as json', async function() {
-        await axios.post('http://localhost:31260/user/text', { name: 'Leonard', nick: 'Leo' }, { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
+        await axios.post('http://localhost:31260/user/text', { name: 'Leonard', nick: 'Leo' }, { headers: { 'Content-Type': 'application/json; charset=utf-8' }, proxy: false })
             .then(res => {
                 expect(res.status).to.equal(200)
                 expect(res.data).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/json', charset: 'utf-8' })
@@ -127,7 +127,7 @@ describe('request body case', function() {
         const params = new URLSearchParams()
         params.append('name', 'Leonard')
         params.append('nick', 'Leo')
-        await axios.post('http://localhost:31260/user/form', params, { headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' } })
+        await axios.post('http://localhost:31260/user/form', params, { headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }, proxy: false })
             .then(res => {
                 expect(res.status).to.equal(200)
                 expect(res.data).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/x-www-form-urlencoded', charset: 'utf-8' })
@@ -137,7 +137,7 @@ describe('request body case', function() {
 
     it('should parse request body as text', async function() {
         await axios.post('http://localhost:31260/user/text', Buffer.from(JSON.stringify({ name: 'Leonard', nick: 'Leo' })),
-            { headers: { 'Content-Type': 'text/plain; charset=utf-8' } })
+            { headers: { 'Content-Type': 'text/plain; charset=utf-8' }, proxy: false })
             .then(res => {
                 expect(res.status).to.equal(200)
                 expect(res.data).to.include({ name: 'Leonard', nick: 'Leo', type: 'text/plain', charset: 'utf-8' })
@@ -147,7 +147,7 @@ describe('request body case', function() {
 
     it('should read request as buffer', async function() {
         await axios.post('http://localhost:31260/user/buffer', Buffer.from(JSON.stringify({ name: 'Leonard', nick: 'Leo' })),
-            { headers: { 'Content-Type': 'application/octet-stream' } })
+            { headers: { 'Content-Type': 'application/octet-stream' }, proxy: false })
             .then(res => {
                 expect(res.status).to.equal(200)
                 expect(res.data).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/octet-stream' })

@@ -6,13 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
+import _rpt from '@rollup/plugin-typescript'
+import { execSync, spawnSync } from 'child_process'
 import fs from 'fs'
 import { Plugin } from 'rollup'
 import _dts from 'rollup-plugin-dts'
-import { terser as _terser } from 'rollup-plugin-terser'
-import _rpt2 from 'rollup-plugin-typescript2'
-import ttypescript from 'ttypescript'
-import ts from 'typescript'
+import ts, { CompilerOptions } from 'typescript'
 
 export function clean(dir: string): Plugin {
     return {
@@ -25,31 +24,23 @@ export function clean(dir: string): Plugin {
     }
 }
 
-export function rpt2(override: ts.CompilerOptions, cacheRoot?: string) {
-    return _rpt2({
-        useTsconfigDeclarationDir: true,
-        tsconfigOverride: {
-            compilerOptions: {
-                ...override,
-                module: 'esnext',
-                paths: null,
-                rootDir: './',
-                removeComments: true,
-            }
-        },
-        cacheRoot,
-        typescript: ttypescript,
-        clean: true,
-    })
+export function gen_dts(dir: string): Plugin {
+    return {
+        name: 'generate .d.ts files',
+        buildStart() {
+            // const start = Date.now()
+            // spawnSync(`tsc --declaration --emitDeclarationOnly --declarationDir ${dir}`)
+            // console.log(Date.now() - start)
+
+        }
+    }
 }
 
-export function dts() {
-    return _dts({ compilerOptions: { paths: {}, module: ts.ModuleKind.ESNext } })
+export function rpt(declarationDir?: string) {
+    return _rpt({ removeComments: true, paths: {} })
 }
 
-export function terser() {
-    return _terser({
-        ecma: 2020,
-        format: { comments: false }
-    })
+export function dts(options: CompilerOptions) {
+    options.declaration = true
+    return _dts({ compilerOptions: { ...options, removeComments: true, paths: {}, module: ts.ModuleKind.ESNext } })
 }

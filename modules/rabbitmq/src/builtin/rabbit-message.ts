@@ -15,7 +15,7 @@ export class RabbitMessage<T> extends Judgement<T extends object ? T : {}> imple
     readonly content: Buffer
     readonly fields: ConsumeMessageFields
     readonly properties: MessageProperties
-    readonly text = this.mime.text
+    readonly text: string | undefined
 
     constructor(
         message: ConsumeMessage,
@@ -26,5 +26,6 @@ export class RabbitMessage<T> extends Judgement<T extends object ? T : {}> imple
         this.content = message.content
         this.fields = message.fields
         this.properties = message.properties
+        this.text = this.mime.text
     }
 }

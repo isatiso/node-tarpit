@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { SyntaxKind } from 'ttypescript'
 import * as ts from 'typescript'
 
 /**
@@ -29,8 +30,10 @@ export function comment_decorators(_: ts.Program, options: { heritage_inline?: b
                     tag_array.push(ctx.factory.createJSDocClassTag(ctx.factory.createIdentifier('class'), origin.name?.text ?? '[anonymous]'))
                 }
                 const text_array: (ts.JSDocText | ts.JSDocLink)[] = []
-                if (origin.decorators) {
-                    const msg = origin.decorators.map(d => d.getText(osf)).join('\n')
+                if (origin.modifiers) {
+                    const msg = origin.modifiers
+                        .filter(d => d.kind === SyntaxKind.Decorator)
+                        .map(d => d.getText(osf)).join('\n')
                     text_array.push(ctx.factory.createJSDocText(msg))
                 }
                 if (ts.isClassDeclaration(origin) && origin.heritageClauses) {

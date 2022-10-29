@@ -90,7 +90,7 @@ describe('context case', function() {
         .bootstrap(TempRouter)
 
     const inspector = platform.expose(TpInspector)!
-    const r = axios.create({ baseURL: 'http://localhost:31260/user' })
+    const r = axios.create({ baseURL: 'http://localhost:31260/user', proxy: false })
 
     const tmp = console.log
 

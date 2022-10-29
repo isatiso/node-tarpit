@@ -49,7 +49,7 @@ describe('normal case', function() {
 
     const inspector = platform.expose(TpInspector)!
     const http_inspector = platform.expose(HttpInspector)!
-    const r = axios.create({ baseURL: 'http://localhost:31254' })
+    const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
 
     const tmp = console.log
 

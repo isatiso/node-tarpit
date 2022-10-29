@@ -7,7 +7,7 @@
  */
 
 import { Platform, TpInspector, TpRoot } from '@tarpit/core'
-import { HttpServerModule, Post, RawBody, TpRouter } from '@tarpit/http'
+import { HttpServerModule, Post, Get, RawBody, TpRouter, Params } from '@tarpit/http'
 
 @TpRouter('/')
 class TestRouter {
@@ -15,7 +15,12 @@ class TestRouter {
     constructor() {
     }
 
-    @Post('asd')
+    @Get()
+    async asd(params: Params<any>) {
+        return params
+    }
+
+    @Post()
     async test(
         buf: RawBody,
     ) {

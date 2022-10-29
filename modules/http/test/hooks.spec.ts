@@ -51,7 +51,7 @@ describe('throw error in hooks case', function() {
         .bootstrap(TempRouter)
 
     const inspector = platform.expose(TpInspector)!
-    const r = axios.create({ baseURL: 'http://localhost:31254' })
+    const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
     const tmp = console.log
 
     before(async function() {

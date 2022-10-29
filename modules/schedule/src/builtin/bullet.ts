@@ -7,12 +7,13 @@
  */
 
 import { Cron } from '@tarpit/cron'
+import { Dora } from '@tarpit/dora'
 import { TaskUnit } from '../tools/collect-tasks'
 
 export class Bullet {
 
-    public crontab = Cron.parse(this.unit.crontab_str, this.unit.options)
-    public execution = this.crontab.next()
+    public crontab: Cron
+    public execution: Dora
     public next_bullet: Bullet | undefined = undefined
 
     constructor(
@@ -20,5 +21,7 @@ export class Bullet {
         public readonly unit: TaskUnit,
         public readonly handler: (current: Bullet) => Promise<void>,
     ) {
+        this.crontab = Cron.parse(this.unit.crontab_str, this.unit.options)
+        this.execution = this.crontab.next()
     }
 }

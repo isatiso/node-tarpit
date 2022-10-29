@@ -95,7 +95,7 @@ describe('errors case', function() {
         .bootstrap(NormalRouter)
 
     const inspector = platform.expose(TpInspector)!
-    const r = axios.create({ baseURL: 'http://localhost:31254/error' })
+    const r = axios.create({ baseURL: 'http://localhost:31254/error', proxy: false })
 
     const tmp = console.log
 
