@@ -48,12 +48,6 @@ jobs:
           git config --global user.email sieglive@gmail.com
           git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
 
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
       - name: Install pnpm
         uses: pnpm/action-setup@v2.2.4
         id: pnpm-install
@@ -61,10 +55,15 @@ jobs:
           version: 7
           run_install: false
 
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
       - env:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
         run: |
-          npm install -g pnpm
           pnpm install
           lerna bootstrap
           lerna run build --scope "@tarpit/abraham"
