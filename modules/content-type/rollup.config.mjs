@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-// noinspection JSFileReferences
-const r = require('./out')
+import { RollupConfig } from '@tarpit/abraham'
 
-export default new r.RollupConfig({ outDir: './lib' }).create('./src/index.ts', true)
+export default new RollupConfig({}).create('./src/index.ts', true)
+

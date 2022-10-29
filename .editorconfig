@@ -67,7 +67,7 @@ ij_json_spaces_within_braces = false
 ij_json_spaces_within_brackets = false
 ij_json_wrap_long_lines = false
 
-[{*.ts, *.ats}]
+[{*.ts, *.ats, *.tsx}]
 max_line_length = 200
 ij_continuation_indent_size = 4
 ij_typescript_align_imports = false
@@ -234,7 +234,7 @@ ij_typescript_while_on_new_line = false
 ij_typescript_wrap_comments = false
 
 
-[{*.cjs,*.js}]
+[{*.cjs,*.js,*.mjs,*.jsx}]
 max_line_length = 200
 ij_continuation_indent_size = 4
 ij_javascript_align_imports = false
@@ -255,7 +255,7 @@ ij_javascript_array_initializer_wrap = off
 ij_javascript_assignment_wrap = off
 ij_javascript_binary_operation_sign_on_next_line = false
 ij_javascript_binary_operation_wrap = off
-ij_javascript_blacklist_imports = rxjs/Rx,node_modules/**,**/node_modules/**,@angular/material,@angular/material/typings/**
+ij_javascript_blacklist_imports = rxjs/Rx, node_modules/**, **/node_modules/**, @angular/material, @angular/material/typings/**
 ij_javascript_blank_lines_after_imports = 1
 ij_javascript_blank_lines_around_class = 1
 ij_javascript_blank_lines_around_field = 0
@@ -282,7 +282,7 @@ ij_javascript_for_statement_new_line_after_left_paren = false
 ij_javascript_for_statement_right_paren_on_new_line = false
 ij_javascript_for_statement_wrap = off
 ij_javascript_force_quote_style = true
-ij_javascript_force_semicolon_style = false
+ij_javascript_force_semicolon_style = true
 ij_javascript_function_expression_brace_style = end_of_line
 ij_javascript_if_brace_force = always
 ij_javascript_import_merge_members = global

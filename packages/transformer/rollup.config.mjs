@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-const { RollupConfig } = require('@tarpit/abraham')
+import { RollupConfig } from '@tarpit/abraham'
 
 export const config = new RollupConfig({
     dts_glob: ['src/**/*.d.ts', '!__dts/**/*.d.ts', '!lib/**/*.d.ts'], externals: ['typescript'], inputOptions: { cache: false }

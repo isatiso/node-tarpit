@@ -1,3 +1,3 @@
-const { RollupConfig } = require('@tarpit/abraham')
+import { RollupConfig } from '@tarpit/abraham'
 
 export default new RollupConfig({}).create('./src/index.ts', true)
