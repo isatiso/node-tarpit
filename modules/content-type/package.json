@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/content-type",
-    "version": "0.5.24",
+    "version": "0.5.25",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -45,8 +45,8 @@
         "tslib": "^2.4.0"
     },
     "devDependencies": {
-        "@tarpit/core": "^0.5.24",
-        "@tarpit/error": "^0.5.24",
+        "@tarpit/core": "^0.5.25",
+        "@tarpit/error": "^0.5.25",
         "@types/mime-types": "^2.1.1"
     },
     "peerDependencies": {

@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/cron",
-    "version": "0.5.24",
+    "version": "0.5.25",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -40,6 +40,6 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "@tarpit/dora": "^0.5.24"
+        "@tarpit/dora": "^0.5.25"
     }
 }

@@ -68,8 +68,8 @@ importers:
 
   modules/content-type:
     specifiers:
-      '@tarpit/core': ^0.5.24
-      '@tarpit/error': ^0.5.24
+      '@tarpit/core': ^0.5.25
+      '@tarpit/error': ^0.5.25
       '@types/mime-types': ^2.1.1
       iconv-lite: ^0.6.3
       mime-types: ^2.1.35
@@ -85,8 +85,8 @@ importers:
 
   modules/core:
     specifiers:
-      '@tarpit/cli': ^0.5.24
-      '@tarpit/config': ^0.5.24
+      '@tarpit/cli': ^0.5.25
+      '@tarpit/config': ^0.5.25
       reflect-metadata: ^0.1.13
       tslib: ^2.4.0
     dependencies:
@@ -98,12 +98,12 @@ importers:
 
   modules/http:
     specifiers:
-      '@tarpit/config': ^0.5.24
-      '@tarpit/content-type': ^0.5.24
-      '@tarpit/core': ^0.5.24
-      '@tarpit/dora': ^0.5.24
-      '@tarpit/error': ^0.5.24
-      '@tarpit/judge': ^0.5.24
+      '@tarpit/config': ^0.5.25
+      '@tarpit/content-type': ^0.5.25
+      '@tarpit/core': ^0.5.25
+      '@tarpit/dora': ^0.5.25
+      '@tarpit/error': ^0.5.25
+      '@tarpit/judge': ^0.5.25
       '@types/content-disposition': ^0.5.5
       '@types/fresh': ^0.5.0
       '@types/mime-types': ^2.1.1
@@ -139,12 +139,12 @@ importers:
 
   modules/rabbitmq:
     specifiers:
-      '@tarpit/barbeque': ^0.5.24
-      '@tarpit/config': ^0.5.24
-      '@tarpit/content-type': ^0.5.24
-      '@tarpit/core': ^0.5.24
-      '@tarpit/error': ^0.5.24
-      '@tarpit/judge': ^0.5.24
+      '@tarpit/barbeque': ^0.5.25
+      '@tarpit/config': ^0.5.25
+      '@tarpit/content-type': ^0.5.25
+      '@tarpit/core': ^0.5.25
+      '@tarpit/error': ^0.5.25
+      '@tarpit/judge': ^0.5.25
       '@types/amqplib': ^0.8.2
       amqplib: ^0.10.3
       tslib: ^2.4.0
@@ -162,10 +162,10 @@ importers:
 
   modules/schedule:
     specifiers:
-      '@tarpit/config': ^0.5.24
-      '@tarpit/core': ^0.5.24
-      '@tarpit/cron': ^0.5.24
-      '@tarpit/dora': ^0.5.24
+      '@tarpit/config': ^0.5.25
+      '@tarpit/core': ^0.5.25
+      '@tarpit/cron': ^0.5.25
+      '@tarpit/dora': ^0.5.25
       tslib: ^2.4.0
     dependencies:
       '@tarpit/cron': link:../../packages/cron
@@ -180,13 +180,13 @@ importers:
 
   packages/config:
     specifiers:
-      '@tarpit/judge': ^0.5.24
+      '@tarpit/judge': ^0.5.25
     dependencies:
       '@tarpit/judge': link:../judge
 
   packages/cron:
     specifiers:
-      '@tarpit/dora': ^0.5.24
+      '@tarpit/dora': ^0.5.25
     dependencies:
       '@tarpit/dora': link:../dora
 
@@ -222,12 +222,12 @@ importers:
 
   projects/zoo:
     specifiers:
-      '@tarpit/config': ^0.5.24
-      '@tarpit/core': ^0.5.24
-      '@tarpit/http': ^0.5.24
-      '@tarpit/judge': ^0.5.24
-      '@tarpit/rabbitmq': ^0.5.24
-      '@tarpit/schedule': ^0.5.24
+      '@tarpit/config': ^0.5.25
+      '@tarpit/core': ^0.5.25
+      '@tarpit/http': ^0.5.25
+      '@tarpit/judge': ^0.5.25
+      '@tarpit/rabbitmq': ^0.5.25
+      '@tarpit/schedule': ^0.5.25
       tslib: ^2.4.0
     dependencies:
       '@tarpit/config': link:../../packages/config
@@ -241,7 +241,7 @@ importers:
   supports/cli:
     specifiers:
       '@istanbuljs/nyc-config-typescript': ^1.0.2
-      '@tarpit/judge': ^0.5.24
+      '@tarpit/judge': ^0.5.25
       '@types/chai': ^4.3.3
       '@types/chai-as-promised': ^7.1.5
       '@types/chai-spies': ^1.0.3
