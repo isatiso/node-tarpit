@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ChildProcess, spawn } from 'child_process'
+import { ChildProcess, exec, spawn } from 'child_process'
 import fs from 'fs'
 
 const clean_board: string[] = []
@@ -48,6 +48,16 @@ export async function deliver_shell(cmd_line: string, options?: {
         child.on('exit', () => child.exitCode
             ? reject(make_error(child.exitCode))
             : resolve(''))
+    })
+}
+
+export async function command_exists(cmd: string) {
+    cmd = cmd.trim()
+    return new Promise<boolean>((resolve) => {
+        const child = exec(`hash ${cmd} 2>/dev/null`)
+        child.on('exit', () => {
+            child.exitCode ? resolve(false) : resolve(true)
+        })
     })
 }
 

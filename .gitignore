@@ -5,13 +5,9 @@
 **/lib
 **/coverage
 
-
-**/src/test.*
+supports/rollup/src/test.*
 
 **/test.*
 
 .DS_Store
 package-lock.json
-
-**/.yarn
-**/.yarnrc.yml

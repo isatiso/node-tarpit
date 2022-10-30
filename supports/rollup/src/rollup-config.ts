@@ -11,11 +11,8 @@ import fs from 'fs'
 import path from 'path'
 import { InputOptions, MergedRollupOptions } from 'rollup'
 import { CompilerOptions } from 'typescript'
-import { read_json_file_sync } from '../tools/files'
-import { parse_tsconfig, read_tsconfig } from '../tools/load-tsconfig'
-import { PackageJson } from '../types'
 import { dts, rpt } from './plugins'
-import { gen_external } from './utils'
+import { gen_external, PackageJson, parse_tsconfig, read_json_file_sync, read_tsconfig } from './tools'
 
 export class RollupConfig {
 

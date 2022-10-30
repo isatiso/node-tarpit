@@ -45,7 +45,8 @@
     },
     "devDependencies": {
         "@tarpit/cli": "^0.5.25",
-        "@tarpit/config": "^0.5.25"
+        "@tarpit/config": "^0.5.25",
+        "@tarpit/rollup": "^0.5.25"
     },
     "peerDependencies": {
         "@tarpit/config": "0.x"

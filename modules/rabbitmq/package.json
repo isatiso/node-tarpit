@@ -50,6 +50,7 @@
         "@tarpit/content-type": "^0.5.25",
         "@tarpit/core": "^0.5.25",
         "@tarpit/error": "^0.5.25",
+        "@tarpit/rollup": "^0.5.25",
         "@types/amqplib": "^0.8.2"
     },
     "peerDependencies": {

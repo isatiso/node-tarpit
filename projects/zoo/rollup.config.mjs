@@ -1,4 +1,4 @@
-import { RollupConfig } from '../../lib/index.mjs'
+import { RollupConfig } from '@tarpit/rollup'
 
 export default new RollupConfig({}).create('./src/index.ts', true)
 

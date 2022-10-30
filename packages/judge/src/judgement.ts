@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { JudgementRule, Path, PathOfType, PathValue } from './__types__'
+import { Path, PathOfType, PathValue } from '@tarpit/type-tools'
+import { JudgementRule } from './__types__'
 import { Matcher, MismatchDescription } from './matcher'
 import { Reference } from './reference'
 

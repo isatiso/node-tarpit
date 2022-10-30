@@ -9,5 +9,5 @@
 // istanbul ignore file
 export { Judgement, MatcherInferType, OnJudgementError } from './judgement'
 export { Matcher, Jtl, MismatchDescription } from './matcher'
-export { Path, PathValue, PathValueMap, PathValueMapOfType, PathOfType, JudgementRule } from './__types__'
+export { JudgementRule } from './__types__'
 export { Reference } from './reference'

@@ -4,29 +4,39 @@ importers:
 
   .:
     specifiers:
+      '@istanbuljs/nyc-config-typescript': ^1.0.2
       '@rollup/plugin-json': ^5.0.1
       '@rollup/plugin-typescript': ^9.0.2
-      '@tarpit/barbeque': workspace:^0.5.24
-      '@tarpit/cli': workspace:^0.5.24
-      '@tarpit/config': workspace:^0.5.24
-      '@tarpit/content-type': workspace:^0.5.24
-      '@tarpit/core': workspace:^0.5.24
-      '@tarpit/cron': workspace:^0.5.24
-      '@tarpit/dora': workspace:^0.5.24
-      '@tarpit/error': workspace:^0.5.24
-      '@tarpit/http': workspace:^0.5.24
-      '@tarpit/judge': workspace:^0.5.24
-      '@tarpit/rabbitmq': workspace:^0.5.24
-      '@tarpit/schedule': workspace:^0.5.24
-      '@tarpit/transformer': workspace:^0.5.24
+      '@tarpit/barbeque': ^0.5.24
+      '@tarpit/cli': ^0.5.24
+      '@tarpit/config': ^0.5.24
+      '@tarpit/content-type': ^0.5.24
+      '@tarpit/core': ^0.5.24
+      '@tarpit/cron': ^0.5.24
+      '@tarpit/dora': ^0.5.24
+      '@tarpit/error': ^0.5.24
+      '@tarpit/http': ^0.5.24
+      '@tarpit/judge': ^0.5.24
+      '@tarpit/rabbitmq': ^0.5.24
+      '@tarpit/schedule': ^0.5.24
+      '@tarpit/transformer': ^0.5.24
+      '@types/chai': ^4.3.3
+      '@types/chai-as-promised': ^7.1.5
+      '@types/chai-spies': ^1.0.3
+      '@types/mocha': ^10.0.0
       '@types/node': ^18.11.7
-      '@types/normalize-package-data': ^2.4.1
+      axios: ^1.1.3
       builtin-modules: ^3.3.0
+      chai: ^4.3.6
+      chai-as-promised: ^7.1.1
+      chai-spies: ^1.0.0
       fast-glob: ^3.2.12
       jsonwebtoken: ^8.5.1
       lerna: ^6.0.1
+      mocha: ^10.1.0
       normalize-package-data: ^5.0.0
       npm-check-updates: ^16.3.16
+      nyc: ^15.1.0
       rollup: ^3.2.3
       rollup-plugin-dts: ^5.0.0
       ts-node: ^10.9.1
@@ -35,6 +45,7 @@ importers:
       typedoc-theme-hierarchy: ^3.0.0
       typescript: ^4.8.4
     dependencies:
+      '@istanbuljs/nyc-config-typescript': 1.0.2_nyc@15.1.0
       '@rollup/plugin-json': 5.0.1_rollup@3.2.3
       '@rollup/plugin-typescript': 9.0.2_655ssj4e7sdqlljrreeiqtltve
       '@tarpit/barbeque': link:packages/barbeque
@@ -50,14 +61,23 @@ importers:
       '@tarpit/rabbitmq': link:modules/rabbitmq
       '@tarpit/schedule': link:modules/schedule
       '@tarpit/transformer': link:packages/transformer
+      '@types/chai': 4.3.3
+      '@types/chai-as-promised': 7.1.5
+      '@types/chai-spies': 1.0.3
+      '@types/mocha': 10.0.0
       '@types/node': 18.11.7
-      '@types/normalize-package-data': 2.4.1
+      axios: 1.1.3
       builtin-modules: 3.3.0
+      chai: 4.3.6
+      chai-as-promised: 7.1.1_chai@4.3.6
+      chai-spies: 1.0.0_chai@4.3.6
       fast-glob: 3.2.12
       jsonwebtoken: 8.5.1
       lerna: 6.0.1
+      mocha: 10.1.0
       normalize-package-data: 5.0.0
       npm-check-updates: 16.3.16
+      nyc: 15.1.0
       rollup: 3.2.3
       rollup-plugin-dts: 5.0.0_655ssj4e7sdqlljrreeiqtltve
       ts-node: 10.9.1_evej5wzm4hojmu6uzxwpspdmsu
@@ -70,6 +90,7 @@ importers:
     specifiers:
       '@tarpit/core': ^0.5.25
       '@tarpit/error': ^0.5.25
+      '@tarpit/rollup': ^0.5.25
       '@types/mime-types': ^2.1.1
       iconv-lite: ^0.6.3
       mime-types: ^2.1.35
@@ -81,12 +102,14 @@ importers:
     devDependencies:
       '@tarpit/core': link:../core
       '@tarpit/error': link:../../packages/error
+      '@tarpit/rollup': link:../../supports/rollup
       '@types/mime-types': 2.1.1
 
   modules/core:
     specifiers:
       '@tarpit/cli': ^0.5.25
       '@tarpit/config': ^0.5.25
+      '@tarpit/rollup': ^0.5.25
       reflect-metadata: ^0.1.13
       tslib: ^2.4.0
     dependencies:
@@ -95,6 +118,7 @@ importers:
     devDependencies:
       '@tarpit/cli': link:../../supports/cli
       '@tarpit/config': link:../../packages/config
+      '@tarpit/rollup': link:../../supports/rollup
 
   modules/http:
     specifiers:
@@ -104,6 +128,7 @@ importers:
       '@tarpit/dora': ^0.5.25
       '@tarpit/error': ^0.5.25
       '@tarpit/judge': ^0.5.25
+      '@tarpit/rollup': ^0.5.25
       '@types/content-disposition': ^0.5.5
       '@types/fresh': ^0.5.0
       '@types/mime-types': ^2.1.1
@@ -131,6 +156,7 @@ importers:
       '@tarpit/content-type': link:../content-type
       '@tarpit/core': link:../core
       '@tarpit/error': link:../../packages/error
+      '@tarpit/rollup': link:../../supports/rollup
       '@types/content-disposition': 0.5.5
       '@types/fresh': 0.5.0
       '@types/mime-types': 2.1.1
@@ -145,6 +171,7 @@ importers:
       '@tarpit/core': ^0.5.25
       '@tarpit/error': ^0.5.25
       '@tarpit/judge': ^0.5.25
+      '@tarpit/rollup': ^0.5.25
       '@types/amqplib': ^0.8.2
       amqplib: ^0.10.3
       tslib: ^2.4.0
@@ -158,6 +185,7 @@ importers:
       '@tarpit/content-type': link:../content-type
       '@tarpit/core': link:../core
       '@tarpit/error': link:../../packages/error
+      '@tarpit/rollup': link:../../supports/rollup
       '@types/amqplib': 0.8.2
 
   modules/schedule:
@@ -166,6 +194,7 @@ importers:
       '@tarpit/core': ^0.5.25
       '@tarpit/cron': ^0.5.25
       '@tarpit/dora': ^0.5.25
+      '@tarpit/rollup': ^0.5.25
       tslib: ^2.4.0
     dependencies:
       '@tarpit/cron': link:../../packages/cron
@@ -174,33 +203,57 @@ importers:
     devDependencies:
       '@tarpit/config': link:../../packages/config
       '@tarpit/core': link:../core
+      '@tarpit/rollup': link:../../supports/rollup
 
   packages/barbeque:
-    specifiers: {}
+    specifiers:
+      '@tarpit/rollup': ^0.5.25
+    devDependencies:
+      '@tarpit/rollup': link:../../supports/rollup
 
   packages/config:
     specifiers:
       '@tarpit/judge': ^0.5.25
+      '@tarpit/rollup': ^0.5.25
+      '@tarpit/type-tools': ^0.5.25
     dependencies:
       '@tarpit/judge': link:../judge
+    devDependencies:
+      '@tarpit/rollup': link:../../supports/rollup
+      '@tarpit/type-tools': link:../type-tools
 
   packages/cron:
     specifiers:
       '@tarpit/dora': ^0.5.25
+      '@tarpit/rollup': ^0.5.25
     dependencies:
       '@tarpit/dora': link:../dora
+    devDependencies:
+      '@tarpit/rollup': link:../../supports/rollup
 
   packages/dora:
-    specifiers: {}
+    specifiers:
+      '@tarpit/rollup': ^0.5.25
+    devDependencies:
+      '@tarpit/rollup': link:../../supports/rollup
 
   packages/error:
-    specifiers: {}
+    specifiers:
+      '@tarpit/rollup': ^0.5.25
+    devDependencies:
+      '@tarpit/rollup': link:../../supports/rollup
 
   packages/judge:
-    specifiers: {}
+    specifiers:
+      '@tarpit/rollup': ^0.5.25
+      '@tarpit/type-tools': ^0.5.25
+    devDependencies:
+      '@tarpit/rollup': link:../../supports/rollup
+      '@tarpit/type-tools': link:../type-tools
 
   packages/transformer:
     specifiers:
+      '@tarpit/rollup': ^0.5.25
       '@types/js-yaml': ^4.0.5
       '@types/micromatch': ^4.0.2
       '@types/node': ^18.11.7
@@ -216,9 +269,16 @@ importers:
       ttypescript: 1.5.13_mwhvu7sfp6vq5ryuwb6hlbjfka
       typescript: 4.8.4
     devDependencies:
+      '@tarpit/rollup': link:../../supports/rollup
       '@types/js-yaml': 4.0.5
       '@types/micromatch': 4.0.2
       '@types/node': 18.11.7
+
+  packages/type-tools:
+    specifiers:
+      '@tarpit/rollup': ^0.5.25
+    devDependencies:
+      '@tarpit/rollup': link:../../supports/rollup
 
   projects/zoo:
     specifiers:
@@ -240,33 +300,34 @@ importers:
 
   supports/cli:
     specifiers:
-      '@istanbuljs/nyc-config-typescript': ^1.0.2
-      '@tarpit/judge': ^0.5.25
-      '@types/chai': ^4.3.3
-      '@types/chai-as-promised': ^7.1.5
-      '@types/chai-spies': ^1.0.3
-      '@types/mocha': ^10.0.0
-      axios: ^1.1.3
-      chai: ^4.3.6
-      chai-as-promised: ^7.1.1
-      chai-spies: ^1.0.0
+      '@tarpit/rollup': ^0.5.25
+      '@tarpit/type-tools': ^0.5.25
+      '@types/normalize-package-data': ^2.4.1
       commander: ^9.4.1
-      mocha: ^10.1.0
-      nyc: ^15.1.0
     dependencies:
-      '@istanbuljs/nyc-config-typescript': 1.0.2_nyc@15.1.0
-      '@tarpit/judge': link:../../packages/judge
-      '@types/chai': 4.3.3
-      '@types/chai-as-promised': 7.1.5
-      '@types/chai-spies': 1.0.3
-      '@types/mocha': 10.0.0
-      axios: 1.1.3
-      chai: 4.3.6
-      chai-as-promised: 7.1.1_chai@4.3.6
-      chai-spies: 1.0.0_chai@4.3.6
+      '@types/normalize-package-data': 2.4.1
       commander: 9.4.1
-      mocha: 10.1.0
-      nyc: 15.1.0
+    devDependencies:
+      '@tarpit/rollup': link:../rollup
+      '@tarpit/type-tools': link:../../packages/type-tools
+
+  supports/rollup:
+    specifiers:
+      '@rollup/plugin-json': ^5.0.1
+      '@rollup/plugin-typescript': ^9.0.2
+      '@types/normalize-package-data': ^2.4.1
+      builtin-modules: ^3.3.0
+      rollup: ^3.2.3
+      rollup-plugin-dts: ^5.0.0
+      typescript: ^4.8.4
+    dependencies:
+      '@rollup/plugin-json': 5.0.1_rollup@3.2.3
+      '@rollup/plugin-typescript': 9.0.2_655ssj4e7sdqlljrreeiqtltve
+      '@types/normalize-package-data': 2.4.1
+      builtin-modules: 3.3.0
+      rollup: 3.2.3
+      rollup-plugin-dts: 5.0.0_655ssj4e7sdqlljrreeiqtltve
+      typescript: 4.8.4
 
 packages:
 
@@ -2767,8 +2828,8 @@ packages:
     resolution: {integrity: sha512-syBZ+rnAK3EgMsH2aYEOLUW7mZSY9Gb+0wUMCFsZvcmiz+HigA0LOcq/HoQqVuGG+EKykunc7QG2bzrponfaSw==}
     dev: false
 
-  /decamelize-keys/1.1.0:
-    resolution: {integrity: sha512-ocLWuYzRPoS9bfiSdDd3cxvrzovVMZnRDVEzAs+hWIVXGDbHxWMECij2OBuyB/An0FFW/nLuq6Kv1i/YC5Qfzg==}
+  /decamelize-keys/1.1.1:
+    resolution: {integrity: sha512-WiPxgEirIV0/eIOMcnFBA3/IJZAZqKnwAwWyvvdi4lsr1WCN22nhdf/3db3DoZcUjTV2SqfzIwNyp6y2xs3nmg==}
     engines: {node: '>=0.10.0'}
     dependencies:
       decamelize: 1.2.0
@@ -4377,7 +4438,7 @@ packages:
     dependencies:
       '@types/minimist': 1.2.2
       camelcase-keys: 6.2.2
-      decamelize-keys: 1.1.0
+      decamelize-keys: 1.1.1
       hard-rejection: 2.1.0
       minimist-options: 4.1.0
       normalize-package-data: 3.0.3

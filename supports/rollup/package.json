@@ -1,13 +1,14 @@
 {
-    "name": "@tarpit/content-type",
+    "name": "@tarpit/rollup",
     "version": "0.5.25",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
+    "private": true,
     "license": "MIT",
-    "main": "lib/index.js",
+    "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
-    "module": "lib/index.mjs",
+    "module": "./lib/index.mjs",
     "files": [
         "lib"
     ],
@@ -34,24 +35,16 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
-        "prepublishOnly": "npm run build",
-        "docs": "tp docs",
-        "test": "tp cover --reporter=json --reporter=text"
+        "build": "rm -rf lib && rollup -c",
+        "prepublishOnly": "npm run build"
     },
     "dependencies": {
-        "iconv-lite": "^0.6.3",
-        "mime-types": "^2.1.35",
-        "tslib": "^2.4.0"
-    },
-    "devDependencies": {
-        "@tarpit/rollup": "^0.5.25",
-        "@tarpit/core": "^0.5.25",
-        "@tarpit/error": "^0.5.25",
-        "@types/mime-types": "^2.1.1"
-    },
-    "peerDependencies": {
-        "@tarpit/core": "0.x",
-        "@tarpit/error": "0.x"
+        "@rollup/plugin-json": "^5.0.1",
+        "@rollup/plugin-typescript": "^9.0.2",
+        "@types/normalize-package-data": "^2.4.1",
+        "builtin-modules": "^3.3.0",
+        "rollup": "^3.2.3",
+        "rollup-plugin-dts": "^5.0.0",
+        "typescript": "^4.8.4"
     }
 }

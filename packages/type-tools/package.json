@@ -1,13 +1,13 @@
 {
-    "name": "@tarpit/content-type",
+    "name": "@tarpit/type-tools",
     "version": "0.5.25",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
-    "main": "lib/index.js",
+    "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
-    "module": "lib/index.mjs",
+    "module": "./lib/index.mjs",
     "files": [
         "lib"
     ],
@@ -39,19 +39,7 @@
         "docs": "tp docs",
         "test": "tp cover --reporter=json --reporter=text"
     },
-    "dependencies": {
-        "iconv-lite": "^0.6.3",
-        "mime-types": "^2.1.35",
-        "tslib": "^2.4.0"
-    },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.25",
-        "@tarpit/core": "^0.5.25",
-        "@tarpit/error": "^0.5.25",
-        "@types/mime-types": "^2.1.1"
-    },
-    "peerDependencies": {
-        "@tarpit/core": "0.x",
-        "@tarpit/error": "0.x"
+        "@tarpit/rollup": "^0.5.25"
     }
 }

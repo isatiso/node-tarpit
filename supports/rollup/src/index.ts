@@ -6,4 +6,4 @@
  * found in the LICENSE file at source root.
  */
 
-export { RollupConfig } from './rollup/rollup-config'
+export { RollupConfig } from './rollup-config'

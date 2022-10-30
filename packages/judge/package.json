@@ -38,5 +38,9 @@
         "prepublishOnly": "npm run build",
         "docs": "tp docs",
         "test": "tp cover --reporter=json --reporter=text"
+    },
+    "devDependencies": {
+        "@tarpit/rollup": "^0.5.25",
+        "@tarpit/type-tools": "^0.5.25"
     }
 }

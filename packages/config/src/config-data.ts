@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Path, PathValue, Reference } from '@tarpit/judge'
+import { Reference } from '@tarpit/judge'
+import { Path, PathValue } from '@tarpit/type-tools'
 
 export interface TpConfigSchema {
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Path, PathValue } from './__types__'
+import { Path, PathValue } from '@tarpit/type-tools'
 
 export class Reference<T> {
 

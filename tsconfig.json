@@ -5,6 +5,6 @@
         "outDir": "./out"
     },
     "include": [
-        "src/**/*.ts"
+        "supports/rollup/src/rollup/**/*.ts"
     ]
 }

@@ -55,6 +55,7 @@
         "@tarpit/content-type": "^0.5.25",
         "@tarpit/core": "^0.5.25",
         "@tarpit/error": "^0.5.25",
+        "@tarpit/rollup": "^0.5.25",
         "@types/content-disposition": "^0.5.5",
         "@types/fresh": "^0.5.0",
         "@types/mime-types": "^2.1.1",

@@ -1,0 +1,10 @@
+{
+    "extends": "../../common-tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "./",
+        "outDir": "./lib"
+    },
+    "include": [
+        "src/**/*.spec.ts"
+    ]
+}

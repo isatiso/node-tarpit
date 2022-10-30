@@ -6,11 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { Path, PathValue } from '@tarpit/judge'
+import { Path, PathValue } from '@tarpit/type-tools'
 import fs from 'fs'
 import path from 'path'
-import { CliOptions } from '../cli.type'
 import { read_json_file_sync } from '../__tools__'
+import { CliOptions } from '../cli.type'
 
 const config_file_name = 'tarpit-cli.json'
 

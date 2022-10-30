@@ -6,8 +6,46 @@
  * found in the LICENSE file at source root.
  */
 
+import builtinModules from 'builtin-modules'
+import fs from 'fs'
+import { Package } from 'normalize-package-data'
 import path from 'path'
 import ts from 'typescript'
+
+export type PackageJsonWorkspacePackageList = string[]
+
+export interface PackageJsonWorkspace {
+    packages?: PackageJsonWorkspacePackageList
+    nohoist?: string[]
+}
+
+export interface PackageJson extends Package {
+    workspaces?: PackageJsonWorkspacePackageList | PackageJsonWorkspace
+}
+
+export function gen_external(pkg: PackageJson, external?: (string | RegExp)[]) {
+    return [
+        ...builtinModules,
+        ...Object.keys(pkg.dependencies || {}),
+        ...Object.keys(pkg.peerDependencies || {}),
+        ...(external ?? []),
+    ]
+}
+
+export function read_json_file_sync<T = any>(path: string): T | undefined {
+    if (fs.existsSync(path)) {
+        const json_file = (fs.readFileSync(path, 'utf-8') || '').trim()
+        if (json_file) {
+            try {
+                return JSON.parse(json_file)
+            } catch (e: any) {
+                console.log(e.message)
+                return
+            }
+        }
+    }
+    return
+}
 
 export function find_tsconfig(dir?: string, config_name?: string) {
 

@@ -16,8 +16,5 @@
         "sourceMap": false,
         "strict": true,
         "target": "es2019"
-    },
-    "include": [
-        "src/**/*.ts"
-    ]
+    }
 }
