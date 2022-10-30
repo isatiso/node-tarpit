@@ -12,8 +12,10 @@ import { Plugin } from 'rollup'
 import _dts from 'rollup-plugin-dts'
 import ts, { CompilerOptions } from 'typescript'
 
-export const rpt = (): Plugin => _rpt({ removeComments: true, paths: {} })
+import _json from '@rollup/plugin-json'
 
+export const json = (): Plugin => _json()
+export const rpt = (): Plugin => _rpt({ removeComments: true, paths: {} })
 export const dts = (options: CompilerOptions): Plugin => _dts({
     compilerOptions: { ...options, declaration: true, removeComments: true, paths: {}, module: ts.ModuleKind.ESNext }
 })

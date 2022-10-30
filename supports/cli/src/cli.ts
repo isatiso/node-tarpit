@@ -7,11 +7,23 @@
  */
 
 import { program } from 'commander'
-import { do_clean_mission } from './__tools__'
 
-import { PackageJson } from './__types__'
+import { Package } from 'normalize-package-data'
+import { do_clean_mission } from './tools'
+
 import { action_cover } from './action/cover'
 import { action_docs } from './action/docs'
+
+export type PackageJsonWorkspacePackageList = string[]
+
+export interface PackageJsonWorkspace {
+    packages?: PackageJsonWorkspacePackageList
+    nohoist?: string[]
+}
+
+export interface PackageJson extends Package {
+    workspaces?: PackageJsonWorkspacePackageList | PackageJsonWorkspace
+}
 
 export async function create_cli(package_json: PackageJson) {
 

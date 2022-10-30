@@ -7,9 +7,9 @@
  */
 
 import { Command, program } from 'commander'
-import { camelcase } from '../__tools__'
+import { camelcase } from '../tools'
 import { CliOptions } from '../cli.type'
-import { ConfigLoader } from '../scripts/config-loader'
+import { ConfigLoader } from '../config-loader'
 
 export function make_action<K extends keyof CliOptions, T extends CliOptions[K]>(action_name: string, callback: (options: T, config: ConfigLoader) => Promise<void>) {
     return async (options: T, command: Command) => {

@@ -23,7 +23,8 @@ export interface PackageJson extends Package {
     workspaces?: PackageJsonWorkspacePackageList | PackageJsonWorkspace
 }
 
-export function gen_external(pkg: PackageJson, external?: (string | RegExp)[]) {
+export function gen_external(external?: (string | RegExp)[]) {
+    const pkg: PackageJson = read_json_file_sync('./package.json')!
     return [
         ...builtinModules,
         ...Object.keys(pkg.dependencies || {}),

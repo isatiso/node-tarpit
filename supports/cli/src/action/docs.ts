@@ -6,9 +6,9 @@
  * found in the LICENSE file at source root.
  */
 
-import { deliver_shell } from '../__tools__'
+import { deliver_shell } from '../tools'
 import { CliOptions } from '../cli.type'
-import { make_action } from './__base__'
+import { make_action } from './base'
 
 export const action_docs = make_action('docs', async (cli_options: CliOptions['docs'], config) => {
 

@@ -9,8 +9,8 @@
 import { Path, PathValue } from '@tarpit/type-tools'
 import fs from 'fs'
 import path from 'path'
-import { read_json_file_sync } from '../__tools__'
-import { CliOptions } from '../cli.type'
+import { read_json_file_sync } from './tools'
+import { CliOptions } from './cli.type'
 
 const config_file_name = 'tarpit-cli.json'
 

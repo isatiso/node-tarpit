@@ -6,10 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import { deliver_shell, register_clean_files } from '../__tools__'
+import { deliver_shell, register_clean_files } from '../tools'
 import { CliOptions } from '../cli.type'
-import { ConfigLoader } from '../scripts/config-loader'
-import { make_action } from './__base__'
+import { ConfigLoader } from '../config-loader'
+import { make_action } from './base'
 
 export const action_cover = make_action('cover', async (cli_options: CliOptions['cover'], config) => {
 
