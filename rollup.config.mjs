@@ -24,9 +24,7 @@ const external = [
 export default [
     {
         input: 'src/index.ts',
-        output: [
-            { file: 'lib/index.mjs', format: 'es', interop: 'auto' },
-        ],
+        output: { file: 'lib/index.mjs', format: 'es', interop: 'auto' },
         external,
         plugins: [
             typescript({ removeComments: true }),
@@ -34,9 +32,7 @@ export default [
     },
     {
         input: 'src/index.ts',
-        output: [
-            { file: 'lib/index.d.ts', format: 'es' }
-        ],
+        output: { file: 'lib/index.d.ts', format: 'es' },
         external,
         plugins: [
             dts({ compilerOptions: { removeComments: true, paths: {}, module: ts.ModuleKind.ESNext } }),

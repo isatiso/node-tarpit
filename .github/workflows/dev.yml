@@ -56,7 +56,7 @@ jobs:
           pnpm install
           pnpm build
           lerna run build
-          lerna run test
+          lerna run test --verbose
 
       - name: Upload coverage barbeque
         uses: codecov/codecov-action@v3
