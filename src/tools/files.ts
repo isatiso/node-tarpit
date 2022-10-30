@@ -37,5 +37,3 @@ export function read_json_file_sync<T = any>(path: string): T | undefined {
     }
     return
 }
-
-

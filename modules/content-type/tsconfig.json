@@ -1,5 +1,5 @@
 {
-    "extends": "@tarpit/abraham/assets/common-tsconfig.json",
+    "extends": "../../common-tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./",
         "outDir": "./lib",

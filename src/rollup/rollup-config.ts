@@ -26,7 +26,7 @@ export class RollupConfig {
     private readonly _input_options: InputOptions
 
     constructor(
-        public readonly options: {
+        public readonly options?: {
             readonly externals?: ReadonlyArray<string | RegExp>
             readonly out_dir?: string
             readonly declaration_dir?: string
@@ -38,9 +38,9 @@ export class RollupConfig {
         }
         this.package_json = read_json_file_sync('./package.json')!
         this.compiler_options = parse_tsconfig(read_tsconfig())
-        this.externals = gen_external(this.package_json, this.options.externals?.slice())
-        this.out_dir = this.options.out_dir ?? this.compiler_options.outDir ?? path.resolve('./lib')
-        this._input_options = this.options.input_options ?? {}
+        this.externals = gen_external(this.package_json, this.options?.externals?.slice())
+        this.out_dir = this.options?.out_dir ?? this.compiler_options.outDir ?? path.resolve('./lib')
+        this._input_options = this.options?.input_options ?? {}
     }
 
     create(input: string, dts?: boolean) {

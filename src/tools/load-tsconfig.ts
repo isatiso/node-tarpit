@@ -7,7 +7,6 @@
  */
 
 import path from 'path'
-import process from 'process'
 import ts from 'typescript'
 
 export function find_tsconfig(dir?: string, config_name?: string) {

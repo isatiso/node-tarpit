@@ -40,7 +40,8 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "reflect-metadata": "^0.1.13"
+        "reflect-metadata": "^0.1.13",
+        "tslib": "^2.4.0"
     },
     "devDependencies": {
         "@tarpit/cli": "^0.5.24",

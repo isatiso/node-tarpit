@@ -47,6 +47,7 @@
         "lru-cache": "^7.14.0",
         "mime-types": "^2.1.35",
         "negotiator": "^0.6.3",
+        "tslib": "^2.4.0",
         "type-is": "^1.6.18"
     },
     "devDependencies": {

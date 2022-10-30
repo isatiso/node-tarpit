@@ -8,7 +8,7 @@
 
 import typescript from '@rollup/plugin-typescript'
 import builtinModules from 'builtin-modules'
-import fs from 'fs'
+import fs from 'node:fs'
 import dts from 'rollup-plugin-dts'
 import ts from 'typescript'
 

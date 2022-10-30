@@ -103,7 +103,7 @@ export class RabbitConnector {
         const connection = await connect_rabbitmq(this.url, this.socket_options)
         return connection
             .on('close', () => this.connect())
-            .on('error', err => {
+            .on('error', (err: any) => {
                 const code = err && err.code
                 if (code !== 200 && code !== 320) {
                     this._connection = undefined

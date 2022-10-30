@@ -1,3 +1,3 @@
-import { RollupConfig } from '@tarpit/abraham'
+import { RollupConfig } from '../../lib/index.mjs'
 
-export default new RollupConfig({}).create('./src/index.ts', true)
+export default new RollupConfig().create('./src/index.ts', true)
