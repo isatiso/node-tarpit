@@ -6,11 +6,13 @@
  * found in the LICENSE file at source root.
  */
 
+import json from '@rollup/plugin-json'
+import rpt from '@rollup/plugin-typescript'
 import fs from 'fs'
 import path from 'path'
 import { MergedRollupOptions } from 'rollup'
-import { CompilerOptions } from 'typescript'
-import { dts, json, rpt } from './plugins'
+import dts from 'rollup-plugin-dts'
+import ts, { CompilerOptions } from 'typescript'
 import { gen_external, parse_tsconfig, read_tsconfig } from './tools'
 
 export class RollupConfig {
@@ -46,7 +48,10 @@ export class RollupConfig {
             { file: path.join(this.out_dir, 'index.js'), format: 'cjs', interop: 'auto' },
             { file: path.join(this.out_dir, 'index.mjs'), format: 'es', interop: 'auto' },
         ],
-        plugins: [json(), rpt()],
+        plugins: [
+            json(),
+            rpt({ removeComments: true, paths: {} })
+        ],
         external: this.externals.slice(),
     })
 
@@ -55,7 +60,17 @@ export class RollupConfig {
         output: [
             { file: path.join(this.out_dir, 'index.d.ts'), format: 'es', interop: 'auto' },
         ],
-        plugins: [dts(this.compiler_options)],
+        plugins: [
+            dts({
+                compilerOptions: {
+                    ...this.compiler_options,
+                    declaration: true,
+                    removeComments: true,
+                    paths: {},
+                    module: ts.ModuleKind.ESNext
+                }
+            })
+        ],
         external: this.externals.slice(),
     })
 }

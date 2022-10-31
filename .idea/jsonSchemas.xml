@@ -14,6 +14,9 @@
                   <Item>
                     <option name="path" value="node_modules/@tarpit/abraham/assets/common-tsconfig.json" />
                   </Item>
+                  <Item>
+                    <option name="path" value="common-tsconfig.json" />
+                  </Item>
                 </list>
               </option>
             </SchemaInfo>

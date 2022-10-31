@@ -12,7 +12,7 @@ import fs from 'node:fs'
 import dts from 'rollup-plugin-dts'
 import ts from 'typescript'
 
-const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+const pkg = JSON.parse(fs.readFileSync('./package.json').toString('utf-8'))
 
 const external = [
     ...builtinModules,

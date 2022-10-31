@@ -18,6 +18,7 @@ importers:
       '@tarpit/http': ^0.5.24
       '@tarpit/judge': ^0.5.24
       '@tarpit/rabbitmq': ^0.5.24
+      '@tarpit/rollup': ^0.5.24
       '@tarpit/schedule': ^0.5.24
       '@tarpit/transformer': ^0.5.24
       '@types/chai': ^4.3.3
@@ -59,6 +60,7 @@ importers:
       '@tarpit/http': link:modules/http
       '@tarpit/judge': link:packages/judge
       '@tarpit/rabbitmq': link:modules/rabbitmq
+      '@tarpit/rollup': link:supports/rollup
       '@tarpit/schedule': link:modules/schedule
       '@tarpit/transformer': link:packages/transformer
       '@types/chai': 4.3.3
@@ -305,11 +307,11 @@ importers:
       '@types/normalize-package-data': ^2.4.1
       commander: ^9.4.1
     dependencies:
-      '@types/normalize-package-data': 2.4.1
       commander: 9.4.1
     devDependencies:
       '@tarpit/rollup': link:../rollup
       '@tarpit/type-tools': link:../../packages/type-tools
+      '@types/normalize-package-data': 2.4.1
 
   supports/rollup:
     specifiers:
@@ -1891,7 +1893,6 @@ packages:
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
-    dev: false
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}

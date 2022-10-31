@@ -8,23 +8,11 @@
 
 import builtinModules from 'builtin-modules'
 import fs from 'fs'
-import { Package } from 'normalize-package-data'
 import path from 'path'
 import ts from 'typescript'
 
-export type PackageJsonWorkspacePackageList = string[]
-
-export interface PackageJsonWorkspace {
-    packages?: PackageJsonWorkspacePackageList
-    nohoist?: string[]
-}
-
-export interface PackageJson extends Package {
-    workspaces?: PackageJsonWorkspacePackageList | PackageJsonWorkspace
-}
-
 export function gen_external(external?: (string | RegExp)[]) {
-    const pkg: PackageJson = read_json_file_sync('./package.json')!
+    const pkg: any = read_json_file_sync('./package.json')!
     return [
         ...builtinModules,
         ...Object.keys(pkg.dependencies || {}),
