@@ -8,6 +8,6 @@
 
 # Dora
 
-It is a Date Object with useful method.
+Out of the box Date Object based on native Date.
 
 See [@tarpit/dora](https://www.tarpit.cc/apis/dora)

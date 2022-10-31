@@ -8,6 +8,6 @@
 
 # Barbeque
 
-It is a queue implementation based on the Array with improved performance.
+Optimized double-end queue based on the native array.
 
 See [@tarpit/barbeque](https://www.tarpit.cc/apis/barbeque)

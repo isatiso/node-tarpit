@@ -1,7 +1,7 @@
 {
     "name": "@tarpit/barbeque",
     "version": "0.5.25",
-    "description": "> TODO: description",
+    "description": "Optimized double-end queue based on the native array.",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
@@ -37,7 +37,7 @@
         "build": "rollup -c",
         "prepublishOnly": "npm run build",
         "docs": "tp docs",
-        "test": "tp cover --reporter=json --reporter=text"
+        "test": "tp cover --reporter=json --reporter=text --clean"
     },
     "devDependencies": {
         "@tarpit/rollup": "^0.5.25"
