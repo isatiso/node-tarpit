@@ -6,8 +6,8 @@
 
 ---
 
-# Type Tools
+# Core
 
-Some types that helped.
+It is the core module of tarpit, which's responsibility is to implement Dependency Injection.
 
-See [@tarpit/type-tools](https://www.tarpit.cc/apis/type-tools)
+See [Core](https://www.tarpit.cc/1-core)

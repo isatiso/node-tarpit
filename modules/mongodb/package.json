@@ -1,5 +1,5 @@
 {
-    "name": "@tarpit/config",
+    "name": "@tarpit/mongodb",
     "version": "0.5.25",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
@@ -40,10 +40,16 @@
         "test": "tp cover --reporter=json --reporter=text --clean"
     },
     "dependencies": {
-        "@tarpit/judge": "^0.5.25"
+        "@tarpit/barbeque": "^0.5.25",
+        "mongodb": "^4.11.0",
+        "tslib": "^2.4.0"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.25",
-        "@tarpit/type-tools": "^0.5.25"
+        "@tarpit/cli": "^0.5.25",
+        "@tarpit/config": "^0.5.25",
+        "@tarpit/rollup": "^0.5.25"
+    },
+    "peerDependencies": {
+        "@tarpit/config": "0.x"
     }
 }

@@ -36,7 +36,7 @@ class TestRouter {
 export class TestRoot {
 }
 
-(async () => {
+;(async () => {
     const platform = new Platform({
         http: {
             port: 3000,

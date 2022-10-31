@@ -6,8 +6,8 @@
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
     "main": "lib/index.js",
-    "types": "./lib/index.d.ts",
     "module": "lib/index.mjs",
+    "types": "lib/index.d.ts",
     "files": [
         "lib"
     ],

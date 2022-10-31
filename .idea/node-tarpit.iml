@@ -25,6 +25,8 @@
       <sourceFolder url="file://$MODULE_DIR$/packages/cron/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/supports/rollup/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/mongodb/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/type-tools/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/projects/zoo/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/cli/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/abraham/lib" />
@@ -44,6 +46,8 @@
       <excludeFolder url="file://$MODULE_DIR$/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/rollup/lib" />
       <excludeFolder url="file://$MODULE_DIR$/docs" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/type-tools/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/mongodb/lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
