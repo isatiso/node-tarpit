@@ -48,6 +48,6 @@
         "@tarpit/rollup": "^0.5.25",
         "@types/js-yaml": "^4.0.5",
         "@types/micromatch": "^4.0.2",
-        "@types/node": "^18.11.7"
+        "@types/node": "^18.11.8"
     }
 }

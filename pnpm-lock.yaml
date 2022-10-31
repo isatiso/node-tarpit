@@ -167,12 +167,14 @@ importers:
 
   modules/mongodb:
     specifiers:
+      '@tarpit/barbeque': ^0.5.25
       '@tarpit/cli': ^0.5.25
       '@tarpit/config': ^0.5.25
       '@tarpit/rollup': ^0.5.25
       mongodb: ^4.11.0
       tslib: ^2.4.0
     dependencies:
+      '@tarpit/barbeque': link:../../packages/barbeque
       mongodb: 4.11.0
       tslib: 2.4.0
     devDependencies:
