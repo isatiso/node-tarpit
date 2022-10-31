@@ -41,6 +41,7 @@
         "@tarpit/core": "^0.5.25",
         "@tarpit/http": "^0.5.25",
         "@tarpit/judge": "^0.5.25",
+        "@tarpit/mongodb": "^0.5.25",
         "@tarpit/rabbitmq": "^0.5.25",
         "@tarpit/schedule": "^0.5.25",
         "tslib": "^2.4.0"

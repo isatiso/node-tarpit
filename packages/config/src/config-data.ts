@@ -18,8 +18,11 @@ export class ConfigData extends Reference<TpConfigSchema> {
         super(data)
     }
 
+    // @ts-ignore
     get(): TpConfigSchema
+    // @ts-ignore
     get<K extends Path<TpConfigSchema>>(path: K): PathValue<TpConfigSchema, K>
+    // @ts-ignore
     get<K extends Path<TpConfigSchema>>(path?: K): PathValue<TpConfigSchema, K> | TpConfigSchema {
         if (!path) {
             return super.get()

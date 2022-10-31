@@ -8,16 +8,30 @@
 
 import { Platform, TpInspector, TpRoot } from '@tarpit/core'
 import { HttpServerModule, Post, Get, RawBody, TpRouter, Params } from '@tarpit/http'
+import { GenericCollection, MongodbModule, TpMongo } from '@tarpit/mongodb'
+
+@TpMongo('main', 'user')
+class AccountData extends GenericCollection<any>() {
+
+}
 
 @TpRouter('/')
 class TestRouter {
 
-    constructor() {
+    constructor(
+        private account: AccountData,
+    ) {
+
     }
 
     @Get()
-    async asd(params: Params<any>) {
-        return params
+    async asd(params: Params<{ id: string }>) {
+        console.log(this.account)
+        console.log((this.account as any).__proto__)
+        console.log(this.account.dbName)
+        // await (this.account as any).__proto__.updateOne({ id: params.get_first('id') }, { name: 'tarpit' })
+        await this.account.updateOne({ id: params.get_first('id') }, { $set: { name: 'tarpit' } })
+        return this.account.findOne({ id: params.get_first('id') })
     }
 
     @Post()
@@ -29,6 +43,9 @@ class TestRouter {
 }
 
 @TpRoot({
+    providers: [
+        AccountData
+    ],
     entries: [
         TestRouter
     ],
@@ -40,9 +57,13 @@ export class TestRoot {
     const platform = new Platform({
         http: {
             port: 3000,
+            expose_error: true,
             body: {
                 max_length: 1000000
             }
+        },
+        mongodb: {
+            uri: 'mongodb://root:7XQPqnNLGmVhmyrFNtiHqefT4hNPrU3z@112.74.191.78:27017/admin?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-256'
         },
         rabbitmq: {
             url: 'amqp://plank:ChKNwziiY84DjUP@112.74.191.78:5672',
@@ -50,6 +71,7 @@ export class TestRoot {
             socket_options: {}
         }
     }).import(HttpServerModule)
+        .import(MongodbModule)
 
     platform.bootstrap(TestRoot).start()
     await platform.expose(TpInspector)?.wait_start()

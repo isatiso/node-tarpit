@@ -7,6 +7,12 @@
 //            "@tarpit/rabbitmq": [
 //                "../../modules/rabbitmq/src"
 //            ],
+//            "@tarpit/core": [
+//                "../../modules/core/src"
+//            ],
+//            "@tarpit/mongodb": [
+//                "../../modules/mongodb/src"
+//            ],
 //            "@tarpit/schedule": [
 //                "../../modules/schedule/src"
 //            ],

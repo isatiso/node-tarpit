@@ -25,7 +25,7 @@ importers:
       '@types/chai-as-promised': ^7.1.5
       '@types/chai-spies': ^1.0.3
       '@types/mocha': ^10.0.0
-      '@types/node': ^18.11.7
+      '@types/node': ^18.11.8
       axios: ^1.1.3
       builtin-modules: ^3.3.0
       chai: ^4.3.6
@@ -67,7 +67,7 @@ importers:
       '@types/chai-as-promised': 7.1.5
       '@types/chai-spies': 1.0.3
       '@types/mocha': 10.0.0
-      '@types/node': 18.11.7
+      '@types/node': 18.11.8
       axios: 1.1.3
       builtin-modules: 3.3.0
       chai: 4.3.6
@@ -82,7 +82,7 @@ importers:
       nyc: 15.1.0
       rollup: 3.2.3
       rollup-plugin-dts: 5.0.0_655ssj4e7sdqlljrreeiqtltve
-      ts-node: 10.9.1_evej5wzm4hojmu6uzxwpspdmsu
+      ts-node: 10.9.1_7jzoohtnaegavowzoeccrsbhty
       ttypescript: 1.5.13_mwhvu7sfp6vq5ryuwb6hlbjfka
       typedoc: 0.23.19_typescript@4.8.4
       typedoc-theme-hierarchy: 3.0.0_typedoc@0.23.19
@@ -275,7 +275,7 @@ importers:
       '@tarpit/rollup': ^0.5.25
       '@types/js-yaml': ^4.0.5
       '@types/micromatch': ^4.0.2
-      '@types/node': ^18.11.7
+      '@types/node': ^18.11.8
       js-yaml: ^4.1.0
       micromatch: ^4.0.5
       ts-node: ^10.9.1
@@ -284,14 +284,14 @@ importers:
     dependencies:
       js-yaml: 4.1.0
       micromatch: 4.0.5
-      ts-node: 10.9.1_evej5wzm4hojmu6uzxwpspdmsu
+      ts-node: 10.9.1_7jzoohtnaegavowzoeccrsbhty
       ttypescript: 1.5.13_mwhvu7sfp6vq5ryuwb6hlbjfka
       typescript: 4.8.4
     devDependencies:
       '@tarpit/rollup': link:../../supports/rollup
       '@types/js-yaml': 4.0.5
       '@types/micromatch': 4.0.2
-      '@types/node': 18.11.7
+      '@types/node': 18.11.8
 
   packages/type-tools:
     specifiers:
@@ -305,6 +305,7 @@ importers:
       '@tarpit/core': ^0.5.25
       '@tarpit/http': ^0.5.25
       '@tarpit/judge': ^0.5.25
+      '@tarpit/mongodb': ^0.5.25
       '@tarpit/rabbitmq': ^0.5.25
       '@tarpit/schedule': ^0.5.25
       tslib: ^2.4.0
@@ -313,6 +314,7 @@ importers:
       '@tarpit/core': link:../../modules/core
       '@tarpit/http': link:../../modules/http
       '@tarpit/judge': link:../../packages/judge
+      '@tarpit/mongodb': link:../../modules/mongodb
       '@tarpit/rabbitmq': link:../../modules/rabbitmq
       '@tarpit/schedule': link:../../modules/schedule
       tslib: 2.4.0
@@ -2661,6 +2663,10 @@ packages:
 
   /@types/node/18.11.7:
     resolution: {integrity: sha512-LhFTglglr63mNXUSRYD8A+ZAIu5sFqNJ4Y2fPuY7UlrySJH87rRRlhtVmMHplmfk5WkoJGmDjE9oiTfyX94CpQ==}
+    dev: true
+
+  /@types/node/18.11.8:
+    resolution: {integrity: sha512-uGwPWlE0Hj972KkHtCDVwZ8O39GmyjfMane1Z3GUBGGnkZ2USDq7SxLpVIiIHpweY9DS0QTDH0Nw7RNBsAAZ5A==}
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -2682,7 +2688,7 @@ packages:
   /@types/whatwg-url/8.2.2:
     resolution: {integrity: sha512-FtQu10RWgn3D9U4aazdwIE2yzphmTJREDqNdODHrbrZmmMqI0vMheC/6NE/J1Yveaj8H+ela+YwWTjq5PGmuhA==}
     dependencies:
-      '@types/node': 18.11.7
+      '@types/node': 18.11.8
       '@types/webidl-conversions': 7.0.0
     dev: false
 
@@ -7116,7 +7122,7 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
-  /ts-node/10.9.1_evej5wzm4hojmu6uzxwpspdmsu:
+  /ts-node/10.9.1_7jzoohtnaegavowzoeccrsbhty:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -7135,7 +7141,7 @@ packages:
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.3
-      '@types/node': 18.11.7
+      '@types/node': 18.11.8
       acorn: 8.8.1
       acorn-walk: 8.2.0
       arg: 4.1.3
@@ -7173,7 +7179,7 @@ packages:
       typescript: '>=3.2.2'
     dependencies:
       resolve: 1.22.1
-      ts-node: 10.9.1_evej5wzm4hojmu6uzxwpspdmsu
+      ts-node: 10.9.1_7jzoohtnaegavowzoeccrsbhty
       typescript: 4.8.4
     dev: false
 

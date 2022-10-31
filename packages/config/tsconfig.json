@@ -3,14 +3,14 @@
     "compilerOptions": {
         "baseUrl": "./",
         "outDir": "./lib",
-//        "paths": {
-//            "@tarpit/type-tools": [
-//                "../type-tools/src"
-//            ],
-//            "@tarpit/judge": [
-//                "../judge/src"
-//            ]
-//        }
+        "paths": {
+            "@tarpit/type-tools": [
+                "../type-tools/src"
+            ],
+            "@tarpit/judge": [
+                "../judge/src"
+            ]
+        }
     },
     "include": [
         "src/**/*.ts"

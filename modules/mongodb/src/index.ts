@@ -8,7 +8,9 @@
 
 import { MongoClientOptions } from 'mongodb'
 
+export { GenericCollection } from './tools/generic-collection'
 export { MongodbModule } from './mongodb.module'
+export { TpMongo } from './annotations/tp-mongo'
 
 declare module '@tarpit/config' {
 

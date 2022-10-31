@@ -7,6 +7,9 @@
  */
 import { Collection } from 'mongodb'
 
-export function GenericCollection<DOC extends object>() {
-    return Collection<DOC>
+export function GenericCollection<DOC extends object>(): {
+    new(): Collection<DOC>
+    prototype: Collection<DOC>
+} {
+    return Object as any
 }

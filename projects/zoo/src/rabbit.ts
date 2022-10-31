@@ -85,9 +85,13 @@ export class TestRoot {
 }
 
 (async () => {
+    // @ts-ignore
     const platform = new Platform({
         http: {
             port: 3000,
+        },
+        mongodb: {
+            uri: 'mongodb://root@112.74.191.78:27017/admin?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-256'
         },
         rabbitmq: {
             url: 'amqp://plank:ChKNwziiY84DjUP@112.74.191.78:5672',

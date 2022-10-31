@@ -8,8 +8,8 @@
 
 import { Barbeque } from '@tarpit/barbeque'
 import { ConfigData } from '@tarpit/config'
-import { TpService } from '@tarpit/core'
-import { MongoClient, MongoClientOptions } from 'mongodb'
+import { ClassProvider, TpService } from '@tarpit/core'
+import { Collection, MongoClient, MongoClientOptions } from 'mongodb'
 
 import { TpMongo } from '../annotations/tp-mongo'
 
@@ -48,15 +48,15 @@ export class MongoHubService {
     }
 
     add(meta: TpMongo) {
-        if (!this.started) {
-            this.meta_cache.push(meta)
-        } else {
-            this._init_collection(meta)
-        }
+        console.log(meta)
+        const collection = this.client.db(meta.db).collection(meta.collection)
+        ;(meta.provider as ClassProvider<any>).resolved = collection
+        // Object.defineProperty(, '__proto__', { value: collection })
     }
 
     private _init_collection(meta: TpMongo) {
-        const collection = this.client.db(meta.db).collection(meta.collection)
-        Object.defineProperty(meta.instance, '__proto__', collection)
+
+
+        // console.log(instance)
     }
 }
