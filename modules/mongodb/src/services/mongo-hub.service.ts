@@ -9,9 +9,10 @@
 import { Barbeque } from '@tarpit/barbeque'
 import { ConfigData } from '@tarpit/config'
 import { ClassProvider, TpService } from '@tarpit/core'
-import { Collection, MongoClient, MongoClientOptions } from 'mongodb'
+import { MongoClient, MongoClientOptions } from 'mongodb'
 
 import { TpMongo } from '../annotations/tp-mongo'
+import { FakeCollection } from '../tools/generic-collection'
 
 @TpService({ inject_root: true })
 export class MongoHubService {
@@ -48,14 +49,18 @@ export class MongoHubService {
     }
 
     add(meta: TpMongo) {
-        console.log(meta)
-        const collection = this.client.db(meta.db).collection(meta.collection)
-        ;(meta.provider as ClassProvider<any>).resolved = collection
-        // Object.defineProperty(, '__proto__', { value: collection })
+        if (Object.getPrototypeOf(meta.cls) !== FakeCollection) {
+            throw new Error('A TpMongo class must inherit from GenericCollection')
+        }
+        if (meta.provider instanceof ClassProvider) {
+            meta.provider.create()
+            const collection = this.client.db(meta.db).collection(meta.collection)
+
+            Object.setPrototypeOf(Object.getPrototypeOf(meta.provider.resolved), collection)
+        }
     }
 
     private _init_collection(meta: TpMongo) {
-
 
         // console.log(instance)
     }

@@ -7,9 +7,13 @@
  */
 import { Collection } from 'mongodb'
 
+export class FakeCollection {
+
+}
+
 export function GenericCollection<DOC extends object>(): {
     new(): Collection<DOC>
     prototype: Collection<DOC>
 } {
-    return Object as any
+    return FakeCollection as any
 }

@@ -12,7 +12,9 @@ import { GenericCollection, MongodbModule, TpMongo } from '@tarpit/mongodb'
 
 @TpMongo('main', 'user')
 class AccountData extends GenericCollection<any>() {
-
+    guess() {
+        return AccountData
+    }
 }
 
 @TpRouter('/')
@@ -26,11 +28,7 @@ class TestRouter {
 
     @Get()
     async asd(params: Params<{ id: string }>) {
-        console.log(this.account)
-        console.log((this.account as any).__proto__)
-        console.log(this.account.dbName)
-        // await (this.account as any).__proto__.updateOne({ id: params.get_first('id') }, { name: 'tarpit' })
-        await this.account.updateOne({ id: params.get_first('id') }, { $set: { name: 'tarpit' } })
+        await this.account.updateOne({ id: params.get_first('id') }, { $set: { name: 'tarpit' } }, { upsert: true })
         return this.account.findOne({ id: params.get_first('id') })
     }
 
