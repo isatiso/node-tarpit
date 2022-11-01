@@ -42,7 +42,7 @@ jobs:
         id: pnpm-install
         with:
           version: 7
-          run_install: false
+          run_install: true
 
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -53,8 +53,6 @@ jobs:
       - env:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
         run: |
-          pnpm install
-          pnpm build
           lerna run build
           lerna run test --verbose
 
