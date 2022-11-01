@@ -168,6 +168,7 @@ importers:
   modules/mongodb:
     specifiers:
       '@tarpit/config': ^0.5.26
+      '@tarpit/core': ^0.5.26
       '@tarpit/rollup': ^0.5.26
       mongodb: ^4.11.0
       tslib: ^2.4.0
@@ -176,6 +177,7 @@ importers:
       tslib: 2.4.0
     devDependencies:
       '@tarpit/config': link:../../packages/config
+      '@tarpit/core': link:../core
       '@tarpit/rollup': link:../../supports/rollup
 
   modules/rabbitmq:

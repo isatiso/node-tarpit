@@ -36,8 +36,7 @@
     "scripts": {
         "build": "rollup -c",
         "prepublishOnly": "npm run build",
-        "docs": "tp docs",
-        "test": "tp cover --reporter=json --reporter=text --clean"
+        "docs": "tp docs"
     },
     "dependencies": {
         "mongodb": "^4.11.0",
@@ -45,9 +44,11 @@
     },
     "devDependencies": {
         "@tarpit/config": "^0.5.26",
+        "@tarpit/core": "^0.5.26",
         "@tarpit/rollup": "^0.5.26"
     },
     "peerDependencies": {
-        "@tarpit/config": "0.x"
+        "@tarpit/config": "0.x",
+        "@tarpit/core": "0.x"
     }
 }
