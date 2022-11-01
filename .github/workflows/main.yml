@@ -141,15 +141,15 @@ jobs:
           fail_ci_if_error: true
           files: ./modules/rabbitmq/coverage/coverage-final.json
 
-#      - name: Authenticate with Registry
-#        run: |
-#          pnpm logout 2>&1 | true
-#          echo "@tarpit:registry=https://registry.npmjs.org/" > .npmrc
-#          echo "registry=https://registry.npmjs.org/" >> .npmrc
-#          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
-#          npm whoami
-#        env:
-#          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Authenticate with Registry
+        run: |
+          pnpm logout 2>&1 | true
+          echo "@tarpit:registry=https://registry.npmjs.org/" > .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
+          npm whoami
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish package
         run: "lerna publish patch --yes"
