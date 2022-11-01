@@ -25,7 +25,7 @@ export class MongodbModule {
         this.loader.register(TpMongoToken, {
             on_start: async () => this.hub.start(),
             on_terminate: async () => this.hub.stop(),
-            on_load: (meta: TpMongo) => meta instanceof TpMongo && this.hub.add(meta),
+            on_load: (meta: TpMongo) => meta instanceof TpMongo && this.hub.load(meta),
         })
     }
 }

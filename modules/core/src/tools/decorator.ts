@@ -80,7 +80,7 @@ export function make_decorator<ARGS extends any[], T, PR>(
                     if (is_parameter) {
                         // DecoratorType.ClassParameter
                         const index = decorator_instance.index = desc
-                        const parameters = target[Parameter_Decorator] = target[Parameter_Decorator] ?? []
+                        const parameters = get_set_own_property(target, Parameter_Decorator, [] as any[])
                         while (parameters.length <= index) {
                             parameters.push(null)
                         }
@@ -88,7 +88,7 @@ export function make_decorator<ARGS extends any[], T, PR>(
                         parameters[index].push(decorator_instance)
                     } else {
                         // DecoratorType.Class
-                        const decorators = target[Class_Decorator] = target[Class_Decorator] ?? []
+                        const decorators = get_set_own_property(target, Class_Decorator, [] as any[])
                         decorators.push(decorator_instance)
                     }
                 }
@@ -102,7 +102,7 @@ export function make_decorator<ARGS extends any[], T, PR>(
                     if (is_parameter) {
                         // DecoratorType.Parameter
                         const index = decorator_instance.prop = desc
-                        const meta = cls[Method_Parameter_Decorator] = cls[Method_Parameter_Decorator] ?? {}
+                        const meta = get_set_own_property(cls, Method_Parameter_Decorator, {} as any)
                         const parameters = meta[prop] = meta[prop] ?? []
                         while (parameters.length <= index) {
                             parameters.push(null)
@@ -111,7 +111,7 @@ export function make_decorator<ARGS extends any[], T, PR>(
                         parameters[index].push(decorator_instance)
                     } else {
                         // DecoratorType.Property
-                        const meta: Map<any, any[]> = cls[Property_Decorator] = cls[Property_Decorator] ?? new Map()
+                        const meta: Map<any, any[]> = get_set_own_property(cls, Property_Decorator, new Map())
                         meta.has(prop) || meta.set(prop, [])
                         meta.get(prop)!.push(decorator_instance)
                     }
@@ -132,39 +132,49 @@ export function make_decorator<ARGS extends any[], T, PR>(
     return DecoratorFactory as any
 }
 
+function get_set_own_property<T>(target: any, prop: string | number | symbol, default_value: T): T {
+    const value = Object.getOwnPropertyDescriptor(target, prop)?.value
+    if (value) {
+        return value
+    } else {
+        Object.defineProperty(target, prop, { value: default_value, writable: false, configurable: false, enumerable: false })
+        return default_value
+    }
+}
+
 export function get_class_decorator<T>(target: any): any[] {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }
-    return target[Class_Decorator] ?? []
+    return Object.getOwnPropertyDescriptor(target, Class_Decorator)?.value ?? []
 }
 
 export function get_class_parameter_decorator<T>(target: any): any[] {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }
-    return target[Parameter_Decorator] ?? []
+    return Object.getOwnPropertyDescriptor(target, Parameter_Decorator)?.value ?? []
 }
 
 export function get_all_prop_decorator<T>(target: any): Map<string | symbol, any[]> | undefined {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }
-    return target[Property_Decorator]
+    return Object.getOwnPropertyDescriptor(target, Property_Decorator)?.value
 }
 
 export function get_prop_decorator<T>(target: any, prop: string | symbol): any[] {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }
-    return target[Property_Decorator]?.get(prop) ?? []
+    return Object.getOwnPropertyDescriptor(target, Property_Decorator)?.value?.get(prop) ?? []
 }
 
 export function get_method_parameter_decorator<T>(target: any, prop: string | symbol): any[] {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }
-    return target[Method_Parameter_Decorator]?.[prop] ?? []
+    return Object.getOwnPropertyDescriptor(target, Method_Parameter_Decorator)?.value?.[prop] ?? []
 }
 
 export function get_param_types(cls: Constructor<any>, prop?: string | symbol) {

@@ -10,14 +10,14 @@ import { Platform, TpInspector, TpRoot } from '@tarpit/core'
 import { Get, HttpServerModule, Params, Post, RawBody, TpRouter } from '@tarpit/http'
 import { GenericCollection, MongodbModule, TpMongo } from '@tarpit/mongodb'
 
-
+@TpMongo('main', 'user')
 class AccountData extends GenericCollection<any>() {
     guess() {
         return AccountData
     }
 }
 
-@TpMongo('main', 'user')
+@TpMongo('main', 'ea')
 class EnhancedAccountData extends AccountData {
 
 }
@@ -26,15 +26,25 @@ class EnhancedAccountData extends AccountData {
 class TestRouter {
 
     constructor(
-        private account: EnhancedAccountData,
+        private account: AccountData,
+        private ea: EnhancedAccountData,
     ) {
-
+        console.log(account)
+        console.log(ea)
     }
 
     @Get()
     async asd(params: Params<{ id: string }>) {
+        console.log(this.account.guess())
         await this.account.updateOne({ id: params.get_first('id') }, { $set: { name: 'tarpit' } }, { upsert: true })
         return this.account.findOne({ id: params.get_first('id') })
+    }
+
+    @Get()
+    async eatest(params: Params<{ id: string }>) {
+        console.log(this.ea.guess())
+        await this.ea.updateOne({ id: params.get_first('id') }, { $set: { name: 'iii' } }, { upsert: true })
+        return this.ea.findOne({ id: params.get_first('id') })
     }
 
     @Post()
@@ -47,6 +57,7 @@ class TestRouter {
 
 @TpRoot({
     providers: [
+        AccountData,
         EnhancedAccountData,
     ],
     entries: [
