@@ -305,7 +305,7 @@ importers:
       '@tarpit/core': ^0.5.26
       '@tarpit/http': ^0.5.26
       '@tarpit/judge': ^0.5.26
-      '@tarpit/mongodb': ^0.5.26
+      '@tarpit/mongodb': ^0.5.27
       tslib: ^2.4.0
     dependencies:
       '@tarpit/config': link:../../packages/config
@@ -321,7 +321,7 @@ importers:
       '@tarpit/core': ^0.5.26
       '@tarpit/http': ^0.5.26
       '@tarpit/judge': ^0.5.26
-      '@tarpit/mongodb': ^0.5.26
+      '@tarpit/mongodb': ^0.5.27
       '@tarpit/rabbitmq': ^0.5.26
       '@tarpit/schedule': ^0.5.26
       tslib: ^2.4.0
