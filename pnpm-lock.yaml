@@ -167,18 +167,14 @@ importers:
 
   modules/mongodb:
     specifiers:
-      '@tarpit/barbeque': ^0.5.25
-      '@tarpit/cli': ^0.5.25
       '@tarpit/config': ^0.5.25
       '@tarpit/rollup': ^0.5.25
       mongodb: ^4.11.0
       tslib: ^2.4.0
     dependencies:
-      '@tarpit/barbeque': link:../../packages/barbeque
       mongodb: 4.11.0
       tslib: 2.4.0
     devDependencies:
-      '@tarpit/cli': link:../../supports/cli
       '@tarpit/config': link:../../packages/config
       '@tarpit/rollup': link:../../supports/rollup
 
@@ -298,6 +294,22 @@ importers:
       '@tarpit/rollup': ^0.5.25
     devDependencies:
       '@tarpit/rollup': link:../../supports/rollup
+
+  projects/router-test:
+    specifiers:
+      '@tarpit/config': ^0.5.25
+      '@tarpit/core': ^0.5.25
+      '@tarpit/http': ^0.5.25
+      '@tarpit/judge': ^0.5.25
+      '@tarpit/mongodb': ^0.5.25
+      tslib: ^2.4.0
+    dependencies:
+      '@tarpit/config': link:../../packages/config
+      '@tarpit/core': link:../../modules/core
+      '@tarpit/http': link:../../modules/http
+      '@tarpit/judge': link:../../packages/judge
+      '@tarpit/mongodb': link:../../modules/mongodb
+      tslib: 2.4.0
 
   projects/zoo:
     specifiers:

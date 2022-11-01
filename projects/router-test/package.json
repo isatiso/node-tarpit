@@ -1,5 +1,5 @@
 {
-    "name": "@tarpit/mongodb",
+    "name": "@tarpit/router-test",
     "version": "0.5.25",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
@@ -8,12 +8,10 @@
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
     "module": "./lib/index.mjs",
+    "private": true,
     "files": [
         "lib"
     ],
-    "engines": {
-        "node": ">=14.0.0"
-    },
     "exports": {
         ".": {
             "require": "./lib/index.js",
@@ -36,18 +34,14 @@
     "scripts": {
         "build": "rollup -c",
         "prepublishOnly": "npm run build",
-        "docs": "tp docs",
-        "test": "tp cover --reporter=json --reporter=text --clean"
+        "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json"
     },
     "dependencies": {
-        "mongodb": "^4.11.0",
-        "tslib": "^2.4.0"
-    },
-    "devDependencies": {
         "@tarpit/config": "^0.5.25",
-        "@tarpit/rollup": "^0.5.25"
-    },
-    "peerDependencies": {
-        "@tarpit/config": "0.x"
+        "@tarpit/core": "^0.5.25",
+        "@tarpit/http": "^0.5.25",
+        "@tarpit/judge": "^0.5.25",
+        "@tarpit/mongodb": "^0.5.25",
+        "tslib": "^2.4.0"
     }
 }

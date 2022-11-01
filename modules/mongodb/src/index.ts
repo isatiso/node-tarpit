@@ -17,7 +17,7 @@ declare module '@tarpit/config' {
     export interface TpConfigSchema {
         mongodb: {
             uri: string
-            options?: MongoClientOptions
+            // options?: MongoClientOptions
         }
     }
 }

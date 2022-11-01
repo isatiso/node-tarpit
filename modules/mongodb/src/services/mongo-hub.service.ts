@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { Barbeque } from '@tarpit/barbeque'
 import { ConfigData } from '@tarpit/config'
 import { ClassProvider, TpService } from '@tarpit/core'
 import { MongoClient, MongoClientOptions } from 'mongodb'
@@ -19,8 +18,6 @@ export class MongoHubService {
 
     client: MongoClient
     started = false
-
-    private meta_cache = new Barbeque<TpMongo>()
 
     // @ts-ignore
     private readonly uri = this.config.get('mongodb.uri')
@@ -36,10 +33,6 @@ export class MongoHubService {
     async start() {
         await this.client.connect()
         this.started = true
-        let meta: TpMongo | undefined
-        while (meta = this.meta_cache.shift()) {
-            this._init_collection(meta)
-        }
     }
 
     async stop() {
@@ -48,20 +41,25 @@ export class MongoHubService {
         await this.client.close()
     }
 
-    add(meta: TpMongo) {
-        if (Object.getPrototypeOf(meta.cls) !== FakeCollection) {
-            throw new Error('A TpMongo class must inherit from GenericCollection')
+    load(meta: TpMongo) {
+
+        if (!(meta.cls.prototype instanceof FakeCollection)) {
+            throw new Error('A TpMongo class must inherit from GenericCollection.')
         }
-        if (meta.provider instanceof ClassProvider) {
-            meta.provider.create()
-            const collection = this.client.db(meta.db).collection(meta.collection)
 
-            Object.setPrototypeOf(Object.getPrototypeOf(meta.provider.resolved), collection)
+        if (!(meta.provider instanceof ClassProvider)) {
+            throw new Error('A TpMongo class must be provided by a ClassProvider.')
         }
-    }
 
-    private _init_collection(meta: TpMongo) {
-
-        // console.log(instance)
+        meta.provider.create()
+        const collection = this.client.db(meta.db).collection(meta.collection)
+        let instance = meta.provider.resolved
+        while (instance && instance !== FakeCollection.prototype) {
+            instance = Object.getPrototypeOf(instance)
+        }
+        if (!instance) {
+            throw new Error('Can\'t find FakeCollection on the chain.')
+        }
+        Object.setPrototypeOf(instance, collection)
     }
 }

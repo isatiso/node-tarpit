@@ -4,7 +4,7 @@
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "scripts": {
         "build": "supports/rollup/src/rollup -c",
-        "clean": "npm run clean-dest && npm run clean-coverage && lerna clean -y",
+        "clean": "npm run clean-dest && npm run clean-coverage && lerna clean -y && rm -rf node_modules",
         "clean-coverage": "lerna exec 'rm -rf ./coverage ./.cache ./.nyc_output'",
         "clean-dest": "lerna exec 'rm -rf ./lib'"
     },
