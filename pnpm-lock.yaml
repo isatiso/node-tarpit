@@ -90,9 +90,9 @@ importers:
 
   modules/content-type:
     specifiers:
-      '@tarpit/core': ^0.5.25
-      '@tarpit/error': ^0.5.25
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/core': ^0.5.26
+      '@tarpit/error': ^0.5.26
+      '@tarpit/rollup': ^0.5.26
       '@types/mime-types': ^2.1.1
       iconv-lite: ^0.6.3
       mime-types: ^2.1.35
@@ -109,9 +109,9 @@ importers:
 
   modules/core:
     specifiers:
-      '@tarpit/cli': ^0.5.25
-      '@tarpit/config': ^0.5.25
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/cli': ^0.5.26
+      '@tarpit/config': ^0.5.26
+      '@tarpit/rollup': ^0.5.26
       reflect-metadata: ^0.1.13
       tslib: ^2.4.0
     dependencies:
@@ -124,13 +124,13 @@ importers:
 
   modules/http:
     specifiers:
-      '@tarpit/config': ^0.5.25
-      '@tarpit/content-type': ^0.5.25
-      '@tarpit/core': ^0.5.25
-      '@tarpit/dora': ^0.5.25
-      '@tarpit/error': ^0.5.25
-      '@tarpit/judge': ^0.5.25
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/config': ^0.5.26
+      '@tarpit/content-type': ^0.5.26
+      '@tarpit/core': ^0.5.26
+      '@tarpit/dora': ^0.5.26
+      '@tarpit/error': ^0.5.26
+      '@tarpit/judge': ^0.5.26
+      '@tarpit/rollup': ^0.5.26
       '@types/content-disposition': ^0.5.5
       '@types/fresh': ^0.5.0
       '@types/mime-types': ^2.1.1
@@ -167,8 +167,8 @@ importers:
 
   modules/mongodb:
     specifiers:
-      '@tarpit/config': ^0.5.25
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/config': ^0.5.26
+      '@tarpit/rollup': ^0.5.26
       mongodb: ^4.11.0
       tslib: ^2.4.0
     dependencies:
@@ -180,13 +180,13 @@ importers:
 
   modules/rabbitmq:
     specifiers:
-      '@tarpit/barbeque': ^0.5.25
-      '@tarpit/config': ^0.5.25
-      '@tarpit/content-type': ^0.5.25
-      '@tarpit/core': ^0.5.25
-      '@tarpit/error': ^0.5.25
-      '@tarpit/judge': ^0.5.25
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/barbeque': ^0.5.26
+      '@tarpit/config': ^0.5.26
+      '@tarpit/content-type': ^0.5.26
+      '@tarpit/core': ^0.5.26
+      '@tarpit/error': ^0.5.26
+      '@tarpit/judge': ^0.5.26
+      '@tarpit/rollup': ^0.5.26
       '@types/amqplib': ^0.8.2
       amqplib: ^0.10.3
       tslib: ^2.4.0
@@ -205,11 +205,12 @@ importers:
 
   modules/schedule:
     specifiers:
-      '@tarpit/config': ^0.5.25
-      '@tarpit/core': ^0.5.25
-      '@tarpit/cron': ^0.5.25
-      '@tarpit/dora': ^0.5.25
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/config': ^0.5.26
+      '@tarpit/core': ^0.5.26
+      '@tarpit/cron': ^0.5.26
+      '@tarpit/dora': ^0.5.26
+      '@tarpit/error': ^0.5.26
+      '@tarpit/rollup': ^0.5.26
       tslib: ^2.4.0
     dependencies:
       '@tarpit/cron': link:../../packages/cron
@@ -218,19 +219,20 @@ importers:
     devDependencies:
       '@tarpit/config': link:../../packages/config
       '@tarpit/core': link:../core
+      '@tarpit/error': link:../../packages/error
       '@tarpit/rollup': link:../../supports/rollup
 
   packages/barbeque:
     specifiers:
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/rollup': ^0.5.26
     devDependencies:
       '@tarpit/rollup': link:../../supports/rollup
 
   packages/config:
     specifiers:
-      '@tarpit/judge': ^0.5.25
-      '@tarpit/rollup': ^0.5.25
-      '@tarpit/type-tools': ^0.5.25
+      '@tarpit/judge': ^0.5.26
+      '@tarpit/rollup': ^0.5.26
+      '@tarpit/type-tools': ^0.5.26
     dependencies:
       '@tarpit/judge': link:../judge
     devDependencies:
@@ -239,8 +241,8 @@ importers:
 
   packages/cron:
     specifiers:
-      '@tarpit/dora': ^0.5.25
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/dora': ^0.5.26
+      '@tarpit/rollup': ^0.5.26
     dependencies:
       '@tarpit/dora': link:../dora
     devDependencies:
@@ -248,27 +250,27 @@ importers:
 
   packages/dora:
     specifiers:
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/rollup': ^0.5.26
     devDependencies:
       '@tarpit/rollup': link:../../supports/rollup
 
   packages/error:
     specifiers:
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/rollup': ^0.5.26
     devDependencies:
       '@tarpit/rollup': link:../../supports/rollup
 
   packages/judge:
     specifiers:
-      '@tarpit/rollup': ^0.5.25
-      '@tarpit/type-tools': ^0.5.25
+      '@tarpit/rollup': ^0.5.26
+      '@tarpit/type-tools': ^0.5.26
     devDependencies:
       '@tarpit/rollup': link:../../supports/rollup
       '@tarpit/type-tools': link:../type-tools
 
   packages/transformer:
     specifiers:
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/rollup': ^0.5.26
       '@types/js-yaml': ^4.0.5
       '@types/micromatch': ^4.0.2
       '@types/node': ^18.11.8
@@ -291,17 +293,17 @@ importers:
 
   packages/type-tools:
     specifiers:
-      '@tarpit/rollup': ^0.5.25
+      '@tarpit/rollup': ^0.5.26
     devDependencies:
       '@tarpit/rollup': link:../../supports/rollup
 
   projects/router-test:
     specifiers:
-      '@tarpit/config': ^0.5.25
-      '@tarpit/core': ^0.5.25
-      '@tarpit/http': ^0.5.25
-      '@tarpit/judge': ^0.5.25
-      '@tarpit/mongodb': ^0.5.25
+      '@tarpit/config': ^0.5.26
+      '@tarpit/core': ^0.5.26
+      '@tarpit/http': ^0.5.26
+      '@tarpit/judge': ^0.5.26
+      '@tarpit/mongodb': ^0.5.26
       tslib: ^2.4.0
     dependencies:
       '@tarpit/config': link:../../packages/config
@@ -313,13 +315,13 @@ importers:
 
   projects/zoo:
     specifiers:
-      '@tarpit/config': ^0.5.25
-      '@tarpit/core': ^0.5.25
-      '@tarpit/http': ^0.5.25
-      '@tarpit/judge': ^0.5.25
-      '@tarpit/mongodb': ^0.5.25
-      '@tarpit/rabbitmq': ^0.5.25
-      '@tarpit/schedule': ^0.5.25
+      '@tarpit/config': ^0.5.26
+      '@tarpit/core': ^0.5.26
+      '@tarpit/http': ^0.5.26
+      '@tarpit/judge': ^0.5.26
+      '@tarpit/mongodb': ^0.5.26
+      '@tarpit/rabbitmq': ^0.5.26
+      '@tarpit/schedule': ^0.5.26
       tslib: ^2.4.0
     dependencies:
       '@tarpit/config': link:../../packages/config
@@ -333,8 +335,8 @@ importers:
 
   supports/cli:
     specifiers:
-      '@tarpit/rollup': ^0.5.25
-      '@tarpit/type-tools': ^0.5.25
+      '@tarpit/rollup': ^0.5.26
+      '@tarpit/type-tools': ^0.5.26
       '@types/normalize-package-data': ^2.4.1
       commander: ^9.4.1
     dependencies:
