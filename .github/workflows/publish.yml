@@ -1,9 +1,6 @@
 name: publish
 
-on:
-  push:
-    branches:
-      - main
+on: workflow_dispatch
 
 jobs:
   build:
@@ -49,10 +46,3 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-#      - run: "lerna run docs"
-#
-#      - run: |
-#          git add ./docs/apis
-#          git commit -am "generate docs"
-#          git push
