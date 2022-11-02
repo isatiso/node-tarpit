@@ -52,7 +52,7 @@ jobs:
         run: lerna run test --verbose
 
       - name: Upload coverage files
-        uses: ./actions/upload-coverage
+        uses: ./actions/upload-codecov
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
