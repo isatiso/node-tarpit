@@ -12,11 +12,11 @@ export function build_exec() {
         `-n ${name} -Q github-action-${version} -f ./packages/dora/coverage/coverage-final.json -F dora -Z`,
         `-n ${name} -Q github-action-${version} -f ./packages/error/coverage/coverage-final.json -F error -Z`,
         `-n ${name} -Q github-action-${version} -f ./packages/judge/coverage/coverage-final.json -F judge -Z`,
-        `-n ${name} -Q github-action-${version} -f ./packages/content-type/coverage/coverage-final.json -F content-type -Z`,
-        `-n ${name} -Q github-action-${version} -f ./packages/core/coverage/coverage-final.json -F core -Z`,
-        `-n ${name} -Q github-action-${version} -f ./packages/http/coverage/coverage-final.json -F http -Z`,
-        `-n ${name} -Q github-action-${version} -f ./packages/schedule/coverage/coverage-final.json -F schedule -Z`,
-        `-n ${name} -Q github-action-${version} -f ./packages/rabbitmq/coverage/coverage-final.json -F rabbitmq -Z`,
+        `-n ${name} -Q github-action-${version} -f ./modules/content-type/coverage/coverage-final.json -F content-type -Z`,
+        `-n ${name} -Q github-action-${version} -f ./modules/core/coverage/coverage-final.json -F core -Z`,
+        `-n ${name} -Q github-action-${version} -f ./modules/http/coverage/coverage-final.json -F http -Z`,
+        `-n ${name} -Q github-action-${version} -f ./modules/schedule/coverage/coverage-final.json -F schedule -Z`,
+        `-n ${name} -Q github-action-${version} -f ./modules/rabbitmq/coverage/coverage-final.json -F rabbitmq -Z`,
     ]
 
     const options: any = {}

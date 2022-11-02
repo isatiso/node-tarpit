@@ -1,0 +1,66 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version:
+          - 16.x
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 7
+          run_install: false
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: lerna run build
+
+      - name: Configure CI Git User
+        run: |
+          git config --global user.name isatiso
+          git config --global user.email sieglive@gmail.com
+          git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
+
+      - name: Authenticate with Registry
+        run: |
+          pnpm logout 2>&1 | true
+          echo "@tarpit:registry=https://registry.npmjs.org/" > ~/.npmrc
+          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          npm whoami
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish package
+        run: "lerna publish patch --yes"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - run: "lerna run docs"
+
+      - run: |
+          git add ./docs/apis
+          git commit -am "generate docs"
+          git push
