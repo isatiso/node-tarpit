@@ -38,7 +38,7 @@ async function verify(filename: string, platform: string, version: string): Prom
             const sha256 = crypto.createHash(`sha256`)
                 .update(fs.readFileSync(filename))
                 .digest('hex')
-            return sha256 + ' ' + uploader_name
+            return sha256 + '  ' + uploader_name
         }
 
         const hash = calculate_hash(filename)
