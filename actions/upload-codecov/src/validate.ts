@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import axios from 'axios'
 import crypto from 'crypto'
 import fs from 'fs'
-import openpgp from 'openpgp'
+import * as openpgp from 'openpgp'
 import path from 'path'
 
 import { get_base_url, set_failure } from './helpers'
@@ -10,7 +10,7 @@ import { get_base_url, set_failure } from './helpers'
 async function verify(filename: string, platform: string, version: string): Promise<void> {
     try {
         const uploader_name = 'codecov'
-        
+
         const public_key = fs.readFileSync(path.join(path.dirname(__dirname), 'pgp_keys.asc'), 'utf-8')
 
         const base_url = get_base_url(platform, version)
