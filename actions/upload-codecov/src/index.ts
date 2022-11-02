@@ -14,7 +14,7 @@ export async function main() {
     const platform = process.env.RUNNER_OS?.toLowerCase() ?? 'linux'
     core.info(`==> ${process.env.RUNNER_OS?.toLowerCase() ?? 'unknown'} OS detected`)
 
-    const filename = path.join(__dirname, 'codecov')
+    const filename = path.join(path.dirname(__dirname), 'codecov')
     await axios.get(get_base_url(platform, uploader_version), { responseType: 'arraybuffer' })
         .then(res => fs.writeFileSync(filename, res.data))
         .catch(err => set_failure(`Codecov: Failed to write uploader binary: ${err.message}`))
