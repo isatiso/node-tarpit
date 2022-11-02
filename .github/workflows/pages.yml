@@ -5,6 +5,11 @@ on:
     branches:
       - '*'
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   deploy:
 
@@ -14,27 +19,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-#      - name: Setup pnpm
-#        uses: pnpm/action-setup@v2.2.4
-#        with:
-#          version: 7
-#          run_install: false
-#
-#      - name: Set up Node.js ${{ matrix.node-version }}
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: ${{ matrix.node-version }}
-#          registry-url: 'https://registry.npmjs.org'
-#          cache: 'pnpm'
-#
-#      - name: Install
-#        run: pnpm install --frozen-lockfile
-#
-#      - name: Build
-#        run: lerna run build
-#
-#      - name: Generate API Docs
-#        run: lerna run docs
+      #      - name: Setup pnpm
+      #        uses: pnpm/action-setup@v2.2.4
+      #        with:
+      #          version: 7
+      #          run_install: false
+      #
+      #      - name: Set up Node.js ${{ matrix.node-version }}
+      #        uses: actions/setup-node@v3
+      #        with:
+      #          node-version: ${{ matrix.node-version }}
+      #          registry-url: 'https://registry.npmjs.org'
+      #          cache: 'pnpm'
+      #
+      #      - name: Install
+      #        run: pnpm install --frozen-lockfile
+      #
+      #      - name: Build
+      #        run: lerna run build
+      #
+      #      - name: Generate API Docs
+      #        run: lerna run docs
 
       - name: Build Jekyll
         uses: actions/jekyll-build-pages@v1.0.6
