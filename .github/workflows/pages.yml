@@ -43,7 +43,7 @@ jobs:
           bundler-cache: true
 
       - name: Install Jekyll
-        run: gem install jekyll
+        run: gem install jekyll bundler just-the-docs
 
       - name: Build Jekyll
         run: jekyll build -d _site
