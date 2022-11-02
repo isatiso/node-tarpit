@@ -36,22 +36,23 @@ jobs:
       - name: Generate API Docs
         run: lerna run docs
 
-      - name: Build Jekyll for GitHub Pages
+      - name: Build Jekyll
         uses: actions/jekyll-build-pages@v1.0.6
-        source: './docs'
-        destination: './docs/_site'
+        source: ./docs
+        destination: ./docs/_site
         token: ${{ secrets.GITHUB_TOKEN }}
-#      - name: Setup Ruby
-#        uses: ruby/setup-ruby@v1
-#        with:
-#          ruby-version: '3.1.2'
-#          bundler-cache: true
-#
-#      - name: Install Jekyll
-#        run: gem install jekyll bundler just-the-docs
-#
-#      - name: Build Jekyll
-#        run: jekyll build -d _site
+
+      #      - name: Setup Ruby
+      #        uses: ruby/setup-ruby@v1
+      #        with:
+      #          ruby-version: '3.1.2'
+      #          bundler-cache: true
+      #
+      #      - name: Install Jekyll
+      #        run: gem install jekyll bundler just-the-docs
+      #
+      #      - name: Build Jekyll
+      #        run: jekyll build -d _site
 
       - name: Setup Pages
         uses: actions/configure-pages@v2
