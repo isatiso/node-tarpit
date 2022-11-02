@@ -140,8 +140,8 @@ Guess you want to know about these things
 - [Make crontab-style Schedule](/3-rabbitmq-client/)
 - [Create Producer and Consumer base-on RabbitMQ](/4-schedule/)
 
-[build badge]: https://img.shields.io/github/workflow/status/isatiso/node-tarpit/node-tarpit-main?style=flat-square
-[build link]: https://github.com/isatiso/node-tarpit/actions/workflows/main.yml
+[build badge]: https://img.shields.io/github/workflow/status/isatiso/node-tarpit/Build%20and%20Test?style=flat-square
+[build link]: https://github.com/isatiso/node-tarpit/actions/workflows/ci.yml
 [coverage badge]: https://img.shields.io/codecov/c/github/isatiso/node-tarpit?style=flat-square
 [coverage link]: https://app.codecov.io/gh/isatiso/node-tarpit
 [license badge]: https://img.shields.io/npm/l/@tarpit/core?style=flat-square
