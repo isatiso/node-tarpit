@@ -1,0 +1,40 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 7
+          run_install: false
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: lerna run build
+
+      - name: Generate API Docs
+        run: lerna run docs
+
+      - name: Build and deploy Jekyll
+        uses: victoriadrake/jekyll-cd@master
