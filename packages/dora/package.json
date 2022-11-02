@@ -40,6 +40,6 @@
         "test": "tp cover --reporter=json --reporter=text --clean"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.29"
+        "@tarpit/rollup": "^0.5.0"
     }
 }

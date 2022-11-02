@@ -38,6 +38,6 @@
         "prepublishOnly": "npm run build"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.29"
+        "@tarpit/rollup": "^0.5.0"
     }
 }

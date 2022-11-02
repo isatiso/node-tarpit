@@ -40,9 +40,9 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "@tarpit/dora": "^0.5.29"
+        "@tarpit/dora": "^0.5.26"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.29"
+        "@tarpit/rollup": "^0.5.0"
     }
 }

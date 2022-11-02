@@ -43,9 +43,9 @@
         "tslib": "^2.4.1"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.5.29",
-        "@tarpit/core": "^0.5.29",
-        "@tarpit/rollup": "^0.5.29"
+        "@tarpit/config": "^0.5.26",
+        "@tarpit/core": "^0.5.26",
+        "@tarpit/rollup": "^0.5.0"
     },
     "peerDependencies": {
         "@tarpit/config": "0.x",
