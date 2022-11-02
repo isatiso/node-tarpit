@@ -50,7 +50,7 @@ export class RollupConfig {
         ],
         plugins: [
             json(),
-            rpt({ rootDir: './src', removeComments: true, paths: {} })
+            rpt({ rootDir: './', removeComments: true, paths: {} })
         ],
         external: this.externals.slice(),
     })
