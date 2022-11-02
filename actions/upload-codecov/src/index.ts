@@ -1,5 +1,5 @@
-import core from '@actions/core'
-import exec from '@actions/exec'
+import * as core from '@actions/core'
+import * as exec from '@actions/exec'
 import axios from 'axios'
 import fs from 'fs'
 import path from 'path'
@@ -9,7 +9,7 @@ import { get_base_url, set_failure, } from './helpers'
 
 import verify from './validate'
 
-async function main() {
+export async function main() {
     const uploader_version = 'latest'
     const platform = process.env.RUNNER_OS?.toLowerCase() ?? 'linux'
     core.info(`==> ${process.env.RUNNER_OS?.toLowerCase() ?? 'unknown'} OS detected`)
@@ -39,4 +39,6 @@ async function main() {
     fs.unlinkSync(filename)
 }
 
-main().then()
+if (require.main === module) {
+    main().then()
+}

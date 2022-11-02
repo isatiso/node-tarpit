@@ -1,4 +1,4 @@
-import core from '@actions/core'
+import * as core from '@actions/core'
 import axios from 'axios'
 import crypto from 'crypto'
 import fs from 'fs'

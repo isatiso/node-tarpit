@@ -1,4 +1,4 @@
-import core from '@actions/core'
+import * as core from '@actions/core'
 
 export function set_failure(message: string): void {
     core.setFailed(message)
