@@ -38,7 +38,7 @@ export class RollupConfig {
 
     create(input: string, dts?: boolean) {
         return dts
-            ? [this._render_js(input), this._render_dts(input)]
+            ? [this._render_js(input), this._render_dts()]
             : [this._render_js(input)]
     }
 
@@ -50,13 +50,13 @@ export class RollupConfig {
         ],
         plugins: [
             json(),
-            rpt({ removeComments: true, paths: {} })
+            rpt({ rootDir: './', declaration: true, removeComments: true, paths: {} })
         ],
         external: this.externals.slice(),
     })
 
-    private _render_dts = (input: string): MergedRollupOptions => ({
-        input,
+    private _render_dts = (): MergedRollupOptions => ({
+        input: './lib/src/index.d.ts',
         output: [
             { file: path.join(this.out_dir, 'index.d.ts'), format: 'es', interop: 'auto' },
         ],
@@ -69,7 +69,13 @@ export class RollupConfig {
                     paths: {},
                     module: ts.ModuleKind.ESNext
                 }
-            })
+            }),
+            {
+                name: 'clean',
+                buildEnd: () => {
+                    fs.rmSync('./lib/src', { recursive: true })
+                }
+            }
         ],
         external: this.externals.slice(),
     })

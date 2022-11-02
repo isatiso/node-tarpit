@@ -17,4 +17,5 @@ categories: apis
 - [@tarpit/http](/apis/http) - HTTP Server Module
 - [@tarpit/judge](/apis/judge) - Lightweight and extensible Assertion Library
 - [@tarpit/rabbitmq](/apis/rabbitmq) - RabbitMQ Client Module
+- [@tarpit/mongodb](/apis/mongodb) - MongoDB Client Module
 - [@tarpit/schedule](/apis/schedule) - Schedule Module with Crontab

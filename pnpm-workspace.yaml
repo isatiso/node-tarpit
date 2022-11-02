@@ -1,4 +1,5 @@
 packages:
+  - 'actions/*'
   - 'modules/*'
   - 'packages/*'
   - 'projects/*'

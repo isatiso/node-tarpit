@@ -41,7 +41,7 @@
     },
     "dependencies": {
         "reflect-metadata": "^0.1.13",
-        "tslib": "^2.4.0"
+        "tslib": "^2.4.1"
     },
     "devDependencies": {
         "@tarpit/cli": "^0.5.26",

@@ -28,6 +28,7 @@
       <sourceFolder url="file://$MODULE_DIR$/modules/mongodb/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/type-tools/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/projects/router-test/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/actions/upload-codecov/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/projects/zoo/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/cli/lib" />
       <excludeFolder url="file://$MODULE_DIR$/supports/abraham/lib" />
@@ -50,6 +51,7 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/type-tools/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/mongodb/lib" />
       <excludeFolder url="file://$MODULE_DIR$/projects/router-test/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/actions/upload-codecov/lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

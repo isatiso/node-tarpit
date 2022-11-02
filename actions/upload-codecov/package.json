@@ -1,9 +1,10 @@
 {
-    "name": "@tarpit/schedule",
+    "name": "upload-codecov",
     "version": "0.5.26",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
+    "private": true,
     "license": "MIT",
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
@@ -34,25 +35,18 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
-        "prepublishOnly": "npm run build",
-        "docs": "tp docs",
-        "test": "tp cover --reporter=json --reporter=text"
+        "build": "rm -rf lib && rollup -c",
+        "prepublishOnly": "npm run build"
     },
     "dependencies": {
-        "@tarpit/cron": "^0.5.26",
-        "@tarpit/dora": "^0.5.26",
-        "tslib": "^2.4.1"
+        "@actions/core": "^1.10.0",
+        "@actions/exec": "^1.1.1",
+        "@actions/github": "^5.1.1",
+        "openpgp": "5.5",
+        "axios": "^1.1.3"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.5.26",
-        "@tarpit/core": "^0.5.26",
-        "@tarpit/error": "^0.5.26",
-        "@tarpit/rollup": "^0.5.26"
-    },
-    "peerDependencies": {
-        "@tarpit/config": "0.x",
-        "@tarpit/core": "0.x",
-        "@tarpit/error": "0.x"
+        "@tarpit/rollup": "^0.5.26",
+        "@types/node": "^18.11.9"
     }
 }

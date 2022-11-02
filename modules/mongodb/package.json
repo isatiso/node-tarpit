@@ -40,7 +40,7 @@
     },
     "dependencies": {
         "mongodb": "^4.11.0",
-        "tslib": "^2.4.0"
+        "tslib": "^2.4.1"
     },
     "devDependencies": {
         "@tarpit/config": "^0.5.26",

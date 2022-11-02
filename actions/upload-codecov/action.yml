@@ -1,0 +1,16 @@
+name: 'Upload Codecov'
+description: 'GitHub Action that uploads coverage reports to codecov.io'
+author: 'Cao Jiahang <sieglive@gmail.com> override GitHub Action codecov/codecov-action'
+inputs:
+  token:
+    description: 'Repository upload token - get it from codecov.io. Required only for private repositories'
+    required: false
+  name:
+    description: 'User defined upload name. Visible in Codecov UI'
+    required: false
+branding:
+  color: 'red'
+  icon: 'umbrella'
+runs:
+  using: 'node16'
+  main: 'lib/index.js'
