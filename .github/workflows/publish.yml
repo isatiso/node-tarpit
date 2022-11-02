@@ -35,11 +35,11 @@ jobs:
       - name: Build
         run: lerna run build
 
-#      - name: Configure CI Git User
-#        run: |
-#          git config --global user.name isatiso
-#          git config --global user.email sieglive@gmail.com
-#          git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
+      - name: Configure CI Git User
+        run: |
+          git config --global user.name isatiso
+          git config --global user.email sieglive@gmail.com
+          git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
 
       - name: Publish package
         run: "lerna publish patch --yes"
