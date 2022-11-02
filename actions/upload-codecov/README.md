@@ -1,11 +1,11 @@
-# `@tarpit/rollup`
+# `@tarpit/upload-codecov`
 
 > TODO: description
 
 ## Usage
 
 ```
-const rollup = require('@tarpit/rollup');
+const upload-codecov = require('@tarpit/upload-codecov');
 
 // TODO: DEMONSTRATE API
 ```

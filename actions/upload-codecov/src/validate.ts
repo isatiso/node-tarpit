@@ -1,78 +1,55 @@
-import * as crypto from 'crypto'
-import * as fs from 'fs'
-import * as path from 'path'
-
-import * as core from '@actions/core'
-import * as openpgp from 'openpgp'
-import * as fetch from 'node-fetch'
+import core from '@actions/core'
+import axios from 'axios'
+import crypto from 'crypto'
+import fs from 'fs'
+import openpgp from 'openpgp'
+import path from 'path'
 
 import { get_base_url, set_failure } from './helpers'
 
-async function verify(filename: string, platform: string, version: string, verbose: boolean, failCi: boolean): Promise<void> {
+async function verify(filename: string, platform: string, version: string): Promise<void> {
     try {
         const uploader_name = 'codecov'
 
         // Read in public key
-        const public_key_armored = fs.readFileSync(path.join(__dirname, 'pgp_keys.asc'), 'utf-8')
+        const public_key = fs.readFileSync(path.join(__dirname, 'pgp_keys.asc'), 'utf-8')
 
-        // Get SHASUM and SHASUM signature files
-        console.log(`${get_base_url(platform, version)}.SHA256SUM`)
-        const shasumRes = await fetch.default(
-            `${get_base_url(platform, version)}.SHA256SUM`,
-        )
-        const shasum = await shasumRes.text()
-        if (verbose) {
-            console.log(`Received SHA256SUM ${shasum}`)
-        }
+        const base_url = get_base_url(platform, version)
+        console.log(base_url + '.SHA256SUM')
 
-        const shaSigRes = await fetch.default(
-            `${get_base_url(platform, version)}.SHA256SUM.sig`,
-        )
-        const shaSig = await shaSigRes.text()
-        if (verbose) {
-            console.log(`Received SHA256SUM signature ${shaSig}`)
-        }
+        const check_sum = await axios.get<string>(base_url + '.SHA256SUM', { responseType: 'text' }).then(res => res.data)
+        console.log(`Received SHA256SUM ${check_sum}`)
 
-        // Verify shasum
+        const sign = await axios.get<string>(base_url + '.SHA256SUM.sig', { responseType: 'text' }).then(res => res.data)
+        console.log(`Received SHA256SUM signature ${sign}`)
+
         const verified = await openpgp.verify({
-            message: await openpgp.createMessage({ text: shasum }),
-            signature: await openpgp.readSignature({ armoredSignature: shaSig }),
-            verificationKeys: await openpgp.readKeys({ armoredKeys: public_key_armored }),
+            message: await openpgp.createMessage({ text: check_sum }),
+            signature: await openpgp.readSignature({ armoredSignature: sign }),
+            verificationKeys: await openpgp.readKeys({ armoredKeys: public_key }),
         })
         const valid = await verified.signatures[0].verified
         if (valid) {
-            core.info('==> SHASUM file signed by key id ' +
-                verified.signatures[0].keyID.toHex(),
-            )
+            core.info('==> SHA256SUM file signed by key id ' + verified.signatures[0].keyID.toHex())
         } else {
-            set_failure('Codecov: Error validating SHASUM signature', failCi)
+            set_failure('Codecov: Error validating SHA256SUM signature')
         }
 
-        const calculateHash = async (filename: string) => {
-            const stream = fs.createReadStream(filename)
-            const uploaderSha = crypto.createHash(`sha256`)
-            stream.pipe(uploaderSha)
-
-            return new Promise((resolve, reject) => {
-                stream.on('end', () => resolve(
-                    `${uploaderSha.digest('hex')}  ${uploader_name}`,
-                ))
-                stream.on('error', reject)
-            })
+        function calculate_hash(filename: string) {
+            const sha256 = crypto.createHash(`sha256`)
+                .update(fs.readFileSync(filename))
+                .digest('hex')
+            return sha256 + ' ' + uploader_name
         }
 
-        const hash = await calculateHash(filename)
-        if (hash === shasum) {
-            core.info(`==> Uploader SHASUM verified (${hash})`)
+        const hash = calculate_hash(filename)
+        if (hash === check_sum) {
+            core.info(`==> Uploader SHA256SUM verified (${hash})`)
         } else {
-            set_failure(
-                'Codecov: Uploader shasum does not match -- ' +
-                `uploader hash: ${hash}, public hash: ${shasum}`,
-                failCi,
-            )
+            set_failure(`Codecov: SHA256SUM does not match -- uploader: ${hash}, public: ${check_sum}`)
         }
-    } catch (err) {
-        set_failure(`Codecov: Error validating uploader: ${err.message}`, failCi)
+    } catch (err: any) {
+        set_failure(`Codecov: Error validating uploader: ${err.message}`)
     }
 }
 

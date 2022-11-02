@@ -43,7 +43,7 @@
         "@rollup/plugin-typescript": "^9.0.2",
         "@types/normalize-package-data": "^2.4.1",
         "builtin-modules": "^3.3.0",
-        "rollup": "^3.2.3",
+        "rollup": "^3.2.5",
         "rollup-plugin-dts": "^5.0.0",
         "typescript": "^4.8.4"
     }

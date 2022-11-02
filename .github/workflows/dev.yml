@@ -51,6 +51,11 @@ jobs:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
         run: lerna run test --verbose
 
+      - name: Upload coverage files
+        uses: ./action/upload-coverage
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
 #  upload-coverage:
 #    runs-on: ubuntu-latest
 #    needs: test

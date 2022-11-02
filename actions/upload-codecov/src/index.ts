@@ -1,66 +1,42 @@
-import * as core from '@actions/core'
-import * as fs from 'fs'
-import * as https from 'https'
-import * as path from 'path'
-
-import * as exec from '@actions/exec'
+import core from '@actions/core'
+import exec from '@actions/exec'
+import axios from 'axios'
+import fs from 'fs'
+import path from 'path'
 
 import { build_exec } from './build-exec'
-import {
-    get_base_url,
-    set_failure,
-} from './helpers'
+import { get_base_url, set_failure, } from './helpers'
 
 import verify from './validate'
-import versionInfo from './version'
 
-let failCi
-
-try {
-    const { exec_args, options, failCi, uploader_version } = build_exec()
-
+async function main() {
+    const uploader_version = 'latest'
     const platform = process.env.RUNNER_OS?.toLowerCase() ?? 'linux'
     core.info(`==> ${process.env.RUNNER_OS?.toLowerCase() ?? 'unknown'} OS detected`)
 
     const filename = path.join(__dirname, 'codecov')
-    https.get(get_base_url(platform, uploader_version), res => {
-        // Image will be stored at this path
-        const filePath = fs.createWriteStream(filename)
-        res.pipe(filePath)
-        filePath
-            .on('error', (err) => {
-                set_failure(
-                    `Codecov: Failed to write uploader binary: ${err.message}`,
-                    true,
-                )
-            }).on('finish', async () => {
-            filePath.close()
+    await axios.get(get_base_url(platform, uploader_version), { responseType: 'arraybuffer' })
+        .then(res => fs.writeFileSync(filename, res.data))
+        .catch(err => set_failure(`Codecov: Failed to write uploader binary: ${err.message}`))
 
-            await verify(filename, platform, uploader_version, verbose, failCi)
-            await versionInfo(platform, uploader_version)
-            await fs.chmodSync(filename, '777')
+    await verify(filename, platform, uploader_version)
 
-            const unlink = () => {
-                fs.unlink(filename, (err) => {
-                    if (err) {
-                        set_failure(
-                            `Codecov: Could not unlink uploader: ${err.message}`,
-                            failCi,
-                        )
-                    }
-                })
-            }
-            await exec.exec(filename, exec_args, options)
-                .catch((err) => {
-                    set_failure(
-                        `Codecov: Failed to properly upload: ${err.message}`,
-                        failCi,
-                    )
-                }).then(() => {
-                    unlink()
-                })
-        })
-    })
-} catch (err) {
-    set_failure(`Codecov: Encountered an unexpected error ${err.message}`, failCi)
+    try {
+        const metadata = await axios.get<any>('https://uploader.codecov.io/linux/latest', { headers: { 'Accept': 'application/json' } })
+            .then(res => res.data)
+        core.info(`==> Running version ${metadata.version}`)
+    } catch (err) {
+        core.info(`Could not pull latest version information: ${err}`)
+    }
+
+    await fs.chmodSync(filename, '777')
+
+    const { exec_list, options } = build_exec()
+    for (const args of exec_list) {
+        await exec.exec(filename, args.split(' '), options).catch((err) => set_failure(`Codecov: Failed to properly upload: ${err.message}`))
+    }
+
+    fs.unlinkSync(filename)
 }
+
+main().then()
