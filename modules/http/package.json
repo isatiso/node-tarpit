@@ -35,7 +35,6 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "prepublishOnly": "npm run build",
         "docs": "tp docs",
         "test": "tp cover --reporter=json --reporter=text"
     },

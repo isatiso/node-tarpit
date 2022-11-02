@@ -39,8 +39,7 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
-        "prepublishOnly": "npm run build"
+        "build": "rollup -c"
     },
     "dependencies": {
         "commander": "^9.4.1"

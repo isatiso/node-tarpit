@@ -33,7 +33,6 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "prepublishOnly": "npm run build",
         "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json"
     },
     "dependencies": {

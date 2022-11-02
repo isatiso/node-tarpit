@@ -34,8 +34,7 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rm -rf lib && rollup -c",
-        "prepublishOnly": "npm run build"
+        "build": "rm -rf lib && rollup -c"
     },
     "devDependencies": {
         "@tarpit/rollup": "^0.5.0"
