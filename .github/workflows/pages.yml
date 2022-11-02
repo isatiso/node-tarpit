@@ -38,9 +38,10 @@ jobs:
 
       - name: Build Jekyll
         uses: actions/jekyll-build-pages@v1.0.6
-        source: ./docs
-        destination: ./docs/_site
-        token: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          source: ./docs
+          destination: ./docs/_site
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       #      - name: Setup Ruby
       #        uses: ruby/setup-ruby@v1
