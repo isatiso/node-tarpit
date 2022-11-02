@@ -1,0 +1,28 @@
+name: 'Upload Codecov'
+description: 'GitHub Action that uploads coverage reports to codecov.io'
+author: 'Cao Jiahang <sieglive@gmail.com> override GitHub Action codecov/codecov-action'
+inputs:
+  token:
+    description: 'Repository upload token - get it from codecov.io. Required only for private repositories'
+    required: false
+  files:
+    description: 'Comma-separated list of files to upload'
+    required: false
+  flags:
+    description: 'Flag upload to group coverage metrics (e.g. unittests | integration | ui,chrome)'
+    required: false
+  fail_ci_if_error:
+    description: 'Specify whether or not CI build should fail if Codecov runs into an error during upload'
+    required: false
+  file:
+    description: 'Path to coverage file to upload'
+    required: false
+  name:
+    description: 'User defined upload name. Visible in Codecov UI'
+    required: false
+branding:
+  color: 'red'
+  icon: 'umbrella'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
