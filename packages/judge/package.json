@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/judge",
-    "version": "0.5.29",
+    "version": "0.5.30",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -40,6 +40,6 @@
     },
     "devDependencies": {
         "@tarpit/rollup": "^0.5.0",
-        "@tarpit/type-tools": "^0.5.26"
+        "@tarpit/type-tools": "^0.5.30"
     }
 }

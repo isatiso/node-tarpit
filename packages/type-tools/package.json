@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/type-tools",
-    "version": "0.5.29",
+    "version": "0.5.30",
     "description": "Some types that helped.",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
