@@ -29,6 +29,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
       - name: Install
@@ -37,30 +38,21 @@ jobs:
       - name: Build
         run: lerna run build
 
-      - name: Configure CI Git User
-        run: |
-          git config --global user.name isatiso
-          git config --global user.email sieglive@gmail.com
-          git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
-
-      - name: Authenticate with Registry
-        run: |
-          pnpm logout 2>&1 | true
-          echo "@tarpit:registry=https://registry.npmjs.org/" > ~/.npmrc
-          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          npm whoami
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#      - name: Configure CI Git User
+#        run: |
+#          git config --global user.name isatiso
+#          git config --global user.email sieglive@gmail.com
+#          git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
 
       - name: Publish package
         run: "lerna publish patch --yes"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - run: "lerna run docs"
-
-      - run: |
-          git add ./docs/apis
-          git commit -am "generate docs"
-          git push
+#      - run: "lerna run docs"
+#
+#      - run: |
+#          git add ./docs/apis
+#          git commit -am "generate docs"
+#          git push

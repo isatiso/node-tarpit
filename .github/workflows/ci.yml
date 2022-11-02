@@ -51,6 +51,7 @@ jobs:
         run: lerna run test --verbose
 
       - name: Upload coverage files
+        if: ${{ github.ref == 'refs/heads/main' }}
         uses: ./actions/upload-codecov
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
