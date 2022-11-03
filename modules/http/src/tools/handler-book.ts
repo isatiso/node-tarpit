@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { MatchFunction } from 'path-to-regexp'
 import { ApiMethod, HttpHandler, HttpHandlerDescriptor } from '../__types__'
 
 interface HttpHandlerMap {
@@ -16,12 +17,24 @@ interface HttpHandlerMap {
     _allows: (ApiMethod | 'HEAD' | 'OPTIONS')[]
 }
 
+interface RegExpNode {
+    regex: MatchFunction
+    method: string
+    handler: HttpHandler
+}
+
+interface SearchNode {
+    children: { [segment: string]: SearchNode }
+    regex: RegExpNode[]
+    method: ApiMethod[]
+    handler: HttpHandler
+}
+
 export class HandlerBook {
 
     private book = new Map<string, HttpHandlerMap>()
 
     record(method: ApiMethod, path: string, handler: HttpHandler) {
-        // console.log(method, path, handler)
         const regular_method = method.toUpperCase() as ApiMethod
         if (!this.book.has(path)) {
             this.book.set(path, { _allows: ['OPTIONS'] })

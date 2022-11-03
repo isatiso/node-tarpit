@@ -106,11 +106,11 @@ export class HttpRouters {
 
     add_router(unit: RouteUnit, meta: TpRouter): void {
         const router = this.make_router(meta.injector!, unit)
-        const prefix = meta.path.replace(/\/{2,}/g, '/').replace(/\/\s*$/g, '')
-        const suffix = unit.path_tail.replace(/(^\/|\/$)/g, '')
-        const full_path = prefix + '/' + suffix
+        const head = meta.path.replace(/\/+\s*$/g, '')
+        const tail = unit.path_tail.replace(/^\s*\/+/g, '')
+        const full_path = head + '/' + tail
 
-        unit.methods.forEach(m => this.handler_book.record(m, full_path, router))
+        unit.methods.forEach(method => this.handler_book.record(method, full_path, router))
     }
 
     private make_router(injector: Injector, unit: RouteUnit) {
@@ -120,19 +120,19 @@ export class HttpRouters {
         const reader = this.reader
         const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
 
-        const provider_au = injector.get(HttpAuthenticator)!
-        const provider_cp = injector.get(HttpCacheProxy)!
-        const provider_ef = injector.get(HttpErrorFormatter)!
-        const provider_hh = injector.get(HttpHooks)!
-        const provider_rf = injector.get(HttpResponseFormatter)!
+        const pv_authenticator = injector.get(HttpAuthenticator)!
+        const pv_cache_proxy = injector.get(HttpCacheProxy)!
+        const pv_hooks = injector.get(HttpHooks)!
+        const pv_error_formatter = injector.get(HttpErrorFormatter)!
+        const pv_response_formatter = injector.get(HttpResponseFormatter)!
 
         return async function(req: IncomingMessage, res: ServerResponse, parsed_url: UrlWithParsedQuery) {
 
-            const cache_proxy = provider_cp.create()
-            const error_formatter = provider_ef.create()
-            const http_hooks = provider_hh.create()
-            const response_formatter = provider_rf.create()
-            const authenticator = provider_au.create()
+            const cache_proxy = pv_cache_proxy.create()
+            const error_formatter = pv_error_formatter.create()
+            const http_hooks = pv_hooks.create()
+            const response_formatter = pv_response_formatter.create()
+            const authenticator = pv_authenticator.create()
 
             const request = new TpRequest(req, parsed_url, proxy_config)
             const response = new TpResponse(res, request)

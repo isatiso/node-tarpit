@@ -160,6 +160,7 @@ importers:
       lru-cache: ^7.14.0
       mime-types: ^2.1.35
       negotiator: ^0.6.3
+      path-to-regexp: ^6.2.1
       tslib: ^2.4.1
       type-is: ^1.6.18
     dependencies:
@@ -170,6 +171,7 @@ importers:
       lru-cache: 7.14.0
       mime-types: 2.1.35
       negotiator: 0.6.3
+      path-to-regexp: 6.2.1
       tslib: 2.4.1
       type-is: 1.6.18
     devDependencies:
@@ -6367,6 +6369,10 @@ packages:
 
   /path-parse/1.0.7:
     resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
+    dev: false
+
+  /path-to-regexp/6.2.1:
+    resolution: {integrity: sha512-JLyh7xT1kizaEvcaXOQwOc2/Yhw6KZOvPf1S8401UyLk86CU79LN3vl7ztXGm/pZ+YjoyAJ4rxmHwbkBXJX+yw==}
     dev: false
 
   /path-type/3.0.0:
