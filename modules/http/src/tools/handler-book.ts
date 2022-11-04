@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { parse, match, MatchFunction } from 'path-to-regexp'
+import { parse, match, MatchFunction, Match } from 'path-to-regexp'
 import { ApiMethod, HttpHandler, HttpHandlerDescriptor } from '../__types__'
 
 interface HttpHandlerMap {
@@ -87,11 +87,29 @@ export class HandlerBook {
         // }
     }
 
-    get_node(path: string) {
-        const segments = path.split('/')
+    search_node(path: string): { type: 'path', node: PathNode } | { type: 'matcher', node: RegExpNode, result: Match } | undefined {
+        if (path === '/' || path === '*') {
+            return { type: 'path', node: this.root }
+        }
+        const segments = path.replace(/^\//g, '').split('/')
         let node = this.root
         for (const segment of segments) {
-
+            if (node.children[segment]) {
+                node = node.children[segment]
+                continue
+            }
+            for (const matcher of node.matchers) {
+                const result = matcher.match(path)
+                if (result) {
+                    return { type: 'matcher', node: matcher, result }
+                }
+            }
+            return
+        }
+        if (node.handler) {
+            return { type: 'path', node }
+        } else {
+            return
         }
     }
 
