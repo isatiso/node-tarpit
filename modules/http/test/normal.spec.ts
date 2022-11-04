@@ -7,20 +7,22 @@
  */
 
 import { Platform, TpInspector } from '@tarpit/core'
+import { Jtl } from '@tarpit/judge'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { Delete, Get, HttpInspector, HttpServerModule, Params, Post, Put, TpRouter } from '../src'
+import { Delete, Get, HttpInspector, HttpServerModule, Params, PathArgs, Post, Put, TpRouter } from '../src'
 
 chai.use(cap)
 
 @TpRouter('/', { imports: [HttpServerModule] })
 class NormalRouter {
 
-    @Get('user')
-    async get_user(params: Params<{ id: string }>) {
+    @Get('user/:user_id')
+    async get_user(params: Params<{ id: string }>, args: PathArgs<{ user_id: string }>) {
         const id = params.get_first('id')
-        return { id }
+        const user_id = args.ensure('user_id', Jtl.string)
+        return { id, user_id }
     }
 
     @Post('user')
@@ -68,7 +70,7 @@ describe('normal case', function() {
     it('should create GET,POST,PUT,DELETE handler on /user', async function() {
         const routers = http_inspector.list_router()
         expect(routers).to.have.deep.members([
-            { method: 'GET', path: '/user' },
+            { method: 'GET', path: '/user/:user_id' },
             { method: 'POST', path: '/user' },
             { method: 'PUT', path: '/user' },
             { method: 'DELETE', path: '/user' },
@@ -76,9 +78,9 @@ describe('normal case', function() {
     })
 
     it('should handle GET request on /user', async function() {
-        await r.get('/user', { params: { id: 'a' } }).then(res => {
+        await r.get('/user/u123', { params: { id: 'a' } }).then(res => {
             expect(res.status).to.equal(200)
-            expect(res.data).to.eql({ id: 'a' })
+            expect(res.data).to.eql({ id: 'a', user_id: 'u123' })
         })
     })
 

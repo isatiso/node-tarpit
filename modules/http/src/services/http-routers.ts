@@ -107,10 +107,11 @@ export class HttpRouters {
     add_router(unit: RouteUnit, meta: TpRouter): void {
         const fat_handler = this.make_fat_handler(meta.injector!, unit)
         const head = meta.path.replace(/\/+\s*$/g, '')
-        const tail = unit.path_tail.replace(/^\s*\/+/g, '')
+        const tail = unit.path_tail.replace(/^\s*\/+/g, '').replace(/\/+\s*$/g, '')
         const path = head + '/' + tail
 
         unit.methods.forEach(method => this.handler_book.record(method, path, fat_handler))
+        this.handler_book.clear_cache()
     }
 
     private make_fat_handler(injector: Injector, unit: RouteUnit): FatHttpHandler {

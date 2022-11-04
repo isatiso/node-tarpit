@@ -35,13 +35,17 @@ export type PathSearchResult =
 
 export class HandlerBook {
 
-    _root: PathNode = { children: {}, matchers: [] }
+    private _root: PathNode = { children: {}, matchers: [] }
     private _index: { [path: string]: { map: HttpHandlerMap } } = {}
-    private _cache = new LRU<string, PathSearchResult | undefined>({ max: 200, ttl: 86400000 })
+    private _path_cache = new LRU<string, PathSearchResult | undefined>({ max: 200, ttl: 86400000 })
+    private _handler_cache = new LRU<`${ApiMethod}-${string}`, HttpHandler | undefined>({ max: 200, ttl: 86400000 })
 
     init_path_node(segments: string[]) {
         let node = this._root
         for (const segment of segments) {
+            if (!segment) {
+                continue
+            }
             if (!node.children[segment]) {
                 node.children[segment] = { children: {}, matchers: [] }
             }
@@ -70,6 +74,10 @@ export class HandlerBook {
                     node.map = handler_node
                     this._index[path] = node as { map: HttpHandlerMap }
                 }
+            } else {
+                const regex_node: RegExpNode = { match: match(path), map: handler_node }
+                this._root.matchers.push(regex_node)
+                this._index[path] = regex_node
             }
         }
     }
@@ -77,14 +85,19 @@ export class HandlerBook {
     find(method: string, path: string): HttpHandler | undefined {
         method = method.toUpperCase()
         const regular_method: ApiMethod = method === 'HEAD' ? 'GET' : method as any
-        const search_result = this._search_with_cache(path)
-        const fat_handler = search_result?.map[regular_method]
-        if (!fat_handler) {
-            return
-        } else {
-            const path_args = search_result.result?.params
-            return (req, res, url) => fat_handler(req, res, url, path_args)
+        const key = `${regular_method}-${path}` as const
+        if (!this._handler_cache.has(key)) {
+            const search_result = this._search_with_cache(path)
+            const fat_handler = search_result?.map[regular_method]
+            if (fat_handler) {
+                const path_args = search_result.result?.params
+                const handler: HttpHandler = (req, res, url) => fat_handler(req, res, url, path_args)
+                this._handler_cache.set(key, handler)
+            } else {
+                this._handler_cache.set(key, undefined)
+            }
         }
+        return this._handler_cache.get(key)
     }
 
     get_allow(path: string): string[] | undefined {
@@ -94,13 +107,18 @@ export class HandlerBook {
     list(): HttpHandlerDescriptor[] {
         const res: HttpHandlerDescriptor[] = []
         for (const path in this._index) {
-            for (const method in this._index[path]) {
+            for (const method in this._index[path].map) {
                 if (!method.startsWith('_')) {
                     res.push({ method: method as ApiMethod, path })
                 }
             }
         }
         return res.sort((a, b) => a.path.localeCompare(b.path))
+    }
+
+    clear_cache() {
+        this._path_cache.clear()
+        this._handler_cache.clear()
     }
 
     private _update_handler_node(node: HttpHandlerMap, method: ApiMethod, handler: FatHttpHandler) {
@@ -111,13 +129,10 @@ export class HandlerBook {
     }
 
     private _search_with_cache(path: string): PathSearchResult | undefined {
-        const cache_result = this._cache.get(path)
-        if (cache_result) {
-            return cache_result
+        if (!this._path_cache.has(path)) {
+            this._path_cache.set(path, this._search(path))
         }
-        const result = this._search(path)
-        this._cache.set(path, result)
-        return result
+        return this._path_cache.get(path)
     }
 
     private _search(path: string): PathSearchResult | undefined {
