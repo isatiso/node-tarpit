@@ -6,37 +6,41 @@
  * found in the LICENSE file at source root.
  */
 
-import { parse, match, MatchFunction, Match } from 'path-to-regexp'
-import { ApiMethod, HttpHandler, HttpHandlerDescriptor } from '../__types__'
+import LRU from 'lru-cache'
+import { match, MatchFunction, MatchResult, parse } from 'path-to-regexp'
+import { ApiMethod, FatHttpHandler, HttpHandler, HttpHandlerDescriptor } from '../__types__'
 
-interface HttpHandlerMap {
-    GET?: HttpHandler
-    POST?: HttpHandler
-    PUT?: HttpHandler
-    DELETE?: HttpHandler
+export interface HttpHandlerMap {
+    GET?: FatHttpHandler
+    POST?: FatHttpHandler
+    PUT?: FatHttpHandler
+    DELETE?: FatHttpHandler
     _allows: (ApiMethod | 'HEAD' | 'OPTIONS')[]
 }
 
-interface RegExpNode {
+export interface RegExpNode {
     match: MatchFunction
-    handler: HttpHandlerMap
+    map: HttpHandlerMap
 }
 
-interface PathNode {
+export interface PathNode {
     children: { [segment: string]: PathNode }
     matchers: RegExpNode[]
-    handler?: HttpHandlerMap
+    map?: HttpHandlerMap
 }
+
+export type PathSearchResult =
+    | { type: 'path', map: HttpHandlerMap, result?: undefined }
+    | { type: 'matcher', map: HttpHandlerMap, result: MatchResult }
 
 export class HandlerBook {
 
-    private book = new Map<string, HttpHandlerMap>()
-
-    private index: { [path: string]: { handler: HttpHandlerMap } } = {}
-    private root: PathNode = { children: {}, matchers: [] }
+    _root: PathNode = { children: {}, matchers: [] }
+    private _index: { [path: string]: { map: HttpHandlerMap } } = {}
+    private _cache = new LRU<string, PathSearchResult | undefined>({ max: 200, ttl: 86400000 })
 
     init_path_node(segments: string[]) {
-        let node = this.root
+        let node = this._root
         for (const segment of segments) {
             if (!node.children[segment]) {
                 node.children[segment] = { children: {}, matchers: [] }
@@ -46,53 +50,86 @@ export class HandlerBook {
         return node
     }
 
-    update_handler_node(node: HttpHandlerMap, method: ApiMethod, handler: HttpHandler) {
-        node[method] = handler
-        if (!node._allows.includes(method)) {
-            method === 'GET' ? node._allows.push('HEAD', 'GET') : node._allows.push(method)
-        }
-    }
-
-    record(method: ApiMethod, path: string, handler: HttpHandler) {
+    record(method: ApiMethod, path: string, fat_handler: FatHttpHandler) {
         method = method.toUpperCase() as any
-        if (this.index[path]) {
-            this.update_handler_node(this.index[path].handler, method, handler)
+        if (this._index[path]) {
+            this._update_handler_node(this._index[path].map, method, fat_handler)
         } else {
             const handler_node: HttpHandlerMap = { _allows: ['OPTIONS'] }
-            this.update_handler_node(handler_node, method, handler)
+            this._update_handler_node(handler_node, method, fat_handler)
 
             const tokens = parse(path)
             if (typeof tokens[0] === 'string') {
                 const static_path = tokens[0].replace(/^\//g, '').split('/')
                 const node = this.init_path_node(static_path)
                 if (tokens[1]) {
-                    const regex_node = { match: match(path), handler: handler_node }
+                    const regex_node: RegExpNode = { match: match(path), map: handler_node }
                     node.matchers.push(regex_node)
-                    this.index[path] = regex_node
+                    this._index[path] = regex_node
                 } else {
-                    node.handler = handler_node
-                    this.index[path] = node as { handler: HttpHandlerMap }
+                    node.map = handler_node
+                    this._index[path] = node as { map: HttpHandlerMap }
                 }
             }
         }
-
-        // const regular_method = method.toUpperCase() as ApiMethod
-        // if (!this.book.has(path)) {
-        //     this.book.set(path, { _allows: ['OPTIONS'] })
-        // }
-        // const map = this.book.get(path)!
-        // map[regular_method] = handler
-        // if (!map._allows.includes(method)) {
-        //     method === 'GET' ? map._allows.push('HEAD', 'GET') : map._allows.push(method)
-        // }
     }
 
-    search_node(path: string): { type: 'path', node: PathNode } | { type: 'matcher', node: RegExpNode, result: Match } | undefined {
-        if (path === '/' || path === '*') {
-            return { type: 'path', node: this.root }
+    find(method: string, path: string): HttpHandler | undefined {
+        method = method.toUpperCase()
+        const regular_method: ApiMethod = method === 'HEAD' ? 'GET' : method as any
+        const search_result = this._search_with_cache(path)
+        const fat_handler = search_result?.map[regular_method]
+        if (!fat_handler) {
+            return
+        } else {
+            const path_args = search_result.result?.params
+            return (req, res, url) => fat_handler(req, res, url, path_args)
+        }
+    }
+
+    get_allow(path: string): string[] | undefined {
+        return this._search_with_cache(path)?.map._allows
+    }
+
+    list(): HttpHandlerDescriptor[] {
+        const res: HttpHandlerDescriptor[] = []
+        for (const path in this._index) {
+            for (const method in this._index[path]) {
+                if (!method.startsWith('_')) {
+                    res.push({ method: method as ApiMethod, path })
+                }
+            }
+        }
+        return res.sort((a, b) => a.path.localeCompare(b.path))
+    }
+
+    private _update_handler_node(node: HttpHandlerMap, method: ApiMethod, handler: FatHttpHandler) {
+        node[method] = handler
+        if (!node._allows.includes(method)) {
+            method === 'GET' ? node._allows.push('HEAD', 'GET') : node._allows.push(method)
+        }
+    }
+
+    private _search_with_cache(path: string): PathSearchResult | undefined {
+        const cache_result = this._cache.get(path)
+        if (cache_result) {
+            return cache_result
+        }
+        const result = this._search(path)
+        this._cache.set(path, result)
+        return result
+    }
+
+    private _search(path: string): PathSearchResult | undefined {
+        if (!path || path === '/' || path === '*') {
+            if (!this._root.map) {
+                return
+            } else {
+                return { type: 'path', map: this._root.map }
+            }
         }
         const segments = path.replace(/^\//g, '').split('/')
-        let node = this.root
+        let node = this._root
         for (const segment of segments) {
             if (node.children[segment]) {
                 node = node.children[segment]
@@ -101,38 +138,15 @@ export class HandlerBook {
             for (const matcher of node.matchers) {
                 const result = matcher.match(path)
                 if (result) {
-                    return { type: 'matcher', node: matcher, result }
+                    return { type: 'matcher', map: matcher.map, result }
                 }
             }
             return
         }
-        if (node.handler) {
-            return { type: 'path', node }
+        if (node.map) {
+            return { type: 'path', map: node.map }
         } else {
             return
         }
-    }
-
-    find(method: string, path: string): HttpHandler | undefined {
-        const regular_method = method.toUpperCase() as ApiMethod | 'HEAD'
-        if (regular_method === 'HEAD') {
-            return this.book.get(path)?.['GET']
-        } else {
-            return this.book.get(path)?.[regular_method]
-        }
-    }
-
-    get_allow(path: string): string[] | undefined {
-        return this.book.get(path)?._allows
-    }
-
-    list(): HttpHandlerDescriptor[] {
-        const res: HttpHandlerDescriptor[] = []
-        this.book.forEach((v, path) => {
-            Object.entries(v).forEach(([method]) => {
-                method.startsWith('_') || res.push({ method: method as ApiMethod, path })
-            })
-        })
-        return res.sort((a, b) => a.path.localeCompare(b.path))
     }
 }

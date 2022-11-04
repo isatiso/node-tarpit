@@ -4,6 +4,9 @@
         "baseUrl": "./",
         "outDir": "./lib",
         "paths": {
+            "@tarpit/judge": [
+                "../../packages/judge/src"
+            ],
             "@tarpit/rabbitmq": [
                 "../../modules/rabbitmq/src"
             ],

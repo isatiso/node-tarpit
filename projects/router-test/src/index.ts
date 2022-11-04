@@ -7,7 +7,8 @@
  */
 
 import { Platform, TpInspector, TpRoot } from '@tarpit/core'
-import { Get, HttpServerModule, Params, Post, RawBody, TpRouter } from '@tarpit/http'
+import { Get, HttpInspector, HttpServerModule, Params, PathArgs, Post, RawBody, TpRouter } from '@tarpit/http'
+import { Jtl } from '@tarpit/judge'
 import { GenericCollection, MongodbModule, TpMongo } from '@tarpit/mongodb'
 
 @TpMongo('main', 'user')
@@ -26,18 +27,23 @@ class EnhancedAccountData extends AccountData {
 class TestRouter {
 
     constructor(
+        private inspector: HttpInspector,
         private account: AccountData,
         private ea: EnhancedAccountData,
     ) {
+        console.log(this.inspector.list_router())
         console.log(account)
         console.log(ea)
     }
 
-    @Get()
-    async asd(params: Params<{ id: string }>) {
+    @Get('account/:user_id/:item_id')
+    async asd(args: PathArgs<{ user_id: string, item_id: string }>) {
         console.log(this.account.guess())
-        await this.account.updateOne({ id: params.get_first('id') }, { $set: { name: 'tarpit' } }, { upsert: true })
-        return this.account.findOne({ id: params.get_first('id') })
+        const user_id = args.ensure('user_id', Jtl.string)
+        const item_id = args.ensure('item_id', Jtl.string)
+        return { user_id, item_id }
+        // await this.account.updateOne({ id: args.ensure('user_id', Jtl.string) }, { $set: { name: args.ensure('item_id', Jtl.string) } }, { upsert: true })
+        // return this.account.findOne({ id: args.ensure('user_id', Jtl.string) })
     }
 
     @Get()

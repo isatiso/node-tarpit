@@ -11,9 +11,9 @@ import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Readable, Transform, TransformCallback } from 'stream'
-import { UrlWithParsedQuery } from 'url'
+import { FatHttpHandler } from '../__types__'
 import { TpRouter } from '../annotations'
-import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
+import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
 import { Finish, StandardError, TpHttpError } from '../errors'
 import { RouteUnit } from '../tools/collect-routes'
 import { flush_response } from '../tools/flush-response'
@@ -28,7 +28,7 @@ import { HttpServer } from './http-server'
 import { HttpUrlParser } from './http-url-parser'
 
 const BODY_TOKEN: any[] = [MimeBody, JsonBody, FormBody, TextBody, RawBody]
-const REQUEST_TOKEN: any[] = [RequestHeaders, Guard, Params, IncomingMessage, TpRequest]
+const REQUEST_TOKEN: any[] = [RequestHeaders, Guard, Params, PathArgs, IncomingMessage, TpRequest]
 const RESPONSE_TOKEN: any[] = [ServerResponse, TpResponse]
 const ALL_HANDLER_TOKEN: any[] = [HttpContext, ResponseCache].concat(BODY_TOKEN, REQUEST_TOKEN, RESPONSE_TOKEN)
 const ALL_HANDLER_TOKEN_SET = new Set(ALL_HANDLER_TOKEN)
@@ -105,15 +105,15 @@ export class HttpRouters {
     }
 
     add_router(unit: RouteUnit, meta: TpRouter): void {
-        const router = this.make_router(meta.injector!, unit)
+        const fat_handler = this.make_fat_handler(meta.injector!, unit)
         const head = meta.path.replace(/\/+\s*$/g, '')
         const tail = unit.path_tail.replace(/^\s*\/+/g, '')
-        const full_path = head + '/' + tail
+        const path = head + '/' + tail
 
-        unit.methods.forEach(method => this.handler_book.record(method, full_path, router))
+        unit.methods.forEach(method => this.handler_book.record(method, path, fat_handler))
     }
 
-    private make_router(injector: Injector, unit: RouteUnit) {
+    private make_fat_handler(injector: Injector, unit: RouteUnit): FatHttpHandler {
         const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
         const body_max_length = this.c_body_max_length
         const proxy_config = this.c_proxy
@@ -126,7 +126,12 @@ export class HttpRouters {
         const pv_error_formatter = injector.get(HttpErrorFormatter)!
         const pv_response_formatter = injector.get(HttpResponseFormatter)!
 
-        return async function(req: IncomingMessage, res: ServerResponse, parsed_url: UrlWithParsedQuery) {
+        return async function(
+            req,
+            res,
+            parsed_url,
+            path_args,
+        ) {
 
             const cache_proxy = pv_cache_proxy.create()
             const error_formatter = pv_error_formatter.create()
@@ -211,6 +216,8 @@ export class HttpRouters {
                             return new RequestHeaders(req.headers)
                         case Params:
                             return new Params(parsed_url.query)
+                        case PathArgs:
+                            return new PathArgs(path_args)
                         case IncomingMessage:
                             return req
                         case ServerResponse:
