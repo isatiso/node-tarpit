@@ -11,9 +11,9 @@ import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Readable, Transform, TransformCallback } from 'stream'
-import { UrlWithParsedQuery } from 'url'
+import { FatHttpHandler } from '../__types__'
 import { TpRouter } from '../annotations'
-import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
+import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
 import { Finish, StandardError, TpHttpError } from '../errors'
 import { RouteUnit } from '../tools/collect-routes'
 import { flush_response } from '../tools/flush-response'
@@ -28,7 +28,7 @@ import { HttpServer } from './http-server'
 import { HttpUrlParser } from './http-url-parser'
 
 const BODY_TOKEN: any[] = [MimeBody, JsonBody, FormBody, TextBody, RawBody]
-const REQUEST_TOKEN: any[] = [RequestHeaders, Guard, Params, IncomingMessage, TpRequest]
+const REQUEST_TOKEN: any[] = [RequestHeaders, Guard, Params, PathArgs, IncomingMessage, TpRequest]
 const RESPONSE_TOKEN: any[] = [ServerResponse, TpResponse]
 const ALL_HANDLER_TOKEN: any[] = [HttpContext, ResponseCache].concat(BODY_TOKEN, REQUEST_TOKEN, RESPONSE_TOKEN)
 const ALL_HANDLER_TOKEN_SET = new Set(ALL_HANDLER_TOKEN)
@@ -105,34 +105,40 @@ export class HttpRouters {
     }
 
     add_router(unit: RouteUnit, meta: TpRouter): void {
-        const router = this.make_router(meta.injector!, unit)
-        const prefix = meta.path.replace(/\/{2,}/g, '/').replace(/\/\s*$/g, '')
-        const suffix = unit.path_tail.replace(/(^\/|\/$)/g, '')
-        const full_path = prefix + '/' + suffix
+        const fat_handler = this.make_fat_handler(meta.injector!, unit)
+        const head = meta.path.replace(/\/+\s*$/g, '')
+        const tail = unit.path_tail.replace(/^\s*\/+/g, '').replace(/\/+\s*$/g, '')
+        const path = head + '/' + tail
 
-        unit.methods.forEach(m => this.handler_book.record(m, full_path, router))
+        unit.methods.forEach(method => this.handler_book.record(method, path, fat_handler))
+        this.handler_book.clear_cache()
     }
 
-    private make_router(injector: Injector, unit: RouteUnit) {
+    private make_fat_handler(injector: Injector, unit: RouteUnit): FatHttpHandler {
         const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
         const body_max_length = this.c_body_max_length
         const proxy_config = this.c_proxy
         const reader = this.reader
         const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
 
-        const provider_au = injector.get(HttpAuthenticator)!
-        const provider_cp = injector.get(HttpCacheProxy)!
-        const provider_ef = injector.get(HttpErrorFormatter)!
-        const provider_hh = injector.get(HttpHooks)!
-        const provider_rf = injector.get(HttpResponseFormatter)!
+        const pv_authenticator = injector.get(HttpAuthenticator)!
+        const pv_cache_proxy = injector.get(HttpCacheProxy)!
+        const pv_hooks = injector.get(HttpHooks)!
+        const pv_error_formatter = injector.get(HttpErrorFormatter)!
+        const pv_response_formatter = injector.get(HttpResponseFormatter)!
 
-        return async function(req: IncomingMessage, res: ServerResponse, parsed_url: UrlWithParsedQuery) {
+        return async function(
+            req,
+            res,
+            parsed_url,
+            path_args,
+        ) {
 
-            const cache_proxy = provider_cp.create()
-            const error_formatter = provider_ef.create()
-            const http_hooks = provider_hh.create()
-            const response_formatter = provider_rf.create()
-            const authenticator = provider_au.create()
+            const cache_proxy = pv_cache_proxy.create()
+            const error_formatter = pv_error_formatter.create()
+            const http_hooks = pv_hooks.create()
+            const response_formatter = pv_response_formatter.create()
+            const authenticator = pv_authenticator.create()
 
             const request = new TpRequest(req, parsed_url, proxy_config)
             const response = new TpResponse(res, request)
@@ -211,6 +217,8 @@ export class HttpRouters {
                             return new RequestHeaders(req.headers)
                         case Params:
                             return new Params(parsed_url.query)
+                        case PathArgs:
+                            return new PathArgs(path_args)
                         case IncomingMessage:
                             return req
                         case ServerResponse:

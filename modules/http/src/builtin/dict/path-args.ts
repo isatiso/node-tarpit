@@ -6,6 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-export { RequestHeaders } from './header'
-export { Params } from './params'
-export { PathArgs } from './path-args'
+import { Judgement } from '@tarpit/judge'
+
+export class PathArgs<T extends object> extends Judgement<T> {
+
+}

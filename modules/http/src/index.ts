@@ -74,6 +74,7 @@ export {
     Guard,
     HttpContext,
     Params,
+    PathArgs,
     RequestHeaders,
     ResponseCache,
     TpRequest,

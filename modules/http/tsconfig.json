@@ -11,7 +11,10 @@
                 "../core/src"
             ],
             "@tarpit/config": [
-                "../config/src"
+                "../../packages/config/src"
+            ],
+            "@tarpit/judge": [
+                "../../packages/judge/src"
             ]
         }
     },

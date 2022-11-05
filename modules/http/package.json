@@ -46,6 +46,7 @@
         "lru-cache": "^7.14.0",
         "mime-types": "^2.1.35",
         "negotiator": "^0.6.3",
+        "path-to-regexp": "^6.2.1",
         "tslib": "^2.4.1",
         "type-is": "^1.6.18"
     },
