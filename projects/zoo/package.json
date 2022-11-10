@@ -36,13 +36,13 @@
         "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.26",
-        "@tarpit/core": "^0.5.26",
-        "@tarpit/http": "^0.5.26",
-        "@tarpit/judge": "^0.5.26",
-        "@tarpit/mongodb": "^0.5.27",
-        "@tarpit/rabbitmq": "^0.5.26",
-        "@tarpit/schedule": "^0.5.26",
+        "@tarpit/config": "^0.5.30",
+        "@tarpit/core": "^0.5.30",
+        "@tarpit/http": "^0.5.30",
+        "@tarpit/judge": "^0.5.30",
+        "@tarpit/mongodb": "^0.5.30",
+        "@tarpit/rabbitmq": "^0.5.30",
+        "@tarpit/schedule": "^0.5.30",
         "tslib": "^2.4.1"
     }
 }

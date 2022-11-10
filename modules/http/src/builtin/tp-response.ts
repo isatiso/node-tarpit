@@ -154,6 +154,22 @@ export class TpResponse {
         return type?.split(';', 1)[0].trim()
     }
 
+    get last_modified(): number | undefined {
+        const header = this.get('Last-Modified')
+        if (Array.isArray(header) && header[0]) {
+            return Date.parse(header[0])
+        } else if (typeof header === 'string') {
+            return Date.parse(header)
+        } else {
+            return
+        }
+    }
+
+    get etag(): string | undefined {
+        const header = this.get('ETag')
+        return Array.isArray(header) ? header[0] : header
+    }
+
     set_content_type(type: string) {
         type = lookup_content_type(type)
         if (type) {

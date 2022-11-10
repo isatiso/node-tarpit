@@ -21,7 +21,7 @@ export class StandardError extends TpHttpError {
     }
 }
 
-export function throw_standard_error(status: number, desc?: Desc & { msg?: string }): never {
+export function throw_standard_status(status: number, desc?: Desc & { msg?: string }): never {
     const improved_msg = desc?.msg ?? HTTP_STATUS.message_of(status) ?? HTTP_STATUS.message_of(500)
     throw new StandardError(status, improved_msg, desc)
 }
@@ -32,9 +32,9 @@ function create_tools(name: string, status: number): ThrowStandardError {
     return {
         [name]: function(desc?: string | (Desc & { msg?: string })): never {
             if (typeof desc === 'string') {
-                throw_standard_error(status, { msg: desc })
+                throw_standard_status(status, { msg: desc })
             } else {
-                throw_standard_error(status, desc)
+                throw_standard_status(status, desc)
             }
         }
     }[name]

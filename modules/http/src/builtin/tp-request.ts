@@ -128,6 +128,24 @@ export class TpRequest {
         return this._accepts
     }
 
+    get if_match() {
+        return this.get('If-Match')
+    }
+
+    get if_none_match() {
+        return this.get('If-None-Match')
+    }
+
+    get if_modified_since() {
+        const header = this.get('If-Modified-Since')
+        return header ? Date.parse(header) : undefined
+    }
+
+    get if_unmodified_since() {
+        const header = this.get('If-Unmodified-Since')
+        return header ? Date.parse(header) : undefined
+    }
+
     is(type: string, ...types: string[]) {
         return type_is(this.req, type, ...types)
     }

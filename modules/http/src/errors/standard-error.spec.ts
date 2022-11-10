@@ -9,7 +9,7 @@
 import { TpError } from '@tarpit/error'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { StandardError, throw_bad_request, throw_forbidden, throw_standard_error, throw_unauthorized } from './standard-error'
+import { StandardError, throw_bad_request, throw_forbidden, throw_standard_status, throw_unauthorized } from './standard-error'
 import { TpHttpError } from './tp-http-error'
 
 chai.use(cap)
@@ -19,15 +19,15 @@ describe('standard-error.ts', function() {
     describe('#throw_standard_error()', function() {
 
         it('should throw StandardError', function() {
-            expect(() => throw_standard_error(403, { msg: 'Refused' })).to.throw('Refused')
+            expect(() => throw_standard_status(403, { msg: 'Refused' })).to.throw('Refused')
         })
 
         it('should use default message of status if message is not specified', function() {
-            expect(() => throw_standard_error(403)).to.throw('Forbidden')
+            expect(() => throw_standard_status(403)).to.throw('Forbidden')
         })
 
         it('should use default message of status  500 if given status not exist', function() {
-            expect(() => throw_standard_error(999)).to.throw('Internal Server Error')
+            expect(() => throw_standard_status(999)).to.throw('Internal Server Error')
         })
     })
 

@@ -240,7 +240,11 @@ export class HttpRouters {
                 Object.entries(handle_result.headers).forEach(([k, v]) => response.set(k, v))
                 response.status = handle_result.status
                 response.body = error_formatter.format(context, handle_result)
-                await http_hooks.on_error(context, handle_result).catch(() => undefined)
+                if (response.status < 400) {
+                    await http_hooks.on_finish(context, response.body).catch(() => undefined)
+                } else {
+                    await http_hooks.on_error(context, handle_result).catch(() => undefined)
+                }
             } else {
                 response.body = response_formatter.format(context, handle_result)
                 await http_hooks.on_finish(context, handle_result).catch(() => undefined)

@@ -17,6 +17,7 @@ import { HttpInspector } from './services/http-inspector'
 import { HttpResponseFormatter } from './services/http-response-formatter'
 import { HttpRouters } from './services/http-routers'
 import { HttpServer } from './services/http-server'
+import { HttpStatic } from './services/http-static'
 import { HttpUrlParser } from './services/http-url-parser'
 import { collect_routes } from './tools/collect-routes'
 
@@ -29,6 +30,7 @@ import { collect_routes } from './tools/collect-routes'
         HttpUrlParser,
         HttpInspector,
         HttpRouters,
+        HttpStatic,
         HttpServer,
         HttpCacheProxy,
         HttpHooks,

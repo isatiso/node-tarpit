@@ -1,6 +1,0 @@
-packages:
-  - 'actions/*'
-  - 'modules/*'
-  - 'packages/*'
-  - 'projects/*'
-  - 'supports/*'

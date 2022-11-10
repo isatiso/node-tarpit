@@ -10,4 +10,4 @@ export { TpHttpError, TpHttpErrorDescription, TpHttpErrorHeader } from './tp-htt
 export { BusinessError, throw_business } from './business-error'
 export { CrashError, throw_crash } from './crash-error'
 export { Finish, finish } from './finish'
-export { StandardError, throw_standard_error, throw_unauthorized, throw_bad_request } from './standard-error'
+export { StandardError, throw_standard_status, throw_unauthorized, throw_bad_request } from './standard-error'

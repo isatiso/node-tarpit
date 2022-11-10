@@ -21,7 +21,7 @@ import {
     throw_bad_request,
     throw_business,
     throw_crash,
-    throw_standard_error,
+    throw_standard_status,
     throw_unauthorized,
     TpHttpError,
     TpRouter
@@ -55,7 +55,7 @@ class NormalRouter {
 
     @Get('standard')
     async test_standard() {
-        throw_standard_error(401)
+        throw_standard_status(401)
     }
 
     @Get('explicit-standard')

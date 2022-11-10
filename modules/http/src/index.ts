@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ProxyConfig } from './__types__'
+import { CacheControl, ProxyConfig } from './__types__'
 
 declare module '@tarpit/config' {
 
@@ -15,6 +15,14 @@ declare module '@tarpit/config' {
             port: number
             proxy?: ProxyConfig
             expose_error?: boolean
+            static?: {
+                root: string,
+                index?: string[],
+                extensions?: `.${string}`[],
+                cache_size?: number
+                vary?: string[] | '*'
+                cache_control?: CacheControl
+            }
             server?: {
                 keepalive_timeout?: number
                 terminate_timeout?: number
@@ -27,7 +35,7 @@ declare module '@tarpit/config' {
             },
             body?: {
                 max_length?: number
-            }
+            },
         }
     }
 }
@@ -56,7 +64,7 @@ export {
     throw_bad_request,
     throw_business,
     throw_crash,
-    throw_standard_error,
+    throw_standard_status,
     throw_unauthorized,
 } from './errors'
 export { HttpAuthenticator } from './services/http-authenticator'
@@ -65,6 +73,7 @@ export { HttpErrorFormatter } from './services/http-error-formatter'
 export { HttpHooks } from './services/http-hooks'
 export { HttpInspector } from './services/http-inspector'
 export { HttpResponseFormatter } from './services/http-response-formatter'
+export { HttpStatic } from './services/http-static'
 export {
     FormBody,
     JsonBody,
