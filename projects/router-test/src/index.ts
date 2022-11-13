@@ -32,14 +32,13 @@ class TestRouter {
         private ea: EnhancedAccountData,
         private http_static: HttpStatic,
     ) {
-        console.log(this.inspector.list_router())
-        console.log(account)
-        console.log(ea)
+        // console.log(this.inspector.list_router())
+        // console.log(account)
+        // console.log(ea)
     }
 
     @Get('assets/(.*\\..*)')
     async avatar(args: PathArgs<{ user_id: string }>, request: TpRequest, response: TpResponse) {
-        console.log('kljlkj')
         return this.http_static.serve(request, response)
     }
 
@@ -86,7 +85,7 @@ export class TestRoot {
             port: 3000,
             expose_error: true,
             static: {
-                root: '/Users/plank/code/node-tarpit/assets'
+                root: '/Users/plank/Downloads'
             }
         },
         mongodb: {

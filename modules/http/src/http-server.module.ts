@@ -11,10 +11,9 @@ import { TpLoader, TpModule } from '@tarpit/core'
 import { TpRouter, TpRouterToken } from './annotations'
 import { HttpAuthenticator } from './services/http-authenticator'
 import { HttpCacheProxy } from './services/http-cache-proxy'
-import { HttpErrorFormatter } from './services/http-error-formatter'
 import { HttpHooks } from './services/http-hooks'
 import { HttpInspector } from './services/http-inspector'
-import { HttpResponseFormatter } from './services/http-response-formatter'
+import { HttpBodyFormatter } from './services/http-body-formatter'
 import { HttpRouters } from './services/http-routers'
 import { HttpServer } from './services/http-server'
 import { HttpStatic } from './services/http-static'
@@ -35,8 +34,7 @@ import { collect_routes } from './tools/collect-routes'
         HttpCacheProxy,
         HttpHooks,
         HttpAuthenticator,
-        HttpResponseFormatter,
-        HttpErrorFormatter,
+        HttpBodyFormatter,
     ]
 })
 export class HttpServerModule {

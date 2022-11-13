@@ -20,6 +20,7 @@ declare module '@tarpit/config' {
                 index?: string[],
                 extensions?: `.${string}`[],
                 cache_size?: number
+                dotfile?: 'allow' | 'ignore' | 'deny'
                 vary?: string[] | '*'
                 cache_control?: CacheControl
             }
@@ -41,6 +42,8 @@ declare module '@tarpit/config' {
 }
 
 export * from './__types__'
+export * from './errors'
+
 export {
     TpRouter,
     CacheUnder,
@@ -52,27 +55,12 @@ export {
     Route,
     RouteProps,
 } from './annotations'
-export {
-    TpHttpErrorDescription,
-    TpHttpErrorHeader,
-    BusinessError,
-    CrashError,
-    Finish,
-    StandardError,
-    TpHttpError,
-    finish,
-    throw_bad_request,
-    throw_business,
-    throw_crash,
-    throw_standard_status,
-    throw_unauthorized,
-} from './errors'
+
 export { HttpAuthenticator } from './services/http-authenticator'
 export { HttpCacheProxy } from './services/http-cache-proxy'
-export { HttpErrorFormatter } from './services/http-error-formatter'
 export { HttpHooks } from './services/http-hooks'
 export { HttpInspector } from './services/http-inspector'
-export { HttpResponseFormatter } from './services/http-response-formatter'
+export { HttpBodyFormatter } from './services/http-body-formatter'
 export { HttpStatic } from './services/http-static'
 export {
     FormBody,

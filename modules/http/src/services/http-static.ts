@@ -11,7 +11,7 @@ import { TpService } from '@tarpit/core'
 import fs from 'fs'
 import { CacheControl } from '../__types__'
 import { TpRequest, TpResponse } from '../builtin'
-import { finish, throw_standard_status } from '../errors'
+import { finish, throw_forbidden, throw_not_found, throw_not_modified, throw_precondition_failed } from '../errors'
 import { FileWatcher, SearchedFile } from '../tools/file-watcher'
 import { MIME } from '../tools/mime'
 
@@ -31,12 +31,19 @@ function make_cache_control(options: CacheControl): string {
     }).filter(key => key).join(', ')
 }
 
+export interface ServeStaticOptions {
+    cache_control?: CacheControl
+    vary?: string[]
+    path?: string
+}
+
 @TpService({ inject_root: true })
 export class HttpStatic {
 
     private _mime = new MIME()
     private root: string = this.config.get('http.static.root')
     private cache_size: number = this.config.get('http.static.cache_size') ?? 100
+    private dotfile = this.config.get('http.static.dotfile') ?? 'ignore'
     private vary = this.config.get('http.static.vary')
     private cache_control = this.config.get('http.static.cache_control')
     private readonly file_watcher?: FileWatcher
@@ -56,18 +63,27 @@ export class HttpStatic {
         }
     }
 
-    async serve(req: TpRequest, res: TpResponse, options?: { cache_control?: CacheControl, vary?: string[], path?: string }) {
+    async serve(req: TpRequest, res: TpResponse, options?: ServeStaticOptions) {
+
         const file = options?.path ?? req.path
         if (!file) {
             // TODO: adjust status
-            console.log(`nofile options: ${options?.path} request: ${req.path}`)
-            throw_standard_status(404)
+            console.log(`no file options: ${options?.path} request: ${req.path}`)
+            throw_not_found()
         }
 
-        const searched_file = await this.file_watcher?.lookup(file)
+        const decoded_file = decodeURI(file)
+        const searched_file = await this.file_watcher?.lookup(decoded_file)
         if (!searched_file) {
-            console.log(`no searched file file: ${file} ${this.file_watcher?.constructor.name}`)
-            throw_standard_status(404)
+            throw_not_found()
+        }
+
+        if (searched_file.is_dot && this.dotfile !== 'allow') {
+            if (this.dotfile === 'deny') {
+                throw_forbidden()
+            } else if (this.dotfile === 'ignore') {
+                throw_not_found()
+            }
         }
 
         if (res.res.headersSent) {
@@ -81,11 +97,11 @@ export class HttpStatic {
 
         if (this.is_conditional_get(req)) {
             if (this.is_precondition_failure(req, res)) {
-                throw_standard_status(412)
+                throw_precondition_failed()
             }
 
             if (this.is_fresh(req, res)) {
-                throw_standard_status(304)
+                throw_not_modified()
             }
         }
 

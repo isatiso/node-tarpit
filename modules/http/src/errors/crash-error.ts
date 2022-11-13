@@ -6,11 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpHttpError, TpHttpErrorDescription } from './tp-http-error'
+import { TpHttpFinish, TpHttpErrorDescription } from './tp-http-finish'
 
 type Desc = Omit<TpHttpErrorDescription, 'code' | 'msg'>
 
-export class CrashError extends TpHttpError {
+export class CrashError extends TpHttpFinish {
     constructor(
         code: number | string,
         msg: string,

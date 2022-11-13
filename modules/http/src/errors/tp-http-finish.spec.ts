@@ -10,7 +10,7 @@ import { TpError } from '@tarpit/error'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { HTTP_STATUS } from '../tools/http-status'
-import { TpHttpError } from './tp-http-error'
+import { TpHttpFinish } from './tp-http-finish'
 
 chai.use(cap)
 
@@ -19,17 +19,17 @@ describe('tp-http-error.ts', function() {
     describe('TpHttpError', function() {
 
         it('should new instance', function() {
-            const instance = new TpHttpError({ code: 'ERR.code', msg: 'something wrong', status: 500 })
+            const instance = new TpHttpFinish({ code: 'ERR.code', msg: 'something wrong', status: 500 })
             expect(instance).to.be.instanceof(TpError)
         })
 
         it('should use 500 as status if given status is not Integer or out of range', function() {
-            const instance = new TpHttpError({ code: 'ERR.code', msg: 'something wrong', status: 2 })
+            const instance = new TpHttpFinish({ code: 'ERR.code', msg: 'something wrong', status: 2 })
             expect(instance.status).to.equal(500)
         })
 
         it('should jsonify with fields', function() {
-            const instance = new TpHttpError({
+            const instance = new TpHttpFinish({
                 code: 'ERR.code',
                 msg: 'something wrong',
                 status: 500,

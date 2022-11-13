@@ -27,14 +27,7 @@ export function flush_response(response: TpResponse) {
         return response.res.end()
     }
 
-    if (response.body === undefined) {
-        response.body = response.message || response.status + ''
-        response.set('Content-Type', 'text/plain; charset=utf-8')
-        response.figure_out_length()
-        return response.res.end(response.body)
-    }
-
-    if (response.body === null) {
+    if (response.body == null) {
         response.remove('Content-Type')
         response.remove('Transfer-Encoding')
         return response.res.end()

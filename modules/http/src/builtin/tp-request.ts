@@ -7,13 +7,13 @@
  */
 
 import { TpConfigSchema } from '@tarpit/config'
+import { Negotiator } from '@tarpit/negotiator'
 import { IncomingHttpHeaders, IncomingMessage } from 'http'
 import net from 'net'
 import { ParsedUrlQuery } from 'querystring'
 import tls from 'tls'
 import type_is from 'type-is'
 import { UrlWithParsedQuery } from 'url'
-import { AcceptParser } from '../tools/accept-parser'
 
 export class TpRequest {
 
@@ -120,10 +120,10 @@ export class TpRequest {
         return len ? +len : undefined
     }
 
-    private _accepts?: AcceptParser
+    private _accepts?: Negotiator
     get accepts() {
         if (!this._accepts) {
-            this._accepts = new AcceptParser(this.req)
+            this._accepts = new Negotiator(this.req.headers)
         }
         return this._accepts
     }

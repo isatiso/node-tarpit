@@ -13,12 +13,12 @@ export interface TpErrorDescription {
     readonly origin?: any
 }
 
-export class TpError extends Error {
+export class TpError<E = any> extends Error {
 
     public readonly code: string | number
     public readonly msg: string
     public readonly detail?: object
-    public readonly origin?: any
+    public readonly origin?: E
     public readonly stack: string
 
     protected jsonify_fields: Array<keyof this> = ['code', 'msg', 'detail', 'stack']

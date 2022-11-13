@@ -11,19 +11,18 @@ import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Readable, Transform, TransformCallback } from 'stream'
-import { FatHttpHandler } from '../__types__'
+import { FatHttpHandler, TpHttpResponseType } from '../__types__'
 import { TpRouter } from '../annotations'
 import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
-import { Finish, StandardError, TpHttpError } from '../errors'
+import { Finish, TpHttpFinish } from '../errors'
 import { RouteUnit } from '../tools/collect-routes'
 import { flush_response } from '../tools/flush-response'
 import { HandlerBook } from '../tools/handler-book'
 import { CODES_KEY, HTTP_STATUS } from '../tools/http-status'
 import { HttpAuthenticator } from './http-authenticator'
 import { HttpCacheProxy } from './http-cache-proxy'
-import { HttpErrorFormatter } from './http-error-formatter'
 import { HttpHooks } from './http-hooks'
-import { HttpResponseFormatter } from './http-response-formatter'
+import { HttpBodyFormatter } from './http-body-formatter'
 import { HttpServer } from './http-server'
 import { HttpUrlParser } from './http-url-parser'
 
@@ -46,7 +45,11 @@ export function reply(res: ServerResponse, status: CODES_KEY) {
 }
 
 function wrap_error(err: any) {
-    return new StandardError(500, 'Internal Server Error', { origin: err })
+    return new TpHttpFinish({ status: 500, code: 'ERR.UNCAUGHT_ERROR', msg: 'Internal Server Error', origin: err })
+}
+
+function wrap_finish(res: TpHttpResponseType) {
+    return new TpHttpFinish({ status: 200, code: 'OK', msg: 'OK', body: res })
 }
 
 @TpService({ inject_root: true })
@@ -124,8 +127,7 @@ export class HttpRouters {
         const pv_authenticator = injector.get(HttpAuthenticator)!
         const pv_cache_proxy = injector.get(HttpCacheProxy)!
         const pv_hooks = injector.get(HttpHooks)!
-        const pv_error_formatter = injector.get(HttpErrorFormatter)!
-        const pv_response_formatter = injector.get(HttpResponseFormatter)!
+        const pv_body_formatter = injector.get(HttpBodyFormatter)!
 
         return async function(
             req,
@@ -135,16 +137,14 @@ export class HttpRouters {
         ) {
 
             const cache_proxy = pv_cache_proxy.create()
-            const error_formatter = pv_error_formatter.create()
             const http_hooks = pv_hooks.create()
-            const response_formatter = pv_response_formatter.create()
+            const formatter = pv_body_formatter.create()
             const authenticator = pv_authenticator.create()
 
             const request = new TpRequest(req, parsed_url, proxy_config)
             const response = new TpResponse(res, request)
             const context = new HttpContext(request, response)
 
-            let handle_result: any
             let stream: Readable = req
             if (body_max_length) {
                 let received = 0
@@ -188,7 +188,7 @@ export class HttpRouters {
                     ? ResponseCache.create(cache_proxy, unit.cache_scope, unit.cache_expire_secs)
                     : undefined
 
-                handle_result = await unit.handler(...param_deps.map(({ provider, token }, index) => {
+                const result = await unit.handler(...param_deps.map(({ provider, token }, index) => {
                     if (provider) {
                         return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
                     }
@@ -225,29 +225,25 @@ export class HttpRouters {
                             return res
                     }
                 }))
+                context.result = TpHttpFinish.isTpHttpFinish(result) ? result : wrap_finish(result)
             } catch (reason) {
                 if (reason instanceof Finish) {
-                    handle_result = await Promise.resolve(reason.response)
-                        .catch((err: any) => err instanceof TpHttpError ? err : wrap_error(err))
-                } else if (reason instanceof TpHttpError) {
-                    handle_result = reason
+                    await Promise.resolve(reason.response)
+                        .then(res => context.result = wrap_finish(res))
+                        .catch(err => context.result = TpHttpFinish.isTpHttpFinish(err) ? err : wrap_error(err))
                 } else {
-                    handle_result = wrap_error(reason)
+                    context.result = TpHttpFinish.isTpHttpFinish(reason) ? reason : wrap_error(reason)
                 }
             }
 
-            if (handle_result instanceof TpHttpError) {
-                Object.entries(handle_result.headers).forEach(([k, v]) => response.set(k, v))
-                response.status = handle_result.status
-                response.body = error_formatter.format(context, handle_result)
-                if (response.status < 400) {
-                    await http_hooks.on_finish(context, response.body).catch(() => undefined)
-                } else {
-                    await http_hooks.on_error(context, handle_result).catch(() => undefined)
-                }
+            response.merge(context.result.headers)
+            response.status = context.result.status
+            response.body = formatter.format(context)
+
+            if (context.result.status < 400) {
+                http_hooks.on_finish(context).catch(() => undefined)
             } else {
-                response.body = response_formatter.format(context, handle_result)
-                await http_hooks.on_finish(context, handle_result).catch(() => undefined)
+                http_hooks.on_error(context).catch(() => undefined)
             }
 
             flush_response(response)

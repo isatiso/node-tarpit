@@ -50,7 +50,6 @@ export class FileWatcher {
         const full_path = path.join(this.root, filepath.replace(/^\//, ''))
         const abs_path = path.resolve(full_path)
         const relative_path = path.relative(this.root, abs_path)
-        console.log(`full_path: ${full_path}, abs_path: ${abs_path}, relative_path: ${relative_path}`)
         if (relative_path.startsWith('..')) {
             return
         }
@@ -66,8 +65,6 @@ export class FileWatcher {
             alt_list.push(abs_path)
             this.extensions.forEach(ext => alt_list.push(abs_path + ext))
         }
-
-        console.log('alt_list', alt_list)
 
         for (const name of alt_list) {
             const stats = await fs.promises.stat(name).catch(() => undefined)

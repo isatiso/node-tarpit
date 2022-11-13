@@ -7,17 +7,23 @@
  */
 
 import { HTTP_STATUS } from '../tools/http-status'
-import { TpHttpError, TpHttpErrorDescription } from './tp-http-error'
+import { TpHttpFinish, TpHttpErrorDescription } from './tp-http-finish'
 
 type Desc = Omit<TpHttpErrorDescription, 'code' | 'msg' | 'status'>
 
-export class StandardError extends TpHttpError {
+export class StandardError extends TpHttpFinish {
     constructor(
         status: number,
         msg: string,
         desc?: Desc
     ) {
-        super({ ...desc, code: 'STANDARD_HTTP_ERROR', msg, status })
+        super({
+            ...desc,
+            code: 'STANDARD_HTTP_ERROR',
+            msg,
+            status,
+            headers: { 'Content-Type': 'text/plain', ...desc?.headers }
+        })
     }
 }
 

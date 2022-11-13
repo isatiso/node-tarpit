@@ -7,6 +7,7 @@
  */
 
 import { HttpSession } from '../__types__'
+import { TpHttpFinish } from '../errors'
 import { TpRequest } from './tp-request'
 import { TpResponse } from './tp-response'
 
@@ -14,6 +15,7 @@ export class HttpContext {
 
     public readonly req = this.request.req
     public readonly res = this.response.res
+    public result = new TpHttpFinish({ status: 200, code: 'OK', msg: 'OK' })
     private _custom_data: Partial<HttpSession> = {}
 
     constructor(

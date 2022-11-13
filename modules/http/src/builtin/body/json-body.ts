@@ -8,16 +8,16 @@
 
 import { decode, MIMEContent } from '@tarpit/content-type'
 import { Judgement, MismatchDescription, OnJudgementError } from '@tarpit/judge'
-import { StandardError, throw_bad_request, TpHttpError } from '../../errors'
+import { throw_bad_request, TpHttpFinish } from '../../errors'
 
 function parse_json_body(content: MIMEContent<any>): any {
     content.text = decode(content.raw, content.charset ?? 'utf-8')
     if (typeof content.text !== 'string') {
-        throw new StandardError(400, 'Fail to decode content')
+        throw_bad_request({ msg: 'Fail to decode content' })
     }
     content.data = JSON.parse(content.text)
     if (Object.prototype.toString.call(content.data) !== '[object Object]') {
-        throw new StandardError(400, 'Invalid JSON, only supports object')
+        throw_bad_request({ msg: 'Invalid JSON, only supports object' })
     }
     return content.data
 }
@@ -28,10 +28,10 @@ export class JsonBody<T> extends Judgement<T> {
         try {
             super(parse_json_body(content))
         } catch (e) {
-            if (e instanceof TpHttpError) {
+            if (e instanceof TpHttpFinish) {
                 throw e
             } else {
-                throw new StandardError(400, 'Fail to parse body in JSON format', { origin: e })
+                throw_bad_request({ msg: 'Fail to parse body in JSON format', origin: e })
             }
         }
     }

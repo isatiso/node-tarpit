@@ -8,7 +8,7 @@
 
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { HttpResponseFormatter } from './http-response-formatter'
+import { HttpBodyFormatter } from './http-body-formatter'
 
 chai.use(cap)
 
@@ -16,7 +16,7 @@ describe('http-response-formatter.ts', function() {
 
     describe('HttpResponseFormatter', function() {
 
-        const f = new HttpResponseFormatter()
+        const f = new HttpBodyFormatter()
 
         describe('.format()', function() {
 

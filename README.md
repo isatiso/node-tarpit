@@ -96,7 +96,7 @@ After that, it creates a Platform instance and loads HttpServerModule and FirstR
 
 For every other path, it will respond with a 404 Not Found.
 
-To start, you can use `tsc` to compile it to JavaScript and run it by `node ./index.js`.
+To start, you can use `tsc` to compile it to JavaScript and run it by `node ./index.ts`.
 
 Or directly use `ts-node ./index.ts`.
 

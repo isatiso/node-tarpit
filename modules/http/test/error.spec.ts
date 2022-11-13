@@ -23,7 +23,7 @@ import {
     throw_crash,
     throw_standard_status,
     throw_unauthorized,
-    TpHttpError,
+    TpHttpFinish,
     TpRouter
 } from '../src'
 import { HTTP_STATUS } from '../src/tools/http-status'
@@ -65,7 +65,7 @@ class NormalRouter {
 
     @Get('http')
     async test_http() {
-        throw new TpHttpError({ code: 'PURE_ERROR', msg: 'some message', status: 500 })
+        throw new TpHttpFinish({ code: 'PURE_ERROR', msg: 'some message', status: 500 })
     }
 
     @Get('unauthorized')

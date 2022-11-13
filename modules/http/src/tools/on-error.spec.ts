@@ -9,7 +9,7 @@
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
-import { TpHttpError } from '../errors'
+import { TpHttpFinish } from '../errors'
 import { on_error } from './on-error'
 
 chai.use(cap)
@@ -71,14 +71,14 @@ describe('on-error.ts', function() {
             chai.spy.on(mock_response, 'getHeaderNames', () => ['content-type', 'content-length'])
             chai.spy.on(mock_response, 'removeHeader', (_key: string) => undefined)
             const set_header_spy = chai.spy.on(mock_response, 'setHeader', (_key: string, _value: string) => undefined)
-            on_error(new TpHttpError({ code: '', msg: '', status: 500, headers: { reason: 'reason something', mixin: 'mixin' } }), mock_response as any)
+            on_error(new TpHttpFinish({ code: '', msg: '', status: 500, headers: { reason: 'reason something', mixin: 'mixin' } }), mock_response as any)
             expect(set_header_spy).to.have.been.called.exactly(4)
             expect(set_header_spy).to.have.been.called.with('reason', 'reason something')
             expect(set_header_spy).to.have.been.called.with('mixin', 'mixin')
         })
 
         it('should set content-type and content-length to headers', function() {
-            const mock_error = new TpHttpError({ code: '', msg: 'something', status: 500, headers: { reason: 'reason something', mixin: 'mixin' } })
+            const mock_error = new TpHttpFinish({ code: '', msg: 'something', status: 500, headers: { reason: 'reason something', mixin: 'mixin' } })
             const mock_response = { headersSent: false, writable: true }
             const jsonify_spy = chai.spy.on(mock_error, 'jsonify')
             const set_header_spy = chai.spy.on(mock_response, 'setHeader', (_key: string, _value: string) => undefined)

@@ -6,13 +6,15 @@
  * found in the LICENSE file at source root.
  */
 
+import { TpHttpResponseType } from '../__types__'
+
 export class Finish {
     constructor(
-        public readonly response: any
+        public readonly response: TpHttpResponseType
     ) {
     }
 }
 
-export function finish(response: any): never {
+export function finish(response: TpHttpResponseType): never {
     throw new Finish(response)
 }

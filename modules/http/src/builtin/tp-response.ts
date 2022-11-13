@@ -6,12 +6,14 @@
  * found in the LICENSE file at source root.
  */
 
-import { OutgoingHttpHeaders, ServerResponse } from 'http'
+import { stat } from 'fs'
+import { OutgoingHttpHeader, OutgoingHttpHeaders, ServerResponse } from 'http'
 import LRU from 'lru-cache'
 import mime_types from 'mime-types'
 import { Stream } from 'stream'
 import { is as type_is } from 'type-is'
-import { Finish, throw_crash } from '../errors'
+import { TpHttpResponseType } from '../__types__'
+import { Finish, throw_internal_server_error } from '../errors'
 import { HTTP_STATUS } from '../tools/http-status'
 import { on_error } from '../tools/on-error'
 import { TpRequest } from './tp-request'
@@ -37,7 +39,7 @@ export class TpResponse {
     ) {
     }
 
-    private _body: undefined | null | string | Buffer | Stream | object = undefined
+    private _body?: TpHttpResponseType = undefined
     get body() {
         return this._body
     }
@@ -97,7 +99,10 @@ export class TpResponse {
         }
 
         if (!Number.isInteger(status_code) || !(status_code >= 100 && status_code <= 999)) {
-            throw_crash('ERR.INVALID_STATUS_CODE', 'status code must be an integer within range of [100, 999]')
+            throw_internal_server_error({
+                code: 'ERR.INVALID_STATUS_CODE',
+                msg: 'status code must be an integer within range of [100, 999]'
+            })
         }
 
         this._explicit_status = true
@@ -222,16 +227,17 @@ export class TpResponse {
         }
     }
 
-    set(field: string, val: number | string | string[]): void {
+    set(field: string, val: undefined | null | number | string | string[]): void {
         if (this.res.headersSent) {
             return
         }
         if (Array.isArray(val)) {
-            val = val.map(v => v + '')
+            this.res.setHeader(field, val.map(v => v + ''))
+        } else if (val === undefined) {
+            this.res.removeHeader(field)
         } else {
-            val = val + ''
+            this.res.setHeader(field, val + '')
         }
-        this.res.setHeader(field, val)
     }
 
     remove(field: string) {
@@ -239,6 +245,14 @@ export class TpResponse {
             return
         }
         this.res.removeHeader(field)
+    }
+
+    clear() {
+        this.res.getHeaderNames().forEach(header => this.remove(header))
+    }
+
+    merge(headers: Record<string, OutgoingHttpHeader>) {
+        Object.entries(headers).forEach(([k, v]) => this.set(k, v))
     }
 
     append(field: string, val: number | string | string[]) {

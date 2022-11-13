@@ -10,7 +10,7 @@ import { TpError } from '@tarpit/error'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { BusinessError, throw_business } from './business-error'
-import { TpHttpError } from './tp-http-error'
+import { TpHttpFinish } from './tp-http-finish'
 
 chai.use(cap)
 
@@ -27,7 +27,7 @@ describe('business-error.ts', function() {
 
         it('should new instance', function() {
             const instance = new BusinessError('ERR.whatever', 'Something Wrong')
-            expect(instance).to.be.instanceof(TpHttpError)
+            expect(instance).to.be.instanceof(TpHttpFinish)
             expect(instance).to.be.instanceof(TpError)
         })
 

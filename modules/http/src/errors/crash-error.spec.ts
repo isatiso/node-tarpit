@@ -11,7 +11,7 @@ import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { BusinessError } from './business-error'
 import { CrashError, throw_crash } from './crash-error'
-import { TpHttpError } from './tp-http-error'
+import { TpHttpFinish } from './tp-http-finish'
 
 chai.use(cap)
 
@@ -28,7 +28,7 @@ describe('crash-error.ts', function() {
 
         it('should new instance', function() {
             const instance = new CrashError('ERR.crash', 'server crashed')
-            expect(instance).to.be.instanceof(TpHttpError)
+            expect(instance).to.be.instanceof(TpHttpFinish)
             expect(instance).to.be.instanceof(TpError)
         })
 

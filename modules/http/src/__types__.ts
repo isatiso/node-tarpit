@@ -15,6 +15,8 @@ export type HttpResponseType = null | string | Buffer | Stream | object
 export type HttpHandler = (req: IncomingMessage, res: ServerResponse, url: UrlWithParsedQuery) => Promise<void>
 export type FatHttpHandler = (req: IncomingMessage, res: ServerResponse, url: UrlWithParsedQuery, path_args: object | undefined) => Promise<void>
 
+export type TpHttpResponseType = null | string | Buffer | Stream | object
+
 export interface HttpHandlerDescriptor {
     method: ApiMethod,
     path: string

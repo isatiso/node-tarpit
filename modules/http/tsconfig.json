@@ -21,6 +21,9 @@
             ],
             "@tarpit/error": [
                 "../../packages/error/src"
+            ],
+            "@tarpit/negotiator": [
+                "../../packages/negotiator/src"
             ]
         }
     },
