@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { CacheControl, ProxyConfig } from './__types__'
+import { ProxyConfig } from './__types__'
+import { ResponseCacheControl } from './tools/cache-control'
 
 declare module '@tarpit/config' {
 
@@ -16,13 +17,13 @@ declare module '@tarpit/config' {
             proxy?: ProxyConfig
             expose_error?: boolean
             static?: {
-                root: string,
+                root?: string,
                 index?: string[],
                 extensions?: `.${string}`[],
                 cache_size?: number
                 dotfile?: 'allow' | 'ignore' | 'deny'
                 vary?: string[] | '*'
-                cache_control?: CacheControl
+                cache_control?: ResponseCacheControl
             }
             server?: {
                 keepalive_timeout?: number

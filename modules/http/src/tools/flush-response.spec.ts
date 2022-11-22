@@ -25,11 +25,11 @@ describe('flush-response.ts', function() {
         const headers = {} as NodeJS.Dict<string | string[]>
         const response = { res, headers, request, ...override, } as TpResponse
         const spy_end = chai.spy.on(res, 'end', () => undefined)
-        const spy_figure_out_length = chai.spy.on(response, 'figure_out_length', () => undefined)
+        const spy_get_headers = chai.spy.on(res, 'getHeaders', () => Object.keys(headers))
         const spy_has = chai.spy.on(response, 'has', (key: string) => headers[key.toLowerCase()] !== undefined)
         const spy_set = chai.spy.on(response, 'set', (key: string, value) => headers[key.toLowerCase()] = value)
         const spy_remove = chai.spy.on(response, 'remove', (key: string) => headers[key.toLowerCase()] !== undefined)
-        return { response, request, res, headers, spy_end, spy_figure_out_length, spy_has, spy_set, spy_remove }
+        return { response, request, res, headers, spy_end, spy_has, spy_set, spy_remove, spy_get_headers }
     }
 
     describe('#flush_response()', function() {
@@ -38,43 +38,27 @@ describe('flush-response.ts', function() {
             flush_response({ writable: false } as any)
         })
 
-        it('should set null to body if current status means empty', function() {
+        it('should end response with nothing if current status means empty', function() {
             const { response, spy_end } = mock_response({ writable: true, status: 204 })
             flush_response(response)
-            expect(response.body).to.be.null
-            expect(spy_end).to.have.been.called.once
-        })
-
-        it('should figure out content length if method is HEAD and Content-Length not exists', function() {
-            const { request, response, spy_end, spy_figure_out_length } = mock_response({ writable: true })
-            request.method = 'HEAD'
-            flush_response(response)
-            expect(spy_figure_out_length).to.have.been.called.once
             expect(spy_end).to.have.been.called.once
         })
 
         it('should just end response if method is HEAD and Content-Length exists', function() {
-            const { request, response, headers, spy_end, spy_figure_out_length } = mock_response({ writable: true })
+            const { request, response, headers, spy_end } = mock_response({ writable: true })
             request.method = 'HEAD'
             headers['content-length'] = '123'
             flush_response(response)
-            expect(spy_figure_out_length).to.have.not.been.called()
             expect(spy_end).to.have.been.called.once
         })
 
-        it('should set body as status message if body is undefined', function() {
-            const { response, spy_end, spy_figure_out_length, spy_set } = mock_response({ writable: true, message: 'Not Found', status: 404 })
+        it('should complete message if it is empty', function() {
+            const body = Buffer.from('something')
+            const { response } = mock_response({ writable: true, body })
+            response.status = 412
+            response.message = ''
             flush_response(response)
-            expect(response.body).to.equal('Not Found')
-            expect(spy_set).to.have.been.called.with('Content-Type', 'text/plain; charset=utf-8')
-            expect(spy_figure_out_length).to.have.been.called()
-            expect(spy_end).to.have.been.called.with(response.body)
-        })
-
-        it('should set body as status if body is undefined and status message is empty', function() {
-            const { response } = mock_response({ writable: true, status: 404 })
-            flush_response(response)
-            expect(response.body).to.equal('404')
+            expect(response.message).to.equal('Precondition Failed')
         })
 
         it('should remove Content-Type and Transfer-Encoding if exists when body is null', function() {

@@ -20,9 +20,9 @@ import { flush_response } from '../tools/flush-response'
 import { HandlerBook } from '../tools/handler-book'
 import { CODES_KEY, HTTP_STATUS } from '../tools/http-status'
 import { HttpAuthenticator } from './http-authenticator'
+import { HttpBodyFormatter } from './http-body-formatter'
 import { HttpCacheProxy } from './http-cache-proxy'
 import { HttpHooks } from './http-hooks'
-import { HttpBodyFormatter } from './http-body-formatter'
 import { HttpServer } from './http-server'
 import { HttpUrlParser } from './http-url-parser'
 
@@ -236,10 +236,15 @@ export class HttpRouters {
                 }
             }
 
-            response.merge(context.result.headers)
-            response.status = context.result.status
-            response.body = formatter.format(context)
 
+            response.status = context.result.status
+
+            if (context.result.status >= 400) {
+                response.clear()
+            }
+
+            response.merge(context.result.headers)
+            response.body = formatter.format(context)
             if (context.result.status < 400) {
                 http_hooks.on_finish(context).catch(() => undefined)
             } else {

@@ -145,8 +145,7 @@ describe('context case', function() {
         await r.get('/error').catch(err => {
             expect(err.response.status).to.equal(500)
             expect(err.response.data).to.have.property('error').which.include({
-                body: '',
-                code: 'STANDARD_HTTP_ERROR',
+                code: 'ERR.UNCAUGHT_ERROR',
                 msg: 'Internal Server Error',
                 status: 500
             })

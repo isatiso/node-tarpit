@@ -41,15 +41,3 @@ export interface HttpCredentials {
 
 export interface TpRouterOptions extends ImportsAndProviders {
 }
-
-export interface CacheControl {
-    'must-revalidate'?: boolean
-    'no-cache'?: boolean
-    'no-store'?: boolean
-    'no-transform'?: boolean
-    'public'?: boolean
-    'private'?: boolean
-    'proxy-revalidate'?: boolean
-    'max-age'?: number
-    's-maxage'?: number
-}

@@ -10,20 +10,40 @@ import { Stream } from 'stream'
 import { TpResponse } from '../builtin'
 import { HTTP_STATUS } from './http-status'
 
+function figure_out_length(response: TpResponse): void {
+    if (response.has('Content-Length')) {
+        return
+    }
+    if (!response.body) {
+        response.set('Content-Length', 0)
+    } else if (response.body instanceof Stream) {
+        // can not figure out length of content
+    } else if (typeof response.body === 'string') {
+        response.set('Content-Length', Buffer.byteLength(response.body))
+    } else if (Buffer.isBuffer(response.body)) {
+        response.set('Content-Length', response.body.length)
+    } else {
+        response.set('Content-Length', Buffer.byteLength(JSON.stringify(response.body)))
+    }
+}
+
 export function flush_response(response: TpResponse) {
+
     if (!response.writable) {
         return
     }
 
     if (HTTP_STATUS.is_empty(response.status)) {
-        response.body = null
         return response.res.end()
     }
 
+    figure_out_length(response)
+
+    if (!response.message) {
+        response.message = HTTP_STATUS.message_of(response.status) ?? ''
+    }
+
     if (response.request.method === 'HEAD') {
-        if (!response.has('Content-Length')) {
-            response.figure_out_length()
-        }
         return response.res.end()
     }
 

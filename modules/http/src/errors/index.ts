@@ -8,12 +8,7 @@
 
 import { create_tools, ThrowStandardError } from './tp-http-finish'
 
-export {
-    TpHttpFinish,
-    TpHttpErrorDescription,
-    TpHttpErrorHeader,
-    throw_http_finish,
-} from './tp-http-finish'
+export { TpHttpFinish, TpHttpErrorDescription, TpHttpErrorHeader, throw_http_finish } from './tp-http-finish'
 
 export { Finish, finish } from './finish'
 
@@ -24,7 +19,3 @@ export const throw_forbidden: ThrowStandardError = create_tools('throw_forbidden
 export const throw_not_found: ThrowStandardError = create_tools('throw_not_found', 404)
 export const throw_precondition_failed: ThrowStandardError = create_tools('throw_precondition_failed', 412)
 export const throw_internal_server_error: ThrowStandardError = create_tools('throw_internal_server_error', 500)
-
-// export { BusinessError, throw_business } from './business-error'
-// export { CrashError, throw_crash } from './crash-error'
-// export { StandardError, throw_standard_status, throw_unauthorized, throw_bad_request } from './standard-error'

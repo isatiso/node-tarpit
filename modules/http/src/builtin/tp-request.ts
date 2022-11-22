@@ -14,11 +14,13 @@ import { ParsedUrlQuery } from 'querystring'
 import tls from 'tls'
 import type_is from 'type-is'
 import { UrlWithParsedQuery } from 'url'
+import { parse_cache_control, RequestCacheControl, ResponseCacheControl } from '../tools/cache-control'
 
 export class TpRequest {
 
     type: string | undefined
     charset: string | undefined
+    private _cache_control?: ResponseCacheControl
 
     constructor(
         public readonly req: IncomingMessage,
@@ -144,6 +146,13 @@ export class TpRequest {
     get if_unmodified_since() {
         const header = this.get('If-Unmodified-Since')
         return header ? Date.parse(header) : undefined
+    }
+
+    get cache_control(): RequestCacheControl | undefined {
+        if (!this._cache_control) {
+            this._cache_control = parse_cache_control(this.get('Cache-Control'))
+        }
+        return this._cache_control
     }
 
     is(type: string, ...types: string[]) {

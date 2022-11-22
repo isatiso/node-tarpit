@@ -18,7 +18,7 @@ export interface SearchedFile {
 
 export class FileWatcher {
 
-    private cache = new cache<string, SearchedFile>({ max: this.options?.cache_size ?? 100 })
+    private cache = new cache<string, SearchedFile>({ max: this.options.cache_size ?? 100 })
     private watcher = fs.watch(this.root, { recursive: true })
 
     constructor(
@@ -28,7 +28,7 @@ export class FileWatcher {
         private options: { cache_size?: number },
     ) {
         this.watcher.on('change', (eventType, filename: string) => {
-            const file = path.join(this.root, filename)
+            const file = path.resolve(path.join(this.root, filename))
             for (const [key, value] of this.cache.entries()) {
                 if (value.name === file) {
                     this.cache.delete(key)

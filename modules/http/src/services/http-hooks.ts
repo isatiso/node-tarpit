@@ -9,7 +9,6 @@
 import { TpService } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
 import { HttpContext } from '../builtin'
-import { TpHttpFinish } from '../errors'
 
 export function assemble_duration(context: HttpContext) {
     const start = context.get('process_start')
@@ -18,7 +17,7 @@ export function assemble_duration(context: HttpContext) {
     return duration
 }
 
-export function create_log(context: HttpContext, duration: number, err?: TpHttpFinish) {
+export function create_log(context: HttpContext, duration: number) {
     const time_str = Dora.now().format('YYYY-MM-DDTHH:mm:ssZZ')
     const ip = context.request.ip.padEnd(18)
     const duration_str = `${duration}ms`.padStart(8)
@@ -45,6 +44,6 @@ export class HttpHooks {
 
     async on_error(context: HttpContext): Promise<void> {
         const duration = assemble_duration(context)
-        create_log(context, duration, context.result)
+        create_log(context, duration)
     }
 }

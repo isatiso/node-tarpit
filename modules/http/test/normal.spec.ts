@@ -11,7 +11,7 @@ import { Jtl } from '@tarpit/judge'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { Delete, Get, HttpInspector, HttpServerModule, Params, PathArgs, Post, Put, TpRouter } from '../src'
+import { Delete, Get, HttpInspector, HttpServerModule, Params, PathArgs, Post, Put, TpHttpFinish, TpRouter } from '../src'
 
 chai.use(cap)
 
@@ -22,7 +22,7 @@ class NormalRouter {
     async get_user(params: Params<{ id: string }>, args: PathArgs<{ user_id: string }>) {
         const id = params.get_first('id')
         const user_id = args.ensure('user_id', Jtl.string)
-        return { id, user_id }
+        return new TpHttpFinish({ status: 200, code: 'OK', msg: 'OK', body: { id, user_id } })
     }
 
     @Post('user')

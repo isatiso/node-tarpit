@@ -132,7 +132,7 @@ describe('HttpServerModule', function() {
                 expect(err.response.status).to.equal(500)
                 expect(err.response.data).to.eql({
                     error: {
-                        code: 'STANDARD_HTTP_ERROR',
+                        code: 'ERR.UNCAUGHT_ERROR',
                         msg: 'Internal Server Error'
                     }
                 })

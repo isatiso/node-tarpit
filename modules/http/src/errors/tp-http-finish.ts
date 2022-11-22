@@ -47,7 +47,7 @@ export class TpHttpFinish<E = any> extends TpError<E> {
 }
 
 export function throw_http_finish(status: number, options?: Partial<Omit<TpHttpErrorDescription, 'status'>>): never {
-    const code = options?.code ?? 'PROCESS_FINISH'
+    const code = options?.code ?? status + ''
     const msg = options?.msg ?? HTTP_STATUS.message_of(status) ?? HTTP_STATUS.message_of(500)
     throw new TpHttpFinish({ ...options, status, code, msg })
 }

@@ -37,7 +37,7 @@ class TestRouter {
         // console.log(ea)
     }
 
-    @Get('assets/(.*\\..*)')
+    @Get('assets/(.+\\..+)')
     async avatar(args: PathArgs<{ user_id: string }>, request: TpRequest, response: TpResponse) {
         return this.http_static.serve(request, response)
     }

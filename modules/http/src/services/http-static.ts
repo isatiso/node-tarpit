@@ -7,179 +7,141 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { TpService } from '@tarpit/core'
+import { OnTerminate, TpService } from '@tarpit/core'
 import fs from 'fs'
-import { CacheControl } from '../__types__'
+import mime_types from 'mime-types'
 import { TpRequest, TpResponse } from '../builtin'
 import { finish, throw_forbidden, throw_not_found, throw_not_modified, throw_precondition_failed } from '../errors'
+import { ResponseCacheControl } from '../tools/cache-control'
 import { FileWatcher, SearchedFile } from '../tools/file-watcher'
-import { MIME } from '../tools/mime'
 
 const MAX_AGE_LIMIT = 60 * 60 * 24 * 365 * 1000 // 1 year
 
-function make_cache_control(options: CacheControl): string {
-    options.public = options.public ?? true
-    options['max-age'] = Math.min(options['max-age'] ?? 0, MAX_AGE_LIMIT)
-    return Object.entries(options).map(([key, value]) => {
-        if (key === 'max-age') {
-            return 'max-age=' + value ?? 0
-        } else if (key === 's-maxage') {
-            return 's-maxage=' + value ?? 0
-        } else if (value) {
-            return key
+export function is_precondition_failure(request: TpRequest, response: TpResponse): boolean {
+
+    const if_match = request.if_match
+    if (if_match) {
+        const etag = response.etag?.replace(/^W\//, '')
+        if (!etag) {
+            return true
+        } else if (if_match === '*') {
+            return false
+        } else {
+            const tokens = if_match.split(',').map(token => token.trim().replace(/^W\//, ''))
+            return tokens.every(token => token !== etag)
         }
-    }).filter(key => key).join(', ')
+    }
+
+    const if_unmodified_since = request.if_unmodified_since
+    if (if_unmodified_since !== undefined) {
+        const last_modified = response.last_modified
+        return last_modified ? last_modified > if_unmodified_since : true
+    }
+
+    return false
+}
+
+export function is_fresh(request: TpRequest, res: TpResponse): boolean {
+
+    if (request.cache_control?.['no-cache']) {
+        return false
+    }
+
+    const if_none_match = request.if_none_match
+    if (if_none_match) {
+        const etag = res.etag?.replace(/^W\//, '')
+        if (!etag) {
+            return false
+        } else if (if_none_match === '*') {
+            return true
+        } else {
+            const tokens = if_none_match.split(',').map(token => token.trim().replace(/^W\//, ''))
+            return tokens.includes(etag)
+        }
+    }
+
+    const if_modified_since = request.if_modified_since
+    if (if_modified_since !== undefined) {
+        const last_modified = res.last_modified
+        return last_modified ? last_modified <= if_modified_since : false
+    }
+
+    return false
 }
 
 export interface ServeStaticOptions {
-    cache_control?: CacheControl
-    vary?: string[]
+    dotfile?: 'allow' | 'ignore' | 'deny'
+    cache_control?: ResponseCacheControl
+    vary?: string[] | '*'
     path?: string
 }
 
 @TpService({ inject_root: true })
 export class HttpStatic {
 
-    private _mime = new MIME()
-    private root: string = this.config.get('http.static.root')
+    // private _mime = new MIME()
+    private root: string = this.config.get('http.static.root') ?? process.cwd()
     private cache_size: number = this.config.get('http.static.cache_size') ?? 100
     private dotfile = this.config.get('http.static.dotfile') ?? 'ignore'
     private vary = this.config.get('http.static.vary')
     private cache_control = this.config.get('http.static.cache_control')
-    private readonly file_watcher?: FileWatcher
+    private readonly file_watcher: FileWatcher
 
     constructor(
         private config: ConfigData,
     ) {
-        if (!this.root) {
-            return
-        }
         const index = this.config.get('http.static.index') ?? ['index.html']
         const extensions = this.config.get('http.static.extensions') ?? ['.html']
-        this.file_watcher = new FileWatcher(this.root, index, extensions, { cache_size: this.cache_size })
         const root_stats = fs.statSync(this.root)
         if (!root_stats.isDirectory()) {
             throw new Error(`static file watching error: root_dir "${this.root}" is not a directory.`)
         }
+        this.file_watcher = new FileWatcher(this.root, index, extensions, { cache_size: this.cache_size })
     }
 
-    async serve(req: TpRequest, res: TpResponse, options?: ServeStaticOptions) {
+    async serve(request: TpRequest, response: TpResponse, options?: ServeStaticOptions) {
 
-        const file = options?.path ?? req.path
-        if (!file) {
-            // TODO: adjust status
-            console.log(`no file options: ${options?.path} request: ${req.path}`)
-            throw_not_found()
-        }
+        const file = options?.path ?? request.path ?? '/'
 
         const decoded_file = decodeURI(file)
-        const searched_file = await this.file_watcher?.lookup(decoded_file)
+        const searched_file = await this.file_watcher.lookup(decoded_file)
         if (!searched_file) {
             throw_not_found()
         }
 
-        if (searched_file.is_dot && this.dotfile !== 'allow') {
-            if (this.dotfile === 'deny') {
+        if (searched_file.is_dot) {
+            const dotfile = options?.dotfile ?? this.dotfile
+            if (dotfile === 'deny') {
                 throw_forbidden()
-            } else if (this.dotfile === 'ignore') {
+            } else if (dotfile === 'ignore') {
                 throw_not_found()
             }
         }
 
-        if (res.res.headersSent) {
-            return
+        response.status = 200
+
+        this.init_header(searched_file, response, { ...options })
+
+        if (is_precondition_failure(request, response)) {
+            throw_precondition_failed()
         }
 
-        res.status = 200
-        this.init_header(searched_file, res)
-
-        const len = searched_file.stats.size
-
-        if (this.is_conditional_get(req)) {
-            if (this.is_precondition_failure(req, res)) {
-                throw_precondition_failed()
-            }
-
-            if (this.is_fresh(req, res)) {
-                throw_not_modified()
-            }
+        if (is_fresh(request, response)) {
+            throw_not_modified()
         }
 
-        res.set('Content-Length', len)
-
-        if (req.method === 'HEAD') {
-            finish(null)
-        }
-
+        response.length = searched_file.stats.size
         finish(fs.createReadStream(searched_file.name))
     }
 
-    private is_conditional_get(req: TpRequest): string | undefined {
-        return req.get('If-Match') ||
-            req.get('If-Unmodified-Since') ||
-            req.get('If-None-Match') ||
-            req.get('If-Modified-Since')
-    }
+    private init_header(file: SearchedFile, res: TpResponse, options: Pick<ServeStaticOptions, 'vary' | 'cache_control'>) {
 
-    private is_fresh(req: TpRequest, res: TpResponse): boolean {
-        const last_modified = res.last_modified
-        const etag = res.etag?.replace(/^W\//, '')
-
-        const cache_control = req.get('Cache-Control')
-        if (cache_control?.indexOf('no-cache') !== -1) {
-            return false
-        }
-
-        const if_none_match = req.if_none_match
-        if (if_none_match) {
-            if (!etag) {
-                return false
-            } else if (if_none_match === '*') {
-                return true
-            } else {
-                const tokens = if_none_match.split(',').map(token => token.trim().replace(/^W\//, ''))
-                return !tokens.includes(etag)
-            }
-        }
-
-        const if_modified_since = req.if_modified_since
-        if (if_modified_since) {
-            return !last_modified || last_modified <= if_modified_since
-        }
-
-        return false
-    }
-
-    private is_precondition_failure(req: TpRequest, res: TpResponse): boolean {
-
-        const last_modified = res.last_modified
-        const etag = res.etag?.replace(/^W\//, '')
-
-        const if_match = req.if_match
-        if (if_match) {
-            if (!etag) {
-                return true
-            } else if (if_match === '*') {
-                return false
-            } else {
-                const tokens = if_match.split(',').map(token => token.trim().replace(/^W\//, ''))
-                return tokens.every(token => token !== etag)
-            }
-        }
-
-        const if_unmodified_since = req.if_unmodified_since
-        if (if_unmodified_since) {
-            return !last_modified || last_modified > if_unmodified_since
-        }
-
-        return false
-    }
-
-    private init_header(file: SearchedFile, res: TpResponse) {
+        const vary = options.vary ?? this.vary
+        const cache_control = options.cache_control ?? this.cache_control ?? { public: true, 'max-age': 0 }
 
         if (!res.has('Content-Type')) {
-            const type = this._mime.lookup(file.name) ?? 'bin'
-            const charset = this._mime.lookup_charset(type)
+            const type = mime_types.lookup(file.name) || ''
+            const charset = mime_types.charset(type) || ''
             res.set('Content-Type', type + (charset ? '; charset=' + charset : ''))
         }
 
@@ -193,12 +155,18 @@ export class HttpStatic {
             res.set('ETag', '"' + size + '-' + mtime + '"')
         }
 
-        if (this.cache_control && !res.has('Cache-Control')) {
-            res.set('Cache-Control', make_cache_control(this.cache_control))
+        if (cache_control && !res.has('Cache-Control')) {
+            cache_control['max-age'] = cache_control['max-age'] ? Math.min(cache_control['max-age'], MAX_AGE_LIMIT) : 0
+            res.cache_control = cache_control
         }
 
-        if (this.vary && !res.has('Vary')) {
-            res.set('Vary', Array.isArray(this.vary) ? this.vary.join(', ') : this.vary)
+        if (vary && !res.has('Vary')) {
+            res.set('Vary', Array.isArray(vary) ? vary.join(',') : vary)
         }
+    }
+
+    @OnTerminate()
+    private async on_terminate() {
+        return this.file_watcher.close()
     }
 }

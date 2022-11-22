@@ -24,11 +24,7 @@ export class ContentDecompressorService {
     constructor(
         private injector: Injector,
     ) {
-        this.injector.on('provider-change', token => {
-            if (token === decompressor_token) {
-                this.load_decompressor()
-            }
-        })
+        this.injector.on('provider-change', token => token === decompressor_token && this.load_decompressor())
         this.load_decompressor()
     }
 

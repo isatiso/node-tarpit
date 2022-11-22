@@ -3,6 +3,7 @@
     "private": true,
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "scripts": {
+        "reset": "yarn clean && yarn && lerna run build",
         "clean": "npm run clean-docs && npm run clean-dest && npm run clean-coverage && lerna clean -y && rm -rf node_modules",
         "clean-docs": "rm -rf ./docs/_site && rm -rf ./docs/apis/*/",
         "clean-coverage": "lerna exec 'rm -rf ./coverage ./.cache ./.nyc_output'",

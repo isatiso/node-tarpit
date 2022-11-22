@@ -13,8 +13,7 @@ import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import crypto from 'crypto'
 import iconv_lite from 'iconv-lite'
-import { FormBody, HttpServerModule, JsonBody, MimeBody, Post, RawBody, TextBody, TpRequest, TpRouter } from '../src'
-import { throw_bad_request } from '../src/errors'
+import { FormBody, HttpServerModule, JsonBody, MimeBody, Post, RawBody, TextBody, throw_bad_request, TpRequest, TpRouter } from '../src'
 
 chai.use(cap)
 

@@ -89,7 +89,7 @@ describe('on-error.ts', function() {
             expect(jsonify_spy).to.have.been.called.once
             expect(set_header_spy).to.have.been.called.exactly(4)
             expect(set_header_spy).to.have.been.called.with('content-type', 'application/json; charset=utf-8')
-            expect(set_header_spy).to.have.been.called.with('content-length', 119)
+            expect(set_header_spy).to.have.been.called.with('content-length', 109)
             expect(end_spy).to.have.been.called.once
         })
     })

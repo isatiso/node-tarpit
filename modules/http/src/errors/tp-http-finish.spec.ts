@@ -10,7 +10,7 @@ import { TpError } from '@tarpit/error'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { HTTP_STATUS } from '../tools/http-status'
-import { TpHttpFinish } from './tp-http-finish'
+import { throw_http_finish, TpHttpFinish } from './tp-http-finish'
 
 chai.use(cap)
 
@@ -48,6 +48,15 @@ describe('tp-http-error.ts', function() {
                     status: 500,
                 }
             )
+        })
+    })
+
+    describe('#throw_http_finish()', function() {
+
+        it('should create a TpHttpFinish and throw out.', function() {
+            expect(() => throw_http_finish(200)).to.throw(TpHttpFinish).which.satisfy((err: TpHttpFinish) => err.status === 200 && err.msg === 'OK')
+            expect(() => throw_http_finish(404)).to.throw(TpHttpFinish).which.satisfy((err: TpHttpFinish) => err.status === 404 && err.msg === 'Not Found')
+            expect(() => throw_http_finish(587)).to.throw(TpHttpFinish).which.satisfy((err: TpHttpFinish) => err.status === 587 && err.msg === 'Internal Server Error')
         })
     })
 })
