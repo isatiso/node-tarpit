@@ -224,15 +224,8 @@ describe('static case', function() {
 
     describe('#constructor()', function() {
 
-        const clean_func: (() => void)[] = []
-
-        afterEach(function() {
-            clean_func.forEach(func => func())
-        })
-
         it('should startup with default config', function() {
             const http_static: any = new HttpStatic(new ConfigData({ http: { port: 3939 } }))
-            clean_func.push(() => http_static.on_terminate())
             expect(http_static).to.have.property('root').which.to.equal(process.cwd())
             expect(http_static).to.have.property('cache_size').which.to.equal(100)
         })

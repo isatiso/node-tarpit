@@ -19,16 +19,8 @@ describe('file-watcher.ts', function() {
 
     describe('.lookup()', function() {
 
-        let cleanup: (() => void)[] = []
-
-        afterEach(async function() {
-            cleanup.forEach(func => func())
-            cleanup = []
-        })
-
         it('should lookup file by specified name', async function() {
             const watcher = new FileWatcher('./test/assets', [], [], { cache_size: 100 })
-            cleanup.push(() => watcher.close())
             const file = await watcher.lookup('some.txt')
             expect(file).to.have.property('name').which.is.satisfy((name: string) => name.endsWith('assets/some.txt'))
             expect(file).to.have.property('is_dot').which.equals(false)
@@ -36,7 +28,6 @@ describe('file-watcher.ts', function() {
 
         it('should remove cache on file change', async function() {
             const watcher = new FileWatcher('./test/assets', [], [], {})
-            cleanup.push(() => watcher.close())
             fs.writeFileSync('./test/assets/temp.txt', 'some random text')
             await watcher.lookup('some.txt')
             expect(await watcher.lookup('temp.txt')).to.exist
@@ -47,14 +38,12 @@ describe('file-watcher.ts', function() {
 
         it('should return undefined if searched file is out of the root directory', async function() {
             const watcher = new FileWatcher('./test/assets', [], [], {})
-            cleanup.push(() => watcher.close())
             const file = await watcher.lookup('../../LICENSE')
             expect(file).to.be.undefined
         })
 
         it('should lookup file with extensions', async function() {
             const watcher = new FileWatcher('./test/assets', [], ['.txt'], {})
-            cleanup.push(() => watcher.close())
             const file = await watcher.lookup('some')
             expect(file).to.have.property('name').which.is.satisfy((name: string) => name.endsWith('assets/some.txt'))
             expect(file).to.have.property('is_dot').which.equals(false)

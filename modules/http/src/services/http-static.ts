@@ -8,7 +8,7 @@
 
 import { ConfigData } from '@tarpit/config'
 import { OnTerminate, TpService } from '@tarpit/core'
-import fs from 'fs'
+import fs, { ReadStream } from 'fs'
 import mime_types from 'mime-types'
 import { TpRequest, TpResponse } from '../builtin'
 import { finish, throw_forbidden, throw_not_found, throw_not_modified, throw_precondition_failed } from '../errors'
@@ -131,7 +131,20 @@ export class HttpStatic {
         }
 
         response.length = searched_file.stats.size
-        finish(fs.createReadStream(searched_file.name))
+        const stream = await this.create_stream(searched_file.name)
+        if (stream) {
+            finish(stream)
+        } else {
+            throw_not_found()
+        }
+    }
+
+    private async create_stream(filename: string): Promise<ReadStream | undefined> {
+        return new Promise(resolve => {
+            const stream = fs.createReadStream(filename)
+            stream.on('ready', () => resolve(stream))
+            stream.on('error', () => resolve(undefined))
+        })
     }
 
     private init_header(file: SearchedFile, res: TpResponse, options: Pick<ServeStaticOptions, 'vary' | 'cache_control'>) {
@@ -163,10 +176,5 @@ export class HttpStatic {
         if (vary && !res.has('Vary')) {
             res.set('Vary', Array.isArray(vary) ? vary.join(',') : vary)
         }
-    }
-
-    @OnTerminate()
-    private async on_terminate() {
-        return this.file_watcher.close()
     }
 }

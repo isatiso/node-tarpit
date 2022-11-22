@@ -9,27 +9,27 @@
 import { Platform, TpInspector, TpRoot } from '@tarpit/core'
 import { Get, HttpInspector, HttpServerModule, HttpStatic, Params, PathArgs, Post, RawBody, TpRequest, TpResponse, TpRouter } from '@tarpit/http'
 import { Jtl } from '@tarpit/judge'
-import { GenericCollection, MongodbModule, TpMongo } from '@tarpit/mongodb'
+// import { GenericCollection, MongodbModule, TpMongo } from '@tarpit/mongodb'
 
-@TpMongo('main', 'user')
-class AccountData extends GenericCollection<any>() {
-    guess() {
-        return AccountData
-    }
-}
-
-@TpMongo('main', 'ea')
-class EnhancedAccountData extends AccountData {
-
-}
+// @TpMongo('main', 'user')
+// class AccountData extends GenericCollection<any>() {
+//     guess() {
+//         return AccountData
+//     }
+// }
+//
+// @TpMongo('main', 'ea')
+// class EnhancedAccountData extends AccountData {
+//
+// }
 
 @TpRouter('/')
 class TestRouter {
 
     constructor(
         private inspector: HttpInspector,
-        private account: AccountData,
-        private ea: EnhancedAccountData,
+        // private account: AccountData,
+        // private ea: EnhancedAccountData,
         private http_static: HttpStatic,
     ) {
         // console.log(this.inspector.list_router())
@@ -44,7 +44,7 @@ class TestRouter {
 
     @Get('account/:user_id/:item_id')
     async asd(args: PathArgs<{ user_id: string, item_id: string }>) {
-        console.log(this.account.guess())
+        // console.log(this.account.guess())
         const user_id = args.ensure('user_id', Jtl.string)
         const item_id = args.ensure('item_id', Jtl.string)
         return { user_id, item_id }
@@ -52,12 +52,12 @@ class TestRouter {
         // return this.account.findOne({ id: args.ensure('user_id', Jtl.string) })
     }
 
-    @Get()
-    async eatest(params: Params<{ id: string }>) {
-        console.log(this.ea.guess())
-        await this.ea.updateOne({ id: params.get_first('id') }, { $set: { name: 'iii' } }, { upsert: true })
-        return this.ea.findOne({ id: params.get_first('id') })
-    }
+    // @Get()
+    // async eatest(params: Params<{ id: string }>) {
+    //     console.log(this.ea.guess())
+    //     await this.ea.updateOne({ id: params.get_first('id') }, { $set: { name: 'iii' } }, { upsert: true })
+    //     return this.ea.findOne({ id: params.get_first('id') })
+    // }
 
     @Post()
     async test(
@@ -69,8 +69,8 @@ class TestRouter {
 
 @TpRoot({
     providers: [
-        AccountData,
-        EnhancedAccountData,
+        // AccountData,
+        // EnhancedAccountData,
     ],
     entries: [
         TestRouter
@@ -88,11 +88,11 @@ export class TestRoot {
                 root: '/Users/plank/Downloads'
             }
         },
-        mongodb: {
-            uri: 'mongodb://root:7XQPqnNLGmVhmyrFNtiHqefT4hNPrU3z@112.74.191.78:27017/admin?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-256'
-        },
+        // mongodb: {
+        //     uri: 'mongodb://root:7XQPqnNLGmVhmyrFNtiHqefT4hNPrU3z@112.74.191.78:27017/admin?connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-256'
+        // },
     }).import(HttpServerModule)
-        .import(MongodbModule)
+        // .import(MongodbModule)
 
     platform.bootstrap(TestRoot).start()
     await platform.expose(TpInspector)?.wait_start()

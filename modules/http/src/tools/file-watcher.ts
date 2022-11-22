@@ -19,7 +19,6 @@ export interface SearchedFile {
 export class FileWatcher {
 
     private cache = new cache<string, SearchedFile>({ max: this.options.cache_size ?? 100 })
-    private watcher = fs.watch(this.root, { recursive: true })
 
     constructor(
         private root: string,
@@ -27,24 +26,21 @@ export class FileWatcher {
         private extensions: `.${string}`[],
         private options: { cache_size?: number },
     ) {
-        this.watcher.on('change', (eventType, filename: string) => {
-            const file = path.resolve(path.join(this.root, filename))
-            for (const [key, value] of this.cache.entries()) {
-                if (value.name === file) {
-                    this.cache.delete(key)
-                }
-            }
-        })
     }
 
     close() {
-        this.watcher.close()
     }
 
     async lookup(filepath: string): Promise<SearchedFile | undefined> {
         const cache = this.cache.get(filepath)
         if (cache) {
-            return cache
+            const stats = await fs.promises.stat(cache.name).catch(() => undefined)
+            if (stats?.isFile()) {
+                cache.stats = stats
+                return cache
+            } else {
+                this.cache.delete(filepath)
+            }
         }
 
         const full_path = path.join(this.root, filepath.replace(/^\//, ''))
@@ -68,7 +64,7 @@ export class FileWatcher {
 
         for (const name of alt_list) {
             const stats = await fs.promises.stat(name).catch(() => undefined)
-            if (stats) {
+            if (stats?.isFile()) {
                 const result = { name, stats, is_dot }
                 this.cache.set(filepath, result)
                 return result
