@@ -135,18 +135,18 @@ describe('consume case', function() {
         console.log = tmp
     })
 
-    it('should ack message', async function() {
+    it('should ack message call ack_message', async function() {
         const channel = await connection.createChannel()
         channel.sendToQueue(D.Q['tarpit.queue.ack'], Buffer.from(JSON.stringify({ a: 1, b: 'c' })))
-        await new Promise(resolve => setTimeout(resolve, 50))
+        await new Promise(resolve => setTimeout(resolve, 100))
         await channel.close()
         expect(spy_ack).to.have.been.first.called.with('normal')
     })
 
-    it('should ack message', async function() {
+    it('should ack message by throw directly', async function() {
         const channel = await connection.createChannel()
         channel.sendToQueue(D.Q['tarpit.queue.ack.native'], Buffer.from(JSON.stringify({ a: 1, b: 'c' })))
-        await new Promise(resolve => setTimeout(resolve, 50))
+        await new Promise(resolve => setTimeout(resolve, 100))
         await channel.close()
         expect(spy_ack).to.have.been.second.called.with('native')
     })
