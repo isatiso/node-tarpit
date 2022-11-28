@@ -18,7 +18,7 @@ export interface TpHttpErrorDescription extends TpErrorDescription {
     readonly body?: TpHttpResponseType
 }
 
-export type ThrowStandardError = (desc?: (string | Partial<Omit<TpHttpErrorDescription, 'status'>>)) => never
+type ThrowStandardError = (desc?: (string | Partial<Omit<TpHttpErrorDescription, 'status'>>)) => never
 
 export class TpHttpFinish<E = any> extends TpError<E> {
 
@@ -52,7 +52,7 @@ export function throw_http_finish(status: number, options?: Partial<Omit<TpHttpE
     throw new TpHttpFinish({ ...options, status, code, msg })
 }
 
-export function create_tools(name: string, status: number): ThrowStandardError {
+function create_tools(name: string, status: number): ThrowStandardError {
     return {
         [name]: function(desc?: string | Partial<Omit<TpHttpErrorDescription, 'status'>>): never {
             if (typeof desc === 'string') {
@@ -64,4 +64,11 @@ export function create_tools(name: string, status: number): ThrowStandardError {
     }[name]
 }
 
+export const throw_not_modified: ThrowStandardError = create_tools('throw_not_modified', 304)
+export const throw_bad_request: ThrowStandardError = create_tools('throw_bad_request', 400)
+export const throw_unauthorized: ThrowStandardError = create_tools('throw_unauthorized', 401)
+export const throw_forbidden: ThrowStandardError = create_tools('throw_forbidden', 403)
+export const throw_not_found: ThrowStandardError = create_tools('throw_not_found', 404)
+export const throw_precondition_failed: ThrowStandardError = create_tools('throw_precondition_failed', 412)
+export const throw_internal_server_error: ThrowStandardError = create_tools('throw_internal_server_error', 500)
 

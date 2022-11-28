@@ -11,7 +11,7 @@ import { OnTerminate, TpService } from '@tarpit/core'
 import fs, { ReadStream } from 'fs'
 import mime_types from 'mime-types'
 import { TpRequest, TpResponse } from '../builtin'
-import { finish, throw_forbidden, throw_not_found, throw_not_modified, throw_precondition_failed } from '../errors'
+import { finish, throw_forbidden, throw_not_found, throw_not_modified, throw_precondition_failed, TpHttpFinish } from '../errors'
 import { ResponseCacheControl } from '../tools/cache-control'
 import { FileWatcher, SearchedFile } from '../tools/file-watcher'
 
@@ -67,6 +67,15 @@ export function is_fresh(request: TpRequest, res: TpResponse): boolean {
     }
 
     return false
+}
+
+export async function create_stream(filename: string): Promise<ReadStream> {
+    const error = new TpHttpFinish({ status: 404, code: '404', msg: 'Not Found' })
+    return new Promise((resolve, reject) => {
+        const stream = fs.createReadStream(filename)
+        stream.on('ready', () => resolve(stream))
+        stream.on('error', () => reject(error))
+    })
 }
 
 export interface ServeStaticOptions {
@@ -131,20 +140,7 @@ export class HttpStatic {
         }
 
         response.length = searched_file.stats.size
-        const stream = await this.create_stream(searched_file.name)
-        if (stream) {
-            finish(stream)
-        } else {
-            throw_not_found()
-        }
-    }
-
-    private async create_stream(filename: string): Promise<ReadStream | undefined> {
-        return new Promise(resolve => {
-            const stream = fs.createReadStream(filename)
-            stream.on('ready', () => resolve(stream))
-            stream.on('error', () => resolve(undefined))
-        })
+        return create_stream(searched_file.name)
     }
 
     private init_header(file: SearchedFile, res: TpResponse, options: Pick<ServeStaticOptions, 'vary' | 'cache_control'>) {

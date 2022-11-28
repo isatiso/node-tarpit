@@ -11,8 +11,9 @@ import { Platform, TpInspector } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { Get, HttpServerModule, HttpStatic, Params, PathArgs, TpRequest, TpResponse, TpRouter } from '../src'
-import { is_fresh, is_precondition_failure } from '../src/services/http-static'
+import fs, { ReadStream } from 'fs'
+import { Get, HttpServerModule, HttpStatic, Params, PathArgs, TpHttpFinish, TpRequest, TpResponse, TpRouter } from '../src'
+import { create_stream, is_fresh, is_precondition_failure } from '../src/services/http-static'
 import { CacheControl } from '../src/tools/cache-control'
 
 chai.use(cap)
@@ -219,7 +220,18 @@ describe('static case', function() {
                     expect(res.data.trim()).to.equal('dotfile content')
                 })
         })
+    })
 
+    describe('#create_stream()', function() {
+
+        it('should read exist file as ReadStream', async function() {
+            const stream = await create_stream('./test/assets/some.txt')
+            expect(stream).to.be.an.instanceof(ReadStream)
+        })
+
+        it('should read non-exist file with a TpHttpError', async function() {
+            await expect(create_stream('./test/assets/non-exists.txt')).rejectedWith(TpHttpFinish)
+        })
     })
 
     describe('#constructor()', function() {

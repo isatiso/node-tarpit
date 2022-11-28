@@ -28,9 +28,6 @@ export class FileWatcher {
     ) {
     }
 
-    close() {
-    }
-
     async lookup(filepath: string): Promise<SearchedFile | undefined> {
         const cache = this.cache.get(filepath)
         if (cache) {
