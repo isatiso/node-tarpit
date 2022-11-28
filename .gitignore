@@ -5,6 +5,9 @@
 **/lib
 **/coverage
 
+.nyc_output/
+.cache/
+
 supports/rollup/src/test.*
 
 **/test.*

@@ -6,17 +6,19 @@
  * found in the LICENSE file at source root.
  */
 
-import { OutgoingHttpHeaders, ServerResponse } from 'http'
-import LRU from 'lru-cache'
+import { OutgoingHttpHeader, OutgoingHttpHeaders, ServerResponse } from 'http'
+import LRUCache from 'lru-cache'
 import mime_types from 'mime-types'
 import { Stream } from 'stream'
 import { is as type_is } from 'type-is'
-import { Finish, throw_crash } from '../errors'
+import { TpHttpResponseType } from '../__types__'
+import { Finish, throw_internal_server_error } from '../errors'
 import { HTTP_STATUS } from '../tools/http-status'
 import { on_error } from '../tools/on-error'
+import { make_cache_control, parse_cache_control, ResponseCacheControl } from '../tools/cache-control'
 import { TpRequest } from './tp-request'
 
-const type_lru_cache = new LRU({ max: 100 })
+const type_lru_cache = new LRUCache({ max: 100 })
 
 export function lookup_content_type(type: string): string {
     let mime_type = type_lru_cache.get<string>(type)
@@ -30,6 +32,7 @@ export function lookup_content_type(type: string): string {
 export class TpResponse {
 
     private _explicit_status = false
+    private _cache_control?: ResponseCacheControl
 
     constructor(
         public readonly res: ServerResponse,
@@ -37,21 +40,24 @@ export class TpResponse {
     ) {
     }
 
-    private _body: undefined | null | string | Buffer | Stream | object = undefined
+    private _body?: TpHttpResponseType = undefined
     get body() {
         return this._body
     }
 
     set body(val) {
+
         if (val === this._body) {
             return
         }
 
+        this._body != null && this.remove('Content-Length')
         this._body = val
 
         if (val == null) {
             if (!HTTP_STATUS.is_empty(this.status)) {
-                this.status = 204
+                this.res.statusCode = 204
+                this.res.statusMessage = HTTP_STATUS.message_of(204)
             }
             this.remove('Content-Type')
             this.remove('Content-Length')
@@ -60,31 +66,15 @@ export class TpResponse {
         }
 
         if (!this._explicit_status) {
-            this.status = 200
+            this.res.statusCode = 200
+            this.res.statusMessage = HTTP_STATUS.message_of(200)
         }
 
-        if (typeof val === 'string') {
-
-            this.set_implicit_type('text/plain; charset=utf-8')
-            this.length = Buffer.byteLength(val)
-
-        } else if (Buffer.isBuffer(val)) {
-
-            this.set_implicit_type('application/octet-stream')
-            this.length = val.length
-
-        } else if (val instanceof Stream) {
-
+        if (val instanceof Stream) {
             val.once('error', err => on_error(err, this.res))
-            this.remove('Content-Length')
-            this.set_implicit_type('application/octet-stream')
-
-        } else {
-
-            this.remove('Content-Length')
-            this.set_implicit_type('application/json; charset=utf-8')
-
         }
+
+        this.set_implicit_type()
     }
 
     get status() {
@@ -96,8 +86,11 @@ export class TpResponse {
             return
         }
 
-        if (!Number.isInteger(status_code) || !(status_code >= 100 && status_code <= 999)) {
-            throw_crash('ERR.INVALID_STATUS_CODE', 'status code must be an integer within range of [100, 999]')
+        if (!Number.isInteger(status_code) || status_code < 100 || status_code > 999) {
+            throw_internal_server_error({
+                code: 'ERR.INVALID_STATUS_CODE',
+                msg: 'status code must be an integer within range of [100, 999]'
+            })
         }
 
         this._explicit_status = true
@@ -110,7 +103,7 @@ export class TpResponse {
     }
 
     get message(): string {
-        return this.res.statusMessage || HTTP_STATUS.message_of(this.status) || ''
+        return this.res.statusMessage
     }
 
     set message(msg) {
@@ -143,40 +136,59 @@ export class TpResponse {
     }
 
     set length(n: number | undefined) {
-        if (n && !this.has('Transfer-Encoding')) {
+        if (n !== undefined) {
             n = Number.isInteger(n) ? n : Math.floor(n)
             this.set('Content-Length', n + '')
+        } else {
+            this.remove('Content-Length')
         }
     }
 
-    get content_type() {
+    get content_type(): string | undefined {
         const type = this.first('Content-Type')
         return type?.split(';', 1)[0].trim()
     }
 
-    set_content_type(type: string) {
-        type = lookup_content_type(type)
-        if (type) {
-            this.set('Content-Type', type)
+    set content_type(type: string | undefined) {
+        if (type !== undefined) {
+            type = lookup_content_type(type)
+            if (type) {
+                this.set('Content-Type', type)
+            }
         } else {
             this.remove('Content-Type')
         }
     }
 
-    figure_out_length(): number | undefined {
-        if (this.has('Transfer-Encoding')) {
-            return this.length
+    get cache_control(): ResponseCacheControl | undefined {
+        if (!this._cache_control) {
+            this._cache_control = parse_cache_control(this.first('Cache-Control'))
         }
-        if (!this.body || this.body instanceof Stream) {
+        return this._cache_control
+    }
 
-        } else if (typeof this.body === 'string') {
-            this.set('Content-Length', Buffer.byteLength(this.body))
-        } else if (Buffer.isBuffer(this.body)) {
-            this.set('Content-Length', this.body.length)
+    set cache_control(value: ResponseCacheControl | undefined) {
+        if (value) {
+            this.set('Cache-Control', make_cache_control(value))
         } else {
-            this.set('Content-Length', Buffer.byteLength(JSON.stringify(this.body)))
+            this.set('Cache-Control', undefined)
         }
-        return this.length
+    }
+
+    get last_modified(): number | undefined {
+        const header = this.get('Last-Modified')
+        if (Array.isArray(header) && header[0]) {
+            return Date.parse(header[0])
+        } else if (typeof header === 'string') {
+            return Date.parse(header)
+        } else {
+            return
+        }
+    }
+
+    get etag(): string | undefined {
+        const header = this.get('ETag')
+        return Array.isArray(header) ? header[0] : header
     }
 
     redirect(url: string, status: number = 302): never {
@@ -206,16 +218,20 @@ export class TpResponse {
         }
     }
 
-    set(field: string, val: number | string | string[]): void {
+    set(field: string, val: undefined | null | number | string | string[]): void {
         if (this.res.headersSent) {
             return
         }
         if (Array.isArray(val)) {
-            val = val.map(v => v + '')
+            this.res.setHeader(field, val.map(v => v + ''))
+        } else if (val === undefined) {
+            this.res.removeHeader(field)
         } else {
-            val = val + ''
+            this.res.setHeader(field, val + '')
         }
-        this.res.setHeader(field, val)
+        if (field.toLowerCase() === 'cache-control') {
+            this._cache_control = undefined
+        }
     }
 
     remove(field: string) {
@@ -223,6 +239,14 @@ export class TpResponse {
             return
         }
         this.res.removeHeader(field)
+    }
+
+    clear() {
+        this.res.getHeaderNames().forEach(header => this.remove(header))
+    }
+
+    merge(headers: Record<string, OutgoingHttpHeader>) {
+        Object.entries(headers).forEach(([k, v]) => this.set(k, v))
     }
 
     append(field: string, val: number | string | string[]) {
@@ -241,9 +265,17 @@ export class TpResponse {
         this.res.flushHeaders()
     }
 
-    private set_implicit_type(value: string) {
+    private set_implicit_type() {
         if (!this.has('Content-Type')) {
-            this.set('Content-Type', value)
+            if (typeof this._body === 'string') {
+                this.content_type = 'text/plain; charset=utf-8'
+            } else if (Buffer.isBuffer(this._body)) {
+                this.content_type = 'application/octet-stream'
+            } else if (this._body instanceof Stream) {
+                this.content_type = 'application/octet-stream'
+            } else {
+                this.content_type = 'application/json; charset=utf-8'
+            }
         }
     }
 }

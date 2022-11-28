@@ -10,7 +10,7 @@ import { Platform, TpInspector, TpService } from '@tarpit/core'
 import axios from 'axios'
 import chai from 'chai'
 import cap from 'chai-as-promised'
-import { Get, HttpAuthenticator, HttpCacheProxy, HttpErrorFormatter, HttpHooks, HttpResponseFormatter, HttpServerModule, TpRouter } from '../src'
+import { Get, HttpAuthenticator, HttpBodyFormatter, HttpCacheProxy, HttpHooks, HttpServerModule, TpRouter } from '../src'
 
 chai.use(cap)
 
@@ -30,12 +30,7 @@ class CustomHooks extends HttpHooks {
 }
 
 @TpService()
-class CustomErrorFormatter extends HttpErrorFormatter {
-
-}
-
-@TpService()
-class CustomResponseFormatter extends HttpResponseFormatter {
+class CustomBodyFormatter extends HttpBodyFormatter {
 
 }
 
@@ -44,8 +39,7 @@ class CustomResponseFormatter extends HttpResponseFormatter {
         { provide: HttpHooks, useClass: CustomHooks },
         { provide: HttpAuthenticator, useClass: CustomAuthenticator },
         { provide: HttpCacheProxy, useClass: CustomCacheProxy },
-        { provide: HttpErrorFormatter, useClass: CustomErrorFormatter },
-        { provide: HttpResponseFormatter, useClass: CustomResponseFormatter },
+        { provide: HttpBodyFormatter, useClass: CustomBodyFormatter },
     ]
 })
 class NormalRouter {

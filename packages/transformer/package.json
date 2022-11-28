@@ -6,7 +6,7 @@
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
     "main": "lib/index.js",
-    "types": "./lib/index.d.ts",
+    "types": "lib/index.d.ts",
     "module": "lib/index.mjs",
     "files": [
         "lib"
@@ -47,6 +47,6 @@
         "@tarpit/rollup": "^0.5.0",
         "@types/js-yaml": "^4.0.5",
         "@types/micromatch": "^4.0.2",
-        "@types/node": "^18.11.9"
+        "@types/node": "^16.18.3"
     }
 }

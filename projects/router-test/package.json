@@ -5,9 +5,9 @@
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
-    "main": "./lib/index.js",
-    "types": "./lib/index.d.ts",
-    "module": "./lib/index.mjs",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "module": "lib/index.mjs",
     "private": true,
     "files": [
         "lib"
@@ -36,11 +36,11 @@
         "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.26",
-        "@tarpit/core": "^0.5.26",
-        "@tarpit/http": "^0.5.26",
-        "@tarpit/judge": "^0.5.26",
-        "@tarpit/mongodb": "^0.5.27",
+        "@tarpit/config": "^0.5.30",
+        "@tarpit/core": "^0.5.30",
+        "@tarpit/http": "^0.5.30",
+        "@tarpit/judge": "^0.5.30",
+        "@tarpit/mongodb": "^0.5.30",
         "tslib": "^2.4.1"
     }
 }

@@ -27,8 +27,13 @@ describe('tp-request.ts', function() {
                 'x-forwarded-for': '136.0.0.1,58.0.0.1,59.0.0.1,60.0.0.1',
                 'x-custom-forwarded-for': '59.0.0.1,60.0.0.1',
                 'x-array-header': ['59.0.0.1', '60.0.0.1'],
+                'if-match': 'W/"12345"',
+                'if-none-match': 'W/"67890"',
+                'if-modified-since': 'Thu, 17 Nov 2022 08:36:24 GMT',
+                'if-unmodified-since': 'Thu, 18 Nov 2022 08:36:24 GMT',
                 'content-length': '872',
                 'content-type': 'application/json; charset=utf-8',
+                'cache-control': 'no-cache',
                 'accept': 'text/plain',
                 'referer': 'https://www.tarpit.cc/path?a=1&b=3'
             }
@@ -255,12 +260,77 @@ describe('tp-request.ts', function() {
 
             it('should return accept object parsed from headers about Accept-*', function() {
                 const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
-                expect(req.accepts.types('application/json', 'text/plain')).to.equal('text/plain')
+                expect(req.accepts.preferred_media_types(['application/json', 'text/plain'])).to.eql(['text/plain'])
             })
 
             it('should use parsed result', function() {
                 const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
                 expect(req.accepts).to.equal(req.accepts)
+            })
+        })
+
+        describe('.if_match', function() {
+
+            it('should return header of If-Match', function() {
+                const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
+                expect(req.if_match).to.equal('W/"12345"')
+            })
+        })
+
+        describe('.if_none_match', function() {
+
+            it('should return header of If-None-Match', function() {
+                const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
+                expect(req.if_none_match).to.equal('W/"67890"')
+            })
+        })
+
+        describe('.if_modified_since', function() {
+
+            it('should return header of If-Modified-Since', function() {
+                const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
+                expect(req.if_modified_since).to.equal(1668674184000)
+            })
+
+            it('should return undefined if header of If-Modified-Since not exists', function() {
+                const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
+                delete mock_incoming_message.headers['if-modified-since']
+                expect(req.if_modified_since).to.be.undefined
+            })
+        })
+
+        describe('.if_unmodified_since', function() {
+
+            it('should return header of If-Unmodified-Since', function() {
+                const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
+                expect(req.if_unmodified_since).to.equal(1668760584000)
+            })
+
+            it('should return undefined if header of If-Unmodified-Since not exists', function() {
+                const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
+                delete mock_incoming_message.headers['if-unmodified-since']
+                expect(req.if_unmodified_since).to.be.undefined
+            })
+        })
+
+        describe('.cache_control', function() {
+
+            it('should return parsed value from header of Cache-Control', function() {
+                const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
+                expect(req.cache_control).to.eql({ 'no-cache': true })
+            })
+
+            it('should use saved value if called twice.', function() {
+                const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
+                const value_a = req.cache_control
+                expect(value_a).to.eql({ 'no-cache': true })
+                expect(req.cache_control).to.equal(value_a)
+            })
+
+            it('should return undefined if header of Cache-Control not exists', function() {
+                const req = new TpRequest(mock_incoming_message, mock_parsed_url, { enable: true })
+                delete mock_incoming_message.headers['cache-control']
+                expect(req.cache_control).to.be.undefined
             })
         })
 

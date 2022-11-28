@@ -11,7 +11,7 @@ import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
 import { HttpContext } from '../builtin'
-import { BusinessError, CrashError, StandardError } from '../errors'
+import { TpHttpFinish } from '../errors'
 import { assemble_duration, create_log, HttpHooks } from './http-hooks'
 
 chai.use(cap)
@@ -65,36 +65,39 @@ describe('http-hooks.ts', function() {
     describe('#create_log()', function() {
 
         it('should create log message by assemble prop of request object', function() {
-            const mock_request = { ip: '127.0.0.1', method: 'GET', path: '/some/path' }
-            create_log(mock_request as any, 996)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]127.0.0.1             996ms GET     success  `, '/some/path')
+            const { context } = mock()
+            context.set('process_start', fake_now - 996)
+            context.response.status = 200
+            create_log(context, 996)
+            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200`, '/some/path')
         })
 
         it('should set method as "-" if method is undefined', function() {
-            const mock_request = { ip: '127.0.0.1', path: '/some/path' }
-            create_log(mock_request as any, 996)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]127.0.0.1             996ms -       success  `, '/some/path')
-        })
-
-        it('should log detail of BusinessError', function() {
-            const mock_request = { ip: '39.62.45.2', method: 'GET', path: '/some/path' }
-            const err = new BusinessError('ERR.NOT_FOUND', 'resource not exists')
-            create_log(mock_request as any, 996, err)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.62.45.2            996ms GET     business `, '/some/path', '<ERR.NOT_FOUND resource not exists>')
+            const { context, mock_request } = mock()
+            context.set('process_start', fake_now - 996)
+            context.response.status = 200
+            mock_request.method = undefined
+            mock_request.ip = '127.0.0.1'
+            create_log(context, 996)
+            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]127.0.0.1             996ms -       200`, '/some/path')
         })
 
         it('should log detail of CrashError', function() {
-            const mock_request = { ip: '39.88.125.6', method: 'POST', path: '/some/path' }
-            const err = new CrashError('ERR.CRASH', 'server crashed')
-            create_log(mock_request as any, 996, err)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    crash    `, '/some/path', '<ERR.CRASH server crashed>')
+            const { context } = mock()
+            context.set('process_start', fake_now - 996)
+            context.result = new TpHttpFinish({ status: 500, code: '500', msg: 'Internal Server Error' })
+            context.response.status = 500
+            create_log(context, 996)
+            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    500`, '/some/path', '<500 Internal Server Error>')
         })
 
         it('should log detail of StandardError', function() {
-            const mock_request = { ip: '39.88.125.6', method: 'POST', path: '/some/path' }
-            const err = new StandardError(401, 'Unauthorized')
-            create_log(mock_request as any, 996, err)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    standard `, '/some/path', '<401 Unauthorized>')
+            const { context } = mock()
+            context.set('process_start', fake_now - 996)
+            context.result = new TpHttpFinish({ status: 401, code: '401', msg: 'Unauthorized' })
+            context.response.status = 401
+            create_log(context, 996)
+            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    401`, '/some/path', '<401 Unauthorized>')
         })
     })
 
@@ -114,8 +117,9 @@ describe('http-hooks.ts', function() {
             it('should create log', async function() {
                 const { context } = mock()
                 context.set('process_start', fake_now - 996)
-                await new HttpHooks().on_finish(context, null as any)
-                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    success  `, '/some/path')
+                context.response.status = 200
+                await new HttpHooks().on_finish(context)
+                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200`, '/some/path')
             })
         })
 
@@ -124,9 +128,10 @@ describe('http-hooks.ts', function() {
             it('should create log', async function() {
                 const { context } = mock()
                 context.set('process_start', fake_now - 996)
-                const err = new BusinessError('ERR.NOT_FOUND', 'resource not exists')
-                await new HttpHooks().on_error(context, err)
-                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    business `, '/some/path', '<ERR.NOT_FOUND resource not exists>')
+                context.result = new TpHttpFinish({ status: 404, code: '404', msg: 'Not Found' })
+                context.response.status = 404
+                await new HttpHooks().on_error(context)
+                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    404`, '/some/path', '<404 Not Found>')
             })
         })
     })

@@ -13,4 +13,4 @@ branding:
   icon: 'umbrella'
 runs:
   using: 'node16'
-  main: 'lib/index.js'
+  main: 'lib/index.ts'

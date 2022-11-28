@@ -10,7 +10,7 @@ import { Platform, TpInspector, TpService } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { HttpContext, HttpHooks, HttpServerModule, Post, RawBody, TpHttpError, TpRouter } from '../src'
+import { HttpContext, HttpHooks, HttpServerModule, Post, RawBody, TpRouter } from '../src'
 
 chai.use(cap)
 
@@ -21,11 +21,11 @@ class CustomHooks extends HttpHooks {
         throw new Error('lkj')
     }
 
-    async on_error(context: HttpContext, err: TpHttpError): Promise<void> {
+    async on_error(context: HttpContext): Promise<void> {
         throw new Error('lkj')
     }
 
-    async on_finish(context: HttpContext, res: any): Promise<void> {
+    async on_finish(context: HttpContext): Promise<void> {
         throw new Error('lkj')
     }
 }

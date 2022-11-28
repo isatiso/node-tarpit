@@ -83,7 +83,7 @@ describe('produce drain case', function() {
         console.log = tmp
     })
 
-    it('should flush on drain', async function() {
+    it('should flush on drain[publish to channel]', async function() {
         for (let i = 0; i < 5000; i++) {
             producer.publish_normal.send(buf)
         }
@@ -94,7 +94,7 @@ describe('produce drain case', function() {
         await channel.close()
     })
 
-    it('should flush on drain', async function() {
+    it('should flush on drain[publish to confirmedChannel]', async function() {
         const promises: Promise<any>[] = []
         for (let i = 0; i < 5000; i++) {
             promises.push(producer.publish_confirm.send(buf))
@@ -106,7 +106,7 @@ describe('produce drain case', function() {
         await channel.close()
     })
 
-    it('should flush on drain', async function() {
+    it('should flush on drain[enqueue]', async function() {
         for (let i = 0; i < 5000; i++) {
             producer.enqueue_normal.send(buf)
         }
@@ -117,7 +117,7 @@ describe('produce drain case', function() {
         await channel.close()
     })
 
-    it('should flush on drain', async function() {
+    it('should flush on drain[confirmed enqueue]', async function() {
         const promises: Promise<any>[] = []
         for (let i = 0; i < 5000; i++) {
             promises.push(producer.enqueue_confirm.send(buf))

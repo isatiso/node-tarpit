@@ -8,8 +8,7 @@
 
 import { TpService } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
-import { HttpContext, TpRequest } from '../builtin'
-import { BusinessError, CrashError, StandardError, TpHttpError } from '../errors'
+import { HttpContext } from '../builtin'
 
 export function assemble_duration(context: HttpContext) {
     const start = context.get('process_start')
@@ -18,26 +17,16 @@ export function assemble_duration(context: HttpContext) {
     return duration
 }
 
-export function create_log(request: TpRequest, duration: number, err?: TpHttpError) {
+export function create_log(context: HttpContext, duration: number) {
     const time_str = Dora.now().format('YYYY-MM-DDTHH:mm:ssZZ')
-    const ip = request.ip.padEnd(18)
+    const ip = context.request.ip.padEnd(18)
     const duration_str = `${duration}ms`.padStart(8)
-    const method_str = (request.method ?? '-').padEnd(7)
-    if (err instanceof BusinessError) {
-        const type = 'business '
-        const err_msg = `<${err.code} ${err.msg}>`
-        console.log(`[${time_str}]${ip} ${duration_str} ${method_str} ${type}`, request.path, err_msg)
-    } else if (err instanceof CrashError) {
-        const type = 'crash    '
-        const err_msg = `<${err.code} ${err.msg}>`
-        console.log(`[${time_str}]${ip} ${duration_str} ${method_str} ${type}`, request.path, err_msg)
-    } else if (err instanceof StandardError) {
-        const type = 'standard '
-        const err_msg = `<${err.status} ${err.msg}>`
-        console.log(`[${time_str}]${ip} ${duration_str} ${method_str} ${type}`, request.path, err_msg)
-    } else {
-        const type = 'success  '
-        console.log(`[${time_str}]${ip} ${duration_str} ${method_str} ${type}`, request.path)
+    const method_str = (context.request.method ?? '-').padEnd(7)
+    const status = context.response.status
+    const err_msg = status >= 400 ? `<${context.result.code} ${context.result.msg}>` : ''
+    console.log(`[${time_str}]${ip} ${duration_str} ${method_str} ${status}`, context.request.path, err_msg)
+    if (status === 500) {
+        console.log(context.result.origin)
     }
 }
 
@@ -48,13 +37,13 @@ export class HttpHooks {
         context.set('process_start', Date.now())
     }
 
-    async on_finish(context: HttpContext, res: any): Promise<void> {
+    async on_finish(context: HttpContext): Promise<void> {
         const duration = assemble_duration(context)
-        create_log(context.request, duration)
+        create_log(context, duration)
     }
 
-    async on_error(context: HttpContext, err: TpHttpError): Promise<void> {
+    async on_error(context: HttpContext): Promise<void> {
         const duration = assemble_duration(context)
-        create_log(context.request, duration, err)
+        create_log(context, duration)
     }
 }

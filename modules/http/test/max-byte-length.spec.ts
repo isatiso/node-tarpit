@@ -48,7 +48,7 @@ describe('max-byte-length case', function() {
     it('should get error of 413', async function() {
         const res = await r.post('/buffer', 'abc12345678').catch(err => err)
         expect(res.response.status).to.equal(413)
-        expect(res.response.data).to.equal('Payload Too Large')
+        expect(res.response.statusText).to.equal('Payload Too Large')
     })
 
     it('should act as normal if body not too large', async function() {

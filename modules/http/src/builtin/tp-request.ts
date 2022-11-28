@@ -7,18 +7,20 @@
  */
 
 import { TpConfigSchema } from '@tarpit/config'
+import { Negotiator } from '@tarpit/negotiator'
 import { IncomingHttpHeaders, IncomingMessage } from 'http'
 import net from 'net'
 import { ParsedUrlQuery } from 'querystring'
 import tls from 'tls'
 import type_is from 'type-is'
 import { UrlWithParsedQuery } from 'url'
-import { AcceptParser } from '../tools/accept-parser'
+import { parse_cache_control, RequestCacheControl, ResponseCacheControl } from '../tools/cache-control'
 
 export class TpRequest {
 
     type: string | undefined
     charset: string | undefined
+    private _cache_control?: ResponseCacheControl
 
     constructor(
         public readonly req: IncomingMessage,
@@ -120,12 +122,37 @@ export class TpRequest {
         return len ? +len : undefined
     }
 
-    private _accepts?: AcceptParser
+    private _accepts?: Negotiator
     get accepts() {
         if (!this._accepts) {
-            this._accepts = new AcceptParser(this.req)
+            this._accepts = new Negotiator(this.req.headers)
         }
         return this._accepts
+    }
+
+    get if_match() {
+        return this.get('If-Match')
+    }
+
+    get if_none_match() {
+        return this.get('If-None-Match')
+    }
+
+    get if_modified_since() {
+        const header = this.get('If-Modified-Since')
+        return header ? Date.parse(header) : undefined
+    }
+
+    get if_unmodified_since() {
+        const header = this.get('If-Unmodified-Since')
+        return header ? Date.parse(header) : undefined
+    }
+
+    get cache_control(): RequestCacheControl | undefined {
+        if (!this._cache_control) {
+            this._cache_control = parse_cache_control(this.get('Cache-Control'))
+        }
+        return this._cache_control
     }
 
     is(type: string, ...types: string[]) {

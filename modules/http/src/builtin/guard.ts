@@ -8,7 +8,7 @@
 
 import { Judgement, MismatchDescription, OnJudgementError } from '@tarpit/judge'
 import { HttpCredentials } from '../__types__'
-import { throw_forbidden } from '../errors/standard-error'
+import { throw_forbidden } from '../errors'
 
 export type MergeCredentials<T> = Omit<T, 'type' | 'credentials'> & HttpCredentials
 

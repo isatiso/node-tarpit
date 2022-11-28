@@ -12,6 +12,7 @@ import chai_spies from 'chai-spies'
 import { ServerResponse } from 'http'
 import { Readable } from 'stream'
 import { Finish } from '../errors'
+import { HTTP_STATUS } from '../tools/http-status'
 import { lookup_content_type, TpResponse } from './tp-response'
 
 chai.use(cap)
@@ -98,12 +99,19 @@ describe('tp-response.ts', function() {
                 expect(response.get('Content-Type')).to.equal('text/plain; charset=utf-8')
             })
 
-            it('should figure out content length and set it to header', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.body = text
-                expect(response.get('Content-Length')).to.equal('54')
-            })
+            // it('should figure out content length and set it to header', function() {
+            //     const { mock_res } = mock_server_response()
+            //     const response = new TpResponse(mock_res, {} as any)
+            //     response.body = text
+            //     expect(response.get('Content-Length')).to.equal('54')
+            // })
+            //
+            // it('should figure out content length and set it to header', function() {
+            //     const { mock_res } = mock_server_response()
+            //     const response = new TpResponse(mock_res, {} as any)
+            //     response.body = buf
+            //     expect(response.get('Content-Length')).to.equal('114')
+            // })
 
             it('should set body as given Buffer', function() {
                 const { mock_res } = mock_server_response()
@@ -120,13 +128,6 @@ describe('tp-response.ts', function() {
                 expect(response.get('Content-Type')).to.equal('application/octet-stream')
             })
 
-            it('should figure out content length and set it to header', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.body = buf
-                expect(response.get('Content-Length')).to.equal('114')
-            })
-
             it('should set body as given Stream', function() {
                 const { mock_res } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
@@ -140,9 +141,9 @@ describe('tp-response.ts', function() {
                 const response = new TpResponse(mock_res, {} as any)
                 const spy_remove = chai.spy.on(response, 'remove', () => undefined)
                 response.body = readable
-                expect(spy_remove).to.have.been.called.once
+                expect(spy_remove).to.have.not.been.called
                 response.body = readable
-                expect(spy_remove).to.have.been.called.once
+                expect(spy_remove).to.have.not.been.called
                 expect(response.body).to.equal(readable)
                 expect(response.status).to.equal(200)
             })
@@ -190,7 +191,7 @@ describe('tp-response.ts', function() {
                 const response = new TpResponse(mock_res, {} as any)
                 const spy_remove = chai.spy.on(response, 'remove', () => undefined)
                 response.body = json
-                expect(spy_remove).to.have.been.first.called.with('Content-Length')
+                expect(spy_remove).to.have.not.been.called
             })
         })
 
@@ -243,20 +244,11 @@ describe('tp-response.ts', function() {
                 expect(response.message).to.equal('Not Found')
             })
 
-            it('should return statusMessage of status code if exists', function() {
+            it('should set message by given value', function() {
                 const { mock_res } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                mock_res.statusCode = 304
-                response.message = ''
+                response.message = HTTP_STATUS.message_of(304)
                 expect(response.message).to.equal('Not Modified')
-            })
-
-            it('should return empty string if last to action failed', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                mock_res.statusCode = 999
-                response.message = ''
-                expect(response.message).to.equal('')
             })
         })
 
@@ -311,6 +303,13 @@ describe('tp-response.ts', function() {
                 expect(response.length).to.equal(798)
             })
 
+            it('should return undefined if header Content-Length not exist', function() {
+                const { mock_res, mock_headers } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                delete mock_headers['content-length']
+                expect(response.length).to.be.undefined
+            })
+
             it('should set Content-Length header', function() {
                 const { mock_res, mock_headers } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
@@ -325,13 +324,11 @@ describe('tp-response.ts', function() {
                 expect(mock_headers['content-length']).to.equal('111')
             })
 
-            it('should ignore given value if Transfer-Encoding header exists', function() {
+            it('should remove header if given undefined', function() {
                 const { mock_res, mock_headers } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                mock_headers['transfer-encoding'] = 'gzip'
-                mock_headers['content-length'] = '2'
-                response.length = 111
-                expect(mock_headers['content-length']).to.equal('2')
+                response.length = undefined
+                expect(mock_headers['content-length']).to.be.undefined
             })
         })
 
@@ -351,82 +348,117 @@ describe('tp-response.ts', function() {
                 const response = new TpResponse(mock_res, {} as any)
                 expect(response.content_type).to.be.undefined
             })
-        })
-
-        describe('.set_content_type()', function() {
 
             it('should set type to header Content-Type if given value is MIME type', function() {
                 const { mock_res, mock_headers } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                response.set_content_type('application/json')
+                response.content_type = 'application/json'
                 expect(mock_headers['content-type']).to.equal('application/json; charset=utf-8')
             })
 
             it('should set parsed type to header Content-Type if given value is extname', function() {
                 const { mock_res, mock_headers } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                response.set_content_type('json')
+                response.content_type = 'json'
                 expect(mock_headers['content-type']).to.equal('application/json; charset=utf-8')
             })
 
             it('should remove header Content-Type if parse type failed', function() {
                 const { mock_res, mock_headers } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                response.set_content_type('unknown')
+                response.content_type = 'unknown'
+                expect(mock_headers['content-type']).to.be.undefined
+            })
+
+            it('should remove header if given undefined', function() {
+                const { mock_res, mock_headers } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                response.content_type = undefined
                 expect(mock_headers['content-type']).to.be.undefined
             })
         })
 
-        describe('.figure_out_length()', function() {
+        describe('.cache_control', function() {
 
-            it('should return current length if Transfer-Encoding exists', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.set('Transfer-Encoding', 'gzip')
-                expect(response.figure_out_length()).to.be.undefined
-                expect(response.length).to.be.undefined
-            })
-
-            it('should return undefined if Content-Length not exists and body not exists', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                expect(response.figure_out_length()).to.be.undefined
-                expect(response.length).to.be.undefined
-            })
-
-            it('should return undefined if Content-Length not exists and body is Stream', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.body = Readable.from(Buffer.from('lkj'))
-                expect(response.figure_out_length()).to.be.undefined
-                expect(response.length).to.be.undefined
-            })
-
-            it('should return compute length of body if Content-Length not exists and body is string', function() {
+            it('should parse value of header Cache-Control when accessing', function() {
                 const { mock_res, mock_headers } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                response.body = '1234567890'
-                delete mock_headers['content-length']
-                expect(response.figure_out_length()).to.equal(10)
-                expect(response.length).to.equal(10)
+                mock_headers['cache-control'] = 'public,no-cache,max-age=86400'
+                expect(response.cache_control).to.eql({ public: true, 'no-cache': true, 'max-age': 86400 })
             })
 
-            it('should return compute length of body if Content-Length not exists and body is Buffer', function() {
+            it('should reuse parsed value if Cache-Control not change', function() {
                 const { mock_res, mock_headers } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                response.body = Buffer.from('1234567890')
-                delete mock_headers['content-length']
-                expect(response.figure_out_length()).to.equal(10)
-                expect(response.length).to.equal(10)
+                mock_headers['cache-control'] = 'public,no-cache,max-age=86400'
+                const parsed_value = response.cache_control
+                expect(response.cache_control).to.equal(parsed_value)
             })
 
-            it('should return compute length of JSON serialized body if Content-Length not exists and body is object', function() {
+            it('should set Cache-Control header by assign to .cache_control', function() {
                 const { mock_res, mock_headers } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                response.body = { a: '阿瑟费', b: 111 }
-                delete mock_headers['content-length']
-                expect(response.figure_out_length()).to.equal(25)
-                expect(response.length).to.equal(25)
+                response.cache_control = { public: true, 'no-cache': true, 'max-age': 86400 }
+                expect(mock_headers['cache-control']).to.equal('public,no-cache,max-age=86400')
+            })
+
+            it('should remove header if given undefined', function() {
+                const { mock_res, mock_headers } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                response.cache_control = undefined
+                expect(mock_headers['cache-control']).to.be.undefined
+            })
+        })
+
+        describe('.last_modified', function() {
+
+            it('should return timestamp number of header Last-Modified', function() {
+                const { mock_res, mock_headers } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                mock_headers['last-modified'] = 'Sat, 05 Nov 2022 15:41:03 GMT'
+                expect(response.last_modified).to.equal(1667662863000)
+            })
+
+            it('should use first value of header Last-Modified, if it\'s accidentally is an array.', function() {
+                const { mock_res, mock_headers } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                mock_headers['last-modified'] = [
+                    'Sat, 05 Nov 2022 15:41:03 GMT',
+                    'Sat, 06 Nov 2022 15:41:03 GMT',
+                ]
+                expect(response.last_modified).to.equal(1667662863000)
+            })
+
+            it('should return undefined if header not exists', function() {
+                const { mock_res } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                expect(response.last_modified).to.be.undefined
+            })
+        })
+
+        describe('.etag', function() {
+
+            it('should return value of header Etag', function() {
+                const { mock_res, mock_headers } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                mock_headers['etag'] = 'W/"bae3a898a842836accb003bafbcbf324"'
+                expect(response.etag).to.equal('W/"bae3a898a842836accb003bafbcbf324"')
+            })
+
+            it('should use first value of header Etag, if it\'s accidentally is an array.', function() {
+                const { mock_res, mock_headers } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                mock_headers['etag'] = [
+                    'W/"bae3a898a842836accb003bafbcbf324"',
+                    'W/"llllllllll"',
+                ]
+                expect(response.etag).to.equal('W/"bae3a898a842836accb003bafbcbf324"')
+            })
+
+            it('should return undefined if header not exists', function() {
+                const { mock_res } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                expect(response.etag).to.be.undefined
             })
         })
 
@@ -539,6 +571,16 @@ describe('tp-response.ts', function() {
                 response.set('X-Custom-Number', 3)
                 expect(response.get('X-Custom-Number')).to.equal('3')
             })
+
+            it('should remove header if given value is undefined', function() {
+                const { mock_res } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                response.set('X-Custom-Number', 3)
+                expect(response.get('X-Custom-Number')).to.equal('3')
+                response.set('X-Custom-Number', undefined)
+                expect(response.get('X-Custom-Number')).to.be.undefined
+                expect(response.has('X-Custom-Number')).to.be.false
+            })
         })
 
         describe('.remove()', function() {
@@ -584,6 +626,20 @@ describe('tp-response.ts', function() {
                 response.set('Custom', ['something', 'a'])
                 response.append('Custom', 'b')
                 expect(response.get('Custom')).to.eql(['something', 'a', 'b'])
+            })
+        })
+
+        describe('.clear()', function() {
+
+            it('should clear all headers', function() {
+                const { mock_res, mock_headers } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                mock_headers['custom-a'] = 'a'
+                mock_headers['custom-b'] = 'b'
+                response.clear()
+                expect(response.has('Custom-A')).to.be.false
+                expect(response.has('Custom-B')).to.be.false
+                expect(Object.keys(response.headers)).to.eql([])
             })
         })
 

@@ -10,7 +10,7 @@ import { Platform, TpInspector } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { Auth, CacheUnder, Delete, finish, Get, HttpServerModule, Params, Post, Put, Route, TpHttpError, TpRouter } from '../src'
+import { Auth, CacheUnder, Delete, finish, Get, HttpServerModule, Params, Post, Put, Route, TpHttpFinish, TpRouter } from '../src'
 
 chai.use(cap)
 
@@ -63,7 +63,7 @@ class TestRouter {
     @Post('finish-with-http-error')
     async finish_http_error() {
         finish((async () => {
-            throw new TpHttpError({ code: 'ERR', msg: 'custom something', status: 504 })
+            throw new TpHttpFinish({ code: 'ERR', msg: 'custom something', status: 504 })
         })())
     }
 }
@@ -132,7 +132,7 @@ describe('HttpServerModule', function() {
                 expect(err.response.status).to.equal(500)
                 expect(err.response.data).to.eql({
                     error: {
-                        code: 'STANDARD_HTTP_ERROR',
+                        code: 'ERR.UNCAUGHT_ERROR',
                         msg: 'Internal Server Error'
                     }
                 })

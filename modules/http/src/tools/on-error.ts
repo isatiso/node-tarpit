@@ -7,7 +7,7 @@
  */
 
 import { ServerResponse } from 'http'
-import { CrashError, TpHttpError } from '../errors'
+import { TpHttpFinish } from '../errors'
 import { HTTP_STATUS } from './http-status'
 
 export function on_error(err: any, res: ServerResponse) {
@@ -23,11 +23,11 @@ export function on_error(err: any, res: ServerResponse) {
         return
     }
 
-    let regular_err: TpHttpError
-    if (err instanceof TpHttpError) {
+    let regular_err: TpHttpFinish
+    if (err instanceof TpHttpFinish) {
         regular_err = err
     } else {
-        regular_err = new CrashError('UNHANDLED_ERROR', HTTP_STATUS.message_of(500), { status: 500, origin: err })
+        regular_err = new TpHttpFinish({ status: 500, code: 'ERR.UNCAUGHT_ERROR', msg: HTTP_STATUS.message_of(500), origin: err })
     }
 
     res.getHeaderNames().forEach(name => res.removeHeader(name))

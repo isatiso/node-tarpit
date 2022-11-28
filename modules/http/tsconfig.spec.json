@@ -2,7 +2,30 @@
     "extends": "../../common-tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./",
-        "outDir": "./lib"
+        "outDir": "./lib",
+        "paths": {
+            "@tarpit/content-type": [
+                "../content-type/src"
+            ],
+            "@tarpit/core": [
+                "../core/src"
+            ],
+            "@tarpit/dora": [
+                "../../packages/dora/src"
+            ],
+            "@tarpit/config": [
+                "../../packages/config/src"
+            ],
+            "@tarpit/judge": [
+                "../../packages/judge/src"
+            ],
+            "@tarpit/error": [
+                "../../packages/error/src"
+            ],
+            "@tarpit/negotiator": [
+                "../../packages/negotiator/src"
+            ]
+        }
     },
     "include": [
         "src/**/*.spec.ts",
