@@ -19,9 +19,6 @@ jobs:
       - name: Install
         run: yarn --frozen-lockfile
 
-      - name: Build
-        run: lerna run build
-
       - name: Configure CI Git User
         run: |
           git config --global user.name isatiso
@@ -30,6 +27,9 @@ jobs:
 
       - name: Publish package
         run: |
+          npm set registry=https://registry.npmjs.org
+          npm set "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}"
+          lerna run build
           lerna publish patch --no-verify-access --registry https://registry.npmjs.org -y
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
