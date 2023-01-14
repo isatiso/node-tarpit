@@ -30,7 +30,6 @@ jobs:
 
       - name: Publish package
         run: |
-          lerna publish patch -y
+          lerna publish patch --no-verify-access --registry https://registry.npmjs.org -y
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
