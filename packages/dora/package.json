@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/dora",
-    "version": "0.5.31",
+    "version": "0.5.32",
     "description": "Out of the box Date Object based on native Date.",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
