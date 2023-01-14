@@ -11,7 +11,7 @@ import { ClassProvider, TpService } from '@tarpit/core'
 import { MongoClient, MongoClientOptions } from 'mongodb'
 
 import { TpMongo } from '../annotations/tp-mongo'
-import { FakeCollection } from '../tools/generic-collection'
+import { StubCollection } from '../tools/generic-collection'
 
 @TpService({ inject_root: true })
 export class MongoHubService {
@@ -43,7 +43,7 @@ export class MongoHubService {
 
     load(meta: TpMongo) {
 
-        if (!(meta.cls.prototype instanceof FakeCollection)) {
+        if (!(meta.cls.prototype instanceof StubCollection)) {
             throw new Error('A TpMongo class must inherit from GenericCollection.')
         }
 
@@ -54,7 +54,7 @@ export class MongoHubService {
         meta.provider.create()
         const collection = this.client.db(meta.db).collection(meta.collection)
         let instance = meta.provider.resolved
-        while (instance && Object.getPrototypeOf(instance) !== FakeCollection.prototype) {
+        while (instance && Object.getPrototypeOf(instance) !== StubCollection.prototype) {
             instance = Object.getPrototypeOf(instance)
         }
         if (!instance) {
