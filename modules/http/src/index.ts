@@ -77,6 +77,5 @@ export {
     ResponseCache,
     TpRequest,
     TpResponse,
-    MergeCredentials,
 } from './builtin'
 export { HttpServerModule } from './http-server.module'

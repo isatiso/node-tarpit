@@ -8,13 +8,14 @@
 
 import { TpService } from '@tarpit/core'
 import { Jtl } from '@tarpit/judge'
+import { HttpCredentials } from '../__types__'
 import { Guard, TpRequest } from '../builtin'
 import { throw_unauthorized } from '../errors'
 
 @TpService({ inject_root: true })
 export class HttpAuthenticator {
 
-    async get_credentials(request: TpRequest) {
+    async get_credentials(request: TpRequest): Promise<HttpCredentials | undefined> {
         const [type, credentials] = request.get('Authorization')?.split(' ') ?? []
         if (type && credentials) {
             return { type, credentials }
