@@ -54,7 +54,7 @@ export class MongoHubService {
         meta.provider.create()
         const collection = this.client.db(meta.db).collection(meta.collection)
         let instance = meta.provider.resolved
-        while (instance && instance !== FakeCollection.prototype) {
+        while (instance && Object.getPrototypeOf(instance) !== FakeCollection.prototype) {
             instance = Object.getPrototypeOf(instance)
         }
         if (!instance) {
