@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/mongodb",
-    "version": "0.5.32",
+    "version": "0.5.33",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -42,9 +42,9 @@
         "tslib": "^2.4.1"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.5.32",
-        "@tarpit/core": "^0.5.32",
-        "@tarpit/rollup": "^0.5.0"
+        "@tarpit/config": "^0.5.33",
+        "@tarpit/core": "^0.5.33",
+        "@tarpit/rollup": "^0.5.33"
     },
     "peerDependencies": {
         "@tarpit/config": "0.x",
