@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/dora",
-    "version": "0.5.35",
+    "version": "0.5.36",
     "description": "Out of the box Date Object based on native Date.",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -39,6 +39,6 @@
         "test": "tp cover --reporter=json --reporter=text --clean"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.35"
+        "@tarpit/rollup": "^0.5.36"
     }
 }
