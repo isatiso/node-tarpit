@@ -41,7 +41,7 @@
     "dependencies": {
         "@tarpit/cron": "^0.5.35",
         "@tarpit/dora": "^0.5.35",
-        "tslib": "^2.4.1"
+        "tslib": "^2.5.0"
     },
     "devDependencies": {
         "@tarpit/config": "^0.5.35",

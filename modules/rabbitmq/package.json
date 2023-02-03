@@ -42,7 +42,7 @@
         "@tarpit/barbeque": "^0.5.35",
         "@tarpit/judge": "^0.5.35",
         "amqplib": "^0.10.3",
-        "tslib": "^2.4.1"
+        "tslib": "^2.5.0"
     },
     "devDependencies": {
         "@tarpit/config": "^0.5.35",
@@ -50,7 +50,7 @@
         "@tarpit/core": "^0.5.35",
         "@tarpit/error": "^0.5.35",
         "@tarpit/rollup": "^0.5.35",
-        "@types/amqplib": "^0.8.2"
+        "@types/amqplib": "^0.10.1"
     },
     "peerDependencies": {
         "@tarpit/config": "0.x",

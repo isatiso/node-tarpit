@@ -42,7 +42,7 @@
         "build": "rollup -c"
     },
     "dependencies": {
-        "commander": "^9.4.1"
+        "commander": "^10.0.0"
     },
     "devDependencies": {
         "@tarpit/rollup": "^0.5.35",
