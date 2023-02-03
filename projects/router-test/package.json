@@ -41,6 +41,6 @@
         "@tarpit/http": "^0.5.35",
         "@tarpit/judge": "^0.5.35",
         "@tarpit/mongodb": "^0.5.35",
-        "tslib": "^2.4.1"
+        "tslib": "^2.5.0"
     }
 }

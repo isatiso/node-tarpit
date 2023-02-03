@@ -47,7 +47,7 @@
         "lru-cache": "^7.14.1",
         "mime-types": "^2.1.35",
         "path-to-regexp": "^6.2.1",
-        "tslib": "^2.4.1",
+        "tslib": "^2.5.0",
         "type-is": "^1.6.18"
     },
     "devDependencies": {
@@ -55,7 +55,7 @@
         "@tarpit/content-type": "^0.5.35",
         "@tarpit/core": "^0.5.35",
         "@tarpit/error": "^0.5.35",
-        "@tarpit/negotiator": "^0.5.30",
+        "@tarpit/negotiator": "^0.5.35",
         "@tarpit/rollup": "^0.5.35",
         "@types/content-disposition": "^0.5.5",
         "@types/fresh": "^0.5.0",
