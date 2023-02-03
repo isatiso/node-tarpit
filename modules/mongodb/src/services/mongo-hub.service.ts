@@ -51,15 +51,14 @@ export class MongoHubService {
             throw new Error('A TpMongo class must be provided by a ClassProvider.')
         }
 
-        meta.provider.create()
         const collection = this.client.db(meta.db).collection(meta.collection)
-        let instance = meta.provider.resolved
-        while (instance && Object.getPrototypeOf(instance) !== StubCollection.prototype) {
-            instance = Object.getPrototypeOf(instance)
+        let proto = meta.cls.prototype
+        while (proto && Object.getPrototypeOf(proto) !== StubCollection.prototype) {
+            proto = Object.getPrototypeOf(proto)
         }
-        if (!instance) {
-            throw new Error('Can\'t find FakeCollection on the chain.')
+        if (!proto) {
+            throw new Error('Can\'t find StubCollection on the chain.')
         }
-        Object.setPrototypeOf(instance, collection)
+        Object.setPrototypeOf(proto, collection)
     }
 }
