@@ -38,7 +38,7 @@ jobs:
           MONGO_INITDB_DATABASE: test
         options: --health-cmd mongo --health-interval 10s --health-timeout 5s --health-retries 5
         ports:
-          - 27017:27017
+          - 27017/tcp
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -58,7 +58,7 @@ jobs:
       - name: Test
         env:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
-          MONGODB_URL: mongodb://admin:admin_password@localhost:27017/admin
+          MONGODB_URL: mongodb://admin:admin_password@localhost:${{ job.services.mongodb.ports[27017] }}/admin
         run: lerna run test --verbose
 
       - name: Upload coverage files
