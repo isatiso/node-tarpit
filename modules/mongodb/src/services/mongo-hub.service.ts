@@ -20,14 +20,14 @@ export class MongoHubService {
     started = false
 
     // @ts-ignore
-    private readonly uri = this.config.get('mongodb.uri')
+    private readonly url = this.config.get('mongodb.url')
     // @ts-ignore
     private readonly options?: MongoClientOptions = this.config.get('mongodb.options')
 
     constructor(
         private config: ConfigData
     ) {
-        this.client = new MongoClient(this.uri, { ...this.options })
+        this.client = new MongoClient(this.url, { ...this.options })
     }
 
     async start() {
@@ -43,22 +43,11 @@ export class MongoHubService {
 
     load(meta: TpMongo) {
 
-        if (!(meta.cls.prototype instanceof StubCollection)) {
-            throw new Error('A TpMongo class must inherit from GenericCollection.')
-        }
-
-        if (!(meta.provider instanceof ClassProvider)) {
-            throw new Error('A TpMongo class must be provided by a ClassProvider.')
+        if (Object.getPrototypeOf(meta.cls.prototype) !== StubCollection.prototype) {
+            throw new Error('A TpMongo class must inherit from GenericCollection directly.')
         }
 
         const collection = this.client.db(meta.db).collection(meta.collection)
-        let proto = meta.cls.prototype
-        while (proto && Object.getPrototypeOf(proto) !== StubCollection.prototype) {
-            proto = Object.getPrototypeOf(proto)
-        }
-        if (!proto) {
-            throw new Error('Can\'t find StubCollection on the chain.')
-        }
-        Object.setPrototypeOf(proto, collection)
+        Object.setPrototypeOf(meta.cls.prototype, collection)
     }
 }
