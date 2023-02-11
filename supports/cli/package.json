@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/cli",
-    "version": "0.5.36",
+    "version": "0.5.37",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -45,8 +45,8 @@
         "commander": "^10.0.0"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.36",
-        "@tarpit/type-tools": "^0.5.36",
+        "@tarpit/rollup": "^0.5.37",
+        "@tarpit/type-tools": "^0.5.37",
         "@types/normalize-package-data": "^2.4.1"
     }
 }
