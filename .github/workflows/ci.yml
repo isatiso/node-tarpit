@@ -19,6 +19,8 @@ jobs:
         rabbitmq-version:
           - '3.9'
           - '3.10'
+        mongodb-version:
+          - '5'
     services:
       rabbitmq:
         image: rabbitmq:${{ matrix.rabbitmq-version }}
@@ -29,7 +31,7 @@ jobs:
           - 5672/tcp
         options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
       mongodb:
-        image: mongo:5
+        image: mongo:${{ matrix.mongodb-version }}
         env:
           MONGO_INITDB_ROOT_USERNAME: admin
           MONGO_INITDB_ROOT_PASSWORD: admin_password
