@@ -16,9 +16,12 @@ jobs:
           - 14.x
           - 16.x
           - 18.x
+        rabbitmq-version:
+          - 3.9
+          - 3.10
     services:
       rabbitmq:
-        image: rabbitmq:3.9
+        image: rabbitmq:${{ matrix.rabbitmq-version }}
         env:
           RABBITMQ_DEFAULT_USER: admin
           RABBITMQ_DEFAULT_PASS: admin_password
