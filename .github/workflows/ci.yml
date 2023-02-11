@@ -17,8 +17,8 @@ jobs:
           - 16.x
           - 18.x
         rabbitmq-version:
-          - 3.9
-          - 3.10
+          - '3.9'
+          - '3.10'
     services:
       rabbitmq:
         image: rabbitmq:${{ matrix.rabbitmq-version }}
