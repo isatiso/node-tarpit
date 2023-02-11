@@ -2,7 +2,8 @@ name: Build and Test
 
 on:
   push:
-    - 'dev'
+    branches:
+      - 'dev'
   pull_request:
     branches:
       - '*'
