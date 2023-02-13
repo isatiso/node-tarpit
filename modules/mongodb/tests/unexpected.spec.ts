@@ -8,10 +8,14 @@
 
 import { Platform, TpInspector } from '@tarpit/core'
 import { expect } from 'chai'
-import { MongodbModule, TpMongo } from '../src'
+import { GenericCollection, MongodbModule, TpMongo } from '../src'
 
 @TpMongo('test', 'no_generic')
 class TestNoGenericMongo {
+}
+
+@TpMongo('test', 'not_exists', { client_name: 'not_exists' as any })
+class TestNotExistClientMongo extends GenericCollection<{ a: string }>() {
 }
 
 describe('unexpected case', function() {
@@ -46,5 +50,11 @@ describe('unexpected case', function() {
         const p = new Platform({ mongodb: { url } })
             .import(MongodbModule)
         expect(() => p.import(TestNoGenericMongo)).to.throw('A TpMongo class must inherit from GenericCollection directly.')
+    })
+
+    it('should throw an error if specified a client_name of nothing', async function() {
+        const p = new Platform({ mongodb: { url } })
+            .import(MongodbModule)
+        expect(() => p.import(TestNotExistClientMongo)).to.throw('Can not find specified MongoClient of name not_exists.')
     })
 })

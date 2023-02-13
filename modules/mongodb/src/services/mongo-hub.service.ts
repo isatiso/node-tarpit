@@ -60,7 +60,7 @@ export class MongoHubService {
         }
         const client_name: keyof TpMongoClientConfigMap = meta.client_name ?? 'mongodb'
         if (!this.client_map[client_name]) {
-            throw new Error(`Can not find specified MongoClient of name ${client_name}`)
+            throw new Error(`Can not find specified MongoClient of name ${client_name}.`)
         }
 
         const collection = this.client_map[client_name].db(meta.db).collection(meta.collection)
