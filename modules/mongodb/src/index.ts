@@ -6,19 +6,20 @@
  * found in the LICENSE file at source root.
  */
 
+import { TpMongoClientConfig, TpMongoClientConfigMap, TpMongoClientName } from './types'
+
 export { GenericCollection } from './tools/generic-collection'
 export { MongodbModule } from './mongodb.module'
 export { TpMongo } from './annotations/tp-mongo'
+export { TpMongoClientConfigMap, TpMongoClientName, TpMongoClientConfig } from './types'
+
+type TpOtherClientConfigMap = Exclude<TpMongoClientName, 'mongodb'> extends never ? {} : {
+    other_clients: Pick<TpMongoClientConfigMap, Exclude<TpMongoClientName, 'mongodb'>>
+}
 
 declare module '@tarpit/config' {
 
     export interface TpConfigSchema {
-        mongodb: {
-            url: string
-            // This field is actually a MongoClientOptions, but it's too complicated to used, and will broke the type inference of ConfigData.
-            // So I leave a unknown here.
-            // TODO: Figure out some better way to deal with this field.
-            options?: unknown
-        }
+        mongodb: TpMongoClientConfig & TpOtherClientConfigMap
     }
 }
