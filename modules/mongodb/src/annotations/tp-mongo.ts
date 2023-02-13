@@ -7,9 +7,11 @@
  */
 
 import { make_decorator, TpWorker } from '@tarpit/core'
+import { TpMongoClientName } from '../types'
 import { TpMongoToken } from './__token__'
 
 export interface TpMongoOptions {
+    instance_name?: TpMongoClientName
 }
 
 export type TpMongo = InstanceType<typeof TpMongo>

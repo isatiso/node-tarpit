@@ -25,6 +25,7 @@ export function build_exec() {
         `-n ${name} -Q github-action-${version} -f ./modules/http/coverage/coverage-final.json -F http -Z`,
         `-n ${name} -Q github-action-${version} -f ./modules/schedule/coverage/coverage-final.json -F schedule -Z`,
         `-n ${name} -Q github-action-${version} -f ./modules/rabbitmq/coverage/coverage-final.json -F rabbitmq -Z`,
+        `-n ${name} -Q github-action-${version} -f ./modules/mongodb/coverage/coverage-final.json -F mongodb -Z`,
     ]
 
     const options: any = {}

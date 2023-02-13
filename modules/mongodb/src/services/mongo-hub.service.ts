@@ -7,38 +7,50 @@
  */
 
 import { ConfigData } from '@tarpit/config'
-import { ClassProvider, TpService } from '@tarpit/core'
+import { TpService } from '@tarpit/core'
 import { MongoClient, MongoClientOptions } from 'mongodb'
 
 import { TpMongo } from '../annotations/tp-mongo'
 import { StubCollection } from '../tools/generic-collection'
+import { TpMongoClientConfigMap } from '../types'
+
+type MongoDBClientMap = {
+    [K in keyof TpMongoClientConfigMap]: MongoClient
+}
 
 @TpService({ inject_root: true })
 export class MongoHubService {
 
-    client: MongoClient
     started = false
-
-    // @ts-ignore
-    private readonly url = this.config.get('mongodb.url')
-    // @ts-ignore
-    private readonly options?: MongoClientOptions = this.config.get('mongodb.options')
+    private readonly client_map: MongoDBClientMap
 
     constructor(
         private config: ConfigData
     ) {
-        this.client = new MongoClient(this.url, { ...this.options })
+        const config_map: TpMongoClientConfigMap = {
+            mongodb: {
+                url: this.config.get('mongodb.url'),
+                options: this.config.get('mongodb.options'),
+            },
+            ...this.config.get('mongodb.other_clients' as any)
+        }
+        this.client_map = Object.fromEntries(
+            Object.entries(config_map)
+                .map(([k, v]) => [k, new MongoClient(v.url, v.options as MongoClientOptions)])
+        ) as any
     }
 
     async start() {
-        await this.client.connect()
+        await Promise.all(Object.values(this.client_map).map(c => c.connect()))
         this.started = true
     }
 
     async stop() {
         this.started = false
-        this.client.removeAllListeners()
-        await this.client.close()
+        await Promise.all(Object.values(this.client_map).map(c => {
+            c.removeAllListeners()
+            return c.close()
+        }))
     }
 
     load(meta: TpMongo) {
@@ -46,8 +58,12 @@ export class MongoHubService {
         if (Object.getPrototypeOf(meta.cls.prototype) !== StubCollection.prototype) {
             throw new Error('A TpMongo class must inherit from GenericCollection directly.')
         }
+        const instance_name: keyof TpMongoClientConfigMap = meta.instance_name ?? 'mongodb'
+        if (!this.client_map[instance_name]) {
+            throw new Error(`Can not find specified MongoClient of name ${instance_name}`)
+        }
 
-        const collection = this.client.db(meta.db).collection(meta.collection)
+        const collection = this.client_map[instance_name].db(meta.db).collection(meta.collection)
         Object.setPrototypeOf(meta.cls.prototype, collection)
     }
 }
