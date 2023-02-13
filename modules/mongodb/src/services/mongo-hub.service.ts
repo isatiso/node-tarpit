@@ -58,12 +58,12 @@ export class MongoHubService {
         if (Object.getPrototypeOf(meta.cls.prototype) !== StubCollection.prototype) {
             throw new Error('A TpMongo class must inherit from GenericCollection directly.')
         }
-        const instance_name: keyof TpMongoClientConfigMap = meta.instance_name ?? 'mongodb'
-        if (!this.client_map[instance_name]) {
-            throw new Error(`Can not find specified MongoClient of name ${instance_name}`)
+        const client_name: keyof TpMongoClientConfigMap = meta.client_name ?? 'mongodb'
+        if (!this.client_map[client_name]) {
+            throw new Error(`Can not find specified MongoClient of name ${client_name}`)
         }
 
-        const collection = this.client_map[instance_name].db(meta.db).collection(meta.collection)
+        const collection = this.client_map[client_name].db(meta.db).collection(meta.collection)
         Object.setPrototypeOf(meta.cls.prototype, collection)
     }
 }
