@@ -7,11 +7,12 @@
  */
 
 import { make_abstract_decorator, make_decorator, TpEntry, TpUnit } from '@tarpit/core'
-import { ApiMethod, TpRouterOptions } from './__types__'
+import { ApiMethod, TpRouterOptions, TpWebSocketOptions } from './__types__'
 
 export type RouteProps = { path_tail?: string, methods: ApiMethod[] }
 
 export const TpRouterToken = Symbol.for('œœ.token.http.TpRouter')
+export const TpWebSocketToken = Symbol.for('œœ.token.http.TpWebSocket')
 
 export type TpHttp = InstanceType<typeof TpHttp>
 export const TpHttp = make_abstract_decorator('TpHttp', TpUnit)
@@ -38,4 +39,19 @@ export type Delete = InstanceType<typeof Delete>
 export const Delete = make_decorator('Delete', (path_tail?: string): RouteProps => ({ path_tail, methods: ['DELETE'] }), Route)
 
 export type TpRouter = InstanceType<typeof TpRouter>
-export const TpRouter = make_decorator('TpRouter', (path: `/${string}`, options?: TpRouterOptions) => ({ ...options, path, token: TpRouterToken, }), TpEntry)
+export const TpRouter = make_decorator('TpRouter', (path: `/${string}`, options?: TpRouterOptions) => ({ ...options, path, token: TpRouterToken }), TpEntry)
+
+export type OnConnect = InstanceType<typeof OnConnect>
+export const OnConnect = make_decorator('OnConnect', () => ({}), TpUnit)
+
+export type OnClose = InstanceType<typeof OnClose>
+export const OnClose = make_decorator('OnClose', () => ({}), TpUnit)
+
+export type OnMessage = InstanceType<typeof OnMessage>
+export const OnMessage = make_decorator('OnMessage', () => ({}), TpUnit)
+
+export type EmitMessage = InstanceType<typeof EmitMessage>
+export const EmitMessage = make_decorator('EmitMessage', () => ({}), TpUnit)
+
+export type TpWebSocket = InstanceType<typeof TpWebSocket>
+export const TpWebSocket = make_decorator('TpWebSocket', (path: `/${string}`, options?: TpWebSocketOptions) => ({ ...options, path, token: TpWebSocketToken }), TpEntry)

@@ -42,6 +42,7 @@
         "@tarpit/dora": "^0.5.38",
         "@tarpit/judge": "^0.5.38",
         "@tarpit/negotiator": "^0.5.38",
+        "ws": "^8.12.1",
         "content-disposition": "^0.5.4",
         "fresh": "^0.5.2",
         "lru-cache": "^7.14.1",
@@ -60,7 +61,8 @@
         "@types/content-disposition": "^0.5.5",
         "@types/fresh": "^0.5.0",
         "@types/mime-types": "^2.1.1",
-        "@types/type-is": "^1.6.3"
+        "@types/type-is": "^1.6.3",
+        "@types/ws": "^8.5.4"
     },
     "peerDependencies": {
         "@tarpit/config": "0.x",

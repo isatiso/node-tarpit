@@ -54,6 +54,7 @@ export {
     Post,
     Auth,
     Route,
+    TpWebSocket,
     RouteProps,
 } from './annotations'
 

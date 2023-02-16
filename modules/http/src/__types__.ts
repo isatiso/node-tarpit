@@ -41,3 +41,6 @@ export interface HttpCredentials {
 
 export interface TpRouterOptions extends ImportsAndProviders {
 }
+
+export interface TpWebSocketOptions extends ImportsAndProviders {
+}
