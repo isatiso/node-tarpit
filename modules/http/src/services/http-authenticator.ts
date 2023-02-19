@@ -17,9 +17,7 @@ export class HttpAuthenticator {
 
     async get_credentials(request: TpRequest): Promise<HttpCredentials | undefined> {
         const [type, credentials] = request.get('Authorization')?.split(' ') ?? []
-        if (type && credentials) {
-            return { type, credentials }
-        }
+        return type && credentials ? { type, credentials } : undefined
     }
 
     async authenticate(guard: Guard): Promise<void> {

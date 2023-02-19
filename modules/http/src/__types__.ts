@@ -7,13 +7,17 @@
  */
 
 import { ImportsAndProviders } from '@tarpit/core'
-import { IncomingMessage, ServerResponse } from 'http'
+import type { IncomingMessage, ServerResponse } from 'http'
 import { Stream } from 'stream'
 import { UrlWithParsedQuery } from 'url'
+import type { WebSocket } from 'ws'
+import { TpRequest } from './builtin'
 
 export type HttpResponseType = null | string | Buffer | Stream | object
-export type HttpHandler = (req: IncomingMessage, res: ServerResponse, url: UrlWithParsedQuery) => Promise<void>
-export type FatHttpHandler = (req: IncomingMessage, res: ServerResponse, url: UrlWithParsedQuery, path_args: object | undefined) => Promise<void>
+export type RequestHandler = (req: IncomingMessage, res: ServerResponse, url: UrlWithParsedQuery) => Promise<void>
+export type RequestHandlerWithPathArgs = (req: IncomingMessage, res: ServerResponse, url: UrlWithParsedQuery, path_args: object | undefined) => Promise<void>
+export type SocketHandler = (req: IncomingMessage, ws: WebSocket, url: UrlWithParsedQuery) => Promise<void>
+export type SocketHandlerWithPathArgs = (req: IncomingMessage, ws: WebSocket, url: UrlWithParsedQuery, path_args: object | undefined) => Promise<void>
 
 export type TpHttpResponseType = null | string | Buffer | Stream | object
 
@@ -43,4 +47,9 @@ export interface TpRouterOptions extends ImportsAndProviders {
 }
 
 export interface TpWebSocketOptions extends ImportsAndProviders {
+}
+
+export interface TpWebSocketStub {
+    on_connection: (ws: WebSocket, req: TpRequest) => Promise<void>
+    on_close: () => Promise<void>
 }

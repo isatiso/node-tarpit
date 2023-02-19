@@ -11,6 +11,7 @@ import { Injector, TpService } from '@tarpit/core'
 import http, { IncomingMessage, Server, ServerResponse } from 'http'
 import { Socket } from 'net'
 import { TLSSocket } from 'tls'
+import WebSocket, { WebSocketServer } from 'ws'
 
 @TpService({ inject_root: true })
 export class HttpServer {
@@ -29,33 +30,50 @@ export class HttpServer {
     ) {
     }
 
+    private _websocket_server?: WebSocketServer
+    get websocket_server(): WebSocketServer | undefined {
+        return this._websocket_server
+    }
+
     private _server?: Server
     get server(): Server | undefined {
         return this._server
     }
 
-    start(request_listener: (req: IncomingMessage, res: ServerResponse) => Promise<void>): Promise<void> {
+    start(
+        request_listener: (req: IncomingMessage, res: ServerResponse) => Promise<void>,
+        socket_listener: (ws: WebSocket, req: IncomingMessage) => Promise<void>
+    ): Promise<void> {
         return this.starting = this.starting ?? new Promise(resolve => {
-            this._server = http.createServer((req, res) => {
+            const websocket_server = new WebSocketServer({ noServer: true })
+            const server = http.createServer((req, res) => {
                 // istanbul ignore if
                 if (this.terminating) {
                     res.setHeader('Connection', 'close')
                 }
-                request_listener(req, res).then()
-            }).listen(this.port, () => resolve())
+            })
             if (this.keepalive_timeout) {
-                this._server.keepAliveTimeout = this.keepalive_timeout
+                server.keepAliveTimeout = this.keepalive_timeout
             }
-            this._server.on('connection', socket => {
+            websocket_server.on('connection', socket_listener)
+            server.on('connection', socket => {
                 this.sockets.add(socket)
                 socket.once('close', () => this.sockets.delete(socket))
             })
+            server.on('upgrade', (req, socket, head) => {
+                if (this.terminating) {
+                    socket.destroy()
+                }
+                websocket_server.handleUpgrade(req, socket, head, ws => websocket_server.emit('connection', ws, req))
+            })
+            this._websocket_server = websocket_server
+            this._server = server.listen(this.port, () => resolve())
         })
     }
 
     terminate(): Promise<void> {
         if (!this.starting) {
-            return new Promise(resolve => resolve())
+            return Promise.resolve()
         }
         return this.terminating = this.terminating ?? new Promise(resolve => {
             this._server!.on('close', resolve)

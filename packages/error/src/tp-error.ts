@@ -19,7 +19,7 @@ export class TpError<E = any> extends Error {
     public readonly msg: string
     public readonly detail?: object
     public readonly origin?: E
-    public readonly stack: string
+    public override readonly stack: string
 
     protected jsonify_fields: Array<keyof this> = ['code', 'msg', 'detail', 'stack']
 

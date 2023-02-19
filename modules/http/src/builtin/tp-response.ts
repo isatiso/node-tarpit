@@ -130,9 +130,7 @@ export class TpResponse {
 
     get length(): number | undefined {
         const content_length = this.first('Content-Length')
-        if (content_length) {
-            return +content_length
-        }
+        return content_length ? +content_length : undefined
     }
 
     set length(n: number | undefined) {

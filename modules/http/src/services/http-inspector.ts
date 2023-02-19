@@ -7,7 +7,7 @@
  */
 
 import { TpService } from '@tarpit/core'
-import { ApiMethod, HttpHandler, HttpHandlerDescriptor } from '../__types__'
+import { ApiMethod, HttpHandlerDescriptor, RequestHandler } from '../__types__'
 import { HttpRouters } from './http-routers'
 
 @TpService({ inject_root: true })
@@ -22,7 +22,7 @@ export class HttpInspector {
         return this._routers.handler_book.list()
     }
 
-    bind(method: ApiMethod, path: string, handler: HttpHandler): void {
-        this._routers.handler_book.record(method, path, handler)
+    bind(method: ApiMethod, path: string, handler: RequestHandler): void {
+        this._routers.handler_book.record(path, { type: method, handler })
     }
 }

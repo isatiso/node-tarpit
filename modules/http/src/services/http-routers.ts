@@ -11,11 +11,12 @@ import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Readable, Transform, TransformCallback } from 'stream'
-import { FatHttpHandler, TpHttpResponseType } from '../__types__'
+import { WebSocket } from 'ws'
+import { ApiMethod, RequestHandlerWithPathArgs, SocketHandlerWithPathArgs, TpHttpResponseType } from '../__types__'
 import { TpRouter } from '../annotations'
 import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
 import { Finish, TpHttpFinish } from '../errors'
-import { RouteUnit } from '../tools/collect-routes'
+import { RequestUnit, RouteUnit, SocketUnit } from '../tools/collect-routes'
 import { flush_response } from '../tools/flush-response'
 import { HandlerBook } from '../tools/handler-book'
 import { CODES_KEY, HTTP_STATUS } from '../tools/http-status'
@@ -23,7 +24,6 @@ import { HttpAuthenticator } from './http-authenticator'
 import { HttpBodyFormatter } from './http-body-formatter'
 import { HttpCacheProxy } from './http-cache-proxy'
 import { HttpHooks } from './http-hooks'
-import { HttpServer } from './http-server'
 import { HttpUrlParser } from './http-url-parser'
 
 const BODY_TOKEN: any[] = [MimeBody, JsonBody, FormBody, TextBody, RawBody]
@@ -65,11 +65,19 @@ export class HttpRouters {
     private readonly c_proxy = this.config_data.get('http.proxy')
 
     constructor(
-        private server: HttpServer,
         private config_data: ConfigData,
         private url_parser: HttpUrlParser,
         private reader: ContentReaderService,
     ) {
+    }
+
+    public readonly socket_listener = async (ws: WebSocket, req: IncomingMessage) => {
+        const parsed_url = this.url_parser.parse({ url: req.url, headers: req.headers })
+        if (!parsed_url || !req.method) {
+            return
+        }
+        parsed_url.pathname = parsed_url.pathname?.trim().replace(/\/$/, '') || '/'
+        this.handler_book.find('SOCKET', parsed_url.pathname)?.(req, ws, parsed_url)
     }
 
     public readonly request_listener = async (req: IncomingMessage, res: ServerResponse) => {
@@ -102,22 +110,80 @@ export class HttpRouters {
         } else {
             res.statusCode = 400
             res.statusMessage = HTTP_STATUS.message_of(400)
-            const handler = this.handler_book.find(req.method as any, parsed_url.pathname)!
+            const handler = this.handler_book.find(req.method as ApiMethod, parsed_url.pathname)!
             return handler(req, res, parsed_url)
         }
     }
 
     add_router(unit: RouteUnit, meta: TpRouter): void {
-        const fat_handler = this.make_fat_handler(meta.injector!, unit)
         const head = meta.path.replace(/\/+\s*$/g, '')
         const tail = unit.path_tail.replace(/^\s*\/+/g, '').replace(/\/+\s*$/g, '')
         const path = head + '/' + tail
-
-        unit.methods.forEach(method => this.handler_book.record(method, path, fat_handler))
+        switch (unit.type) {
+            case 'request': {
+                const handler = this.make_request_handler(meta.injector!, unit)
+                unit.methods.forEach(method => this.handler_book.record(path, { type: method, handler }))
+                break
+            }
+            case 'socket': {
+                const handler = this.make_socket_handler(meta.injector!, unit)
+                this.handler_book.record(path, { type: 'SOCKET', handler })
+                break
+            }
+        }
         this.handler_book.clear_cache()
     }
 
-    private make_fat_handler(injector: Injector, unit: RouteUnit): FatHttpHandler {
+    private make_socket_handler(injector: Injector, unit: SocketUnit): SocketHandlerWithPathArgs {
+        const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
+        const proxy_config = this.c_proxy
+        const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
+
+        const pv_authenticator = injector.get(HttpAuthenticator)!
+
+        return async function(req, ws, parsed_url, path_args): Promise<void> {
+
+            const authenticator = pv_authenticator.create()
+
+            const request = new TpRequest(req, parsed_url, proxy_config)
+
+            try {
+                const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined
+                if (unit.auth) {
+                    await authenticator.authenticate(guard!)
+                }
+
+                const on_close = await unit.handler(...param_deps.map(({ provider, token }, index) => {
+                    if (provider) {
+                        return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
+                    }
+                    switch (token) {
+                        case WebSocket:
+                            return ws
+                        case TpRequest:
+                            return request
+                        case Params:
+                            return new Params(parsed_url.query)
+                        case PathArgs:
+                            return new PathArgs(path_args)
+                        case Guard:
+                            return guard
+                        case RequestHeaders:
+                            return new RequestHeaders(req.headers)
+                        case IncomingMessage:
+                            return req
+                    }
+                }))
+                if (typeof on_close === 'function') {
+                    ws.on('close', on_close)
+                }
+            } catch (reason) {
+                ws.close()
+            }
+        }
+    }
+
+    private make_request_handler(injector: Injector, unit: RequestUnit): RequestHandlerWithPathArgs {
         const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
         const body_max_length = this.c_body_max_length
         const proxy_config = this.c_proxy
@@ -235,7 +301,6 @@ export class HttpRouters {
                     context.result = TpHttpFinish.isTpHttpFinish(reason) ? reason : wrap_error(reason)
                 }
             }
-
 
             response.status = context.result.status
 

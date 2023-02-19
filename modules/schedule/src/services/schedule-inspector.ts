@@ -38,6 +38,7 @@ export class ScheduleInspector {
             }
             cursor = cursor.next_bullet
         }
+        return
     }
 
     get_suspended_task(id: string): TaskDesc | undefined {
@@ -45,6 +46,7 @@ export class ScheduleInspector {
         if (bullet) {
             return map_bullet(bullet)
         }
+        return
     }
 
     list_suspended(): TaskDesc[] {

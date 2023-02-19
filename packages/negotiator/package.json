@@ -35,6 +35,7 @@
     },
     "scripts": {
         "build": "rollup -c",
+        "check-type": "tsc --noEmit",
         "docs": "tp docs"
     },
     "devDependencies": {
