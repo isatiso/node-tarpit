@@ -45,28 +45,30 @@ export class HttpServer {
         socket_listener: (ws: WebSocket, req: IncomingMessage) => Promise<void>
     ): Promise<void> {
         return this.starting = this.starting ?? new Promise(resolve => {
-            const websocket_server = new WebSocketServer({ noServer: true })
-            const server = http.createServer((req, res) => {
+            const ws_server = new WebSocketServer({ noServer: true })
+            ws_server.on('connection', socket_listener)
+            const server = http.createServer()
+            if (this.keepalive_timeout) {
+                server.keepAliveTimeout = this.keepalive_timeout
+            }
+            server.on('request', (req, res) => {
                 // istanbul ignore if
                 if (this.terminating) {
                     res.setHeader('Connection', 'close')
                 }
-            })
-            if (this.keepalive_timeout) {
-                server.keepAliveTimeout = this.keepalive_timeout
-            }
-            websocket_server.on('connection', socket_listener)
-            server.on('connection', socket => {
-                this.sockets.add(socket)
-                socket.once('close', () => this.sockets.delete(socket))
+                request_listener(req, res).then()
             })
             server.on('upgrade', (req, socket, head) => {
                 if (this.terminating) {
                     socket.destroy()
                 }
-                websocket_server.handleUpgrade(req, socket, head, ws => websocket_server.emit('connection', ws, req))
+                ws_server.handleUpgrade(req, socket, head, ws => ws_server.emit('connection', ws, req))
             })
-            this._websocket_server = websocket_server
+            server.on('connection', socket => {
+                this.sockets.add(socket)
+                socket.once('close', () => this.sockets.delete(socket))
+            })
+            this._websocket_server = ws_server
             this._server = server.listen(this.port, () => resolve())
         })
     }

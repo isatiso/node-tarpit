@@ -32,6 +32,8 @@ const RESPONSE_TOKEN: any[] = [ServerResponse, TpResponse]
 const ALL_HANDLER_TOKEN: any[] = [HttpContext, ResponseCache].concat(BODY_TOKEN, REQUEST_TOKEN, RESPONSE_TOKEN)
 const ALL_HANDLER_TOKEN_SET = new Set(ALL_HANDLER_TOKEN)
 
+const SOCKET_TOKEN_SET = new Set([WebSocket, TpRequest, Params, PathArgs, Guard, RequestHeaders, IncomingMessage])
+
 export function reply(res: ServerResponse, status: CODES_KEY) {
     res.statusCode = status
     res.statusMessage = HTTP_STATUS.message_of(status)
@@ -111,6 +113,7 @@ export class HttpRouters {
             res.statusCode = 400
             res.statusMessage = HTTP_STATUS.message_of(400)
             const handler = this.handler_book.find(req.method as ApiMethod, parsed_url.pathname)!
+            console.log('handler find', parsed_url.pathname)
             return handler(req, res, parsed_url)
         }
     }
@@ -135,7 +138,7 @@ export class HttpRouters {
     }
 
     private make_socket_handler(injector: Injector, unit: SocketUnit): SocketHandlerWithPathArgs {
-        const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
+        const param_deps = get_providers(unit, injector, SOCKET_TOKEN_SET)
         const proxy_config = this.c_proxy
         const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
 

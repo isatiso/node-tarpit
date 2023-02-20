@@ -55,6 +55,7 @@ export {
     Auth,
     Route,
     TpWebSocket,
+    WS,
     RouteProps,
 } from './annotations'
 

@@ -47,7 +47,7 @@ export function collect_routes(meta: TpRouter): RouteUnit[] {
         const is_request = decorators.find(d => d instanceof Route)
         const is_socket = decorators.find(d => d instanceof WS)
         if (is_request && is_socket) {
-            throw new Error('is_request is conflict with is_websocket')
+            throw new Error(`is_request is conflict with is_websocket ${prop.toString()}`)
         } else if (is_socket) {
             const prop_meta: SocketUnit = {
                 type: 'socket',

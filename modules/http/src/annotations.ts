@@ -38,7 +38,7 @@ export type Delete = InstanceType<typeof Delete>
 export const Delete = make_decorator('Delete', (path_tail?: string): RouteProps => ({ path_tail, methods: ['DELETE'] }), Route)
 
 export type WS = InstanceType<typeof WS>
-export const WS = make_decorator('WS', (path_tail?: string): RouteProps => ({ path_tail, methods: ['socket'] }), Route)
+export const WS = make_decorator('WS', (path_tail?: string) => ({ path_tail }), TpHttp)
 
 export type TpRouter = InstanceType<typeof TpRouter>
 export const TpRouter = make_decorator('TpRouter', (path: `/${string}`, options?: TpRouterOptions) => ({ ...options, path, token: TpHttpToken }), TpEntry)
