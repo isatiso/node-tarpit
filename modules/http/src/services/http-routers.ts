@@ -78,7 +78,7 @@ export class HttpRouters {
         if (!parsed_url || !req.method) {
             return
         }
-        parsed_url.pathname = parsed_url.pathname?.trim().replace(/\/$/, '') || '/'
+        parsed_url.pathname = parsed_url.pathname?.trim().replace(/\/+$/, '') || '/'
         this.handler_book.find('SOCKET', parsed_url.pathname)?.(req, ws, parsed_url)
     }
 
@@ -146,6 +146,8 @@ export class HttpRouters {
 
         return async function(req, ws, parsed_url, path_args): Promise<void> {
 
+            ws.on('error', err => console.log(`err ${err}`))
+
             const authenticator = pv_authenticator.create()
 
             const request = new TpRequest(req, parsed_url, proxy_config)
@@ -180,8 +182,8 @@ export class HttpRouters {
                 if (typeof on_close === 'function') {
                     ws.on('close', on_close)
                 }
-            } catch (reason) {
-                ws.close()
+            } catch (reason: any) {
+                ws.close(5000, `catch ${reason.message}`)
             }
         }
     }
