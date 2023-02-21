@@ -15,6 +15,7 @@ import { WebSocket } from 'ws'
 import { ApiMethod, RequestHandlerWithPathArgs, SocketHandlerWithPathArgs, TpHttpResponseType } from '../__types__'
 import { TpRouter } from '../annotations'
 import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
+import { TpWebSocket } from '../builtin/tp-websocket'
 import { Finish, TpHttpFinish } from '../errors'
 import { RequestUnit, RouteUnit, SocketUnit } from '../tools/collect-routes'
 import { flush_response } from '../tools/flush-response'
@@ -32,7 +33,7 @@ const RESPONSE_TOKEN: any[] = [ServerResponse, TpResponse]
 const ALL_HANDLER_TOKEN: any[] = [HttpContext, ResponseCache].concat(BODY_TOKEN, REQUEST_TOKEN, RESPONSE_TOKEN)
 const ALL_HANDLER_TOKEN_SET = new Set(ALL_HANDLER_TOKEN)
 
-const SOCKET_TOKEN_SET = new Set([WebSocket, TpRequest, Params, PathArgs, Guard, RequestHeaders, IncomingMessage])
+const SOCKET_TOKEN_SET = new Set([TpWebSocket, TpRequest, Params, PathArgs, Guard, RequestHeaders, IncomingMessage])
 
 export function reply(res: ServerResponse, status: CODES_KEY) {
     res.statusCode = status
@@ -146,25 +147,24 @@ export class HttpRouters {
 
         return async function(req, ws, parsed_url, path_args): Promise<void> {
 
-            ws.on('error', err => console.log(`err ${err}`))
-
             const authenticator = pv_authenticator.create()
 
             const request = new TpRequest(req, parsed_url, proxy_config)
 
+            const socket_hook = new TpWebSocket(ws)
             try {
                 const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined
                 if (unit.auth) {
                     await authenticator.authenticate(guard!)
                 }
 
-                const on_close = await unit.handler(...param_deps.map(({ provider, token }, index) => {
+                await unit.handler(...param_deps.map(({ provider, token }, index) => {
                     if (provider) {
                         return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
                     }
                     switch (token) {
-                        case WebSocket:
-                            return ws
+                        case TpWebSocket:
+                            return socket_hook
                         case TpRequest:
                             return request
                         case Params:
@@ -179,12 +179,13 @@ export class HttpRouters {
                             return req
                     }
                 }))
-                if (typeof on_close === 'function') {
-                    ws.on('close', on_close)
-                }
             } catch (reason: any) {
+                // TODO: define code and message
                 ws.close(5000, `catch ${reason.message}`)
             }
+
+            ws.on('error', err => console.log(`err ${err}`))
+            ws.on('close', (code, reason) => socket_hook.)
         }
     }
 
