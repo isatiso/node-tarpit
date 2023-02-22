@@ -17,15 +17,15 @@ describe('hooks case', function() {
 
     @TpService()
     class CustomHooks extends ScheduleHooks {
-        async on_error(context: TaskContext<any>, err: any): Promise<void> {
+        override async on_error(context: TaskContext<any>, err: any): Promise<void> {
             throw new Error()
         }
 
-        async on_init(context: TaskContext<any>): Promise<void> {
+        override async on_init(context: TaskContext<any>): Promise<void> {
             throw new Error()
         }
 
-        async on_finish<T>(context: TaskContext<any>, res: T): Promise<void> {
+        override async on_finish<T>(context: TaskContext<any>, res: T): Promise<void> {
             throw new Error()
         }
     }
