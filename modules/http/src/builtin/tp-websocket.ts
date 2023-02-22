@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { Injector } from '@tarpit/core'
 import { WebSocket } from 'ws'
 
 type BufferLike =
@@ -30,16 +31,18 @@ type SendMessageOptions = { mask?: boolean | undefined; binary?: boolean | undef
 
 export class TpWebSocket {
 
-    private _on_message?: (data: Buffer | Buffer[], is_binary: boolean) => void
+    private _on_message?: (data: Buffer | ArrayBuffer | Buffer[], is_binary: boolean) => void
     private _on_close?: (code: number, reason: Buffer) => void
     private _on_error?: (err: Error) => void
+    private _on_message_error?: (err: Error) => void
 
     constructor(
-        public readonly socket: WebSocket
+        public readonly socket: WebSocket,
+        private injector: Injector,
     ) {
     }
 
-    on_message(listener: (data: Buffer | Buffer[], is_binary: boolean) => void): void {
+    on_message(listener: (data: Buffer | ArrayBuffer | Buffer[], is_binary: boolean) => void): void {
         this._on_message = listener
     }
 
@@ -51,8 +54,24 @@ export class TpWebSocket {
         this._on_error = listener
     }
 
+    on_message_error(listener: (err: Error) => void): void {
+        this._on_message_error = listener
+    }
+
     close(code?: number, data?: string | Buffer): void {
         this.socket.close(code, data)
+    }
+
+    bind(ws: WebSocket) {
+        ws.on('message', (data, isBinary) => {
+            try {
+                this._on_message?.(data, isBinary)
+            } catch (e) {
+                this.injector.emit('websocket-message-handling-failed', e)
+            }
+        })
+        ws.on('close', (code, reason) => this._on_close?.(code, reason))
+        ws.on('error', err => this._on_error?.(err))
     }
 
     async send(data: BufferLike): Promise<Error | undefined>

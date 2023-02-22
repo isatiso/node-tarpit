@@ -54,7 +54,6 @@ export {
     Post,
     Auth,
     Route,
-    TpWebSocket,
     WS,
     RouteProps,
 } from './annotations'
@@ -79,5 +78,6 @@ export {
     ResponseCache,
     TpRequest,
     TpResponse,
+    TpWebSocket,
 } from './builtin'
 export { HttpServerModule } from './http-server.module'

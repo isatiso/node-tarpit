@@ -8,7 +8,8 @@
 
 import { ConfigData } from '@tarpit/config'
 import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
-import { get_providers, Injector, TpService } from '@tarpit/core'
+import { get_providers, Injector, TpInspector, TpService } from '@tarpit/core'
+import { errno } from 'fast-glob/out/utils'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Readable, Transform, TransformCallback } from 'stream'
 import { WebSocket } from 'ws'
@@ -71,6 +72,7 @@ export class HttpRouters {
         private config_data: ConfigData,
         private url_parser: HttpUrlParser,
         private reader: ContentReaderService,
+        private inspector: TpInspector,
     ) {
     }
 
@@ -148,10 +150,9 @@ export class HttpRouters {
         return async function(req, ws, parsed_url, path_args): Promise<void> {
 
             const authenticator = pv_authenticator.create()
-
             const request = new TpRequest(req, parsed_url, proxy_config)
+            const socket_wrapper = new TpWebSocket(ws, injector)
 
-            const socket_hook = new TpWebSocket(ws)
             try {
                 const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined
                 if (unit.auth) {
@@ -164,7 +165,7 @@ export class HttpRouters {
                     }
                     switch (token) {
                         case TpWebSocket:
-                            return socket_hook
+                            return socket_wrapper
                         case TpRequest:
                             return request
                         case Params:
@@ -179,13 +180,12 @@ export class HttpRouters {
                             return req
                     }
                 }))
+                socket_wrapper.bind(ws)
             } catch (reason: any) {
+                injector.emit('websocket-connecting-failed', reason)
                 // TODO: define code and message
-                ws.close(5000, `catch ${reason.message}`)
+                socket_wrapper.close(5000, `catch ${reason.message}`)
             }
-
-            ws.on('error', err => console.log(`err ${err}`))
-            ws.on('close', (code, reason) => socket_hook.)
         }
     }
 

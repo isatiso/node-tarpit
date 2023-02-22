@@ -13,6 +13,13 @@ import { UrlWithParsedQuery } from 'url'
 import type { WebSocket } from 'ws'
 import { TpRequest } from './builtin'
 
+declare module '@tarpit/core' {
+    export interface TpEventCollector {
+        'websocket-connecting-failed': (err: any) => void
+        'websocket-message-handling-failed': (err: any) => void
+    }
+}
+
 export type HttpResponseType = null | string | Buffer | Stream | object
 export type RequestHandler = (req: IncomingMessage, res: ServerResponse, url: UrlWithParsedQuery) => Promise<void>
 export type RequestHandlerWithPathArgs = (req: IncomingMessage, res: ServerResponse, url: UrlWithParsedQuery, path_args: object | undefined) => Promise<void>
@@ -47,9 +54,4 @@ export interface TpRouterOptions extends ImportsAndProviders {
 }
 
 export interface TpWebSocketOptions extends ImportsAndProviders {
-}
-
-export interface TpWebSocketStub {
-    on_connection: (ws: WebSocket, req: TpRequest) => Promise<void>
-    on_close: () => Promise<void>
 }

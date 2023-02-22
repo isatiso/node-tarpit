@@ -42,6 +42,3 @@ export const WS = make_decorator('WS', (path_tail?: string) => ({ path_tail }), 
 
 export type TpRouter = InstanceType<typeof TpRouter>
 export const TpRouter = make_decorator('TpRouter', (path: `/${string}`, options?: TpRouterOptions) => ({ ...options, path, token: TpHttpToken }), TpEntry)
-
-export type TpWebSocket = InstanceType<typeof TpWebSocket>
-export const TpWebSocket = make_decorator('TpWebSocket', (path: `/${string}`, options?: TpWebSocketOptions) => ({ ...options, path, token: TpHttpToken }), TpEntry)
