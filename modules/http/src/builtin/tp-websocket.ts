@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector } from '@tarpit/core'
 import { WebSocket } from 'ws'
 
 type BufferLike =
@@ -38,16 +37,30 @@ export class TpWebSocket {
 
     constructor(
         public readonly socket: WebSocket,
-        private injector: Injector,
     ) {
+
+        this.socket.on('close', (code, reason) => this._on_close?.(code, reason))
+        this.socket.on('error', err => this._on_error?.(err))
     }
 
     on_message(listener: (data: Buffer | ArrayBuffer | Buffer[], is_binary: boolean) => void): void {
-        this._on_message = listener
+        if (!this._on_message) {
+            this._on_message = listener
+            this.socket.on('message', (data, isBinary) => {
+                try {
+                    this._on_message?.(data, isBinary)
+                } catch (e) {
+                    this.socket.emit('error', e)
+                }
+            })
+        } else {
+            this._on_message = listener
+        }
     }
 
     on_close(listener: (code: number, reason: Buffer) => void): void {
         this._on_close = listener
+        this.socket.on('close', (code, reason) => this._on_close?.(code, reason))
     }
 
     on_error(listener: (err: Error) => void): void {
@@ -62,23 +75,18 @@ export class TpWebSocket {
         this.socket.close(code, data)
     }
 
-    bind(ws: WebSocket) {
-        ws.on('message', (data, isBinary) => {
-            try {
-                this._on_message?.(data, isBinary)
-            } catch (e) {
-                this.injector.emit('websocket-message-handling-failed', e)
-            }
-        })
-        ws.on('close', (code, reason) => this._on_close?.(code, reason))
-        ws.on('error', err => this._on_error?.(err))
+    terminate() {
+        return this.socket.terminate()
     }
 
     async send(data: BufferLike): Promise<Error | undefined>
     async send(data: BufferLike, options?: SendMessageOptions): Promise<Error | undefined>
     async send(data: BufferLike, options?: SendMessageOptions): Promise<Error | undefined> {
         return new Promise((resolve, reject) => {
-            this.socket.send(data, options ?? {}, err => err ? reject(err) : resolve(undefined))
+            if (this.socket.readyState === WebSocket.OPEN) {
+                this.socket.send(data, options ?? {}, err => err ? reject(err) : resolve(undefined))
+            }
         })
     }
+
 }

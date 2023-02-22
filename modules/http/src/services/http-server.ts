@@ -10,8 +10,10 @@ import { ConfigData } from '@tarpit/config'
 import { Injector, TpService } from '@tarpit/core'
 import http, { IncomingMessage, Server, ServerResponse } from 'http'
 import { Socket } from 'net'
+import { Duplex } from 'stream'
 import { TLSSocket } from 'tls'
-import WebSocket, { WebSocketServer } from 'ws'
+import { WebSocketServer } from 'ws'
+import { SocketHandler } from '../__types__'
 
 @TpService({ inject_root: true })
 export class HttpServer {
@@ -42,11 +44,10 @@ export class HttpServer {
 
     start(
         request_listener: (req: IncomingMessage, res: ServerResponse) => Promise<void>,
-        socket_listener: (ws: WebSocket, req: IncomingMessage) => Promise<void>
+        upgrade_listener: (req: IncomingMessage, socket: Duplex, head: Buffer) => Promise<SocketHandler | undefined>
     ): Promise<void> {
         return this.starting = this.starting ?? new Promise(resolve => {
             const ws_server = new WebSocketServer({ noServer: true })
-            ws_server.on('connection', socket_listener)
             const server = http.createServer()
             if (this.keepalive_timeout) {
                 server.keepAliveTimeout = this.keepalive_timeout
@@ -61,8 +62,16 @@ export class HttpServer {
             server.on('upgrade', (req, socket, head) => {
                 if (this.terminating) {
                     socket.destroy()
+                    return
                 }
-                ws_server.handleUpgrade(req, socket, head, ws => ws_server.emit('connection', ws, req))
+                upgrade_listener(req, socket, head).then(socket_handler => {
+                    if (socket_handler) {
+                        ws_server.handleUpgrade(req, socket, head, ws => {
+                            ws_server.emit('connection', ws, req)
+                            socket_handler(req, ws).then()
+                        })
+                    }
+                })
             })
             server.on('connection', socket => {
                 this.sockets.add(socket)

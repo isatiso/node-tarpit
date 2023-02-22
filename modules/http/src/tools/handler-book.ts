@@ -8,14 +8,14 @@
 
 import LRU from 'lru-cache'
 import { match, MatchFunction, MatchResult, parse } from 'path-to-regexp'
-import { ApiMethod, HttpHandlerDescriptor, RequestHandler, RequestHandlerWithPathArgs, SocketHandler, SocketHandlerWithPathArgs } from '../__types__'
+import { ApiMethod, HttpHandlerDescriptor, RequestHandler, RequestHandlerWithPathArgs, UpgradeHandler, UpgradeHandlerWithPathArgs } from '../__types__'
 
 export interface HttpHandlerMap {
     GET?: RequestHandlerWithPathArgs
     POST?: RequestHandlerWithPathArgs
     PUT?: RequestHandlerWithPathArgs
     DELETE?: RequestHandlerWithPathArgs
-    SOCKET?: SocketHandlerWithPathArgs
+    SOCKET?: UpgradeHandlerWithPathArgs
     _allows: (ApiMethod | 'HEAD' | 'OPTIONS')[]
 }
 
@@ -40,7 +40,7 @@ export class HandlerBook {
     private _index: { [path: string]: { map: HttpHandlerMap } } = {}
     private _path_cache = new LRU<string, PathSearchResult | undefined>({ max: 200, ttl: 86400000 })
     private _request_handler_cache = new LRU<`${ApiMethod}-${string}`, RequestHandler | undefined>({ max: 200, ttl: 86400000 })
-    private _socket_handler_cache = new LRU<`SOCKET-${string}`, SocketHandler | undefined>({ max: 200, ttl: 86400000 })
+    private _socket_handler_cache = new LRU<`SOCKET-${string}`, UpgradeHandler | undefined>({ max: 200, ttl: 86400000 })
 
     init_path_node(segments: string[]) {
         let node = this._root
@@ -56,8 +56,6 @@ export class HandlerBook {
         return node
     }
 
-    // record(type: 'SOCKET', path: string, socket_handler: SocketHandler): void
-    // record(type: ApiMethod, path: string, request_handler: RequestHandler): void
     record<K extends Exclude<keyof HttpHandlerMap, '_allows'>>(path: string, record: { type: K, handler: HttpHandlerMap[K] }): void {
         record.type = record.type.toUpperCase() as any
         if (this._index[path]) {
@@ -86,9 +84,9 @@ export class HandlerBook {
         }
     }
 
-    find(type: 'SOCKET', path: string): SocketHandler | undefined
+    find(type: 'SOCKET', path: string): UpgradeHandler | undefined
     find(type: ApiMethod, path: string): RequestHandler | undefined
-    find(type: string, path: string): RequestHandler | SocketHandler | undefined {
+    find(type: string, path: string): RequestHandler | UpgradeHandler | undefined {
         type = type.toUpperCase()
         const regular_type: ApiMethod | 'SOCKET' = type === 'HEAD' ? 'GET' : type as any
         const search_result = this._search_with_cache(path)
@@ -97,7 +95,7 @@ export class HandlerBook {
             if (!this._socket_handler_cache.has(key)) {
                 const fat_handler = search_result?.map[regular_type]
                 if (fat_handler) {
-                    const handler: SocketHandler = (req, ws, url) => fat_handler(req, ws, url, search_result.result?.params)
+                    const handler: UpgradeHandler = (req, socket, head, url) => fat_handler(req, socket, head, url, search_result.result?.params)
                     this._socket_handler_cache.set(key, handler)
                 } else {
                     this._socket_handler_cache.set(key, undefined)

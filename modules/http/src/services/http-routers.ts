@@ -8,15 +8,13 @@
 
 import { ConfigData } from '@tarpit/config'
 import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
-import { get_providers, Injector, TpInspector, TpService } from '@tarpit/core'
-import { errno } from 'fast-glob/out/utils'
+import { get_providers, Injector, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
-import { Readable, Transform, TransformCallback } from 'stream'
+import { Duplex, Readable, Transform, TransformCallback } from 'stream'
 import { WebSocket } from 'ws'
-import { ApiMethod, RequestHandlerWithPathArgs, SocketHandlerWithPathArgs, TpHttpResponseType } from '../__types__'
+import { ApiMethod, RequestHandlerWithPathArgs, SocketHandler, TpHttpResponseType, UpgradeHandlerWithPathArgs } from '../__types__'
 import { TpRouter } from '../annotations'
-import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
-import { TpWebSocket } from '../builtin/tp-websocket'
+import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse, TpWebSocket } from '../builtin'
 import { Finish, TpHttpFinish } from '../errors'
 import { RequestUnit, RouteUnit, SocketUnit } from '../tools/collect-routes'
 import { flush_response } from '../tools/flush-response'
@@ -72,17 +70,21 @@ export class HttpRouters {
         private config_data: ConfigData,
         private url_parser: HttpUrlParser,
         private reader: ContentReaderService,
-        private inspector: TpInspector,
     ) {
     }
 
-    public readonly socket_listener = async (ws: WebSocket, req: IncomingMessage) => {
+    public readonly upgrade_listener = async (req: IncomingMessage, socket: Duplex, head: Buffer): Promise<SocketHandler | undefined> => {
         const parsed_url = this.url_parser.parse({ url: req.url, headers: req.headers })
         if (!parsed_url || !req.method) {
             return
         }
         parsed_url.pathname = parsed_url.pathname?.trim().replace(/\/+$/, '') || '/'
-        this.handler_book.find('SOCKET', parsed_url.pathname)?.(req, ws, parsed_url)
+        const handler = this.handler_book.find('SOCKET', parsed_url.pathname)
+        if (!handler) {
+            socket.destroy()
+            return
+        }
+        return handler(req, socket, head, parsed_url)
     }
 
     public readonly request_listener = async (req: IncomingMessage, res: ServerResponse) => {
@@ -132,7 +134,7 @@ export class HttpRouters {
                 break
             }
             case 'socket': {
-                const handler = this.make_socket_handler(meta.injector!, unit)
+                const handler = this.make_upgrade_handler(meta.injector!, unit)
                 this.handler_book.record(path, { type: 'SOCKET', handler })
                 break
             }
@@ -140,51 +142,63 @@ export class HttpRouters {
         this.handler_book.clear_cache()
     }
 
-    private make_socket_handler(injector: Injector, unit: SocketUnit): SocketHandlerWithPathArgs {
+    private make_upgrade_handler(injector: Injector, unit: SocketUnit): UpgradeHandlerWithPathArgs {
         const param_deps = get_providers(unit, injector, SOCKET_TOKEN_SET)
         const proxy_config = this.c_proxy
         const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
 
         const pv_authenticator = injector.get(HttpAuthenticator)!
 
-        return async function(req, ws, parsed_url, path_args): Promise<void> {
+        return async function(req, socket, head, parsed_url, path_args): Promise<undefined | SocketHandler> {
 
             const authenticator = pv_authenticator.create()
             const request = new TpRequest(req, parsed_url, proxy_config)
-            const socket_wrapper = new TpWebSocket(ws, injector)
 
             try {
                 const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined
                 if (unit.auth) {
                     await authenticator.authenticate(guard!)
                 }
+            } catch (e) {
+                socket.destroy()
+                return
+            }
 
-                await unit.handler(...param_deps.map(({ provider, token }, index) => {
-                    if (provider) {
-                        return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
+            return async function(req: IncomingMessage, ws: WebSocket): Promise<void> {
+
+                const socket_wrapper = new TpWebSocket(ws)
+
+                try {
+                    const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined
+                    if (unit.auth) {
+                        await authenticator.authenticate(guard!)
                     }
-                    switch (token) {
-                        case TpWebSocket:
-                            return socket_wrapper
-                        case TpRequest:
-                            return request
-                        case Params:
-                            return new Params(parsed_url.query)
-                        case PathArgs:
-                            return new PathArgs(path_args)
-                        case Guard:
-                            return guard
-                        case RequestHeaders:
-                            return new RequestHeaders(req.headers)
-                        case IncomingMessage:
-                            return req
-                    }
-                }))
-                socket_wrapper.bind(ws)
-            } catch (reason: any) {
-                injector.emit('websocket-connecting-failed', reason)
-                // TODO: define code and message
-                socket_wrapper.close(5000, `catch ${reason.message}`)
+
+                    await unit.handler(...param_deps.map(({ provider, token }, index) => {
+                        if (provider) {
+                            return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
+                        }
+                        switch (token) {
+                            case TpWebSocket:
+                                return socket_wrapper
+                            case TpRequest:
+                                return request
+                            case Params:
+                                return new Params(parsed_url.query)
+                            case PathArgs:
+                                return new PathArgs(path_args)
+                            case Guard:
+                                return guard
+                            case RequestHeaders:
+                                return new RequestHeaders(req.headers)
+                            case IncomingMessage:
+                                return req
+                        }
+                    }))
+
+                } catch (reason: any) {
+                    socket_wrapper.close(1011, `Error: ${reason.message}`)
+                }
             }
         }
     }

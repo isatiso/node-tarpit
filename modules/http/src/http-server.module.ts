@@ -45,7 +45,7 @@ export class HttpServerModule {
         private routers: HttpRouters,
     ) {
         this.loader.register(TpHttpToken, {
-            on_start: async () => this.server.start(this.routers.request_listener, this.routers.socket_listener),
+            on_start: async () => this.server.start(this.routers.request_listener, this.routers.upgrade_listener),
             on_terminate: async () => this.server.terminate(),
             on_load: async (meta: TpRouter) => collect_routes(meta).forEach(f => this.routers.add_router(f, meta)),
         })
