@@ -85,7 +85,7 @@ export class HandlerBook {
     }
 
     find(type: 'SOCKET', path: string): UpgradeHandler | undefined
-    find(type: ApiMethod, path: string): RequestHandler | undefined
+    find(type: ApiMethod | 'HEAD', path: string): RequestHandler | undefined
     find(type: string, path: string): RequestHandler | UpgradeHandler | undefined {
         type = type.toUpperCase()
         const regular_type: ApiMethod | 'SOCKET' = type === 'HEAD' ? 'GET' : type as any

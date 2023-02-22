@@ -25,7 +25,9 @@ describe('http-server.ts', function() {
             const http_server = platform.expose(HttpServer)!
             expect(http_server).to.have.property('starting').which.is.undefined
             expect(http_server).to.have.property('terminating').which.is.undefined
-            const starting = http_server.start(async (_req, _res) => undefined)
+            const starting = http_server.start(
+                async (_req, _res) => undefined,
+                async (_req, _socket, _head) => undefined)
             expect(http_server).to.have.property('starting').which.equals(starting)
             expect(http_server).to.have.property('terminating').which.is.undefined
             await starting
@@ -49,8 +51,12 @@ describe('http-server.ts', function() {
             const platform = new Platform({ http: { port: 31254 } })
                 .import(HttpServerModule)
             const http_server = platform.expose(HttpServer)!
-            const starting = http_server.start(async (_req, _res) => undefined)
-            const start_twice = http_server.start(async (_req, _res) => undefined)
+            const starting = http_server.start(
+                async (_req, _res) => undefined,
+                async (_req, _socket, _head) => undefined)
+            const start_twice = http_server.start(
+                async (_req, _res) => undefined,
+                async (_req, _socket, _head) => undefined)
             expect(start_twice).to.equal(starting)
             await starting
             await http_server.terminate()
@@ -60,7 +66,9 @@ describe('http-server.ts', function() {
             const platform = new Platform({ http: { port: 31254 } })
                 .import(HttpServerModule)
             const http_server = platform.expose(HttpServer)!
-            await http_server.start(async (_req, _res) => undefined)
+            await http_server.start(
+                async (_req, _res) => undefined,
+                async (_req, _socket, _head) => undefined)
             const terminating = http_server.terminate()
             const terminate_twice = http_server.terminate()
             expect(terminating).to.equal(terminate_twice)

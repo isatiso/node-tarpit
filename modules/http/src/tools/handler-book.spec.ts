@@ -25,7 +25,7 @@ describe('handler-book.ts', function() {
                 expect(book.find('GET', '/')).to.be.undefined
                 expect(book.find('GET', '*')).to.be.undefined
                 expect(book.find('GET', '')).to.be.undefined
-                book.record('/', 'GET', some_handler)
+                book.record('/', { type: 'GET', handler: some_handler })
                 book.clear_cache()
                 expect(book.find('GET', '/')).to.be.a('function')
                 expect(book.find('GET', '*')).to.be.a('function')
@@ -37,7 +37,7 @@ describe('handler-book.ts', function() {
                 const some_path = '/some/path'
                 const some_handler = async () => undefined
                 expect(book.find('POST', '/some/path')).to.be.undefined
-                book.record('/some/path', 'POST', some_handler)
+                book.record('/some/path', { type: 'POST', handler: some_handler })
                 book.clear_cache()
                 expect(book.find('POST', '/some/path')).to.be.a('function')
                 expect(book.find('POST', '/some')).not.to.be.a('function')
@@ -49,7 +49,7 @@ describe('handler-book.ts', function() {
                 const some_path = '/some/walden-pond/abc'
                 const some_handler = async () => undefined
                 expect(book.find('POST', some_path)).to.be.undefined
-                book.record(some_def, 'POST', some_handler)
+                book.record(some_def, { type: 'POST', handler: some_handler })
                 book.clear_cache()
                 expect(book.find('POST', some_path)).to.be.a('function')
             })
@@ -58,8 +58,8 @@ describe('handler-book.ts', function() {
                 const book = new HandlerBook()
                 const some_handler = async () => undefined
                 expect(book.find('POST', '/walden-pond/abc')).to.be.undefined
-                book.record('/:path([a-c]\\d+)/:id', 'POST', some_handler)
-                book.record('/:path([d-f]\\d+)/:id', 'POST', some_handler)
+                book.record('/:path([a-c]\\d+)/:id', { type: 'POST', handler: some_handler })
+                book.record('/:path([d-f]\\d+)/:id', { type: 'POST', handler: some_handler })
                 book.clear_cache()
                 expect(book.find('POST', '/a2/abc')).to.be.a('function')
                 expect(book.find('POST', '/c2/abc')).to.be.a('function')
@@ -70,7 +70,7 @@ describe('handler-book.ts', function() {
                 const book = new HandlerBook()
                 const some_path = '/some/path'
                 const some_handler = async () => undefined
-                book.record(some_path, 'POST', some_handler)
+                book.record(some_path, { type: 'POST', handler: some_handler })
                 expect(book.get_allow(some_path)).to.contain('POST')
             })
 
@@ -78,7 +78,7 @@ describe('handler-book.ts', function() {
                 const book = new HandlerBook()
                 const some_path = '/some/path'
                 const some_handler = async () => undefined
-                book.record(some_path, 'GET', some_handler)
+                book.record(some_path, { type: 'GET', handler: some_handler })
                 expect(book.get_allow(some_path)).to.have.contain('HEAD')
             })
 
@@ -86,7 +86,7 @@ describe('handler-book.ts', function() {
                 const book = new HandlerBook()
                 const some_path = '/some/path'
                 const some_handler = async () => undefined
-                book.record(some_path, 'GET', some_handler)
+                book.record(some_path, { type: 'GET', handler: some_handler })
                 expect(book.get_allow(some_path)).to.contain('OPTIONS')
             })
 
@@ -94,8 +94,8 @@ describe('handler-book.ts', function() {
                 const book = new HandlerBook()
                 const some_path = '/some/path'
                 const some_handler = async () => undefined
-                book.record(some_path, 'POST', some_handler)
-                book.record(some_path, 'POST', some_handler)
+                book.record(some_path, { type: 'POST', handler: some_handler })
+                book.record(some_path, { type: 'POST', handler: some_handler })
                 expect(book.get_allow(some_path)).to.have.members(['OPTIONS', 'POST'])
             })
         })
@@ -109,7 +109,7 @@ describe('handler-book.ts', function() {
             ]
 
             for (const d of data) {
-                book.record(d[1], d[0], d[2])
+                book.record(d[1], { type: d[0], handler: d[2] })
             }
 
             it('should find and return handler of given path and method', function() {
@@ -139,7 +139,7 @@ describe('handler-book.ts', function() {
             ]
 
             for (const d of data) {
-                book.record(d[1], d[0], d[2])
+                book.record(d[1], { type: d[0], handler: d[2] })
             }
 
             it('should return allows array of specified path', function() {
@@ -163,7 +163,7 @@ describe('handler-book.ts', function() {
                 ]
 
                 for (const d of data) {
-                    book.record(d[1], d[0], d[2])
+                    book.record(d[1], { type: d[0], handler: d[2] })
                 }
 
                 expect(book.list()).to.eql([

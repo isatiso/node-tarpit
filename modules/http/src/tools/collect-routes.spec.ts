@@ -10,7 +10,7 @@ import { Disabled, get_class_decorator, Optional } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { CacheUnder, Delete, Get, Post, Put, TpRouter } from '../annotations'
-import { collect_routes } from './collect-routes'
+import { collect_routes, RequestUnit } from './collect-routes'
 
 chai.use(cap)
 
@@ -49,7 +49,7 @@ describe('collect-routes.ts', function() {
 
             const router_meta = get_class_decorator(TestRouter).find(token => token instanceof TpRouter)
             expect(router_meta).to.exist
-            const units = collect_routes(router_meta)
+            const units = collect_routes(router_meta).filter((value): value is RequestUnit => value.type === 'request')
             expect(units).to.be.an('array').with.lengthOf(4)
 
             expect(units[0]).to.have.property('path_tail').which.equal('user')

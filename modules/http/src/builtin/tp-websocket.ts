@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { ClientRequest, IncomingMessage } from 'http'
 import { WebSocket } from 'ws'
 
 type BufferLike =
@@ -30,45 +31,67 @@ type SendMessageOptions = { mask?: boolean | undefined; binary?: boolean | undef
 
 export class TpWebSocket {
 
-    private _on_message?: (data: Buffer | ArrayBuffer | Buffer[], is_binary: boolean) => void
-    private _on_close?: (code: number, reason: Buffer) => void
-    private _on_error?: (err: Error) => void
-    private _on_message_error?: (err: Error) => void
+    private listeners: { [name: string | symbol]: (...args: any[]) => void } = {}
 
     constructor(
         public readonly socket: WebSocket,
     ) {
-
-        this.socket.on('close', (code, reason) => this._on_close?.(code, reason))
-        this.socket.on('error', err => this._on_error?.(err))
     }
 
-    on_message(listener: (data: Buffer | ArrayBuffer | Buffer[], is_binary: boolean) => void): void {
-        if (!this._on_message) {
-            this._on_message = listener
-            this.socket.on('message', (data, isBinary) => {
+    on(event: 'close', listener: (code: number, reason: Buffer) => void): this
+    on(event: 'error', listener: (err: Error) => void): this
+    on(event: 'upgrade', listener: (request: IncomingMessage) => void): this
+    on(event: 'message', listener: (data: Buffer | ArrayBuffer | Buffer[], isBinary: boolean) => void): this
+    on(event: 'open', listener: () => void): this
+    on(event: 'ping' | 'pong', listener: (data: Buffer) => void): this
+    on(event: 'unexpected-response', listener: (request: ClientRequest, response: IncomingMessage) => void): this
+    on(event: string | symbol, listener: (...args: any[]) => void): this {
+        if (!this.listeners[event]) {
+            this.socket.on(event, (...args: any[]) => this.listeners[event](...args))
+        }
+        if (event === 'message') {
+            this.listeners[event] = (data, isBinary) => {
                 try {
-                    this._on_message?.(data, isBinary)
+                    listener(data, isBinary)
                 } catch (e) {
                     this.socket.emit('error', e)
                 }
-            })
+            }
         } else {
-            this._on_message = listener
+            this.listeners[event] = listener
         }
+        return this
     }
 
-    on_close(listener: (code: number, reason: Buffer) => void): void {
-        this._on_close = listener
-        this.socket.on('close', (code, reason) => this._on_close?.(code, reason))
+    once(event: 'close', listener: (code: number, reason: Buffer) => void): this
+    once(event: 'error', listener: (err: Error) => void): this
+    once(event: 'upgrade', listener: (request: IncomingMessage) => void): this
+    once(event: 'message', listener: (data: Buffer | ArrayBuffer | Buffer[], isBinary: boolean) => void): this
+    once(event: 'open', listener: () => void): this
+    once(event: 'ping' | 'pong', listener: (data: Buffer) => void): this
+    once(event: 'unexpected-response', listener: (request: ClientRequest, response: IncomingMessage) => void): this
+    once(event: string | symbol, listener: (...args: any[]) => void): this {
+        if (!this.listeners[event]) {
+            this.socket.once(event, (...args: any[]) => this.listeners[event](...args))
+        }
+        if (event === 'message') {
+            this.listeners[event] = (data, isBinary) => {
+                try {
+                    listener(data, isBinary)
+                } catch (e) {
+                    this.socket.emit('error', e)
+                }
+            }
+        } else {
+            this.listeners[event] = listener
+        }
+        return this
     }
 
-    on_error(listener: (err: Error) => void): void {
-        this._on_error = listener
-    }
-
-    on_message_error(listener: (err: Error) => void): void {
-        this._on_message_error = listener
+    remove_all_listeners(event: 'close' | 'error' | 'upgrade' | 'message' | 'open' | 'ping' | 'pong' | 'unexpected-response' | string | symbol): this {
+        this.socket.removeAllListeners()
+        delete this.listeners[event]
+        return this
     }
 
     close(code?: number, data?: string | Buffer): void {
@@ -88,5 +111,4 @@ export class TpWebSocket {
             }
         })
     }
-
 }
