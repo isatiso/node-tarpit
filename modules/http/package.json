@@ -37,7 +37,7 @@
         "build": "rollup -c",
         "check-type": "tsc --noEmit",
         "docs": "tp docs",
-        "test": "tp cover --reporter=json --reporter=text"
+        "test": "tp cover --reporter=json --reporter=text --clean"
     },
     "dependencies": {
         "@tarpit/dora": "^0.5.38",
