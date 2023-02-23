@@ -47,7 +47,7 @@ export function collect_routes(meta: TpRouter): RouteUnit[] {
         const is_request = decorators.find(d => d instanceof Route)
         const is_socket = decorators.find(d => d instanceof WS)
         if (is_request && is_socket) {
-            throw new Error(`is_request is conflict with is_websocket ${prop.toString()}`)
+            throw new Error(`Request decorator is conflict with socket decorator on ${meta.cls.name}.${prop.toString()}`)
         } else if (is_socket) {
             const prop_meta: SocketUnit = {
                 type: 'socket',
@@ -94,9 +94,7 @@ export function collect_routes(meta: TpRouter): RouteUnit[] {
                     continue iterate_prop
                 }
             }
-            if (prop_meta.methods.size) {
-                units.push(prop_meta)
-            }
+            units.push(prop_meta)
         }
     }
     return units

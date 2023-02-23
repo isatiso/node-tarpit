@@ -9,8 +9,8 @@
 import { Disabled, get_class_decorator, Optional } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { CacheUnder, Delete, Get, Post, Put, TpRouter } from '../annotations'
-import { collect_routes, RequestUnit } from './collect-routes'
+import { Auth, CacheUnder, Delete, Get, Post, Put, TpRouter, WS } from '../annotations'
+import { collect_routes, RequestUnit, SocketUnit } from './collect-routes'
 
 chai.use(cap)
 
@@ -45,24 +45,48 @@ describe('collect-routes.ts', function() {
                 async disabled_get_user() {
 
                 }
+
+                @WS()
+                async subscribe_user() {
+                }
+
+                @WS()
+                @Auth()
+                async subscribe_user_need_auth() {
+                }
+
+                @WS()
+                @Disabled()
+                async disabled_subscribe_user() {
+                }
             }
 
             const router_meta = get_class_decorator(TestRouter).find(token => token instanceof TpRouter)
             expect(router_meta).to.exist
-            const units = collect_routes(router_meta).filter((value): value is RequestUnit => value.type === 'request')
-            expect(units).to.be.an('array').with.lengthOf(4)
+            const all_units = collect_routes(router_meta)
+            const request_units = all_units.filter((value): value is RequestUnit => value.type === 'request')
+            const socket_units = all_units.filter((value): value is SocketUnit => value.type === 'socket')
+            expect(request_units).to.be.an('array').with.lengthOf(4)
 
-            expect(units[0]).to.have.property('path_tail').which.equal('user')
-            expect(units[0].methods).to.be.instanceof(Set)
-            expect(Array.from(units[0].methods)).to.eql(['GET'])
-            expect(units[0]).to.have.property('cache_scope').which.equal('scope')
-            expect(units[0]).to.have.property('cache_expire_secs').which.equal(3600)
+            expect(request_units[0]).to.have.property('path_tail').which.equal('user')
+            expect(request_units[0].methods).to.be.instanceof(Set)
+            expect(Array.from(request_units[0].methods)).to.eql(['GET'])
+            expect(request_units[0]).to.have.property('cache_scope').which.equal('scope')
+            expect(request_units[0]).to.have.property('cache_expire_secs').which.equal(3600)
 
-            expect(units[1]).to.have.property('path_tail').which.equal('add-user')
-            expect(units[1].methods).to.be.instanceof(Set)
-            expect(Array.from(units[1].methods)).to.eql(['POST'])
-            expect(units[1]).to.have.property('cache_scope').which.equal('')
-            expect(units[1]).to.have.property('cache_expire_secs').which.equal(0)
+            expect(request_units[1]).to.have.property('path_tail').which.equal('add-user')
+            expect(request_units[1].methods).to.be.instanceof(Set)
+            expect(Array.from(request_units[1].methods)).to.eql(['POST'])
+            expect(request_units[1]).to.have.property('cache_scope').which.equal('')
+            expect(request_units[1]).to.have.property('cache_expire_secs').which.equal(0)
+
+            expect(socket_units).to.be.an('array').with.lengthOf(2)
+
+            expect(socket_units[0]).to.have.property('path_tail').which.equal('subscribe_user')
+            expect(socket_units[0].auth).to.be.false
+
+            expect(socket_units[1]).to.have.property('path_tail').which.equal('subscribe_user_need_auth')
+            expect(socket_units[1].auth).to.be.true
         })
 
         it('should return empty array if given router meta has no unit', function() {
@@ -99,12 +123,17 @@ describe('collect-routes.ts', function() {
                 @Optional()
                 async user() {
                 }
+
+                @WS()
+                @Optional()
+                async subscribe_user() {
+                }
             }
 
             const router_meta = get_class_decorator(TestRouter).find(token => token instanceof TpRouter)
             expect(router_meta).to.exist
             const units = collect_routes(router_meta)
-            expect(units).to.be.an('array').with.lengthOf(1)
+            expect(units).to.be.an('array').with.lengthOf(2)
         })
 
         it('should ignore units if its decorators contain no route decorator', function() {
@@ -121,6 +150,21 @@ describe('collect-routes.ts', function() {
             expect(router_meta).to.exist
             const units = collect_routes(router_meta)
             expect(units).to.be.an('array').with.lengthOf(0)
+        })
+
+        it('should throw error if request decorator and socket decorator on the same method', function() {
+            @TpRouter('/')
+            class TestRouter {
+
+                @Get()
+                @WS()
+                async user() {
+                }
+            }
+
+            const router_meta = get_class_decorator(TestRouter).find(token => token instanceof TpRouter)
+            expect(router_meta).to.exist
+            expect(() => collect_routes(router_meta)).to.throw('Request decorator is conflict with socket decorator on TestRouter.user')
         })
     })
 })

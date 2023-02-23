@@ -18,10 +18,10 @@ import { on_error } from '../tools/on-error'
 import { make_cache_control, parse_cache_control, ResponseCacheControl } from '../tools/cache-control'
 import { TpRequest } from './tp-request'
 
-const type_lru_cache = new LRUCache({ max: 100 })
+const type_lru_cache = new LRUCache<string, string>({ max: 100 })
 
 export function lookup_content_type(type: string): string {
-    let mime_type = type_lru_cache.get<string>(type)
+    let mime_type = type_lru_cache.get(type)
     if (!mime_type) {
         mime_type = mime_types.contentType(type) || ''
         type_lru_cache.set(type, mime_type)

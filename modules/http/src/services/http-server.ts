@@ -60,6 +60,7 @@ export class HttpServer {
                 request_listener(req, res).then()
             })
             server.on('upgrade', (req, socket, head) => {
+                // istanbul ignore if
                 if (this.terminating) {
                     socket.destroy()
                     return

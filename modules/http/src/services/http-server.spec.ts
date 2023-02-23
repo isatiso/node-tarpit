@@ -10,6 +10,7 @@ import { Platform } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { Server } from 'net'
+import { WebSocketServer } from 'ws'
 import { HttpServerModule } from '../http-server.module'
 import { HttpServer } from './http-server'
 
@@ -32,6 +33,7 @@ describe('http-server.ts', function() {
             expect(http_server).to.have.property('terminating').which.is.undefined
             await starting
             expect(http_server.server).to.be.instanceof(Server)
+            expect(http_server.websocket_server).to.be.instanceof(WebSocketServer)
             const terminating = http_server.terminate()
             expect(http_server).to.have.property('terminating').which.equals(terminating)
             await terminating
