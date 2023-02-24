@@ -30,8 +30,6 @@ type SendMessageOptions = { mask?: boolean | undefined; binary?: boolean | undef
 
 export class TpWebSocket {
 
-    private listeners: { [name: string | symbol]: (...args: any[]) => void } = {}
-
     constructor(
         public readonly socket: WebSocket,
     ) {
@@ -53,8 +51,7 @@ export class TpWebSocket {
     }
 
     off(event: 'close' | 'error' | 'message' | string | symbol): this {
-        this.socket.removeAllListeners()
-        delete this.listeners[event]
+        this.socket.removeAllListeners(event)
         return this
     }
 
@@ -77,20 +74,18 @@ export class TpWebSocket {
     }
 
     private set_listener(event: string | symbol, once: boolean, listener: (...args: any[]) => void): this {
-        if (!this.listeners[event]) {
-            if (once) {
-                this.socket.once(event, (...args: any[]) => this.listeners[event](...args))
-            } else {
-                this.socket.on(event, (...args: any[]) => this.listeners[event](...args))
-            }
-        }
-        this.listeners[event] = event !== 'message' ? listener : (...args: any[]) => {
+        const wrapped_listener = event !== 'message' ? listener : (...args: any[]) => {
             try {
                 listener(...args)
             } catch (e) {
                 // TODO: optimize error handling
                 this.socket.emit('error', e)
             }
+        }
+        if (once) {
+            this.socket.once(event, (...args: any[]) => wrapped_listener(...args))
+        } else {
+            this.socket.on(event, (...args: any[]) => wrapped_listener(...args))
         }
         return this
     }
