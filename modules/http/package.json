@@ -69,7 +69,6 @@
         "@tarpit/config": "0.x",
         "@tarpit/content-type": "0.x",
         "@tarpit/core": "0.x",
-        "@tarpit/error": "0.x",
-        "@tarpit/negotiator": "0.x"
+        "@tarpit/error": "0.x"
     }
 }
