@@ -81,7 +81,7 @@ describe('errors case', function() {
     const tmp = console.log
 
     before(async function() {
-        // console.log = (..._args: any[]) => undefined
+        console.log = (..._args: any[]) => undefined
         platform.start()
         await inspector.wait_start()
     })

@@ -29,7 +29,7 @@ describe('unexpected case', function() {
 
     const tmp = console.log
     before(async function() {
-        // console.log = () => undefined
+        console.log = () => undefined
         platform = new Platform({ mongodb: { url } })
             .import(MongodbModule)
 

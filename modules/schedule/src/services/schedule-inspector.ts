@@ -30,7 +30,7 @@ export class ScheduleInspector {
     ) {
     }
 
-    get_task(id: string): TaskDesc | undefined {
+    get_task(id: string): TaskDesc | void {
         let cursor: { next_bullet?: Bullet } = this.hub
         while (cursor.next_bullet) {
             if (cursor.next_bullet.id === id) {
@@ -38,7 +38,6 @@ export class ScheduleInspector {
             }
             cursor = cursor.next_bullet
         }
-        return
     }
 
     get_suspended_task(id: string): TaskDesc | undefined {
