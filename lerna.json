@@ -1,11 +1,11 @@
 {
-    "version": "0.5.38",
-    "npmClient": "yarn",
-    "useWorkspaces": true,
-    "command": {
-        "publish": {
-            "registry": "https://registry.npmjs.org/",
-            "message": "chore(release): publish"
-        }
+  "version": "0.5.39",
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "command": {
+    "publish": {
+      "registry": "https://registry.npmjs.org/",
+      "message": "chore(release): publish"
     }
+  }
 }
