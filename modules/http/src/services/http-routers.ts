@@ -75,9 +75,11 @@ export class HttpRouters {
 
     public readonly upgrade_listener = async (req: IncomingMessage, socket: Duplex, head: Buffer): Promise<SocketHandler | undefined> => {
         const parsed_url = this.url_parser.parse({ url: req.url, headers: req.headers })
+        // istanbul ignore if
         if (!parsed_url || !req.method) {
             return
         }
+        // istanbul ignore next
         parsed_url.pathname = parsed_url.pathname?.trim().replace(/\/+$/, '') || '/'
         const handler = this.handler_book.find('SOCKET', parsed_url.pathname)
         if (!handler) {
@@ -149,7 +151,7 @@ export class HttpRouters {
 
         const pv_authenticator = injector.get(HttpAuthenticator)!
 
-        return async function(req, socket, head, parsed_url, path_args): Promise<undefined | SocketHandler> {
+        return async function(req, socket, head, parsed_url, path_args): Promise<SocketHandler | undefined> {
 
             const authenticator = pv_authenticator.create()
             const request = new TpRequest(req, parsed_url, proxy_config)

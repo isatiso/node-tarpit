@@ -12,8 +12,9 @@ import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
+import { IncomingMessage } from 'http'
 import { WebSocket } from 'ws'
-import { Delete, Get, HttpInspector, HttpServerModule, Params, PathArgs, Post, Put, TpHttpFinish, TpRouter, TpWebSocket, WS } from '../src'
+import { Delete, Get, HttpInspector, HttpServerModule, Params, PathArgs, Post, Put, RequestHeaders, TpHttpFinish, TpRequest, TpRouter, TpWebSocket, WS } from '../src'
 
 chai.use(cap)
 chai.use(chai_spies)
@@ -55,9 +56,23 @@ class NormalRouter {
     }
 
     @WS('subscribe-user')
-    async subscribe_user2(ws: TpWebSocket) {
+    async subscribe_user2(
+        ws: TpWebSocket,
+        tp_inspector: TpInspector,
+        incoming_message: IncomingMessage,
+        request: TpRequest,
+        headers: RequestHeaders,
+        params: Params<{ id: string }>
+    ) {
         ws.on('message', data => {
-            ws.send(data.toString())
+            ws.send(JSON.stringify({
+                message: data.toString(),
+                time: tp_inspector.start_time,
+                method: incoming_message.method,
+                request: request.method,
+                header: headers.get_first('tarpit'),
+                param_id: params.get_first('id'),
+            }))
         })
     }
 }
@@ -160,14 +175,22 @@ describe('normal case', function() {
     })
 
     it('should handler upgrade with handler-book cache', function(done) {
-        const ws = new WebSocket('ws://localhost:31254/subscribe-user')
+        const ws = new WebSocket('ws://localhost:31254/subscribe-user?id=qwe987', { headers: { 'Tarpit': 'abc' } })
         const msg = 'some specified message randomly'
         ws.on('error', err => {
             expect(err).not.to.be.instanceof(Error)
             done()
         })
         ws.on('message', data => {
-            expect(data.toString()).to.equal(msg)
+            const obj = JSON.parse(data.toString())
+            expect(obj).to.eql({
+                message: msg,
+                time: inspector.start_time,
+                method: 'GET',
+                request: 'GET',
+                param_id: 'qwe987',
+                header: 'abc'
+            })
             ws.close()
             done()
         })

@@ -63,6 +63,11 @@ class NormalRouter {
             ws.send(data.toString())
         })
     }
+
+    @WS()
+    async subscribe_with_error() {
+        throw new Error('test subscribe with error')
+    }
 }
 
 describe('errors case', function() {
@@ -76,7 +81,7 @@ describe('errors case', function() {
     const tmp = console.log
 
     before(async function() {
-        console.log = (..._args: any[]) => undefined
+        // console.log = (..._args: any[]) => undefined
         platform.start()
         await inspector.wait_start()
     })
@@ -129,6 +134,15 @@ describe('errors case', function() {
         const ws = new WebSocket('ws://localhost:31254/not_exist')
         ws.on('error', err => {
             expect(err).to.be.instanceof(Error)
+            done()
+        })
+    })
+
+    it('should close socket when socket api throw an error during handshake', function(done) {
+        const ws = new WebSocket('ws://localhost:31254/error/subscribe_with_error')
+        ws.on('close', (code, reason) => {
+            expect(code).to.equal(1011)
+            expect(reason.toString()).to.equal('Error: test subscribe with error')
             done()
         })
     })
