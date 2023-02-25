@@ -7,11 +7,11 @@
  */
 
 import { make_abstract_decorator, make_decorator, TpEntry, TpUnit } from '@tarpit/core'
-import { ApiMethod, TpRouterOptions } from './__types__'
+import { ApiMethod, TpRouterOptions, TpWebSocketOptions } from './__types__'
 
 export type RouteProps = { path_tail?: string, methods: ApiMethod[] }
 
-export const TpRouterToken = Symbol.for('œœ.token.http.TpRouter')
+export const TpHttpToken = Symbol.for('œœ.token.http.TpHttp')
 
 export type TpHttp = InstanceType<typeof TpHttp>
 export const TpHttp = make_abstract_decorator('TpHttp', TpUnit)
@@ -37,5 +37,8 @@ export const Put = make_decorator('Put', (path_tail?: string): RouteProps => ({ 
 export type Delete = InstanceType<typeof Delete>
 export const Delete = make_decorator('Delete', (path_tail?: string): RouteProps => ({ path_tail, methods: ['DELETE'] }), Route)
 
+export type WS = InstanceType<typeof WS>
+export const WS = make_decorator('WS', (path_tail?: string) => ({ path_tail }), TpHttp)
+
 export type TpRouter = InstanceType<typeof TpRouter>
-export const TpRouter = make_decorator('TpRouter', (path: `/${string}`, options?: TpRouterOptions) => ({ ...options, path, token: TpRouterToken, }), TpEntry)
+export const TpRouter = make_decorator('TpRouter', (path: `/${string}`, options?: TpRouterOptions) => ({ ...options, path, token: TpHttpToken }), TpEntry)

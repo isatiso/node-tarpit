@@ -10,10 +10,13 @@ import { Platform, TpInspector } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { Finish, finish, Get, HttpServerModule, throw_bad_request, throw_http_finish, throw_unauthorized, TpHttpFinish, TpRouter } from '../src'
+import chai_spies from 'chai-spies'
+import { WebSocket } from 'ws'
+import { finish, Get, HttpServerModule, throw_bad_request, throw_http_finish, throw_unauthorized, TpHttpFinish, TpRouter, TpWebSocket, WS } from '../src'
 import { HTTP_STATUS } from '../src/tools/http-status'
 
 chai.use(cap)
+chai.use(chai_spies)
 
 @TpRouter('/error', { imports: [HttpServerModule] })
 class NormalRouter {
@@ -52,6 +55,18 @@ class NormalRouter {
     async test_finish_thrown() {
         // throw new Finish({})
         throw_http_finish(200, { body: {} })
+    }
+
+    @WS()
+    async subscribe(ws: TpWebSocket) {
+        ws.on('message', data => {
+            ws.send(data.toString())
+        })
+    }
+
+    @WS()
+    async subscribe_with_error() {
+        throw new Error('test subscribe with error')
     }
 }
 
@@ -112,6 +127,23 @@ describe('errors case', function() {
         await r.get('/finish-thrown', {}).then(res => {
             expect(res.status).to.equal(200)
             expect(res.data).to.eql({})
+        })
+    })
+
+    it('should throw error when socket api not found', function(done) {
+        const ws = new WebSocket('ws://localhost:31254/not_exist')
+        ws.on('error', err => {
+            expect(err).to.be.instanceof(Error)
+            done()
+        })
+    })
+
+    it('should close socket when socket api throw an error during handshake', function(done) {
+        const ws = new WebSocket('ws://localhost:31254/error/subscribe_with_error')
+        ws.on('close', (code, reason) => {
+            expect(code).to.equal(1011)
+            expect(reason.toString()).to.equal('Error: test subscribe with error')
+            done()
         })
     })
 })

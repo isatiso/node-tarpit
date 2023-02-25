@@ -66,7 +66,7 @@ describe('connection case', function() {
             @TpService({ inject_root: true })
             class CustomRetryStrategy extends RabbitRetryStrategy {
 
-                async on_failed(err: any): Promise<void> {
+                override async on_failed(err: any): Promise<void> {
                     spy_error()
                     return super.on_failed(err)
                 }
@@ -88,9 +88,9 @@ describe('connection case', function() {
             @TpService({ inject_root: true })
             class CustomRetryStrategy extends RabbitRetryStrategy {
 
-                max_retries = 5
+                override max_retries = 5
 
-                async on_failed(err: any): Promise<void> {
+                override async on_failed(err: any): Promise<void> {
                     spy_error()
                 }
             }

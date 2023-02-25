@@ -90,6 +90,7 @@ export function load_component(meta: any, injector: Injector): ProviderTreeNode 
         }
         return provider_tree
     }
+    return
 }
 
 export function check_usage(injector: Injector, tree_node: ProviderTreeNode | undefined, path?: any[]): boolean {

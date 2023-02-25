@@ -8,12 +8,12 @@
 
 import { ContentTypeModule } from '@tarpit/content-type'
 import { TpLoader, TpModule } from '@tarpit/core'
-import { TpRouter, TpRouterToken } from './annotations'
+import { TpHttpToken, TpRouter } from './annotations'
 import { HttpAuthenticator } from './services/http-authenticator'
+import { HttpBodyFormatter } from './services/http-body-formatter'
 import { HttpCacheProxy } from './services/http-cache-proxy'
 import { HttpHooks } from './services/http-hooks'
 import { HttpInspector } from './services/http-inspector'
-import { HttpBodyFormatter } from './services/http-body-formatter'
 import { HttpRouters } from './services/http-routers'
 import { HttpServer } from './services/http-server'
 import { HttpStatic } from './services/http-static'
@@ -44,8 +44,8 @@ export class HttpServerModule {
         private server: HttpServer,
         private routers: HttpRouters,
     ) {
-        this.loader.register(TpRouterToken, {
-            on_start: async () => this.server.start(this.routers.request_listener),
+        this.loader.register(TpHttpToken, {
+            on_start: async () => this.server.start(this.routers.request_listener, this.routers.upgrade_listener),
             on_terminate: async () => this.server.terminate(),
             on_load: async (meta: TpRouter) => collect_routes(meta).forEach(f => this.routers.add_router(f, meta)),
         })

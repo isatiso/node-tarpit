@@ -10,12 +10,13 @@ import { ConfigData } from '@tarpit/config'
 import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
 import { get_providers, Injector, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
-import { Readable, Transform, TransformCallback } from 'stream'
-import { FatHttpHandler, TpHttpResponseType } from '../__types__'
+import { Duplex, Readable, Transform, TransformCallback } from 'stream'
+import { WebSocket } from 'ws'
+import { ApiMethod, RequestHandlerWithPathArgs, SocketHandler, TpHttpResponseType, UpgradeHandlerWithPathArgs } from '../__types__'
 import { TpRouter } from '../annotations'
-import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse } from '../builtin'
+import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse, TpWebSocket } from '../builtin'
 import { Finish, TpHttpFinish } from '../errors'
-import { RouteUnit } from '../tools/collect-routes'
+import { RequestUnit, RouteUnit, SocketUnit } from '../tools/collect-routes'
 import { flush_response } from '../tools/flush-response'
 import { HandlerBook } from '../tools/handler-book'
 import { CODES_KEY, HTTP_STATUS } from '../tools/http-status'
@@ -23,7 +24,6 @@ import { HttpAuthenticator } from './http-authenticator'
 import { HttpBodyFormatter } from './http-body-formatter'
 import { HttpCacheProxy } from './http-cache-proxy'
 import { HttpHooks } from './http-hooks'
-import { HttpServer } from './http-server'
 import { HttpUrlParser } from './http-url-parser'
 
 const BODY_TOKEN: any[] = [MimeBody, JsonBody, FormBody, TextBody, RawBody]
@@ -31,6 +31,8 @@ const REQUEST_TOKEN: any[] = [RequestHeaders, Guard, Params, PathArgs, IncomingM
 const RESPONSE_TOKEN: any[] = [ServerResponse, TpResponse]
 const ALL_HANDLER_TOKEN: any[] = [HttpContext, ResponseCache].concat(BODY_TOKEN, REQUEST_TOKEN, RESPONSE_TOKEN)
 const ALL_HANDLER_TOKEN_SET = new Set(ALL_HANDLER_TOKEN)
+
+const SOCKET_TOKEN_SET = new Set([TpWebSocket, TpRequest, Params, PathArgs, Guard, RequestHeaders, IncomingMessage])
 
 export function reply(res: ServerResponse, status: CODES_KEY) {
     res.statusCode = status
@@ -65,11 +67,26 @@ export class HttpRouters {
     private readonly c_proxy = this.config_data.get('http.proxy')
 
     constructor(
-        private server: HttpServer,
         private config_data: ConfigData,
         private url_parser: HttpUrlParser,
         private reader: ContentReaderService,
     ) {
+    }
+
+    public readonly upgrade_listener = async (req: IncomingMessage, socket: Duplex, head: Buffer): Promise<SocketHandler | undefined> => {
+        const parsed_url = this.url_parser.parse({ url: req.url, headers: req.headers })
+        // istanbul ignore if
+        if (!parsed_url || !req.method) {
+            return
+        }
+        // istanbul ignore next
+        parsed_url.pathname = parsed_url.pathname?.trim().replace(/\/+$/, '') || '/'
+        const handler = this.handler_book.find('SOCKET', parsed_url.pathname)
+        if (!handler) {
+            socket.destroy()
+            return
+        }
+        return handler(req, socket, head, parsed_url)
     }
 
     public readonly request_listener = async (req: IncomingMessage, res: ServerResponse) => {
@@ -102,22 +119,93 @@ export class HttpRouters {
         } else {
             res.statusCode = 400
             res.statusMessage = HTTP_STATUS.message_of(400)
-            const handler = this.handler_book.find(req.method as any, parsed_url.pathname)!
+            const handler = this.handler_book.find(req.method as ApiMethod, parsed_url.pathname)!
+            console.log('handler find', parsed_url.pathname)
             return handler(req, res, parsed_url)
         }
     }
 
     add_router(unit: RouteUnit, meta: TpRouter): void {
-        const fat_handler = this.make_fat_handler(meta.injector!, unit)
         const head = meta.path.replace(/\/+\s*$/g, '')
         const tail = unit.path_tail.replace(/^\s*\/+/g, '').replace(/\/+\s*$/g, '')
         const path = head + '/' + tail
-
-        unit.methods.forEach(method => this.handler_book.record(method, path, fat_handler))
+        switch (unit.type) {
+            case 'request': {
+                const handler = this.make_request_handler(meta.injector!, unit)
+                unit.methods.forEach(method => this.handler_book.record(path, { type: method, handler }))
+                break
+            }
+            case 'socket': {
+                const handler = this.make_upgrade_handler(meta.injector!, unit)
+                this.handler_book.record(path, { type: 'SOCKET', handler })
+                break
+            }
+        }
         this.handler_book.clear_cache()
     }
 
-    private make_fat_handler(injector: Injector, unit: RouteUnit): FatHttpHandler {
+    private make_upgrade_handler(injector: Injector, unit: SocketUnit): UpgradeHandlerWithPathArgs {
+        const param_deps = get_providers(unit, injector, SOCKET_TOKEN_SET)
+        const proxy_config = this.c_proxy
+        const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
+
+        const pv_authenticator = injector.get(HttpAuthenticator)!
+
+        return async function(req, socket, head, parsed_url, path_args): Promise<SocketHandler | undefined> {
+
+            const authenticator = pv_authenticator.create()
+            const request = new TpRequest(req, parsed_url, proxy_config)
+
+            try {
+                const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined
+                if (unit.auth) {
+                    await authenticator.authenticate(guard!)
+                }
+            } catch (e) {
+                socket.destroy()
+                return
+            }
+
+            return async function(req: IncomingMessage, ws: WebSocket): Promise<void> {
+
+                const socket_wrapper = new TpWebSocket(ws)
+
+                try {
+                    const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined
+                    if (unit.auth) {
+                        await authenticator.authenticate(guard!)
+                    }
+
+                    await unit.handler(...param_deps.map(({ provider, token }, index) => {
+                        if (provider) {
+                            return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])
+                        }
+                        switch (token) {
+                            case TpWebSocket:
+                                return socket_wrapper
+                            case TpRequest:
+                                return request
+                            case Params:
+                                return new Params(parsed_url.query)
+                            case PathArgs:
+                                return new PathArgs(path_args)
+                            case Guard:
+                                return guard
+                            case RequestHeaders:
+                                return new RequestHeaders(req.headers)
+                            case IncomingMessage:
+                                return req
+                        }
+                    }))
+
+                } catch (reason: any) {
+                    socket_wrapper.close(1011, `Error: ${reason.message}`)
+                }
+            }
+        }
+    }
+
+    private make_request_handler(injector: Injector, unit: RequestUnit): RequestHandlerWithPathArgs {
         const param_deps = get_providers(unit, injector, ALL_HANDLER_TOKEN_SET)
         const body_max_length = this.c_body_max_length
         const proxy_config = this.c_proxy
@@ -235,7 +323,6 @@ export class HttpRouters {
                     context.result = TpHttpFinish.isTpHttpFinish(reason) ? reason : wrap_error(reason)
                 }
             }
-
 
             response.status = context.result.status
 

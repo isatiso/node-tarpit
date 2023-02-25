@@ -67,5 +67,5 @@ export function flush_response(response: TpResponse) {
 
     const json_body = JSON.stringify(response.body)
     response.length = Buffer.byteLength(json_body)
-    response.res.end(json_body)
+    return response.res.end(json_body)
 }

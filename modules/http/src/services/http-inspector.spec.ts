@@ -37,7 +37,7 @@ describe('http-inspector.ts', function() {
                 const inspector = new HttpInspector({ handler_book: mock_book } as any)
                 const some_handler = async () => undefined
                 inspector.bind('GET', '/some/path', some_handler)
-                expect(spy_record).to.have.been.called.with('GET', '/some/path', some_handler)
+                expect(spy_record).to.have.been.called.with('/some/path', { type: 'GET', handler: some_handler })
             })
         })
     })

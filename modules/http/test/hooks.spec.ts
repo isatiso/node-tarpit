@@ -17,15 +17,15 @@ chai.use(cap)
 @TpService()
 class CustomHooks extends HttpHooks {
 
-    async on_init(context: HttpContext): Promise<void> {
+    override async on_init(context: HttpContext): Promise<void> {
         throw new Error('lkj')
     }
 
-    async on_error(context: HttpContext): Promise<void> {
+    override async on_error(context: HttpContext): Promise<void> {
         throw new Error('lkj')
     }
 
-    async on_finish(context: HttpContext): Promise<void> {
+    override async on_finish(context: HttpContext): Promise<void> {
         throw new Error('lkj')
     }
 }

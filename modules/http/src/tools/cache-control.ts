@@ -54,6 +54,8 @@ export function make_cache_control(options?: CacheControl): string {
             return key
         } else if (typeof value === 'number') {
             return `${key}=${value}`
+        } else {
+            return
         }
     }).filter(key => key).join(',')
 }

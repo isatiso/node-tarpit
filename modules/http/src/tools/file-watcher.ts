@@ -67,6 +67,8 @@ export class FileWatcher {
                 return result
             }
         }
+
+        return undefined
     }
 
     private contains_dot_file(filename: string) {
