@@ -57,7 +57,6 @@
         "@tarpit/content-type": "^0.5.39",
         "@tarpit/core": "^0.5.39",
         "@tarpit/error": "^0.5.39",
-        "@tarpit/negotiator": "^0.5.38",
         "@tarpit/rollup": "^0.5.39",
         "@types/content-disposition": "^0.5.5",
         "@types/fresh": "^0.5.0",
