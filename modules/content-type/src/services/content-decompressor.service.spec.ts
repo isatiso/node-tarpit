@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { load_config } from '@tarpit/config'
 import { Platform } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
@@ -24,7 +25,7 @@ describe('content-decompressor.service.ts', function() {
 
         describe('.decompress()', function() {
 
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
                 .import(ContentTypeModule)
 
             const decompressor = platform.expose(ContentDecompressorService)!
@@ -83,7 +84,7 @@ describe('content-decompressor.service.ts', function() {
 
         describe('.load_decompressor()', function() {
 
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
                 .import(ContentDecompressorService)
                 .import({
                     provide: decompressor_token, useValue: ['err', (req: Readable) => req.pipe(new Transform({

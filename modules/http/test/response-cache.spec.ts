@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Platform, TpInspector, TpService } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Platform, TpConfigSchema, TpInspector, TpService } from '@tarpit/core'
 import { Jtl } from '@tarpit/judge'
 import axios from 'axios'
 import chai, { expect } from 'chai'
@@ -47,7 +48,7 @@ class TempRouter {
 
 describe('response cache case', function() {
 
-    const platform = new Platform({ http: { port: 31260, expose_error: true } })
+    const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31260, expose_error: true } }))
         .import(SomeMongo)
         .bootstrap(TempRouter)
 

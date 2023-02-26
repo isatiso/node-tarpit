@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { load_config } from '@tarpit/config'
 import { Platform, TpInspector, TpRoot } from '@tarpit/core'
 import { expect } from 'chai'
 import { ObjectId, WithId } from 'mongodb'
@@ -39,7 +40,7 @@ describe('normal case', function() {
     const tmp = console.log
     before(async function() {
         console.log = () => undefined
-        platform = new Platform({ mongodb: { url } })
+        platform = new Platform(load_config({ mongodb: { url } }))
             .import(MongodbModule)
             .import(TempRoot)
 

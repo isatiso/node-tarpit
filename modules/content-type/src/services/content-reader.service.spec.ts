@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { load_config } from '@tarpit/config'
 import { Platform } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
@@ -20,7 +21,7 @@ describe('content-reader.service.ts', function() {
 
         describe('.deserialize()', function() {
 
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
                 .import(ContentTypeModule)
 
             const reader = platform.expose(ContentReaderService)!

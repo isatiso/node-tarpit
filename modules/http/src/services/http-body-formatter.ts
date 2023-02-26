@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { TpService } from '@tarpit/core'
+import { TpConfigData, TpService } from '@tarpit/core'
 import { HttpResponseType } from '../__types__'
 import { HttpContext } from '../builtin'
 import { HTTP_STATUS } from '../tools/http-status'
@@ -18,7 +17,7 @@ export class HttpBodyFormatter {
     private expose = this.config_data.get('http.expose_error') ?? false
 
     constructor(
-        private config_data: ConfigData,
+        private config_data: TpConfigData,
     ) {
     }
 

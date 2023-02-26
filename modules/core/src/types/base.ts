@@ -10,3 +10,6 @@ export type PureJSON = null | boolean | number | string | { [prop: string]: Pure
 export type Constructor<T> = new(...args: any[]) => T
 export type AbstractConstructor<T> = abstract new(...args: any[]) => T
 export type KeyOfFilterType<T, U> = { [K in keyof T]: Exclude<T[K], undefined> extends U ? K : never }[keyof T]
+
+export interface TpConfigSchema {
+}

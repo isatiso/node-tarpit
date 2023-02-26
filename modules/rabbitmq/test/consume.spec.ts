@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Platform, TpInspector, TpService } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Platform, TpConfigSchema, TpInspector, TpService } from '@tarpit/core'
 import amqplib, { Connection } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
@@ -107,7 +108,7 @@ describe('consume case', function() {
     before(async function() {
         console.log = () => undefined
         connection = await amqplib.connect(url)
-        platform = new Platform({ rabbitmq: { url, prefetch: 10 } })
+        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url, prefetch: 10 } }))
             .import(RabbitmqModule)
             .import(TempConsumer)
 

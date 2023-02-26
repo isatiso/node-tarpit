@@ -16,21 +16,7 @@
         "projects/*",
         "supports/*"
     ],
-    "dependencies": {
-        "@tarpit/barbeque": "^0.5.38",
-        "@tarpit/cli": "^0.5.38",
-        "@tarpit/config": "^0.5.38",
-        "@tarpit/content-type": "^0.5.38",
-        "@tarpit/core": "^0.5.38",
-        "@tarpit/cron": "^0.5.38",
-        "@tarpit/dora": "^0.5.38",
-        "@tarpit/error": "^0.5.38",
-        "@tarpit/http": "^0.5.38",
-        "@tarpit/judge": "^0.5.38",
-        "@tarpit/rabbitmq": "^0.5.38",
-        "@tarpit/rollup": "^0.5.0",
-        "@tarpit/schedule": "^0.5.38",
-        "@tarpit/transformer": "^0.5.38",
+    "devDependencies": {
         "@istanbuljs/nyc-config-typescript": "^1.0.2",
         "@rollup/plugin-json": "^6.0.0",
         "@rollup/plugin-typescript": "^11.0.0",

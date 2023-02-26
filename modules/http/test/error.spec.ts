@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Platform, TpInspector } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
@@ -72,7 +73,7 @@ class NormalRouter {
 
 describe('errors case', function() {
 
-    const platform = new Platform({ http: { port: 31254, expose_error: true } })
+    const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31254, expose_error: true } }))
         .bootstrap(NormalRouter)
 
     const inspector = platform.expose(TpInspector)!

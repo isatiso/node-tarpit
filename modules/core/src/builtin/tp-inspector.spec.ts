@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { load_config } from '@tarpit/config'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import spies from 'chai-spies'
@@ -29,7 +30,7 @@ describe('tp-inspector.ts', function() {
 
     describe('TpInspector', function() {
 
-        const platform = new Platform({})
+        const platform = new Platform(load_config({}))
         const inspector = platform.expose(TpInspector)
 
         it('should show start and terminate thing as -1', function() {

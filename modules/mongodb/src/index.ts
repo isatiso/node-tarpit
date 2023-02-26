@@ -17,7 +17,7 @@ type TpOtherClientConfigMap = Exclude<TpMongoClientName, 'mongodb'> extends neve
     other_clients: Pick<TpMongoClientConfigMap, Exclude<TpMongoClientName, 'mongodb'>>
 }
 
-declare module '@tarpit/config' {
+declare module '@tarpit/core' {
 
     export interface TpConfigSchema {
         mongodb: TpMongoClientConfig & TpOtherClientConfigMap

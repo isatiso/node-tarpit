@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { Injector, TpService } from '@tarpit/core'
+import { Injector, TpConfigData, TpService } from '@tarpit/core'
 import { Connection } from 'amqplib'
 import { RabbitConnector } from './rabbit-connector'
 import { RabbitDefine, RabbitDefineToken } from './rabbit-define'
@@ -18,7 +17,7 @@ export class RabbitClient {
     private definition = new RabbitDefine()
 
     constructor(
-        private config_data: ConfigData,
+        private config_data: TpConfigData,
         private connector: RabbitConnector,
         private injector: Injector,
     ) {
@@ -51,12 +50,12 @@ export class RabbitClient {
         return
     }
 
-    private emit(event: any, data: any) {
-        this.injector.emit(event, data)
-    }
-
     async terminate() {
         return this.connector.close()
+    }
+
+    private emit(event: any, data: any) {
+        this.injector.emit(event, data)
     }
 
     private merge_definition() {

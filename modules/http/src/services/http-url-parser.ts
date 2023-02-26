@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { TpService } from '@tarpit/core'
+import { TpConfigData, TpService } from '@tarpit/core'
 import url, { UrlWithParsedQuery } from 'url'
 
 export type RequestInfo = {
@@ -29,7 +28,7 @@ export class HttpUrlParser {
     private proxy_config = this.config_data.get('http.proxy')
 
     constructor(
-        private config_data: ConfigData,
+        private config_data: TpConfigData,
     ) {
     }
 

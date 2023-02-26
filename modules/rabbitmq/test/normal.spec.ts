@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Platform, TpInspector, TpRoot } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Platform, TpConfigSchema, TpInspector, TpRoot } from '@tarpit/core'
 import amqplib, { Connection, GetMessage } from 'amqplib'
 import { expect } from 'chai'
 import crypto from 'crypto'
@@ -92,7 +93,7 @@ describe('normal case', function() {
     before(async function() {
         console.log = () => undefined
         connection = await amqplib.connect(url)
-        platform = new Platform({ rabbitmq: { url } })
+        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import(RabbitmqModule)
             .import(TempRoot)
 

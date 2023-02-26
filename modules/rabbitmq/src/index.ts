@@ -66,7 +66,7 @@ export interface AMQPConnect {
     vhost?: string
 }
 
-declare module '@tarpit/config' {
+declare module '@tarpit/core' {
 
     export interface TpConfigSchema {
         rabbitmq: {
