@@ -44,12 +44,10 @@
         "tslib": "^2.5.0"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.5.41",
         "@tarpit/core": "^0.5.41",
         "@tarpit/rollup": "^0.5.41"
     },
     "peerDependencies": {
-        "@tarpit/config": "0.x",
         "@tarpit/core": "0.x"
     }
 }
