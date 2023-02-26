@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, Platform, TpInspector } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Injector, Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
 import { connect } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
@@ -54,7 +55,7 @@ describe('assert definition case', function() {
             .bind_queue('tarpit.exchange.b', 'tarpit.queue.b', 'bb')
             .bind_queue('tarpit.exchange.c', 'tarpit.queue.c', 'cc')
 
-        const platform = new Platform({ rabbitmq: { url } })
+        const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import({ provide: RabbitDefineToken, useValue: D, multi: true, root: true })
             .import(RabbitmqModule)
         const inspector = platform.expose(TpInspector)!
@@ -84,7 +85,7 @@ describe('assert definition case', function() {
 
     it('should throw error if definition conflicted', async function() {
         const D = new RabbitDefine().define_exchange('tarpit.exchange.a', 'direct', { durable: true })
-        const platform = new Platform({ rabbitmq: { url } })
+        const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
         const inspector = platform.expose(TpInspector)!
         const injector = platform.expose(Injector)!
         injector.on('error', ({ type, error }) => {

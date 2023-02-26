@@ -5,7 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
+import { ConfigData } from '@tarpit/config'
+import { TpConfigSchema } from '../types'
 
-// istanbul ignore file
-export { ConfigData } from './config-data'
-export { load_config } from './config-tools'
+export class TpConfigData extends ConfigData<TpConfigSchema> {
+
+}

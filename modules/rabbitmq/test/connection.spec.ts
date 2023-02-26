@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, Platform, TpInspector, TpService } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Injector, Platform, TpConfigSchema, TpInspector, TpService } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import chai_as_promised from 'chai-as-promised'
 import chai_spies from 'chai-spies'
@@ -49,7 +50,7 @@ describe('connection case', function() {
         let connector: RabbitConnector
 
         beforeEach(async function() {
-            platform = new Platform({ rabbitmq: { url: {}, timeout: 200 } })
+            platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url: {}, timeout: 200 } }))
 
             injector = platform.expose(Injector)!
             inspector = platform.expose(TpInspector)!
@@ -108,7 +109,7 @@ describe('connection case', function() {
 
         it('should mark connector closed if error occurred with code 320 or 200', async function() {
             const url = process.env.RABBITMQ_URL ?? ''
-            const platform = new Platform({ rabbitmq: { url, timeout: 200 } }).import(RabbitmqModule)
+            const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url, timeout: 200 } })).import(RabbitmqModule)
             const injector = platform.expose(Injector)!
             injector.on('error', ({ type, error }) => console.log(type, error))
             const inspector = platform.expose(TpInspector)!

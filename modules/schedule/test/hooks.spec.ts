@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { load_config } from '@tarpit/config'
 import { Platform, TpInspector, TpService } from '@tarpit/core'
 import chai from 'chai'
 import chai_spies from 'chai-spies'
@@ -57,7 +58,7 @@ describe('hooks case', function() {
     before(async function() {
         console.log = (..._args: any[]) => undefined
         chai.spy.on(Date, 'now', () => fake_time)
-        platform = new Platform({}).bootstrap(TempSchedule)
+        platform = new Platform(load_config({})).bootstrap(TempSchedule)
         inspector = platform.expose(TpInspector)!
         hooks = platform.expose(ScheduleHooks)!
         chai.spy.on(hooks, 'on_init')

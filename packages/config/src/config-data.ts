@@ -9,24 +9,20 @@
 import { Reference } from '@tarpit/judge'
 import { Path, PathValue } from '@tarpit/type-tools'
 
-export interface TpConfigSchema {
-}
+export class ConfigData<T extends object> {
 
-export class ConfigData extends Reference<TpConfigSchema> {
+    private _data: Reference<T>
 
-    constructor(data: TpConfigSchema) {
-        super(data)
+    constructor(data: T) {
+        this._data = new Reference<T>(data)
     }
 
-    // @ts-ignore
-    get(): TpConfigSchema
-    // @ts-ignore
-    get<K extends Path<TpConfigSchema>>(path: K): PathValue<TpConfigSchema, K>
-    // @ts-ignore
-    get<K extends Path<TpConfigSchema>>(path?: K): PathValue<TpConfigSchema, K> | TpConfigSchema {
+    get(): T
+    get<K extends Path<T>>(path: K): PathValue<T, K>
+    get<K extends Path<T>>(path?: K): PathValue<T, K> | T {
         if (!path) {
-            return super.get()
+            return this._data.get()
         }
-        return super.get(path)!
+        return this._data.get(path)!
     }
 }

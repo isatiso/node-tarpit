@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { load_config } from '@tarpit/config'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { Debug, TpEntry, TpModule, TpRoot, TpService, TpUnit } from './annotations'
@@ -49,43 +50,43 @@ describe('platform.ts', function() {
 
     describe('Platform', function() {
         it('could create instance by new operator', function() {
-            expect(() => new Platform({})).to.not.throw()
+            expect(() => new Platform(load_config({}))).to.not.throw()
         })
     })
 
     describe('.import()', function() {
         it('should import ClassProviderDef to Platform', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             platform.import({ provide: Service1, useClass: Service1 })
             expect((platform as any).root_injector.get(Service1)?.create()).to.be.instanceof(Service1)
         })
 
         it('should import FactoryProviderDef to Platform', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             platform.import({ provide: Service1, useFactory: () => new Service1() })
             expect((platform as any).root_injector.get(Service1)?.create()).to.be.instanceof(Service1)
         })
 
         it('should import ValueProviderDef to Platform', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             platform.import({ provide: Service1, useValue: Service1 })
             expect((platform as any).root_injector.get(Service1)?.create()).to.equal(Service1)
         })
 
         it('should import TpService to Platform', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             platform.import(Service1)
             expect((platform as any).root_injector.get(Service1)?.create()).to.be.instanceof(Service1)
         })
 
         it('should import TpModule to Platform', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             platform.import(Module1)
             expect((platform as any).root_injector.get(Module1)?.create()).to.be.instanceof(Module1)
         })
 
         it('should import TpRoot to Platform', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             platform.import(Root1)
             expect((platform as any).root_injector.get(Root1)?.create()).to.be.instanceof(Root1)
         })
@@ -93,7 +94,7 @@ describe('platform.ts', function() {
 
     describe('.bootstrap()', function() {
         it('should bootstrap TpRoot to Platform', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             platform.bootstrap(Root1)
             const meta = get_class_decorator(Root1)?.find(d => d instanceof TpEntry)
 
@@ -103,20 +104,20 @@ describe('platform.ts', function() {
         })
 
         it('should throw error if provided is not "TpEntry"', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             expect(() => platform.bootstrap(Noop)).to.throw('Noop is not a "TpEntry"')
         })
     })
 
     describe('.expose()', function() {
         it('should expose things from root injector', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             const inspector = platform.expose(TpInspector)
             expect(inspector).to.be.instanceof(TpInspector)
         })
 
         it('should expose undefined from provided not exists', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             const inspector = platform.expose(Noop)
             expect(inspector).to.be.undefined
         })
@@ -180,7 +181,7 @@ describe('platform.ts', function() {
         }
 
         it('should call all hooks', async function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             platform.import(SomeModule)
             platform.bootstrap(SomeRoot)
             const inspector = platform.expose(TpInspector)
@@ -197,7 +198,7 @@ describe('platform.ts', function() {
         })
 
         it('should catch and ignore error in hooks', function() {
-            const platform = new Platform({})
+            const platform = new Platform(load_config({}))
             platform.import(SomeModule)
         })
     })

@@ -6,8 +6,9 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData, load_config, TpConfigSchema, } from '@tarpit/config'
+import { ConfigData } from '@tarpit/config'
 import { TpEntry } from './annotations'
+import { TpConfigData } from './builtin/tp-config-data'
 import { TpInspector } from './builtin/tp-inspector'
 import { TpLoader } from './builtin/tp-loader'
 import { TpLogger } from './builtin/tp-logger'
@@ -15,7 +16,7 @@ import { ClassProvider, Injector, ValueProvider } from './di'
 import { get_class_decorator } from './tools/decorator'
 import { check_usage, def_to_provider, load_component } from './tools/load-component'
 import { stringify } from './tools/stringify'
-import { AbstractConstructor, Constructor, ProviderDef } from './types'
+import { AbstractConstructor, Constructor, ProviderDef, TpConfigSchema } from './types'
 
 export class Platform {
 
@@ -25,11 +26,8 @@ export class Platform {
     private started = false
     private terminated = false
 
-    constructor(file_path?: string)
-    constructor(data: TpConfigSchema)
-    constructor(data: () => TpConfigSchema)
-    constructor(data?: string | TpConfigSchema | (() => TpConfigSchema)) {
-        ValueProvider.create(this.root_injector, { provide: ConfigData, useValue: load_config(data) })
+    constructor(data: ConfigData<TpConfigSchema>) {
+        ValueProvider.create(this.root_injector, { provide: TpConfigData, useValue: data })
         ValueProvider.create(this.root_injector, { provide: Platform, useValue: this })
         ClassProvider.create(this.root_injector, { provide: TpLogger, useClass: TpLogger }).create()
         this.root_injector.on('start', this.on_start)

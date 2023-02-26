@@ -9,7 +9,6 @@
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import fs from 'fs'
-import { TpConfigSchema } from './config-data'
 import { load_config } from './config-tools'
 
 chai.use(cap)
@@ -24,7 +23,7 @@ describe('config-tools.ts', function() {
                 b: 'string',
             }
             fs.writeFileSync('./tarpit.json', JSON.stringify(data))
-            const config_data = load_config()
+            const config_data = load_config<typeof data>()
             expect(config_data.get('a')).to.equal(123)
             expect(config_data.get('b')).to.equal('string')
             fs.rmSync('./tarpit.json')
@@ -40,7 +39,7 @@ describe('config-tools.ts', function() {
                 b: 'string'
             }
             fs.writeFileSync('./tmp-tarpit.spec.json', JSON.stringify(data))
-            const config_data = load_config('./tmp-tarpit.spec.json')
+            const config_data = load_config<typeof data>('./tmp-tarpit.spec.json')
             expect(config_data.get('a')).to.equal(123)
             expect(config_data.get('b')).to.equal('string')
             fs.rmSync('./tmp-tarpit.spec.json')
@@ -57,21 +56,21 @@ describe('config-tools.ts', function() {
         })
 
         it('should use data from given JSON.', function() {
-            const data: TpConfigSchema = {
+            const data = {
                 a: 123,
                 b: 'string'
-            } as any
+            }
             const config_data = load_config(data)
             expect(config_data.get('a')).to.equal(123)
             expect(config_data.get('b')).to.equal('string')
         })
 
         it('should use return value if given data is function.', function() {
-            const data: TpConfigSchema = {
+            const data = {
                 a: 123,
                 b: 'string'
-            } as any
-            const config_data = load_config(() => data)
+            }
+            const config_data = load_config<typeof data>(() => data)
             expect(config_data.get('a')).to.equal(123)
             expect(config_data.get('b')).to.equal('string')
         })

@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { TpService } from '@tarpit/core'
+import { TpConfigData, TpService } from '@tarpit/core'
 import { MongoClient, MongoClientOptions } from 'mongodb'
 
 import { TpMongo } from '../annotations/tp-mongo'
@@ -25,7 +24,7 @@ export class MongoHubService {
     private readonly client_map: MongoDBClientMap
 
     constructor(
-        private config: ConfigData
+        private config: TpConfigData
     ) {
         const config_map: TpMongoClientConfigMap = {
             mongodb: {

@@ -6,12 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { OnTerminate, TpService } from '@tarpit/core'
+import { TpConfigData, TpService } from '@tarpit/core'
 import fs, { ReadStream } from 'fs'
 import mime_types from 'mime-types'
 import { TpRequest, TpResponse } from '../builtin'
-import { finish, throw_forbidden, throw_not_found, throw_not_modified, throw_precondition_failed, TpHttpFinish } from '../errors'
+import { throw_forbidden, throw_not_found, throw_not_modified, throw_precondition_failed, TpHttpFinish } from '../errors'
 import { ResponseCacheControl } from '../tools/cache-control'
 import { FileWatcher, SearchedFile } from '../tools/file-watcher'
 
@@ -97,7 +96,7 @@ export class HttpStatic {
     private readonly file_watcher: FileWatcher
 
     constructor(
-        private config: ConfigData,
+        private config: TpConfigData,
     ) {
         const index = this.config.get('http.static.index') ?? ['index.html']
         const extensions = this.config.get('http.static.extensions') ?? ['.html']

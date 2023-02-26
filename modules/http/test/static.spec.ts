@@ -6,12 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { Platform, TpInspector } from '@tarpit/core'
+import { ConfigData, load_config } from '@tarpit/config'
+import { Platform, TpConfigData, TpConfigSchema, TpInspector } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import fs, { ReadStream } from 'fs'
+import { ReadStream } from 'fs'
 import { Get, HttpServerModule, HttpStatic, Params, PathArgs, TpHttpFinish, TpRequest, TpResponse, TpRouter } from '../src'
 import { create_stream, is_fresh, is_precondition_failure } from '../src/services/http-static'
 import { CacheControl } from '../src/tools/cache-control'
@@ -65,7 +65,7 @@ class StaticRouter {
 
 describe('static case', function() {
 
-    const platform = new Platform({
+    const platform = new Platform(load_config<TpConfigSchema>({
         http: {
             port: 31254, expose_error: true,
             static: {
@@ -77,7 +77,7 @@ describe('static case', function() {
                 vary: '*'
             }
         }
-    }).bootstrap(StaticRouter)
+    })).bootstrap(StaticRouter)
 
     const inspector = platform.expose(TpInspector)!
     const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
@@ -243,7 +243,7 @@ describe('static case', function() {
         })
 
         it('should throw error if specified root path is not a directory', function() {
-            expect(() => new HttpStatic(new ConfigData({ http: { port: 3939, static: { root: './test/assets/some.txt' } } }))).to.throw()
+            expect(() => new HttpStatic(new TpConfigData({ http: { port: 3939, static: { root: './test/assets/some.txt' } } }))).to.throw()
         })
     })
 

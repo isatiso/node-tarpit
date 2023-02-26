@@ -6,6 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
+import { load_config } from '@tarpit/config'
 import { Platform } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
@@ -21,7 +22,7 @@ describe('http-server.ts', function() {
     describe('HttpServer', function() {
 
         it('should start and terminate', async function() {
-            const platform = new Platform({ http: { port: 31254 } })
+            const platform = new Platform(load_config({ http: { port: 31254 } }))
                 .import(HttpServerModule)
             const http_server = platform.expose(HttpServer)!
             expect(http_server).to.have.property('starting').which.is.undefined
@@ -40,7 +41,7 @@ describe('http-server.ts', function() {
         })
 
         it('should do nothing if calling terminate before start', async function() {
-            const platform = new Platform({ http: { port: 31254 } })
+            const platform = new Platform(load_config({ http: { port: 31254 } }))
                 .import(HttpServerModule)
             const http_server = platform.expose(HttpServer)!
             const terminating = http_server.terminate()
@@ -50,7 +51,7 @@ describe('http-server.ts', function() {
         })
 
         it('should return same promise if calling start multi times', async function() {
-            const platform = new Platform({ http: { port: 31254 } })
+            const platform = new Platform(load_config({ http: { port: 31254 } }))
                 .import(HttpServerModule)
             const http_server = platform.expose(HttpServer)!
             const starting = http_server.start(
@@ -65,7 +66,7 @@ describe('http-server.ts', function() {
         })
 
         it('should return same promise if calling terminate multi times', async function() {
-            const platform = new Platform({ http: { port: 31254 } })
+            const platform = new Platform(load_config({ http: { port: 31254 } }))
                 .import(HttpServerModule)
             const http_server = platform.expose(HttpServer)!
             await http_server.start(

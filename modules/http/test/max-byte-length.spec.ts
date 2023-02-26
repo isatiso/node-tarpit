@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Platform, TpInspector } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
@@ -25,7 +26,7 @@ class TempRouter {
 
 describe('max-byte-length case', function() {
 
-    const platform = new Platform({ http: { port: 31254, expose_error: true, body: { max_length: 10 } } })
+    const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31254, expose_error: true, body: { max_length: 10 } } }))
         .bootstrap(TempRouter)
 
     const inspector = platform.expose(TpInspector)!

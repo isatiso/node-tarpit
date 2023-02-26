@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { Injector } from '@tarpit/core'
+import { Injector, TpConfigData } from '@tarpit/core'
 import { Channel, ConsumeMessage } from 'amqplib'
 import { ConsumeOptions } from '../annotations/consume'
 import { RabbitSession } from './rabbit-session'
@@ -16,7 +15,7 @@ type ConsumeArguments = [queue: string, on_message: (msg: ConsumeMessage | null)
 
 export class Consumer extends RabbitSession<Channel> {
 
-    private config = this.injector.get(ConfigData)!.create()
+    private config = this.injector.get(TpConfigData)!.create()
     private prefetch = this.config.get('rabbitmq.prefetch')
     private consumers: ConsumeArguments[] = []
     private consumer_tags = new Set<string>()

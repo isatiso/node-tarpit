@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { Injector, TpService } from '@tarpit/core'
+import { Injector, TpConfigData, TpService } from '@tarpit/core'
 import http, { IncomingMessage, Server, ServerResponse } from 'http'
 import { Socket } from 'net'
 import { Duplex } from 'stream'
@@ -28,7 +27,7 @@ export class HttpServer {
 
     constructor(
         private injector: Injector,
-        private config_data: ConfigData
+        private config_data: TpConfigData
     ) {
     }
 

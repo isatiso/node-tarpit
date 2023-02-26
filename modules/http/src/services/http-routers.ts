@@ -6,9 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
 import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
-import { get_providers, Injector, TpService } from '@tarpit/core'
+import { get_providers, Injector, TpConfigData, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Duplex, Readable, Transform, TransformCallback } from 'stream'
 import { WebSocket } from 'ws'
@@ -67,7 +66,7 @@ export class HttpRouters {
     private readonly c_proxy = this.config_data.get('http.proxy')
 
     constructor(
-        private config_data: ConfigData,
+        private config_data: TpConfigData,
         private url_parser: HttpUrlParser,
         private reader: ContentReaderService,
     ) {

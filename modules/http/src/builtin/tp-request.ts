@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpConfigSchema } from '@tarpit/config'
+import { TpConfigSchema } from '@tarpit/core'
 import { Negotiator } from '@tarpit/negotiator'
 import { IncomingHttpHeaders, IncomingMessage } from 'http'
 import net from 'net'
@@ -20,13 +20,21 @@ export class TpRequest {
 
     type: string | undefined
     charset: string | undefined
-    private _cache_control?: ResponseCacheControl
 
     constructor(
         public readonly req: IncomingMessage,
         private readonly _url: UrlWithParsedQuery,
         private proxy: TpConfigSchema['http']['proxy'],
     ) {
+    }
+
+    private _cache_control?: ResponseCacheControl
+
+    get cache_control(): RequestCacheControl | undefined {
+        if (!this._cache_control) {
+            this._cache_control = parse_cache_control(this.get('Cache-Control'))
+        }
+        return this._cache_control
     }
 
     get href() {
@@ -70,6 +78,7 @@ export class TpRequest {
     }
 
     private _ips: string[] | undefined
+
     get ips() {
         if (!this._ips) {
             const header = this.proxy?.ip_header ?? 'X-Forwarded-For'
@@ -123,6 +132,7 @@ export class TpRequest {
     }
 
     private _accepts?: Negotiator
+
     get accepts() {
         if (!this._accepts) {
             this._accepts = new Negotiator(this.req.headers)
@@ -146,13 +156,6 @@ export class TpRequest {
     get if_unmodified_since() {
         const header = this.get('If-Unmodified-Since')
         return header ? Date.parse(header) : undefined
-    }
-
-    get cache_control(): RequestCacheControl | undefined {
-        if (!this._cache_control) {
-            this._cache_control = parse_cache_control(this.get('Cache-Control'))
-        }
-        return this._cache_control
     }
 
     is(type: string, ...types: string[]) {

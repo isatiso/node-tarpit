@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Platform } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Platform, TpConfigSchema } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { get_first, HttpUrlParser } from './http-url-parser'
@@ -30,10 +31,10 @@ describe('http-url-parser.ts', function() {
 
         describe('.parse()', function() {
 
-            const proxy_platform = new Platform({ http: { port: 3000, proxy: { enable: true } } }).import(HttpUrlParser)
+            const proxy_platform = new Platform(load_config<TpConfigSchema>({ http: { port: 3000, proxy: { enable: true } } })).import(HttpUrlParser)
             const proxy_parser = proxy_platform.expose(HttpUrlParser)!
 
-            const no_proxy_platform = new Platform({ http: { port: 3000, proxy: { enable: false } } }).import(HttpUrlParser)
+            const no_proxy_platform = new Platform(load_config<TpConfigSchema>({ http: { port: 3000, proxy: { enable: false } } })).import(HttpUrlParser)
             const no_proxy_parser = no_proxy_platform.expose(HttpUrlParser)!
 
             it('should parse full url', function() {

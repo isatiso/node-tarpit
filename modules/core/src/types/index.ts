@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-export { Constructor, AbstractConstructor, PureJSON, KeyOfFilterType } from './base'
+export { Constructor, AbstractConstructor, PureJSON, KeyOfFilterType, TpConfigSchema } from './base'
 export { ClassProviderDef, FactoryProviderDef, ValueProviderDef, ProviderTreeNode, ProviderDef, Provider, ParentDesc } from './provider'
 export { TpEvent, TpEventCollector, InjectorType, InjectorEventEmitter } from './injector'
 export { TpRootOptions, TpModuleOptions, ImportsAndProviders, TpServiceOptions } from './options'

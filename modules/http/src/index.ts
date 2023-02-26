@@ -9,7 +9,7 @@
 import { ProxyConfig } from './__types__'
 import { ResponseCacheControl } from './tools/cache-control'
 
-declare module '@tarpit/config' {
+declare module '@tarpit/core' {
 
     export interface TpConfigSchema {
         http: {

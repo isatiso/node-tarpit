@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, Platform, TpInspector } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Injector, Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
 import amqplib, { Connection } from 'amqplib'
 import { expect } from 'chai'
 import { ConfirmProducer, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitmqModule, TpProducer } from '../src'
@@ -55,7 +56,7 @@ describe('produce drain case', function() {
     before(async function() {
         console.log = () => undefined
         connection = await amqplib.connect(url)
-        platform = new Platform({ rabbitmq: { url } })
+        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import(RabbitmqModule)
             .import(TempProducer)
 

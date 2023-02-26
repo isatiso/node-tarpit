@@ -6,7 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { Platform, TpInspector } from '@tarpit/core'
+import { load_config } from '@tarpit/config'
+import { Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
 import amqplib, { Connection, GetMessage } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_as_promised from 'chai-as-promised'
@@ -47,7 +48,7 @@ describe('decorator abused case', function() {
     before(async function() {
         console.log = () => undefined
         connection = await amqplib.connect(url)
-        platform = new Platform({ rabbitmq: { url } })
+        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import({ provide: RabbitDefineToken, useValue: D, multi: true, root: true })
             .import(RabbitmqModule)
             .import(TempProducer)

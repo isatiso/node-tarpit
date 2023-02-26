@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ConfigData } from '@tarpit/config'
-import { Injector, TpService } from '@tarpit/core'
+import { Injector, TpConfigData, TpService } from '@tarpit/core'
 import { connect as connect_rabbitmq, Connection, Options } from 'amqplib'
 import net from 'net'
 import url from 'url'
@@ -54,7 +53,7 @@ export class RabbitConnector {
     private closed = false
 
     constructor(
-        private config: ConfigData,
+        private config: TpConfigData,
         private sessions: RabbitSessionCollector,
         private injector: Injector,
         private retry_strategy: RabbitRetryStrategy,
