@@ -53,7 +53,6 @@
         "ws": "^8.12.1"
     },
     "devDependencies": {
-        "@tarpit/config": "^0.5.41",
         "@tarpit/content-type": "^0.5.41",
         "@tarpit/core": "^0.5.41",
         "@tarpit/error": "^0.5.41",
@@ -65,7 +64,6 @@
         "@types/ws": "^8.5.4"
     },
     "peerDependencies": {
-        "@tarpit/config": "0.x",
         "@tarpit/content-type": "0.x",
         "@tarpit/core": "0.x",
         "@tarpit/error": "0.x"

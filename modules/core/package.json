@@ -40,15 +40,12 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
+        "@tarpit/config": "^0.5.41",
         "reflect-metadata": "^0.1.13",
         "tslib": "^2.5.0"
     },
     "devDependencies": {
         "@tarpit/cli": "^0.5.41",
-        "@tarpit/config": "^0.5.41",
         "@tarpit/rollup": "^0.5.41"
-    },
-    "peerDependencies": {
-        "@tarpit/config": "0.x"
     }
 }
