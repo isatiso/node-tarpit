@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/router-test",
-    "version": "0.5.41",
+    "version": "0.5.42",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -36,11 +36,11 @@
         "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.41",
-        "@tarpit/core": "^0.5.41",
-        "@tarpit/http": "^0.5.41",
-        "@tarpit/judge": "^0.5.41",
-        "@tarpit/mongodb": "^0.5.41",
+        "@tarpit/config": "^0.5.42",
+        "@tarpit/core": "^0.5.42",
+        "@tarpit/http": "^0.5.42",
+        "@tarpit/judge": "^0.5.42",
+        "@tarpit/mongodb": "^0.5.42",
         "tslib": "^2.5.0"
     }
 }
