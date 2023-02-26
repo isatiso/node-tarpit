@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/error",
-    "version": "0.5.40",
+    "version": "0.5.41",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -40,6 +40,6 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.40"
+        "@tarpit/rollup": "^0.5.41"
     }
 }
