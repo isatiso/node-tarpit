@@ -50,7 +50,8 @@
         "path-to-regexp": "^6.2.1",
         "tslib": "^2.5.0",
         "type-is": "^1.6.18",
-        "ws": "^8.12.1"
+        "ws": "^8.12.1",
+        "@types/ws": "^8.5.4"
     },
     "devDependencies": {
         "@tarpit/content-type": "^0.5.42",
@@ -60,8 +61,7 @@
         "@types/content-disposition": "^0.5.5",
         "@types/fresh": "^0.5.0",
         "@types/mime-types": "^2.1.1",
-        "@types/type-is": "^1.6.3",
-        "@types/ws": "^8.5.4"
+        "@types/type-is": "^1.6.3"
     },
     "peerDependencies": {
         "@tarpit/content-type": "0.x",

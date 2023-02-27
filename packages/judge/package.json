@@ -39,8 +39,10 @@
         "docs": "tp docs",
         "test": "tp cover --reporter=json --reporter=text"
     },
-    "devDependencies": {
-        "@tarpit/rollup": "^0.5.42",
+    "dependencies": {
         "@tarpit/type-tools": "^0.5.42"
+    },
+    "devDependencies": {
+        "@tarpit/rollup": "^0.5.42"
     }
 }
