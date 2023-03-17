@@ -9,9 +9,12 @@
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema, TpInspector, TpRoot } from '@tarpit/core'
 import amqplib, { Connection, GetMessage } from 'amqplib'
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
+import chai_spies from 'chai-spies'
 import crypto from 'crypto'
 import { ConfirmProducer, Consume, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitMessage, RabbitmqModule, TpConsumer, TpProducer } from '../src'
+
+chai.use(chai_spies)
 
 const consume_result: string[] = []
 const predefined_message: string[] = []
@@ -117,7 +120,7 @@ describe('normal case', function() {
         await channel.deleteQueue(D.Q['tarpit.queue.predefined.confirm'], { ifUnused: false, ifEmpty: false })
         await channel.close()
         await connection.close()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should consume predefine message', async function() {

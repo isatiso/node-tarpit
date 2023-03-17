@@ -49,7 +49,7 @@ describe('context case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should serve OPTIONS request', async function() {

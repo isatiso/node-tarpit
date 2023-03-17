@@ -87,7 +87,7 @@ describe('request body case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should parse body according to Content-Type', async function() {

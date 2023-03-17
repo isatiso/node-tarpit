@@ -104,7 +104,7 @@ describe('context case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should inject service to constructor parameters and unit function parameters', async function() {

@@ -9,8 +9,11 @@
 import { load_config } from '@tarpit/config'
 import { Injector, Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
 import amqplib, { Connection } from 'amqplib'
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
+import chai_spies from 'chai-spies'
 import { ConfirmProducer, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitmqModule, TpProducer } from '../src'
+
+chai.use(chai_spies)
 
 const D = new RabbitDefine()
     .define_exchange('tarpit.exchange.bench.confirm', 'topic')
@@ -82,7 +85,7 @@ describe('produce drain case', function() {
         await channel.deleteQueue(D.Q['tarpit.queue.bench.confirm'], { ifUnused: false, ifEmpty: false })
         await channel.close()
         await connection.close()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should flush on drain[publish to channel]', async function() {

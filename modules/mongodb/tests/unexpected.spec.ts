@@ -48,7 +48,7 @@ describe('unexpected case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should throw an error if TpMongo is not inherit from GenericCollection', async function() {

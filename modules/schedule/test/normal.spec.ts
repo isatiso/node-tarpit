@@ -56,7 +56,7 @@ describe('normal case', function() {
         platform.terminate()
         await inspector.wait_terminate()
         chai.spy.restore(Date)
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should call task at time', async function() {

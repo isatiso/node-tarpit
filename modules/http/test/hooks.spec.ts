@@ -65,7 +65,7 @@ describe('throw error in hooks case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should catch error from on_init and on_finished called', async function() {

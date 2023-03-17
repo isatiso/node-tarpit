@@ -27,12 +27,12 @@ describe('http-response-formatter.ts', function() {
 
     const fake_now = 1657960791441
     let spy_date_now: any
-    let spy_console_log: any
+
     let formatter: HttpBodyFormatter
 
     beforeEach(function() {
         spy_date_now = chai.spy.on(Date, 'now', () => fake_now)
-        spy_console_log = chai.spy.on(console, 'log', () => undefined)
+        chai.spy.on(console, 'log', () => undefined)
         formatter = new HttpBodyFormatter(new ConfigData({ http: { expose_error: false } } as any))
     })
 

@@ -28,7 +28,7 @@ describe('connection case', function() {
     })
 
     after(function() {
-        sandbox.restore(console)
+        sandbox.restore()
     })
     describe('#is_reachable()', function() {
 

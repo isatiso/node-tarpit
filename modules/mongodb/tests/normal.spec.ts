@@ -59,7 +59,7 @@ describe('normal case', function() {
         await user_mongo.deleteMany({})
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should add a doc to the collection', async function() {

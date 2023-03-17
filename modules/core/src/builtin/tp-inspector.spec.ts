@@ -25,7 +25,7 @@ describe('tp-inspector.ts', function() {
     })
 
     after(function() {
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     describe('TpInspector', function() {

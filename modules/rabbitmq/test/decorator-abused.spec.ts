@@ -71,7 +71,7 @@ describe('decorator abused case', function() {
         await channel.deleteQueue(D.Q['tarpit.queue.abused.b'], { ifUnused: false, ifEmpty: false })
         await channel.close()
         await connection.close()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should reject cached promise with error', async function() {

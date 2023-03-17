@@ -59,7 +59,7 @@ describe('schedule-inspector.ts', function() {
             platform.terminate()
             await inspector.wait_terminate()
             chai.spy.restore(Date)
-            sandbox.restore(console)
+            sandbox.restore()
         })
 
         describe('.get_task()', function() {

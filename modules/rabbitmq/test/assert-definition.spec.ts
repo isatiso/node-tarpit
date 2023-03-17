@@ -39,7 +39,7 @@ describe('assert definition case', function() {
         await channel.deleteQueue('tarpit.queue.c', { ifUnused: false, ifEmpty: false })
         await channel.close()
         await connection.close()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should assert definition as provide', async function() {

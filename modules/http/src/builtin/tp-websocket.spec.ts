@@ -68,12 +68,17 @@ describe('tp-websocket.ts', function() {
 
     const sandbox = chai.spy.sandbox()
 
+    function redo_spy_console() {
+        sandbox.restore()
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
+    }
+
     before(function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
     })
 
     after(function() {
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     describe('.on()', function() {
@@ -144,14 +149,13 @@ describe('tp-websocket.ts', function() {
         it('should log message if _listener_error_handler is not set', function() {
             const mock = new MockWebSocket()
             const ws = new TpWebSocket(mock as any)
-            chai.spy.on(console, 'log')
+            redo_spy_console()
             const listener = () => {
                 throw new Error('business error')
             }
             ws.on('error', listener)
             mock.listen_history['error'][0][1]()
-            expect(console.log).to.have.been.called.once
-            chai.spy.restore(console, 'log')
+            expect(console.error).to.have.been.called.once
         })
     })
 

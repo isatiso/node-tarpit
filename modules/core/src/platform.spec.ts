@@ -30,7 +30,7 @@ describe('platform.ts', function() {
     })
 
     after(function() {
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     @Debug()

@@ -24,7 +24,7 @@ describe('tp-logger.ts', function() {
     })
 
     after(function() {
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     describe('TpLogger', function() {

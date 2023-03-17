@@ -133,7 +133,7 @@ describe('consume case', function() {
         await channel.deleteQueue(D.Q['tarpit.queue.kill.native'], { ifEmpty: false, ifUnused: false })
         await channel.close()
         await connection.close()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should ack message call ack_message', async function() {

@@ -92,7 +92,7 @@ describe('HttpServerModule', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should response as normal', async function() {

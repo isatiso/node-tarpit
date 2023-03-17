@@ -65,7 +65,7 @@ describe('produce error case', function() {
         platform.terminate()
         await inspector.wait_terminate()
         await connection.close()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should reject cached promise with error', async function() {

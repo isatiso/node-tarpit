@@ -65,7 +65,7 @@ describe('response cache case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should use cache if exists', async function() {

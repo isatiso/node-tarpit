@@ -71,7 +71,7 @@ describe('authenticate case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should authenticate request in simple way if route under @Auth()', async function() {

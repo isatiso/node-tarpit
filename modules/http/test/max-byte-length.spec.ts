@@ -43,7 +43,7 @@ describe('max-byte-length case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        sandbox.restore(console)
+        sandbox.restore()
     })
 
     it('should get error of 413', async function() {
