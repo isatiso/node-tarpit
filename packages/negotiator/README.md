@@ -10,4 +10,4 @@
 
 It is the base Error of Tarpit.
 
-See [@tarpit/error](https://www.tarpit.cc/apis/error)
+See [@tarpit/core](https://www.tarpit.cc/apis/error)

@@ -14,7 +14,6 @@ export interface TpErrorDescription {
 }
 
 export class TpError<E = any> extends Error {
-
     public readonly code: string | number
     public readonly msg: string
     public readonly detail?: object

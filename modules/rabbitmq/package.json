@@ -48,13 +48,11 @@
     "devDependencies": {
         "@tarpit/content-type": "^0.5.43",
         "@tarpit/core": "^0.5.43",
-        "@tarpit/error": "^0.5.43",
         "@tarpit/rollup": "^0.5.43",
         "@types/amqplib": "^0.10.1"
     },
     "peerDependencies": {
         "@tarpit/content-type": "0.x",
-        "@tarpit/core": "0.x",
-        "@tarpit/error": "0.x"
+        "@tarpit/core": "0.x"
     }
 }

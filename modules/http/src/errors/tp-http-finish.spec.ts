@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpError } from '@tarpit/error'
+import { TpError } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { HTTP_STATUS } from '../tools/http-status'

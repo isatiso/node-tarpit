@@ -13,7 +13,6 @@ categories: apis
 - [@tarpit/core](/apis/core) - Core of DI
 - [@tarpit/cron](/apis/cron) - Crontab Parser
 - [@tarpit/dora](/apis/dora) - Date Object with nice APIs
-- [@tarpit/error](/apis/error) - Base Error Definition
 - [@tarpit/http](/apis/http) - HTTP Server Module
 - [@tarpit/judge](/apis/judge) - Lightweight and extensible Assertion Library
 - [@tarpit/rabbitmq](/apis/rabbitmq) - RabbitMQ Client Module
