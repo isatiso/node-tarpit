@@ -104,7 +104,7 @@ export class HandlerBook {
                     this._socket_handler_cache.set(key, {})
                 }
             }
-            return this._socket_handler_cache.get(key)?.handler
+            return this._socket_handler_cache.get(key)!.handler
         } else {
             const key = `${regular_type}-${path}` as const
             if (!this._request_handler_cache.has(key)) {
@@ -116,7 +116,7 @@ export class HandlerBook {
                     this._request_handler_cache.set(key, {})
                 }
             }
-            return this._request_handler_cache.get(key)?.handler
+            return this._request_handler_cache.get(key)!.handler
         }
     }
 
