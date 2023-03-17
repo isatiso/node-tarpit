@@ -22,13 +22,13 @@ async function verify(filename: string, platform: string, version: string): Prom
         const public_key = fs.readFileSync(path.join(path.dirname(__dirname), 'pgp_keys.asc'), 'utf-8')
 
         const base_url = get_base_url(platform, version)
-        console.log(base_url + '.SHA256SUM')
+        console.info(base_url + '.SHA256SUM')
 
         const check_sum = await axios.get<string>(base_url + '.SHA256SUM', { responseType: 'text' }).then(res => res.data)
-        console.log(`Received SHA256SUM ${check_sum}`)
+        console.info(`Received SHA256SUM ${check_sum}`)
 
         const sign = await axios.get<string>(base_url + '.SHA256SUM.sig', { responseType: 'text' }).then(res => res.data)
-        console.log(`Received SHA256SUM signature ${sign}`)
+        console.info(`Received SHA256SUM signature ${sign}`)
 
         const verified = await openpgp.verify({
             message: await openpgp.createMessage({ text: check_sum }),

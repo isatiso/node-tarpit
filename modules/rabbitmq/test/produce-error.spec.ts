@@ -45,17 +45,16 @@ describe('produce error case', function() {
     let inspector: TpInspector
     let producer: TempProducer
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
+
     before(async function() {
-        console.log = () => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         connection = await amqplib.connect(url)
         platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import(RabbitmqModule)
             .import(TempRoot)
 
         inspector = platform.expose(TpInspector)!
-        // const injector = platform.expose(Injector)!
-        // injector.on('channel-error', err => console.log('channel-error', err))
         platform.start()
         await inspector.wait_start()
         producer = platform.expose(TempProducer)!
@@ -66,7 +65,7 @@ describe('produce error case', function() {
         platform.terminate()
         await inspector.wait_terminate()
         await connection.close()
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     it('should reject cached promise with error', async function() {

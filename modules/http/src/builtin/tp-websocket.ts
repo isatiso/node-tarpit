@@ -91,7 +91,7 @@ export class TpWebSocket {
                 if (this._listener_error_handler) {
                     this._listener_error_handler(event as EventNeedToWrap, this, err)
                 } else {
-                    console.log(`Uncaught Error from TpWebSocket event ${event}: ${err}`)
+                    console.error(`Uncaught Error from TpWebSocket event ${event}: ${err}`)
                 }
             }
         } : listener

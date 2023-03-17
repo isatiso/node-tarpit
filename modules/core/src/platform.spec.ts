@@ -9,6 +9,7 @@
 import { load_config } from '@tarpit/config'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
+import spies from 'chai-spies'
 import { Debug, TpEntry, TpModule, TpRoot, TpService, TpUnit } from './annotations'
 import { TpInspector } from './builtin/tp-inspector'
 import { TpLoader } from './builtin/tp-loader'
@@ -17,19 +18,19 @@ import { Platform } from './platform'
 import { get_class_decorator, make_decorator } from './tools/decorator'
 
 chai.use(cap)
+chai.use(spies)
 
 Debug.log = (..._args: any[]) => undefined
-
 describe('platform.ts', function() {
 
-    let tmp: any
+    const sandbox = chai.spy.sandbox()
+
     before(function() {
-        tmp = console.log
-        console.log = (..._args: any[]) => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
     })
 
     after(function() {
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     @Debug()
@@ -185,10 +186,10 @@ describe('platform.ts', function() {
             platform.import(SomeModule)
             platform.bootstrap(SomeRoot)
             const inspector = platform.expose(TpInspector)
-            platform.start(() => console.log('started'))
+            platform.start(() => console.debug('started'))
             platform.start()
             await inspector?.wait_start()
-            platform.terminate(() => console.log('terminate'))
+            platform.terminate(() => console.debug('terminate'))
             platform.terminate()
             await inspector?.wait_terminate()
             const instance = platform.expose(SomeModule)

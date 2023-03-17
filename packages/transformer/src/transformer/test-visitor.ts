@@ -42,14 +42,10 @@ export function test_visitor(_: ts.Program) {
                         msg = ts.tokenToString(node.operatorToken.kind)
                     }
                     if (msg) {
-                        console.log(''.padEnd(indent), SyntaxKindMap[node.kind][0], '=> {', msg, '}')
+                        console.info(''.padEnd(indent), SyntaxKindMap[node.kind][0], '=> {', msg, '}')
                     } else {
-                        console.log(''.padEnd(indent), SyntaxKindMap[node.kind][0])
+                        console.info(''.padEnd(indent), SyntaxKindMap[node.kind][0])
                     }
-
-                    // if (ts.isDecorator(node)) {
-                    //     console.log(node.parent)
-                    // }
 
                     indent += 4
                     const res = ts.visitEachChild(node, visitor, ctx)

@@ -82,7 +82,8 @@ describe('static case', function() {
     const inspector = platform.expose(TpInspector)!
     const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
     const http_static = platform.expose(HttpStatic)
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
+
 
     function mock_request_and_response(override: {
         if_match?: string
@@ -106,7 +107,7 @@ describe('static case', function() {
     }
 
     before(async function() {
-        console.log = (..._args: any[]) => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform.start()
         await inspector.wait_start()
     })
@@ -114,7 +115,7 @@ describe('static case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     describe('serve static', function() {

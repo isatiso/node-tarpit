@@ -79,10 +79,10 @@ describe('errors case', function() {
     const inspector = platform.expose(TpInspector)!
     const r = axios.create({ baseURL: 'http://localhost:31254/error', proxy: false })
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
 
     before(async function() {
-        console.log = (..._args: any[]) => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform.start()
         await inspector.wait_start()
     })
@@ -90,7 +90,7 @@ describe('errors case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     it('should throw standard error', async function() {

@@ -51,7 +51,7 @@ export class Platform {
 
     start(after_start?: () => void) {
         if (this.started) {
-            console.log('Tarpit server is started.')
+            console.info('Tarpit server is started.')
             return this
         }
         this.started = true
@@ -62,7 +62,7 @@ export class Platform {
 
     terminate(after_terminate?: () => void) {
         if (this.terminated) {
-            console.log('Tarpit server is terminated.')
+            console.info('Tarpit server is terminated.')
             return this
         }
         this.terminated = true

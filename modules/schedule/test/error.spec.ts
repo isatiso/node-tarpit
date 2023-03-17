@@ -64,10 +64,10 @@ describe('error case', function() {
     let platform: Platform
     let inspector: TpInspector
     let hooks: ScheduleHooks
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
 
     before(async function() {
-        console.log = (..._args: any[]) => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         chai.spy.on(Date, 'now', () => fake_time)
         platform = new Platform(load_config({})).bootstrap(TempSchedule)
         inspector = platform.expose(TpInspector)!
@@ -83,7 +83,7 @@ describe('error case', function() {
         platform.terminate()
         await inspector.wait_terminate()
         chai.spy.restore(Date)
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     it('should call task at time', async function() {

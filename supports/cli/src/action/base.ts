@@ -18,6 +18,6 @@ export function make_action<K extends keyof CliOptions, T extends CliOptions[K]>
         workdir && process.chdir(workdir)
         const config = ConfigLoader.load({ [camelcase(command.name())]: options }, program.opts().config)
         await callback(options, config)
-        console.log(`Action ${action_name} done in ${(Date.now() - start) / 1000}s.`)
+        console.info(`Action ${action_name} done in ${(Date.now() - start) / 1000}s.`)
     }
 }

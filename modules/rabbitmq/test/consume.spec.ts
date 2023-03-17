@@ -103,10 +103,10 @@ describe('consume case', function() {
     let platform: Platform
     let inspector: TpInspector
     let consumer: TempConsumer
+    const sandbox = chai.spy.sandbox()
 
-    const tmp = console.log
     before(async function() {
-        console.log = () => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         connection = await amqplib.connect(url)
         platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url, prefetch: 10 } }))
             .import(RabbitmqModule)
@@ -133,7 +133,7 @@ describe('consume case', function() {
         await channel.deleteQueue(D.Q['tarpit.queue.kill.native'], { ifEmpty: false, ifUnused: false })
         await channel.close()
         await connection.close()
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     it('should ack message call ack_message', async function() {

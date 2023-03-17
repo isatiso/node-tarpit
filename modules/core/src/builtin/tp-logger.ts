@@ -20,10 +20,10 @@ export class TpLogger {
     }
 
     after_start(duration: number) {
-        console.log(`Tarpit server started at ${new Date().toISOString()}, during ${duration}s`)
+        console.info(`Tarpit server started at ${new Date().toISOString()}, during ${duration}s`)
     }
 
     after_terminate(duration: number) {
-        console.log(`Tarpit server destroyed at ${new Date().toISOString()}, during ${duration}s`)
+        console.info(`Tarpit server destroyed at ${new Date().toISOString()}, during ${duration}s`)
     }
 }

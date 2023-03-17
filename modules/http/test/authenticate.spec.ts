@@ -60,10 +60,10 @@ describe('authenticate case', function() {
 
     const r = axios.create({ baseURL: 'http://localhost:31254/user', proxy: false })
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
 
     before(async function() {
-        console.log = (..._args: any[]) => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform.start()
         await inspector.wait_start()
     })
@@ -71,7 +71,7 @@ describe('authenticate case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     it('should authenticate request in simple way if route under @Auth()', async function() {

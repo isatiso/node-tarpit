@@ -32,9 +32,6 @@ class TestRouter {
         // private ea: EnhancedAccountData,
         private http_static: HttpStatic,
     ) {
-        // console.log(this.inspector.list_router())
-        // console.log(account)
-        // console.log(ea)
     }
 
     @Get('assets/(.+\\..+)')
@@ -44,20 +41,12 @@ class TestRouter {
 
     @Get('account/:user_id/:item_id')
     async asd(args: PathArgs<{ user_id: string, item_id: string }>) {
-        // console.log(this.account.guess())
         const user_id = args.ensure('user_id', Jtl.string)
         const item_id = args.ensure('item_id', Jtl.string)
         return { user_id, item_id }
         // await this.account.updateOne({ id: args.ensure('user_id', Jtl.string) }, { $set: { name: args.ensure('item_id', Jtl.string) } }, { upsert: true })
         // return this.account.findOne({ id: args.ensure('user_id', Jtl.string) })
     }
-
-    // @Get()
-    // async eatest(params: Params<{ id: string }>) {
-    //     console.log(this.ea.guess())
-    //     await this.ea.updateOne({ id: params.get_first('id') }, { $set: { name: 'iii' } }, { upsert: true })
-    //     return this.ea.findOne({ id: params.get_first('id') })
-    // }
 
     @Post()
     async test(

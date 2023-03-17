@@ -24,9 +24,9 @@ export function create_log(context: HttpContext, duration: number) {
     const method_str = (context.request.method ?? '-').padEnd(7)
     const status = context.response.status
     const err_msg = status >= 400 ? `<${context.result.code} ${context.result.msg}>` : ''
-    console.log(`[${time_str}]${ip} ${duration_str} ${method_str} ${status}`, context.request.path, err_msg)
+    console.info(`[${time_str}]${ip} ${duration_str} ${method_str} ${status}`, context.request.path, err_msg)
     if (status === 500) {
-        console.log(context.result.origin)
+        console.info(context.result.origin)
     }
 }
 

@@ -66,14 +66,14 @@ class MockWebSocket {
 
 describe('tp-websocket.ts', function() {
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
 
-    before(async function() {
-        console.log = (..._args: any[]) => undefined
+    before(function() {
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
     })
 
-    after(async function() {
-        console.log = tmp
+    after(function() {
+        sandbox.restore(console)
     })
 
     describe('.on()', function() {
@@ -141,7 +141,7 @@ describe('tp-websocket.ts', function() {
             expect(_listener_error_handler).to.have.been.called.with('error', ws)
         })
 
-        it('should console.log message if _listener_error_handler is not set', function() {
+        it('should log message if _listener_error_handler is not set', function() {
             const mock = new MockWebSocket()
             const ws = new TpWebSocket(mock as any)
             chai.spy.on(console, 'log')

@@ -35,16 +35,31 @@ describe('schedule-hooks.ts', function() {
     const fake_now = 1658395732508
     const time_str = new Dora(fake_now).format('YYYY-MM-DDTHH:mm:ssZZ')
     let spy_date_now: any
-    let spy_console_log: any
+    let spy_console_info: any
+    let spy_console_error: any
+
+    const sandbox = chai.spy.sandbox()
+
+    before(async function() {
+        const spy = sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
+        spy_console_info = spy[2]
+        spy_console_error = spy[4]
+    })
+
+    after(async function() {
+        sandbox.restore(console)
+    })
 
     beforeEach(function() {
         spy_date_now = chai.spy.on(Date, 'now', () => fake_now)
-        spy_console_log = chai.spy.on(console, 'log', () => undefined)
+        sandbox.restore()
+        const spy = sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
+        spy_console_info = spy[2]
+        spy_console_error = spy[4]
     })
 
     afterEach(function() {
         chai.spy.restore(Date)
-        chai.spy.restore(console)
     })
 
     describe('#assemble_duration()', function() {
@@ -68,28 +83,28 @@ describe('schedule-hooks.ts', function() {
         it('should create log message with task name', function() {
             const mock_context = { unit: { task_name: 'task name whatever some' } }
             create_log(mock_context as any, 996)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]        996ms success  `, 'task name whatever some')
+            expect(spy_console_info).to.have.been.first.called.with(`[${time_str}]        996ms success  `, 'task name whatever some')
         })
 
         it('should log detail of TaskRetry', function() {
             const mock_context = { unit: { task_name: 'task name whatever some' }, count: 3 }
             const err = new TaskRetry(6, 'resource not exists')
             create_log(mock_context as any, 996, err as any)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]        996ms retry    `, 'task name whatever some', '<ERR.Retry try again, failed 3 times>')
+            expect(spy_console_info).to.have.been.first.called.with(`[${time_str}]        996ms retry    `, 'task name whatever some', '<ERR.Retry try again, failed 3 times>')
         })
 
         it('should log detail of TaskCrash', function() {
             const mock_context = { unit: { task_name: 'task name whatever some' } }
             const err = new TaskCrash('ERR.Crash', 'pipe is broken')
             create_log(mock_context as any, 996, err)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]        996ms crash    `, 'task name whatever some', '<ERR.Crash pipe is broken>')
+            expect(spy_console_error).to.have.been.first.called.with(`[${time_str}]        996ms crash    `, 'task name whatever some', '<ERR.Crash pipe is broken>')
         })
 
         it('should log detail of TaskIgnore', function() {
             const mock_context = { unit: { task_name: 'task name whatever some' } }
             const err = new TaskIgnore({ msg: 'something not important wrong' })
             create_log(mock_context as any, 996, err)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]        996ms ignore   `, 'task name whatever some', '<ERR.Ignore something not important wrong>')
+            expect(spy_console_info).to.have.been.first.called.with(`[${time_str}]        996ms ignore   `, 'task name whatever some', '<ERR.Ignore something not important wrong>')
         })
     })
 
@@ -110,7 +125,7 @@ describe('schedule-hooks.ts', function() {
                 const { context } = mock()
                 context.set('process_start', fake_now - 996)
                 await new ScheduleHooks().on_finish(context, null as any)
-                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]        996ms success  `, 'task name whatever some')
+                expect(spy_console_info).to.have.been.first.called.with(`[${time_str}]        996ms success  `, 'task name whatever some')
             })
         })
 
@@ -121,7 +136,7 @@ describe('schedule-hooks.ts', function() {
                 context.set('process_start', fake_now - 996)
                 const err = new TaskCrash('ERR.Crash', 'pipe is broken')
                 await new ScheduleHooks().on_error(context, err)
-                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]        996ms crash    `, 'task name whatever some', '<ERR.Crash pipe is broken>')
+                expect(spy_console_error).to.have.been.first.called.with(`[${time_str}]        996ms crash    `, 'task name whatever some', '<ERR.Crash pipe is broken>')
             })
         })
     })

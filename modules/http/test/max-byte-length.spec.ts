@@ -32,10 +32,10 @@ describe('max-byte-length case', function() {
     const inspector = platform.expose(TpInspector)!
     const r = axios.create({ baseURL: 'http://localhost:31254/user', proxy: false })
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
 
     before(async function() {
-        console.log = (..._args: any[]) => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform.start()
         await inspector.wait_start()
     })
@@ -43,7 +43,7 @@ describe('max-byte-length case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     it('should get error of 413', async function() {

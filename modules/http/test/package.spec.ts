@@ -80,10 +80,10 @@ describe('HttpServerModule', function() {
 
     const r = axios.create({ baseURL: 'http://127.0.0.1:31254', proxy: false })
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
 
     before(async function() {
-        console.log = (..._args: any[]) => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform.start()
         await inspector.wait_start()
         axios.get('http://127.0.0.1:31254/delay', { proxy: false }).then()
@@ -92,7 +92,7 @@ describe('HttpServerModule', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     it('should response as normal', async function() {

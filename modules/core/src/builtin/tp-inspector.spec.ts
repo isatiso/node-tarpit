@@ -18,14 +18,14 @@ chai.use(spies)
 
 describe('tp-inspector.ts', function() {
 
-    let tmp: any
+    const sandbox = chai.spy.sandbox()
+
     before(function() {
-        tmp = console.log
-        console.log = (..._args: any[]) => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => unde)
     })
 
     after(function() {
-        console.log = tmp
+        sandbox.restore(console)
     })
 
     describe('TpInspector', function() {
