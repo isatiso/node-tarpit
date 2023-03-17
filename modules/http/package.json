@@ -46,7 +46,7 @@
         "@types/ws": "^8.5.4",
         "content-disposition": "^0.5.4",
         "fresh": "^0.5.2",
-        "lru-cache": "^8.0.3",
+        "lru-cache": "^7.17.0",
         "mime-types": "^2.1.35",
         "path-to-regexp": "^6.2.1",
         "tslib": "^2.5.0",
