@@ -44,9 +44,10 @@ describe('decorator abused case', function() {
     let inspector: TpInspector
     let producer: TempProducer
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
+
     before(async function() {
-        console.log = () => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         connection = await amqplib.connect(url)
         platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import({ provide: RabbitDefineToken, useValue: D, multi: true, root: true })
@@ -54,8 +55,6 @@ describe('decorator abused case', function() {
             .import(TempProducer)
 
         inspector = platform.expose(TpInspector)!
-        // const injector = platform.expose(Injector)!
-        // injector.on('rabbitmq-channel-error', err => console.log('channel-error', err))
         platform.start()
         await inspector.wait_start()
         producer = platform.expose(TempProducer)!
@@ -72,7 +71,7 @@ describe('decorator abused case', function() {
         await channel.deleteQueue(D.Q['tarpit.queue.abused.b'], { ifUnused: false, ifEmpty: false })
         await channel.close()
         await connection.close()
-        console.log = tmp
+        sandbox.restore()
     })
 
     it('should reject cached promise with error', async function() {

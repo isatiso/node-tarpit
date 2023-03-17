@@ -29,4 +29,4 @@ export function Debug() {
     }
 }
 
-Debug.log = console.log
+Debug.log = console.info

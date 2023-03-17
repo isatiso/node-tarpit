@@ -58,10 +58,10 @@ describe('service replace case', function() {
 
     const inspector = platform.expose(TpInspector)!
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
 
     before(async function() {
-        console.log = (..._args: any[]) => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform.start()
         await inspector.wait_start()
     })
@@ -69,7 +69,7 @@ describe('service replace case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        console.log = tmp
+        sandbox.restore()
     })
 
     it('should throw business error', async function() {

@@ -29,19 +29,27 @@ describe('http-hooks.ts', function() {
         return { context, mock_request, mock_response, spy_response_set, spy_get, spy_set }
     }
 
+    function redo_spy_console() {
+        sandbox.restore()
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
+    }
+
     const fake_now = 1657960791441
     const time_str = new Dora(fake_now).format('YYYY-MM-DDTHH:mm:ssZZ')
-    let spy_date_now: any
-    let spy_console_log: any
+    const sandbox = chai.spy.sandbox()
 
-    beforeEach(function() {
-        spy_date_now = chai.spy.on(Date, 'now', () => fake_now)
-        spy_console_log = chai.spy.on(console, 'log', () => undefined)
+    before(function() {
+        chai.spy.on(Date, 'now', () => fake_now)
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
     })
 
-    afterEach(function() {
+    after(function() {
         chai.spy.restore(Date)
-        chai.spy.restore(console)
+        sandbox.restore()
+    })
+
+    beforeEach(function() {
+        redo_spy_console()
     })
 
     describe('#assemble_duration()', function() {
@@ -69,7 +77,7 @@ describe('http-hooks.ts', function() {
             context.set('process_start', fake_now - 996)
             context.response.status = 200
             create_log(context, 996)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200`, '/some/path')
+            expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200`, '/some/path')
         })
 
         it('should set method as "-" if method is undefined', function() {
@@ -79,7 +87,7 @@ describe('http-hooks.ts', function() {
             mock_request.method = undefined
             mock_request.ip = '127.0.0.1'
             create_log(context, 996)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]127.0.0.1             996ms -       200`, '/some/path')
+            expect(console.info).to.have.been.first.called.with(`[${time_str}]127.0.0.1             996ms -       200`, '/some/path')
         })
 
         it('should log detail of CrashError', function() {
@@ -88,7 +96,7 @@ describe('http-hooks.ts', function() {
             context.result = new TpHttpFinish({ status: 500, code: '500', msg: 'Internal Server Error' })
             context.response.status = 500
             create_log(context, 996)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    500`, '/some/path', '<500 Internal Server Error>')
+            expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    500`, '/some/path', '<500 Internal Server Error>')
         })
 
         it('should log detail of StandardError', function() {
@@ -97,7 +105,7 @@ describe('http-hooks.ts', function() {
             context.result = new TpHttpFinish({ status: 401, code: '401', msg: 'Unauthorized' })
             context.response.status = 401
             create_log(context, 996)
-            expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    401`, '/some/path', '<401 Unauthorized>')
+            expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    401`, '/some/path', '<401 Unauthorized>')
         })
     })
 
@@ -119,7 +127,7 @@ describe('http-hooks.ts', function() {
                 context.set('process_start', fake_now - 996)
                 context.response.status = 200
                 await new HttpHooks().on_finish(context)
-                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200`, '/some/path')
+                expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200`, '/some/path')
             })
         })
 
@@ -131,7 +139,7 @@ describe('http-hooks.ts', function() {
                 context.result = new TpHttpFinish({ status: 404, code: '404', msg: 'Not Found' })
                 context.response.status = 404
                 await new HttpHooks().on_error(context)
-                expect(spy_console_log).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    404`, '/some/path', '<404 Not Found>')
+                expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    404`, '/some/path', '<404 Not Found>')
             })
         })
     })

@@ -9,8 +9,11 @@
 import { load_config } from '@tarpit/config'
 import { Injector, Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
 import amqplib, { Connection } from 'amqplib'
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
+import chai_spies from 'chai-spies'
 import { ConfirmProducer, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitmqModule, TpProducer } from '../src'
+
+chai.use(chai_spies)
 
 const D = new RabbitDefine()
     .define_exchange('tarpit.exchange.bench.confirm', 'topic')
@@ -52,9 +55,10 @@ describe('produce drain case', function() {
     let inspector: TpInspector
     let producer: TempProducer
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
+
     before(async function() {
-        console.log = () => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         connection = await amqplib.connect(url)
         platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import(RabbitmqModule)
@@ -62,8 +66,8 @@ describe('produce drain case', function() {
 
         inspector = platform.expose(TpInspector)!
         const injector = platform.expose(Injector)!
-        injector.on('rabbitmq-channel-error', err => console.log('channel-error', err))
-        injector.on('error', err => console.log('error', err))
+        injector.on('rabbitmq-channel-error', err => console.error('channel-error', err))
+        injector.on('error', err => console.error('error', err))
         platform.start()
         await inspector.wait_start()
         producer = platform.expose(TempProducer)!
@@ -81,7 +85,7 @@ describe('produce drain case', function() {
         await channel.deleteQueue(D.Q['tarpit.queue.bench.confirm'], { ifUnused: false, ifEmpty: false })
         await channel.close()
         await connection.close()
-        console.log = tmp
+        sandbox.restore()
     })
 
     it('should flush on drain[publish to channel]', async function() {

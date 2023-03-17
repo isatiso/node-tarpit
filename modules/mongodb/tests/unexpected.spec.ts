@@ -8,8 +8,11 @@
 
 import { load_config } from '@tarpit/config'
 import { Platform, TpInspector } from '@tarpit/core'
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
+import chai_spies from 'chai-spies'
 import { GenericCollection, MongodbModule, TpMongo } from '../src'
+
+chai.use(chai_spies)
 
 @TpMongo('test', 'no_generic')
 class TestNoGenericMongo {
@@ -28,9 +31,10 @@ describe('unexpected case', function() {
     let inspector: TpInspector
     let mongo: TestNoGenericMongo
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
+
     before(async function() {
-        console.log = () => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform = new Platform(load_config({ mongodb: { url } }))
             .import(MongodbModule)
 
@@ -44,7 +48,7 @@ describe('unexpected case', function() {
     after(async function() {
         platform.terminate()
         await inspector.wait_terminate()
-        console.log = tmp
+        sandbox.restore()
     })
 
     it('should throw an error if TpMongo is not inherit from GenericCollection', async function() {

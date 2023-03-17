@@ -8,9 +8,12 @@
 
 import { load_config } from '@tarpit/config'
 import { Platform, TpInspector, TpRoot } from '@tarpit/core'
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
+import chai_spies from 'chai-spies'
 import { ObjectId, WithId } from 'mongodb'
 import { GenericCollection, MongodbModule, TpMongo } from '../src'
+
+chai.use(chai_spies)
 
 @TpMongo('test', 'user')
 class TestUserMongo extends GenericCollection<{ name: string, age: number, created_at: number, updated_at: number }>() {
@@ -37,9 +40,10 @@ describe('normal case', function() {
     let inspector: TpInspector
     let user_mongo: TestUserMongo
 
-    const tmp = console.log
+    const sandbox = chai.spy.sandbox()
+
     before(async function() {
-        console.log = () => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform = new Platform(load_config({ mongodb: { url } }))
             .import(MongodbModule)
             .import(TempRoot)
@@ -55,7 +59,7 @@ describe('normal case', function() {
         await user_mongo.deleteMany({})
         platform.terminate()
         await inspector.wait_terminate()
-        console.log = tmp
+        sandbox.restore()
     })
 
     it('should add a doc to the collection', async function() {

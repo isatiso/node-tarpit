@@ -21,15 +21,15 @@ describe('connection case', function() {
 
     this.timeout(8000)
 
-    const tmp = console.log
-    before(async function() {
-        console.log = () => undefined
+    const sandbox = chai.spy.sandbox()
+
+    before(function() {
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
     })
 
-    after(async function() {
-        console.log = tmp
+    after(function() {
+        sandbox.restore()
     })
-
     describe('#is_reachable()', function() {
 
         it('should tell whether given port is open', async function() {
@@ -76,7 +76,7 @@ describe('connection case', function() {
             const spy_error: (...args: any[]) => void = chai.spy()
             platform.import({ provide: RabbitRetryStrategy, useClass: CustomRetryStrategy })
             platform.import(RabbitmqModule)
-            injector.on('error', ({ type, error }) => console.log(type, error))
+            injector.on('error', ({ type, error }) => console.error(type, error))
             platform.start()
             await inspector.wait_start()
             expect(spy_error).to.have.been.called.once
@@ -98,7 +98,7 @@ describe('connection case', function() {
 
             platform.import({ provide: RabbitRetryStrategy, useClass: CustomRetryStrategy })
             platform.import(RabbitmqModule)
-            injector.on('error', ({ type, error }) => console.log(type, error))
+            injector.on('error', ({ type, error }) => console.error(type, error))
             platform.start()
             await inspector.wait_start()
             expect(spy_error).to.have.been.called.exactly(5)
@@ -111,7 +111,7 @@ describe('connection case', function() {
             const url = process.env.RABBITMQ_URL ?? ''
             const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url, timeout: 200 } })).import(RabbitmqModule)
             const injector = platform.expose(Injector)!
-            injector.on('error', ({ type, error }) => console.log(type, error))
+            injector.on('error', ({ type, error }) => console.error(type, error))
             const inspector = platform.expose(TpInspector)!
             const connector = platform.expose(RabbitConnector)!
             platform.start()

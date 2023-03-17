@@ -22,9 +22,10 @@ describe('assert definition case', function() {
 
     const url = process.env.RABBITMQ_URL ?? ''
 
-    const tmp = console.log
-    before(async function() {
-        console.log = () => undefined
+    const sandbox = chai.spy.sandbox()
+
+    before(function() {
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
     })
 
     after(async function() {
@@ -38,7 +39,7 @@ describe('assert definition case', function() {
         await channel.deleteQueue('tarpit.queue.c', { ifUnused: false, ifEmpty: false })
         await channel.close()
         await connection.close()
-        console.log = tmp
+        sandbox.restore()
     })
 
     it('should assert definition as provide', async function() {
@@ -88,7 +89,7 @@ describe('assert definition case', function() {
         const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
         const inspector = platform.expose(TpInspector)!
         const injector = platform.expose(Injector)!
-        injector.on('error', ({ type, error }) => {
+        injector.on('error', ({ type }) => {
             if (type === 'rabbitmq.connection.error' || type === 'rabbitmq.assert.definition.failed') {
                 spy_on_error(type)
             }

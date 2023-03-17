@@ -119,7 +119,6 @@ export class HttpRouters {
             res.statusCode = 400
             res.statusMessage = HTTP_STATUS.message_of(400)
             const handler = this.handler_book.find(req.method as ApiMethod, parsed_url.pathname)!
-            console.log('handler find', parsed_url.pathname)
             return handler(req, res, parsed_url)
         }
     }

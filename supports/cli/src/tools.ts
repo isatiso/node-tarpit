@@ -72,7 +72,7 @@ export function read_json_file_sync<T = any>(path: string): T | undefined {
             try {
                 return JSON.parse(json_file)
             } catch (e: any) {
-                console.log(e.message)
+                console.error(e.message)
                 return
             }
         }

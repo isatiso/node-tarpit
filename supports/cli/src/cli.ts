@@ -42,7 +42,7 @@ export async function create_cli(package_json: PackageJson) {
         .action(action_docs)
 
     const signal_handler = (signal: any, code: any) => {
-        console.log(`Stopped by signal ${signal}(${code}).`)
+        console.info(`Stopped by signal ${signal}(${code}).`)
         do_clean_mission()
         process.exit(code)
     }

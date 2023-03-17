@@ -36,10 +36,17 @@ describe('schedule-inspector.ts', function() {
         let platform: Platform
         let inspector: TpInspector
         let schedule_inspector: ScheduleInspector
-        const tmp = console.log
+
+        const sandbox = chai.spy.sandbox()
+
+        before(function() {
+        })
+
+        after(function() {
+        })
 
         before(async function() {
-            console.log = (..._args: any[]) => undefined
+            sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
             chai.spy.on(Date, 'now', () => fake_time)
             platform = new Platform(load_config({})).bootstrap(TempSchedule)
             inspector = platform.expose(TpInspector)!
@@ -52,7 +59,7 @@ describe('schedule-inspector.ts', function() {
             platform.terminate()
             await inspector.wait_terminate()
             chai.spy.restore(Date)
-            console.log = tmp
+            sandbox.restore()
         })
 
         describe('.get_task()', function() {

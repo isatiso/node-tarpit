@@ -24,16 +24,16 @@ export function create_log(context: Context, duration: number, err?: TaskError) 
     const duration_str = `${duration}ms`.padStart(12)
     if (err instanceof TaskRetry) {
         const type = 'retry    '
-        console.log(`[${time_str}] ${duration_str} ${type}`, context.unit.task_name, `<${err.code} ${err.msg}, failed ${context.count} times>`)
+        console.info(`[${time_str}] ${duration_str} ${type}`, context.unit.task_name, `<${err.code} ${err.msg}, failed ${context.count} times>`)
     } else if (err instanceof TaskCrash) {
         const type = 'crash    '
-        console.log(`[${time_str}] ${duration_str} ${type}`, context.unit.task_name, `<${err.code} ${err.msg}>`)
+        console.error(`[${time_str}] ${duration_str} ${type}`, context.unit.task_name, `<${err.code} ${err.msg}>`)
     } else if (err instanceof TaskIgnore) {
         const type = 'ignore   '
-        console.log(`[${time_str}] ${duration_str} ${type}`, context.unit.task_name, `<${err.code} ${err.msg}>`)
+        console.info(`[${time_str}] ${duration_str} ${type}`, context.unit.task_name, `<${err.code} ${err.msg}>`)
     } else {
         const type = 'success  '
-        console.log(`[${time_str}] ${duration_str} ${type}`, context.unit.task_name)
+        console.info(`[${time_str}] ${duration_str} ${type}`, context.unit.task_name)
     }
 }
 

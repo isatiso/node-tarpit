@@ -9,9 +9,12 @@
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema, TpInspector, TpRoot } from '@tarpit/core'
 import amqplib, { Connection, GetMessage } from 'amqplib'
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
+import chai_spies from 'chai-spies'
 import crypto from 'crypto'
 import { ConfirmProducer, Consume, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitMessage, RabbitmqModule, TpConsumer, TpProducer } from '../src'
+
+chai.use(chai_spies)
 
 const consume_result: string[] = []
 const predefined_message: string[] = []
@@ -88,18 +91,16 @@ describe('normal case', function() {
     let platform: Platform
     let inspector: TpInspector
     let producer: TempProducer
+    const sandbox = chai.spy.sandbox()
 
-    const tmp = console.log
     before(async function() {
-        console.log = () => undefined
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         connection = await amqplib.connect(url)
         platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import(RabbitmqModule)
             .import(TempRoot)
 
         inspector = platform.expose(TpInspector)!
-        // const injector = platform.expose(Injector)!
-        // injector.on('channel-error', err => console.log('channel-error', err))
         platform.start()
         await inspector.wait_start()
         producer = platform.expose(TempProducer)!
@@ -119,7 +120,7 @@ describe('normal case', function() {
         await channel.deleteQueue(D.Q['tarpit.queue.predefined.confirm'], { ifUnused: false, ifEmpty: false })
         await channel.close()
         await connection.close()
-        console.log = tmp
+        sandbox.restore()
     })
 
     it('should consume predefine message', async function() {
