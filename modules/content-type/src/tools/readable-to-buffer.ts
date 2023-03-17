@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpError } from '@tarpit/error'
+import { TpError } from '@tarpit/core'
 import { Readable } from 'stream'
 
 export async function readable_to_buffer(stream: Readable): Promise<Buffer> {

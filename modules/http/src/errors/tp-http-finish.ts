@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { TpError, TpErrorDescription } from '@tarpit/error'
+import { TpError, TpErrorDescription } from '@tarpit/core'
 import { TpHttpResponseType } from '../__types__'
 import { HTTP_STATUS } from '../tools/http-status'
 

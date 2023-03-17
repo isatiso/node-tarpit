@@ -35,6 +35,8 @@ export { TpLogger } from './builtin/tp-logger'
 export { TpLoader, TpLoaderType } from './builtin/tp-loader'
 export { get_providers } from './tools/get-providers'
 
+export { TpError, TpErrorDescription, throw_native_error } from './error/tp-error'
+
 export {
     DecoratorInnerField,
     AbstractDecoratorFactory,

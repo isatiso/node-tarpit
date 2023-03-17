@@ -30,17 +30,20 @@ export interface PathNode {
     map?: HttpHandlerMap
 }
 
+export type PathSearchNoResult = { type: 'no_result' }
+
 export type PathSearchResult =
     | { type: 'path', map: HttpHandlerMap, result?: undefined }
     | { type: 'matcher', map: HttpHandlerMap, result: MatchResult }
+    | PathSearchNoResult
 
 export class HandlerBook {
 
     private _root: PathNode = { children: {}, matchers: [] }
     private _index: { [path: string]: { map: HttpHandlerMap } } = {}
-    private _path_cache = new LRU<string, PathSearchResult | undefined>({ max: 200, ttl: 86400000 })
-    private _request_handler_cache = new LRU<`${ApiMethod}-${string}`, RequestHandler | undefined>({ max: 200, ttl: 86400000 })
-    private _socket_handler_cache = new LRU<`SOCKET-${string}`, UpgradeHandler | undefined>({ max: 200, ttl: 86400000 })
+    private _path_cache = new LRU<string, PathSearchResult>({ max: 200, ttl: 86400000 })
+    private _request_handler_cache = new LRU<`${ApiMethod}-${string}`, { handler?: RequestHandler }>({ max: 200, ttl: 86400000 })
+    private _socket_handler_cache = new LRU<`SOCKET-${string}`, { handler?: UpgradeHandler }>({ max: 200, ttl: 86400000 })
 
     init_path_node(segments: string[]) {
         let node = this._root
@@ -96,24 +99,24 @@ export class HandlerBook {
                 const fat_handler = search_result?.map[regular_type]
                 if (fat_handler) {
                     const handler: UpgradeHandler = (req, socket, head, url) => fat_handler(req, socket, head, url, search_result.result?.params)
-                    this._socket_handler_cache.set(key, handler)
+                    this._socket_handler_cache.set(key, { handler })
                 } else {
-                    this._socket_handler_cache.set(key, undefined)
+                    this._socket_handler_cache.set(key, {})
                 }
             }
-            return this._socket_handler_cache.get(key)
+            return this._socket_handler_cache.get(key)?.handler
         } else {
             const key = `${regular_type}-${path}` as const
             if (!this._request_handler_cache.has(key)) {
                 const fat_handler = search_result?.map[regular_type]
                 if (fat_handler) {
                     const handler: RequestHandler = (req, res, url) => fat_handler(req, res, url, search_result.result?.params)
-                    this._request_handler_cache.set(key, handler)
+                    this._request_handler_cache.set(key, { handler })
                 } else {
-                    this._request_handler_cache.set(key, undefined)
+                    this._request_handler_cache.set(key, {})
                 }
             }
-            return this._request_handler_cache.get(key)
+            return this._request_handler_cache.get(key)?.handler
         }
     }
 
@@ -146,17 +149,21 @@ export class HandlerBook {
         }
     }
 
-    private _search_with_cache(path: string): PathSearchResult | undefined {
+    private _search_with_cache(path: string): Exclude<PathSearchResult, PathSearchNoResult> | undefined {
         if (!this._path_cache.has(path)) {
             this._path_cache.set(path, this._search(path))
         }
-        return this._path_cache.get(path)
+        const cache = this._path_cache.get(path)
+        if (cache && cache.type !== 'no_result') {
+            return cache
+        }
+        return
     }
 
-    private _search(path: string): PathSearchResult | undefined {
+    private _search(path: string): PathSearchResult {
         if (!path || path === '/' || path === '*') {
             if (!this._root.map) {
-                return
+                return { type: 'no_result' }
             } else {
                 return { type: 'path', map: this._root.map }
             }
@@ -174,12 +181,12 @@ export class HandlerBook {
                     return { type: 'matcher', map: matcher.map, result }
                 }
             }
-            return
+            return { type: 'no_result' }
         }
         if (node.map) {
             return { type: 'path', map: node.map }
         } else {
-            return
+            return { type: 'no_result' }
         }
     }
 }

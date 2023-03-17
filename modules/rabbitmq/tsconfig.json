@@ -13,9 +13,6 @@
             "@tarpit/config": [
                 "../../packages/config/src"
             ],
-            "@tarpit/error": [
-                "../../packages/error/src"
-            ]
         }
     },
     "include": [
