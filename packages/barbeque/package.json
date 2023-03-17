@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/barbeque",
-    "version": "0.5.44",
+    "version": "0.5.45",
     "description": "Optimized double-end queue based on the native array.",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -40,6 +40,6 @@
         "test": "tp cover --reporter=json --reporter=text --clean"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.44"
+        "@tarpit/rollup": "^0.5.45"
     }
 }
