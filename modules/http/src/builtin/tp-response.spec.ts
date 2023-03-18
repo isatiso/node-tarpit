@@ -11,7 +11,7 @@ import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
 import { ServerResponse } from 'http'
 import { Readable } from 'stream'
-import { Finish } from '../errors'
+import { TpHttpFinish } from '../errors'
 import { HTTP_STATUS } from '../tools/http-status'
 import { lookup_content_type, TpResponse } from './tp-response'
 
@@ -464,31 +464,31 @@ describe('tp-response.ts', function() {
 
         describe('.redirect()', function() {
 
-            it('should set Location and throw Finish', function() {
+            it('should set Location and throw TpHttpFinish', function() {
                 const { mock_res } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                expect(() => response.redirect('https://www.tarpit.cc/some/where?a=阿拉伯啃大瓜')).to.throw().which.is.instanceof(Finish)
+                expect(() => response.redirect('https://www.tarpit.cc/some/where?a=阿拉伯啃大瓜')).to.throw().which.is.instanceof(TpHttpFinish)
                 expect(response.get('Location')).to.equal('https://www.tarpit.cc/some/where?a=%E9%98%BF%E6%8B%89%E4%BC%AF%E5%95%83%E5%A4%A7%E7%93%9C')
             })
 
             it('should use status 302 if not specified', function() {
                 const { mock_res } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                expect(() => response.redirect('/some/where')).to.throw().which.is.instanceof(Finish)
+                expect(() => response.redirect('/some/where')).to.throw().which.is.instanceof(TpHttpFinish)
                 expect(response.status).to.equal(302)
             })
 
             it('should use status 302 if given status is not about redirect', function() {
                 const { mock_res } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                expect(() => response.redirect('/some/where', 401)).to.throw().which.is.instanceof(Finish)
+                expect(() => response.redirect('/some/where', 401)).to.throw().which.is.instanceof(TpHttpFinish)
                 expect(response.status).to.equal(302)
             })
 
             it('should use set status as given', function() {
                 const { mock_res } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
-                expect(() => response.redirect('/some/where', 301)).to.throw().which.is.instanceof(Finish)
+                expect(() => response.redirect('/some/where', 301)).to.throw().which.is.instanceof(TpHttpFinish)
                 expect(response.status).to.equal(301)
             })
         })

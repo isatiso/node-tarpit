@@ -12,7 +12,7 @@ import mime_types from 'mime-types'
 import { Stream } from 'stream'
 import { is as type_is } from 'type-is'
 import { TpHttpResponseType } from '../__types__'
-import { Finish, throw_internal_server_error } from '../errors'
+import { throw_internal_server_error, TpHttpFinish } from '../errors'
 import { HTTP_STATUS } from '../tools/http-status'
 import { on_error } from '../tools/on-error'
 import { make_cache_control, parse_cache_control, ResponseCacheControl } from '../tools/cache-control'
@@ -192,7 +192,12 @@ export class TpResponse {
     redirect(url: string, status: number = 302): never {
         this.status = HTTP_STATUS.is_redirect(status) ? status : 302
         this.set('Location', encodeURI(url))
-        throw new Finish(`Redirecting to ${url}`)
+        throw new TpHttpFinish({
+            status: 302,
+            code: this.status + '',
+            msg: HTTP_STATUS.message_of(this.status)!,
+            body: `Redirecting to ${url}`
+        })
     }
 
     is(type: string, ...types: string[]) {

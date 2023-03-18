@@ -15,7 +15,7 @@ import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
 import { IncomingMessage } from 'http'
 import { WebSocket } from 'ws'
-import { Delete, Get, HttpInspector, HttpServerModule, Params, PathArgs, Post, Put, RequestHeaders, TpHttpFinish, TpRequest, TpRouter, TpWebSocket, WS } from '../src'
+import { Delete, Get, HttpInspector, HttpServerModule, Params, PathArgs, Post, Put, RequestHeaders, TpHttpFinish, TpRequest, TpResponse, TpRouter, TpWebSocket, WS } from '../src'
 
 chai.use(cap)
 chai.use(chai_spies)
@@ -28,6 +28,11 @@ class NormalRouter {
         const id = params.get_first('id')
         const user_id = args.ensure('user_id', Jtl.string)
         return new TpHttpFinish({ status: 200, code: 'OK', msg: 'OK', body: { id, user_id } })
+    }
+
+    @Get('user_redirect')
+    async redirect(res: TpResponse) {
+        res.redirect('/user/1111' + '?' + res.request.query_string)
     }
 
     @Post('user')
@@ -105,6 +110,7 @@ describe('normal case', function() {
         const routers = http_inspector.list_router()
         expect(routers).to.have.deep.members([
             { method: 'GET', path: '/user/:user_id' },
+            { method: 'GET', path: '/user_redirect' },
             { method: 'POST', path: '/user' },
             { method: 'PUT', path: '/user' },
             { method: 'DELETE', path: '/user' },
@@ -117,6 +123,13 @@ describe('normal case', function() {
         await r.get('/user/u123', { params: { id: 'a' } }).then(res => {
             expect(res.status).to.equal(200)
             expect(res.data).to.eql({ id: 'a', user_id: 'u123' })
+        })
+    })
+
+    it('should redirect request to /user', async function() {
+        await r.get('/user_redirect', { params: { id: 'a' } }).then(res => {
+            expect(res.status).to.equal(200)
+            expect(res.data).to.eql({ id: 'a', user_id: '1111' })
         })
     })
 
