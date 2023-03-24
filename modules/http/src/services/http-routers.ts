@@ -96,7 +96,7 @@ export class HttpRouters {
         }
         // istanbul ignore next
         parsed_url.pathname = parsed_url.pathname || '/'
-        const pathname = parsed_url.pathname.replace(/\/\s*/, '')
+        const pathname = parsed_url.pathname.replace(/\/\s*$/, '')
         const allow = this.handler_book.get_allow(pathname)
         if (!allow) {
             return reply(res, 404)
