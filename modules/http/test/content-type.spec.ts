@@ -65,7 +65,7 @@ describe('content type case', function() {
     const r = axios.create({ baseURL: 'http://localhost:31260', proxy: false })
 
     before(async function() {
-        // sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform.start()
         await inspector.wait_start()
     })
