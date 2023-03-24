@@ -8,7 +8,7 @@
 
 import { Constructor, Disabled, get_all_prop_decorator } from '@tarpit/core'
 import { ApiMethod } from '../__types__'
-import { Auth, CacheUnder, Route, TpRouter, WS } from '../annotations'
+import { Auth, CacheUnder, ContentType, Route, TpRouter, WS } from '../annotations'
 
 export interface BaseRouteUnit {
     type: 'request' | 'socket'
@@ -24,6 +24,7 @@ export interface RequestUnit extends BaseRouteUnit {
     methods: Set<ApiMethod>
     auth: boolean
     cache_scope: string
+    content_type: string
     cache_expire_secs: number
 
 }
@@ -75,6 +76,7 @@ export function collect_routes(meta: TpRouter): RouteUnit[] {
                 methods: new Set<ApiMethod>(),
                 cache_scope: '',
                 cache_expire_secs: 0,
+                content_type: '',
                 auth: false,
                 position: `${meta.cls.name}.${prop.toString()}`,
                 handler: descriptor.value.bind(meta.instance),
@@ -88,6 +90,8 @@ export function collect_routes(meta: TpRouter): RouteUnit[] {
                 } else if (d instanceof CacheUnder) {
                     prop_meta.cache_scope = d.scope
                     prop_meta.cache_expire_secs = d.expire_secs
+                } else if (d instanceof ContentType) {
+                    prop_meta.content_type = d.content_type
                 } else if (d instanceof Auth) {
                     prop_meta.auth = true
                 } else if (d instanceof Disabled) {

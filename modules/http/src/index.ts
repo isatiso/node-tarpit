@@ -55,6 +55,7 @@ export {
     Auth,
     Route,
     WS,
+    ContentType,
     RouteProps,
 } from './annotations'
 
