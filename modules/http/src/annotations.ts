@@ -7,7 +7,7 @@
  */
 
 import { make_abstract_decorator, make_decorator, TpEntry, TpUnit } from '@tarpit/core'
-import { ApiMethod, TpRouterOptions, TpWebSocketOptions } from './__types__'
+import { ApiMethod, TpRouterOptions } from './__types__'
 
 export type RouteProps = { path_tail?: string, methods: ApiMethod[] }
 

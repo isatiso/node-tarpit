@@ -91,6 +91,7 @@ export class HandlerBook {
     find(type: ApiMethod | 'HEAD', path: string): RequestHandler | undefined
     find(type: string, path: string): RequestHandler | UpgradeHandler | undefined {
         type = type.toUpperCase()
+        path = path.replace(/\/\s*$/, '')
         const regular_type: ApiMethod | 'SOCKET' = type === 'HEAD' ? 'GET' : type as any
         const search_result = this._search_with_cache(path)
         if (regular_type === 'SOCKET') {
