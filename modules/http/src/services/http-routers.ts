@@ -275,6 +275,10 @@ export class HttpRouters {
                     ? ResponseCache.create(cache_proxy, unit.cache_scope, unit.cache_expire_secs)
                     : undefined
 
+                if (unit.content_type) {
+                    response.content_type = unit.content_type
+                }
+
                 const result = await unit.handler(...param_deps.map(({ provider, token }, index) => {
                     if (provider) {
                         return provider.create([{ token: `${unit.cls.name}.${unit.prop.toString()}`, index }])

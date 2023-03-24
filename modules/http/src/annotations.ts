@@ -16,6 +16,9 @@ export const TpHttpToken = Symbol.for('œœ.token.http.TpHttp')
 export type TpHttp = InstanceType<typeof TpHttp>
 export const TpHttp = make_abstract_decorator('TpHttp', TpUnit)
 
+export type ContentType = InstanceType<typeof ContentType>
+export const ContentType = make_decorator('ContentType', (content_type: string) => ({ content_type }), TpHttp)
+
 export type Route = InstanceType<typeof Route>
 export const Route = make_decorator('Route', (methods: ApiMethod[], path_tail?: string): RouteProps => ({ path_tail, methods }), TpHttp)
 
