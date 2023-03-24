@@ -96,7 +96,8 @@ export class HttpRouters {
         }
         // istanbul ignore next
         parsed_url.pathname = parsed_url.pathname || '/'
-        const allow = this.handler_book.get_allow(parsed_url.pathname)
+        const pathname = parsed_url.pathname.replace(/\/\s*$/, '')
+        const allow = this.handler_book.get_allow(pathname)
         if (!allow) {
             return reply(res, 404)
         }
@@ -118,7 +119,7 @@ export class HttpRouters {
         } else {
             res.statusCode = 400
             res.statusMessage = HTTP_STATUS.message_of(400)
-            const handler = this.handler_book.find(req.method as ApiMethod, parsed_url.pathname)!
+            const handler = this.handler_book.find(req.method as ApiMethod, pathname)!
             return handler(req, res, parsed_url)
         }
     }

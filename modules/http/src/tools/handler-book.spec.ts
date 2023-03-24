@@ -34,13 +34,14 @@ describe('handler-book.ts', function() {
 
             it('should record handler of specified path and method', function() {
                 const book = new HandlerBook()
-                const some_path = '/some/path'
                 const some_handler = async () => undefined
                 expect(book.find('POST', '/some/path')).to.be.undefined
                 book.record('/some/path', { type: 'POST', handler: some_handler })
                 book.clear_cache()
                 expect(book.find('POST', '/some/path')).to.be.a('function')
+                expect(book.find('POST', '/some/path/')).to.be.a('function')
                 expect(book.find('POST', '/some')).not.to.be.a('function')
+                expect(book.find('POST', '/some/')).not.to.be.a('function')
             })
 
             it('should record handler of regexp path with prefix path and method', function() {
