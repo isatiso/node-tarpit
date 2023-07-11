@@ -40,8 +40,8 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "mongodb": "^5.1.0",
-        "tslib": "^2.5.0"
+        "mongodb": "^5.7.0",
+        "tslib": "^2.6.0"
     },
     "devDependencies": {
         "@tarpit/core": "^0.5.49",

@@ -87,7 +87,6 @@ export interface ServeStaticOptions {
 @TpService({ inject_root: true })
 export class HttpStatic {
 
-    // private _mime = new MIME()
     private root: string = this.config.get('http.static.root') ?? process.cwd()
     private cache_size: number = this.config.get('http.static.cache_size') ?? 100
     private dotfile = this.config.get('http.static.dotfile') ?? 'ignore'

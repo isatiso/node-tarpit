@@ -8,11 +8,43 @@
 
 import { program } from 'commander'
 
-import { Package } from 'normalize-package-data'
 import { do_clean_mission } from './tools'
 
 import { action_cover } from './action/cover'
 import { action_docs } from './action/docs'
+
+interface Person {
+    name?: string | undefined;
+    email?: string | undefined;
+    url?: string | undefined;
+}
+
+interface Package {
+    [k: string]: any;
+
+    name: string;
+    version: string;
+    files?: string[] | undefined;
+    bin?: { [k: string]: string } | undefined;
+    man?: string[] | undefined;
+    keywords?: string[] | undefined;
+    author?: Person | undefined;
+    maintainers?: Person[] | undefined;
+    contributors?: Person[] | undefined;
+    bundleDependencies?: { [name: string]: string; } | undefined;
+    dependencies?: { [name: string]: string; } | undefined;
+    devDependencies?: { [name: string]: string; } | undefined;
+    optionalDependencies?: { [name: string]: string; } | undefined;
+    description?: string | undefined;
+    engines?: { [type: string]: string } | undefined;
+    license?: string | undefined;
+    repository?: { type: string, url: string } | undefined;
+    bugs?: { url: string, email?: string | undefined } | { url?: string | undefined, email: string } | undefined;
+    homepage?: string | undefined;
+    scripts?: { [k: string]: string } | undefined;
+    readme: string;
+    _id: string;
+}
 
 export type PackageJsonWorkspacePackageList = string[]
 

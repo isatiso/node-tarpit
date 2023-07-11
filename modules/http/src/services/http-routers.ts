@@ -149,10 +149,12 @@ export class HttpRouters {
         const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
 
         const pv_authenticator = injector.get(HttpAuthenticator)!
+        const pv_hooks = injector.get(HttpHooks)!
 
         return async function(req, socket, head, parsed_url, path_args): Promise<SocketHandler | undefined> {
 
             const authenticator = pv_authenticator.create()
+            const http_hooks = pv_hooks.create()
             const request = new TpRequest(req, parsed_url, proxy_config)
 
             try {
@@ -168,6 +170,9 @@ export class HttpRouters {
             return async function(req: IncomingMessage, ws: WebSocket): Promise<void> {
 
                 const socket_wrapper = new TpWebSocket(ws)
+
+                socket_wrapper.on('close', code => http_hooks.on_ws_close(socket_wrapper, request, code))
+                http_hooks.on_ws_init(socket_wrapper, request).catch(() => undefined)
 
                 try {
                     const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined

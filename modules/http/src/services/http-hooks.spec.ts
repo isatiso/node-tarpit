@@ -12,7 +12,7 @@ import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
 import { HttpContext } from '../builtin'
 import { TpHttpFinish } from '../errors'
-import { assemble_duration, create_log, HttpHooks } from './http-hooks'
+import { assemble_duration, create_request_log, HttpHooks } from './http-hooks'
 
 chai.use(cap)
 chai.use(chai_spies)
@@ -70,14 +70,14 @@ describe('http-hooks.ts', function() {
         })
     })
 
-    describe('#create_log()', function() {
+    describe('#create_request_log()', function() {
 
         it('should create log message by assemble prop of request object', function() {
             const { context } = mock()
             context.set('process_start', fake_now - 996)
             context.response.status = 200
-            create_log(context, 996)
-            expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200`, '/some/path')
+            create_request_log(context, 996)
+            expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200 `, '/some/path')
         })
 
         it('should set method as "-" if method is undefined', function() {
@@ -86,8 +86,8 @@ describe('http-hooks.ts', function() {
             context.response.status = 200
             mock_request.method = undefined
             mock_request.ip = '127.0.0.1'
-            create_log(context, 996)
-            expect(console.info).to.have.been.first.called.with(`[${time_str}]127.0.0.1             996ms -       200`, '/some/path')
+            create_request_log(context, 996)
+            expect(console.info).to.have.been.first.called.with(`[${time_str}]127.0.0.1             996ms -       200 `, '/some/path')
         })
 
         it('should log detail of CrashError', function() {
@@ -95,8 +95,8 @@ describe('http-hooks.ts', function() {
             context.set('process_start', fake_now - 996)
             context.result = new TpHttpFinish({ status: 500, code: '500', msg: 'Internal Server Error' })
             context.response.status = 500
-            create_log(context, 996)
-            expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    500`, '/some/path', '<500 Internal Server Error>')
+            create_request_log(context, 996)
+            expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    500 `, '/some/path', '<500 Internal Server Error>')
         })
 
         it('should log detail of StandardError', function() {
@@ -104,8 +104,8 @@ describe('http-hooks.ts', function() {
             context.set('process_start', fake_now - 996)
             context.result = new TpHttpFinish({ status: 401, code: '401', msg: 'Unauthorized' })
             context.response.status = 401
-            create_log(context, 996)
-            expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    401`, '/some/path', '<401 Unauthorized>')
+            create_request_log(context, 996)
+            expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    401 `, '/some/path', '<401 Unauthorized>')
         })
     })
 
@@ -127,7 +127,7 @@ describe('http-hooks.ts', function() {
                 context.set('process_start', fake_now - 996)
                 context.response.status = 200
                 await new HttpHooks().on_finish(context)
-                expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200`, '/some/path')
+                expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    200 `, '/some/path')
             })
         })
 
@@ -139,7 +139,7 @@ describe('http-hooks.ts', function() {
                 context.result = new TpHttpFinish({ status: 404, code: '404', msg: 'Not Found' })
                 context.response.status = 404
                 await new HttpHooks().on_error(context)
-                expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    404`, '/some/path', '<404 Not Found>')
+                expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    404 `, '/some/path', '<404 Not Found>')
             })
         })
     })
