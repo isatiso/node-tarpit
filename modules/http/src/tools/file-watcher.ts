@@ -7,7 +7,7 @@
  */
 
 import fs from 'fs'
-import cache from 'lru-cache'
+import { LRUCache } from 'lru-cache'
 import path from 'path'
 
 export interface SearchedFile {
@@ -18,7 +18,7 @@ export interface SearchedFile {
 
 export class FileWatcher {
 
-    private cache = new cache<string, SearchedFile>({ max: this.options.cache_size ?? 100 })
+    private cache = new LRUCache<string, SearchedFile>({ max: this.options.cache_size ?? 100 })
 
     constructor(
         private root: string,

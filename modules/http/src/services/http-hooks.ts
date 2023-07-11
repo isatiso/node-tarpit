@@ -8,7 +8,15 @@
 
 import { TpService } from '@tarpit/core'
 import { Dora } from '@tarpit/dora'
-import { HttpContext } from '../builtin'
+import { HttpContext, TpRequest, TpWebSocket } from '../builtin'
+
+function time_str() {
+    return Dora.now().format('YYYY-MM-DDTHH:mm:ssZZ')
+}
+
+export function write_log(time_str: string, ip: string, duration: string, method: string, status: string, path: string, err_msg?: string) {
+    console.info(`[${time_str}]${ip.padEnd(18)} ${duration.padStart(8)} ${method.padEnd(7)} ${status.padEnd(4)}`, path, err_msg)
+}
 
 export function assemble_duration(context: HttpContext) {
     const start = context.get('process_start')
@@ -17,15 +25,10 @@ export function assemble_duration(context: HttpContext) {
     return duration
 }
 
-export function create_log(context: HttpContext, duration: number) {
-    const time_str = Dora.now().format('YYYY-MM-DDTHH:mm:ssZZ')
-    const ip = context.request.ip.padEnd(18)
-    const duration_str = `${duration}ms`.padStart(8)
-    const method_str = (context.request.method ?? '-').padEnd(7)
-    const status = context.response.status
-    const err_msg = status >= 400 ? `<${context.result.code} ${context.result.msg}>` : ''
-    console.info(`[${time_str}]${ip} ${duration_str} ${method_str} ${status}`, context.request.path, err_msg)
-    if (status === 500) {
+export function create_request_log(context: HttpContext, duration: number) {
+    const err_msg = context.response.status >= 400 ? `<${context.result.code} ${context.result.msg}>` : ''
+    write_log(time_str(), context.request.ip, `${duration}ms`, context.request.method ?? '-', context.response.status + '', context.request.path ?? '-', err_msg)
+    if (context.response.status === 500) {
         console.info(context.result.origin)
     }
 }
@@ -39,11 +42,19 @@ export class HttpHooks {
 
     async on_finish(context: HttpContext): Promise<void> {
         const duration = assemble_duration(context)
-        create_log(context, duration)
+        create_request_log(context, duration)
     }
 
     async on_error(context: HttpContext): Promise<void> {
         const duration = assemble_duration(context)
-        create_log(context, duration)
+        create_request_log(context, duration)
+    }
+
+    async on_ws_init(socket: TpWebSocket, req: TpRequest) {
+        write_log(time_str(), req.ip, 'OPEN', 'SOCKET', '-', req.path ?? '-')
+    }
+
+    async on_ws_close(socket: TpWebSocket, req: TpRequest, code: number) {
+        write_log(time_str(), req.ip, 'CLOSE', 'SOCKET', code + '', req.path ?? '-')
     }
 }

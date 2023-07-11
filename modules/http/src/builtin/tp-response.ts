@@ -7,7 +7,7 @@
  */
 
 import { OutgoingHttpHeader, OutgoingHttpHeaders, ServerResponse } from 'http'
-import LRUCache from 'lru-cache'
+import { LRUCache } from 'lru-cache'
 import mime_types from 'mime-types'
 import { Stream } from 'stream'
 import { is as type_is } from 'type-is'

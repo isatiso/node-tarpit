@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import LRU from 'lru-cache'
+import { LRUCache } from 'lru-cache'
 import { match, MatchFunction, MatchResult, parse } from 'path-to-regexp'
 import { ApiMethod, HttpHandlerDescriptor, RequestHandler, RequestHandlerWithPathArgs, UpgradeHandler, UpgradeHandlerWithPathArgs } from '../__types__'
 
@@ -41,9 +41,9 @@ export class HandlerBook {
 
     private _root: PathNode = { children: {}, matchers: [] }
     private _index: { [path: string]: { map: HttpHandlerMap } } = {}
-    private _path_cache = new LRU<string, PathSearchResult>({ max: 200, ttl: 86400000 })
-    private _request_handler_cache = new LRU<`${ApiMethod}-${string}`, { handler?: RequestHandler }>({ max: 200, ttl: 86400000 })
-    private _socket_handler_cache = new LRU<`SOCKET-${string}`, { handler?: UpgradeHandler }>({ max: 200, ttl: 86400000 })
+    private _path_cache = new LRUCache<string, PathSearchResult>({ max: 200, ttl: 86400000 })
+    private _request_handler_cache = new LRUCache<`${ApiMethod}-${string}`, { handler?: RequestHandler }>({ max: 200, ttl: 86400000 })
+    private _socket_handler_cache = new LRUCache<`SOCKET-${string}`, { handler?: UpgradeHandler }>({ max: 200, ttl: 86400000 })
 
     init_path_node(segments: string[]) {
         let node = this._root

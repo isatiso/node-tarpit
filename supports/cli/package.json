@@ -42,11 +42,10 @@
         "build": "rollup -c"
     },
     "dependencies": {
-        "commander": "^10.0.0"
+        "commander": "^11.0.0"
     },
     "devDependencies": {
         "@tarpit/rollup": "^0.5.49",
-        "@tarpit/type-tools": "^0.5.49",
-        "@types/normalize-package-data": "^2.4.1"
+        "@tarpit/type-tools": "^0.5.49"
     }
 }

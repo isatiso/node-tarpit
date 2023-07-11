@@ -7,7 +7,7 @@
  */
 
 import { TpService } from '@tarpit/core'
-import LRUCache from 'lru-cache'
+import { LRUCache } from 'lru-cache'
 
 @TpService({ inject_root: true })
 export class HttpCacheProxy {

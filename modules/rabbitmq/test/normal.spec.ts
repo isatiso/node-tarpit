@@ -124,14 +124,14 @@ describe('normal case', function() {
     })
 
     it('should consume predefine message', async function() {
-        await new Promise(resolve => setTimeout(resolve, predefined_message.length))
+        await new Promise(resolve => setTimeout(resolve, 200))
         expect(consume_result.length).to.equal(predefined_message.length)
         expect(consume_result).to.eql(predefined_message)
     })
 
     it('should publish message to exchange', async function() {
         producer.publish_normal.send('publish_normal')
-        await new Promise(resolve => setTimeout(resolve, 50))
+        await new Promise(resolve => setTimeout(resolve, 100))
         const channel = await connection.createChannel()
         const msg = await channel.get(D.Q['tarpit.queue.normal'], { noAck: true })
         expect(msg).to.not.equal(false)
