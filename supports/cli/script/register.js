@@ -7,6 +7,6 @@
  */
 
 require('ts-node').register({
-    compiler: 'ttypescript',
+    compiler: 'ts-patch/compiler',
     files: true,
 })
