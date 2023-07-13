@@ -9,9 +9,10 @@
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema, TpInspector, TpService } from '@tarpit/core'
 import axios from 'axios'
+import { WebSocket } from 'ws'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { HttpContext, HttpHooks, HttpServerModule, Post, RawBody, TpRouter } from '../src'
+import { HttpContext, HttpHooks, HttpServerModule, Post, RawBody, TpRequest, TpRouter, TpWebSocket, WS } from '../src'
 
 chai.use(cap)
 
@@ -29,6 +30,14 @@ class CustomHooks extends HttpHooks {
     override async on_finish(context: HttpContext): Promise<void> {
         throw new Error('lkj')
     }
+
+    override async on_ws_init(socket: TpWebSocket, req: TpRequest): Promise<void> {
+        throw new Error('socket init error')
+    }
+
+    override async on_ws_close(socket: TpWebSocket, req: TpRequest, code: number): Promise<void> {
+        throw new Error('socket close error')
+    }
 }
 
 @TpRouter('/user', { imports: [HttpServerModule] })
@@ -37,6 +46,13 @@ class TempRouter {
     @Post('buffer')
     async add_user_by_buffer(body: RawBody) {
         return { length: body.byteLength }
+    }
+
+    @WS()
+    async subscribe(ws: TpWebSocket) {
+        await ws.send('message')
+        await new Promise(resolve => setTimeout(resolve, 300))
+        ws.close()
     }
 
     @Post('error')
@@ -78,5 +94,11 @@ describe('throw error in hooks case', function() {
         await r.post('/user/error', Buffer.from('some thing')).catch(err => {
             expect(err.response.status).to.equal(500)
         })
+    })
+
+    it('should catch error from on_ws_init and on_ws_close called', async function() {
+        const ws = new WebSocket('ws://localhost:31254/user/subscribe')
+        const msg: Buffer = await new Promise(resolve => ws.on('message', resolve))
+        expect(msg.toString()).to.equal('message')
     })
 })

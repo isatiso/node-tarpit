@@ -32,7 +32,7 @@ export function comment_decorators(_: ts.Program, options: { heritage_inline?: b
                 const text_array: (ts.JSDocText | ts.JSDocLink)[] = []
                 if (origin.modifiers) {
                     const msg = origin.modifiers
-                        .filter(d => d.kind === SyntaxKind.Decorator)
+                        .filter(d => d.kind === ts.SyntaxKind.Decorator)
                         .map(d => d.getText(osf)).join('\n')
                     text_array.push(ctx.factory.createJSDocText(msg))
                 }

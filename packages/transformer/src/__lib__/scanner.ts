@@ -112,8 +112,8 @@ export class Scanner {
         }
     }
 
-    create_visitor(processor: (node: ts.Node) => any): any {
-        const visitor: ts.Visitor = (node: ts.Node) => {
+    create_visitor(processor: (node: ts.Node) => any): ts.Visitor<ts.Node, ts.Node> {
+        const visitor: ts.Visitor<ts.Node, ts.Node> = (node: ts.Node) => {
             try {
                 return processor(node)
             } catch (e) {
@@ -125,7 +125,7 @@ export class Scanner {
         return visitor
     }
 
-    traverse(visitor: ts.Visitor) {
+    traverse(visitor: ts.Visitor<ts.Node, ts.Node>) {
         return this.symbols.update_identifier_by_symbol(ts.visitNode(this.source_file, visitor))
     }
 }

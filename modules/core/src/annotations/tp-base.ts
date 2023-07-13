@@ -8,9 +8,8 @@
 
 import { Injector } from '../di'
 import { make_abstract_decorator } from '../tools/decorator'
-import { ImportsAndProviders } from '../types'
+import { ImportsAndProviders, TpBaseOptions } from '../types'
 
-export type TpBaseOptions = { inject_root?: boolean }
 export type TpComponentProps = { token: symbol, instance?: any }
 export type TpEntryProps = { injector?: Injector }
 
