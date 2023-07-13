@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { SyntaxKind } from 'ttypescript'
 import * as ts from 'typescript'
+import { SyntaxKind } from 'typescript'
 
 /**
  * {

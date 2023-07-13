@@ -46,6 +46,6 @@
     },
     "devDependencies": {
         "@tarpit/rollup": "^0.5.51",
-        "@types/node": "^20.4.1"
+        "@types/node": "^20.4.2"
     }
 }
