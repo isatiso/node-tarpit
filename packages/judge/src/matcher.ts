@@ -6,12 +6,13 @@
  * found in the LICENSE file at source root.
  */
 
-import { JudgementRule } from './__types__'
-import { MatcherInferType } from './judgement'
 
 export type MismatchDescription = {
     rule: string,
 }
+
+export type JudgementRule = RegExp | Matcher<any>
+export type MatcherInferType<T extends Matcher<any> | RegExp> = T extends RegExp ? string : T extends Matcher<infer V> ? V : never
 
 export class Matcher<ReturnType> {
 

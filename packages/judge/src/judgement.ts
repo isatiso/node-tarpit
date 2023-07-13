@@ -7,11 +7,9 @@
  */
 
 import { Path, PathOfType, PathValue } from '@tarpit/type-tools'
-import { JudgementRule } from './__types__'
-import { Matcher, MismatchDescription } from './matcher'
+import { JudgementRule, Matcher, MatcherInferType, MismatchDescription } from './matcher'
 import { Reference } from './reference'
 
-export type MatcherInferType<T extends Matcher<any> | RegExp> = T extends RegExp ? string : T extends Matcher<infer V> ? V : never
 export type OnJudgementError = (prop: string, desc: MismatchDescription) => string
 
 export class Judgement<T> extends Reference<T> {

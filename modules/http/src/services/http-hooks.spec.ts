@@ -10,7 +10,7 @@ import { Dora } from '@tarpit/dora'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
-import { HttpContext } from '../builtin'
+import { HttpContext, TpRequest } from '../builtin'
 import { TpHttpFinish } from '../errors'
 import { assemble_duration, create_request_log, HttpHooks } from './http-hooks'
 
@@ -142,5 +142,26 @@ describe('http-hooks.ts', function() {
                 expect(console.info).to.have.been.first.called.with(`[${time_str}]39.88.125.6           996ms POST    404 `, '/some/path', '<404 Not Found>')
             })
         })
+
+        describe('.on_ws_init()', function() {
+
+            it('should create log', async function() {
+                await new HttpHooks().on_ws_init(null as any, { ip: '152.215.22.3', path: '/some/path' } as TpRequest)
+                await new HttpHooks().on_ws_init(null as any, { ip: '45.12.2.3' } as TpRequest)
+                expect(console.info).to.have.been.first.called.with(`[${time_str}]152.215.22.3           OPEN SOCKET  -   `, '/some/path')
+                expect(console.info).to.have.been.second.called.with(`[${time_str}]45.12.2.3              OPEN SOCKET  -   `, '-')
+            })
+        })
+
+        describe('.on_ws_close()', function() {
+
+            it('should create log', async function() {
+                await new HttpHooks().on_ws_close(null as any, { ip: '152.215.22.3', path: '/some/path' } as TpRequest, 1001)
+                await new HttpHooks().on_ws_close(null as any, { ip: '45.12.2.3' } as TpRequest, 1098)
+                expect(console.info).to.have.been.first.called.with(`[${time_str}]152.215.22.3          CLOSE SOCKET  1001`, '/some/path')
+                expect(console.info).to.have.been.second.called.with(`[${time_str}]45.12.2.3             CLOSE SOCKET  1098`, '-')
+            })
+        })
     })
+
 })

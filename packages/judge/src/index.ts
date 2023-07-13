@@ -7,7 +7,6 @@
  */
 
 // istanbul ignore file
-export { Judgement, MatcherInferType, OnJudgementError } from './judgement'
-export { Matcher, Jtl, MismatchDescription } from './matcher'
-export { JudgementRule } from './__types__'
+export { Judgement, OnJudgementError } from './judgement'
+export { Matcher, Jtl, MismatchDescription, JudgementRule, MatcherInferType } from './matcher'
 export { Reference } from './reference'

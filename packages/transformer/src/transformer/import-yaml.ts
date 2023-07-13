@@ -24,7 +24,7 @@ export function import_yaml(program: ts.Program, options: { pattern?: string | s
         return (sourceFile: ts.SourceFile) => {
             const scanner = new Scanner(sourceFile, ctx, program)
             const is_path_match = scanner.create_path_matcher(pattern)
-            const visitor: ts.Visitor = scanner.create_visitor(node => {
+            const visitor: ts.Visitor<ts.Node, ts.Node> = scanner.create_visitor(node => {
                 const { identifier, content } = scanner.find_import(node, visitor, is_path_match)
                 let obj: object | string | number | null | undefined = null
                 try {

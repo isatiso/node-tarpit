@@ -21,7 +21,7 @@ export class SymbolSync {
         return this._set.add(symbol)
     }
 
-    update_identifier_by_symbol(source_file: ts.SourceFile) {
+    update_identifier_by_symbol(source_file: ts.Node) {
         const updater: ts.Visitor = node => {
             if (ts.isIdentifier(node)) {
                 const symbol = this.type_checker.getSymbolAtLocation(node)

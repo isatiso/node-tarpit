@@ -9,4 +9,4 @@
 export { Constructor, AbstractConstructor, PureJSON, KeyOfFilterType, TpConfigSchema } from './base'
 export { ClassProviderDef, FactoryProviderDef, ValueProviderDef, ProviderTreeNode, ProviderDef, Provider, ParentDesc } from './provider'
 export { TpEvent, TpEventCollector, InjectorType, InjectorEventEmitter } from './injector'
-export { TpRootOptions, TpModuleOptions, ImportsAndProviders, TpServiceOptions } from './options'
+export { TpRootOptions, TpModuleOptions, ImportsAndProviders, TpServiceOptions, TpBaseOptions } from './options'
