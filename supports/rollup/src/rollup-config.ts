@@ -50,7 +50,10 @@ export class RollupConfig {
         ],
         plugins: [
             json(),
-            rpt({ rootDir: './', declaration: true, removeComments: true, paths: {} })
+            rpt({
+                rootDir: './', declaration: true, removeComments: true, paths: {},
+                include: ['src/**/*.ts'], exclude: ['src/**/*.spec.ts']
+            })
         ],
         external: this.externals.slice(),
     })

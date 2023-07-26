@@ -38,6 +38,7 @@ export { get_providers } from './tools/get-providers'
 export { TpError, TpErrorDescription, throw_native_error } from './error/tp-error'
 
 export {
+    TarpitId,
     DecoratorInnerField,
     AbstractDecoratorFactory,
     DecoratorFactory,

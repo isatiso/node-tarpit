@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
-
+import { isMainThread } from 'worker_threads'
 import { ConfigData } from '@tarpit/config'
 import { TpEntry } from './annotations'
 import { TpConfigData } from './builtin/tp-config-data'
@@ -50,6 +50,9 @@ export class Platform {
     }
 
     start(after_start?: () => void) {
+        if (!isMainThread) {
+            return this
+        }
         if (this.started) {
             console.info('Tarpit server is started.')
             return this
@@ -61,6 +64,9 @@ export class Platform {
     }
 
     terminate(after_terminate?: () => void) {
+        if (!isMainThread) {
+            return this
+        }
         if (this.terminated) {
             console.info('Tarpit server is terminated.')
             return this
