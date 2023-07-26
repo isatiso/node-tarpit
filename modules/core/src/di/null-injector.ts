@@ -20,4 +20,8 @@ export class NullInjector implements InjectorType {
     get(_token: any): Provider<any> | undefined {
         return
     }
+
+    get_id(_id: string): Provider<any> | undefined {
+        return
+    }
 }

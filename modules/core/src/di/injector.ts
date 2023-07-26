@@ -19,6 +19,7 @@ export class Injector implements InjectorType, InjectorEventEmitter {
     readonly children: Injector[] = []
     readonly root: Injector
     protected providers: Map<any, Provider<any>> = new Map([])
+    protected providers_id_map: Map<string, Provider<any>> = new Map([])
 
     constructor(
         protected parent: InjectorType,
@@ -44,6 +45,11 @@ export class Injector implements InjectorType, InjectorEventEmitter {
         return provider
     }
 
+    set_id<T>(id: string, provider: Provider<T>): Provider<T> {
+        this.providers_id_map.set(id, provider)
+        return provider
+    }
+
     get<T>(token: AbstractConstructor<T>): Provider<T> | undefined
     get<T>(token: Constructor<T>): Provider<T> | undefined
     get<T>(token: string | symbol): Provider<T> | undefined
@@ -52,6 +58,10 @@ export class Injector implements InjectorType, InjectorEventEmitter {
             return
         }
         return this.providers.get(token) ?? this.parent.get(token)
+    }
+
+    get_id<T>(id: string): Provider<T> | undefined {
+        return this.providers_id_map.get(id) ?? this.parent.get_id(id)
     }
 
     has(token: any): boolean {

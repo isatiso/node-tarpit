@@ -8,7 +8,7 @@
 
 import { OnTerminate } from '../annotations'
 import { TpLoader } from '../builtin/tp-loader'
-import { get_all_prop_decorator } from '../tools/decorator'
+import { get_all_prop_decorator, TarpitId } from '../tools/decorator'
 import { detect_cycle_ref } from '../tools/detect-cycle-ref'
 import { get_providers } from '../tools/get-providers'
 import { stringify } from '../tools/stringify'
@@ -26,6 +26,10 @@ export class ClassProvider<M extends object> implements Provider<M> {
         private cls: Constructor<M>,
     ) {
         injector.set(token, this)
+        const tarpit_id = (this.cls as any)[TarpitId]
+        if (typeof tarpit_id === 'string') {
+            injector.set_id(tarpit_id, this)
+        }
         injector.emit('provider-change', token)
     }
 
