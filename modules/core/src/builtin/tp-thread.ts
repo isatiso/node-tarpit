@@ -112,7 +112,7 @@ export class TpThread extends EventEmitter {
         } else {
             const { callback, ...other } = task
             worker.task = new TaskInfo(callback)
-            worker.ins.postMessage({ other })
+            worker.ins.postMessage({ ...other })
         }
     }
 
