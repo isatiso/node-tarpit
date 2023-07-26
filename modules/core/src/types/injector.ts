@@ -35,6 +35,8 @@ export interface InjectorType {
     has(token: any): boolean
 
     get(token: any): Provider<any> | undefined
+
+    get_id(id: string): Provider<any> | undefined
 }
 
 export interface InjectorEventEmitter {

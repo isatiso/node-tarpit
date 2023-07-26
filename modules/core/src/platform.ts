@@ -5,13 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
-
 import { ConfigData } from '@tarpit/config'
+import { isMainThread } from 'worker_threads'
 import { TpEntry } from './annotations'
 import { TpConfigData } from './builtin/tp-config-data'
 import { TpInspector } from './builtin/tp-inspector'
 import { TpLoader } from './builtin/tp-loader'
 import { TpLogger } from './builtin/tp-logger'
+import { TpThread } from './builtin/tp-thread'
+import { TpThreadStrategy } from './builtin/tp-thread-strategy'
 import { ClassProvider, Injector, ValueProvider } from './di'
 import { get_class_decorator } from './tools/decorator'
 import { check_usage, def_to_provider, load_component } from './tools/load-component'
@@ -29,6 +31,8 @@ export class Platform {
     constructor(data: ConfigData<TpConfigSchema>) {
         ValueProvider.create(this.root_injector, { provide: TpConfigData, useValue: data })
         ValueProvider.create(this.root_injector, { provide: Platform, useValue: this })
+        ClassProvider.create(this.root_injector, { provide: TpThreadStrategy, useClass: TpThreadStrategy })
+        ClassProvider.create(this.root_injector, { provide: TpThread, useClass: TpThread }).create()
         ClassProvider.create(this.root_injector, { provide: TpLogger, useClass: TpLogger }).create()
         this.root_injector.on('start', this.on_start)
         this.root_injector.on('terminate', this.on_terminate)
@@ -50,6 +54,9 @@ export class Platform {
     }
 
     start(after_start?: () => void) {
+        if (!isMainThread) {
+            return this
+        }
         if (this.started) {
             console.info('Tarpit server is started.')
             return this
@@ -61,6 +68,9 @@ export class Platform {
     }
 
     terminate(after_terminate?: () => void) {
+        if (!isMainThread) {
+            return this
+        }
         if (this.terminated) {
             console.info('Tarpit server is terminated.')
             return this
