@@ -75,9 +75,15 @@ export class TpThread extends EventEmitter {
         if (typeof tarpit_id !== 'string') {
             throw new Error(`${cls.name} is not a TpComponent`)
         }
-        return new Promise((resolve, reject) => {
-            this._run_task({ tarpit_id, method, args, callback: (err, result) => err ? reject(err) : resolve(result) })
-        })
+        if (isMainThread) {
+            return new Promise((resolve, reject) => {
+                this._run_task({ tarpit_id, method, args, callback: (err, result) => err ? reject(err) : resolve(result) })
+            })
+        } else {
+            const instance: any = this.injector.get_id(tarpit_id)?.create()
+            const result = await instance?.[method]?.(...args)
+            return Promise.resolve(result)
+        }
     }
 
     start() {
@@ -100,13 +106,13 @@ export class TpThread extends EventEmitter {
     }
 
     private _run_task(task: TaskDescription) {
-        if (!this.free_workers.length) {
+        const worker = this.free_workers.pop()
+        if (!worker) {
             this.task_buffer.push(task)
         } else {
-            const worker = this.free_workers.pop()!
-            const { tarpit_id, method, args, callback } = task
+            const { callback, ...other } = task
             worker.task = new TaskInfo(callback)
-            worker.ins.postMessage({ tarpit_id, method, args })
+            worker.ins.postMessage({ other })
         }
     }
 
@@ -119,11 +125,7 @@ export class TpThread extends EventEmitter {
             this.emit(worker_freed_event)
         })
         worker.ins.on('error', err => {
-            if (worker.task) {
-                worker.task?.done(err, null)
-            } else {
-                this.emit('error', err)
-            }
+            worker.task?.done(err, null)
             this.workers.splice(this.workers.indexOf(worker), 1)
             this._add_new_worker()
         })
