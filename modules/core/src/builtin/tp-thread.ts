@@ -70,7 +70,9 @@ export class TpThread extends EventEmitter {
         }
     }
 
-    async run_task<T extends object, K extends MethodOfClass<T>>(cls: Constructor<T>, method: K & string, ...args: Parameters<T[K]>): Promise<ReturnType<T[K]>> {
+    async run_task<T extends object, K extends MethodOfClass<T>>(
+        cls: Constructor<T>, method: K & string, ...args: Parameters<T[K]>
+    ): Promise<ReturnType<T[K]> extends Promise<infer R> ? R : ReturnType<T[K]>> {
         const tarpit_id = (cls as any)[TarpitId]
         if (typeof tarpit_id !== 'string') {
             throw new Error(`${cls.name} is not a TpComponent`)
