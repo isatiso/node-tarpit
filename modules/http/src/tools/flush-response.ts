@@ -17,7 +17,8 @@ export function flush_response(response: TpResponse) {
         return
     }
 
-    if (!response.status_implicit) {
+    // set response status as 200 if not set
+    if ((response as any)._status === undefined) {
         response.status = 200
     }
 
@@ -25,13 +26,17 @@ export function flush_response(response: TpResponse) {
         response.message = HTTP_STATUS.message_of(response.status) ?? ''
     }
 
+    if (response.body instanceof Stream) {
+        response.body.once('error', err => on_error(err, response.res))
+    }
+
     // Compatible with the case where the body is ArrayBufferView
-    if (ArrayBuffer.isView(response.body) && !(response.body instanceof Uint8Array)) {
+    if (!(response.body instanceof Uint8Array) && ArrayBuffer.isView(response.body)) {
         response.body = new Uint8Array(response.body.buffer) as any
     }
 
     if (response.body == null) {
-        if (response.status_implicit || !HTTP_STATUS.is_empty(response.status)) {
+        if ((response as any)._status === undefined || !HTTP_STATUS.is_empty(response.status)) {
             response.status = 204
         }
         response.remove('Content-Type')
@@ -57,9 +62,7 @@ export function flush_response(response: TpResponse) {
     // figure out content-length before write
     if (response.request.method === 'HEAD') {
         if (!response.has('Content-Length')) {
-            if (!response.body) {
-                response.set('Content-Length', 0)
-            } else if (response.body instanceof Stream) {
+            if (response.body instanceof Stream) {
                 // can not figure out length of content
             } else if (typeof response.body === 'string') {
                 response.set('Content-Length', Buffer.byteLength(response.body))
@@ -89,7 +92,6 @@ export function flush_response(response: TpResponse) {
     }
 
     if (response.body instanceof Stream) {
-        response.body.once('error', err => on_error(err, response.res))
         return response.body.pipe(response.res)
     }
 

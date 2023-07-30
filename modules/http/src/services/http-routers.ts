@@ -246,6 +246,7 @@ export class HttpRouters {
                         if (received > body_max_length) {
                             stream.pause()
                             response.status = 413
+                            response.body = response.message
                             flush_response(response)
                         } else {
                             callback(null, chunk)

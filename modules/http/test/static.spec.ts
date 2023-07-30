@@ -177,6 +177,7 @@ describe('static case', function() {
                 .catch(err => err.response)
                 .then(res => {
                     expect(res.status).to.equal(304)
+                    expect(res.data).to.equal('')
                 })
         })
 

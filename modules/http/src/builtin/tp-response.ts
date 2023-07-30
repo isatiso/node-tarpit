@@ -62,10 +62,6 @@ export class TpResponse {
         this._body = val
     }
 
-    get body_implicit() {
-        return this._body === undefined
-    }
-
     private _status?: number = undefined
 
     get status() {
@@ -87,10 +83,6 @@ export class TpResponse {
         this._status = status_code
         this.res.statusCode = status_code
         this.res.statusMessage = HTTP_STATUS.message_of(status_code) ?? ''
-    }
-
-    get status_implicit() {
-        return this._status === undefined
     }
 
     get message(): string {
