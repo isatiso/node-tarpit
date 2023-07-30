@@ -9,13 +9,11 @@
 import { OutgoingHttpHeader, OutgoingHttpHeaders, ServerResponse } from 'http'
 import { LRUCache } from 'lru-cache'
 import mime_types from 'mime-types'
-import { Stream } from 'stream'
 import { is as type_is } from 'type-is'
 import { TpHttpResponseType } from '../__types__'
 import { throw_internal_server_error, TpHttpFinish } from '../errors'
-import { HTTP_STATUS } from '../tools/http-status'
-import { on_error } from '../tools/on-error'
 import { make_cache_control, parse_cache_control, ResponseCacheControl } from '../tools/cache-control'
+import { HTTP_STATUS } from '../tools/http-status'
 import { TpRequest } from './tp-request'
 
 const type_lru_cache = new LRUCache<string, string>({ max: 100 })
@@ -31,54 +29,47 @@ export function lookup_content_type(type: string): string {
 
 export class TpResponse {
 
-    private _explicit_status = false
-    private _cache_control?: ResponseCacheControl
-
     constructor(
         public readonly res: ServerResponse,
         public readonly request: TpRequest,
     ) {
     }
 
+    private _cache_control?: ResponseCacheControl
+
+    get cache_control(): ResponseCacheControl | undefined {
+        if (!this._cache_control) {
+            this._cache_control = parse_cache_control(this.first('Cache-Control'))
+        }
+        return this._cache_control
+    }
+
+    set cache_control(value: ResponseCacheControl | undefined) {
+        if (value) {
+            this.set('Cache-Control', make_cache_control(value))
+        } else {
+            this.set('Cache-Control', undefined)
+        }
+    }
+
     private _body?: TpHttpResponseType = undefined
-    get body() {
-        return this._body
+
+    get body(): TpHttpResponseType {
+        return this._body ?? null
     }
 
-    set body(val) {
-
-        if (val === this._body) {
-            return
-        }
-
-        this._body != null && this.remove('Content-Length')
+    set body(val: TpHttpResponseType) {
         this._body = val
-
-        if (val == null) {
-            if (!HTTP_STATUS.is_empty(this.status)) {
-                this.res.statusCode = 204
-                this.res.statusMessage = HTTP_STATUS.message_of(204)
-            }
-            this.remove('Content-Type')
-            this.remove('Content-Length')
-            this.remove('Transfer-Encoding')
-            return
-        }
-
-        if (!this._explicit_status) {
-            this.res.statusCode = 200
-            this.res.statusMessage = HTTP_STATUS.message_of(200)
-        }
-
-        if (val instanceof Stream) {
-            val.once('error', err => on_error(err, this.res))
-        }
-
-        this.set_implicit_type()
     }
+
+    get body_implicit() {
+        return this._body === undefined
+    }
+
+    private _status?: number = undefined
 
     get status() {
-        return this.res.statusCode
+        return this._status ?? this.res.statusCode
     }
 
     set status(status_code: number) {
@@ -93,13 +84,13 @@ export class TpResponse {
             })
         }
 
-        this._explicit_status = true
+        this._status = status_code
         this.res.statusCode = status_code
         this.res.statusMessage = HTTP_STATUS.message_of(status_code) ?? ''
+    }
 
-        if (HTTP_STATUS.is_empty(status_code)) {
-            this.body = null
-        }
+    get status_implicit() {
+        return this._status === undefined
     }
 
     get message(): string {
@@ -133,8 +124,8 @@ export class TpResponse {
         return content_length ? +content_length : undefined
     }
 
-    set length(n: number | undefined) {
-        if (n !== undefined) {
+    set length(n: number | null | undefined) {
+        if (typeof n === 'number') {
             n = Number.isInteger(n) ? n : Math.floor(n)
             this.set('Content-Length', n + '')
         } else {
@@ -155,21 +146,6 @@ export class TpResponse {
             }
         } else {
             this.remove('Content-Type')
-        }
-    }
-
-    get cache_control(): ResponseCacheControl | undefined {
-        if (!this._cache_control) {
-            this._cache_control = parse_cache_control(this.first('Cache-Control'))
-        }
-        return this._cache_control
-    }
-
-    set cache_control(value: ResponseCacheControl | undefined) {
-        if (value) {
-            this.set('Cache-Control', make_cache_control(value))
-        } else {
-            this.set('Cache-Control', undefined)
         }
     }
 
@@ -266,19 +242,5 @@ export class TpResponse {
 
     flush_headers() {
         this.res.flushHeaders()
-    }
-
-    private set_implicit_type() {
-        if (!this.has('Content-Type')) {
-            if (typeof this._body === 'string') {
-                this.content_type = 'text/plain; charset=utf-8'
-            } else if (Buffer.isBuffer(this._body)) {
-                this.content_type = 'application/octet-stream'
-            } else if (this._body instanceof Stream) {
-                this.content_type = 'application/octet-stream'
-            } else {
-                this.content_type = 'application/json; charset=utf-8'
-            }
-        }
     }
 }
