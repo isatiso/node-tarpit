@@ -35,7 +35,7 @@ describe('tp-response.ts', function() {
 
         const origin_mocked_server_response = {
             headersSent: false,
-            statusCode: 200,
+            statusCode: 400,
             writable: true,
             writableEnded: false,
             writableFinished: false,
@@ -63,139 +63,29 @@ describe('tp-response.ts', function() {
             const readable = Readable.from(buf)
             const json = { a: 1, b: 'abc' }
 
-            it('should set to body if given null and set 204 to status if not set yet', function() {
+            it('should set body as given', function() {
                 const { mock_res } = mock_server_response()
                 const response = new TpResponse(mock_res, {} as any)
                 response.body = null
                 expect(response.body).to.be.null
-                expect(response.status).to.equal(204)
-                response.body = undefined
-                expect(response.body).to.be.undefined
-                expect(response.status).to.equal(204)
-            })
-
-            it('should remove headers: Content-Type, Content-Length, Transfer-Encoding', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                const spy_remove = chai.spy.on(response, 'remove', () => undefined)
-                response.body = null
-                expect(spy_remove).to.have.been.first.called.with('Content-Type')
-                expect(spy_remove).to.have.been.second.called.with('Content-Length')
-                expect(spy_remove).to.have.been.third.called.with('Transfer-Encoding')
-            })
-
-            it('should set body as given string', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
                 response.body = text
                 expect(response.body).to.equal(text)
-                expect(response.status).to.equal(200)
-            })
-
-            it('should set Content-Type as text/plain if given string', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.body = text
-                expect(response.get('Content-Type')).to.equal('text/plain; charset=utf-8')
-            })
-
-            // it('should figure out content length and set it to header', function() {
-            //     const { mock_res } = mock_server_response()
-            //     const response = new TpResponse(mock_res, {} as any)
-            //     response.body = text
-            //     expect(response.get('Content-Length')).to.equal('54')
-            // })
-            //
-            // it('should figure out content length and set it to header', function() {
-            //     const { mock_res } = mock_server_response()
-            //     const response = new TpResponse(mock_res, {} as any)
-            //     response.body = buf
-            //     expect(response.get('Content-Length')).to.equal('114')
-            // })
-
-            it('should set body as given Buffer', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
                 response.body = buf
                 expect(response.body).to.equal(buf)
-                expect(response.status).to.equal(200)
-            })
-
-            it('should set Content-Type as application/octet-stream if given Buffer', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.body = buf
-                expect(response.get('Content-Type')).to.equal('application/octet-stream')
-            })
-
-            it('should set body as given Stream', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
                 response.body = readable
                 expect(response.body).to.equal(readable)
-                expect(response.status).to.equal(200)
-            })
-
-            it('should skip stream process if given stream as same as pre-body', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                const spy_remove = chai.spy.on(response, 'remove', () => undefined)
-                response.body = readable
-                expect(spy_remove).to.have.not.been.called
-                response.body = readable
-                expect(spy_remove).to.have.not.been.called
-                expect(response.body).to.equal(readable)
-                expect(response.status).to.equal(200)
-            })
-
-            it('should set Content-Type as application/octet-stream if given Stream', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.body = readable
-                expect(response.get('Content-Type')).to.equal('application/octet-stream')
-            })
-
-            it('should handle error event of stream which set to body', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.body = readable
-                readable.emit('error')
-            })
-
-            it('should remove header Content-Length if last value is not null', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                const spy_remove = chai.spy.on(response, 'remove', () => undefined)
-                response.body = 'some thing'
-                response.body = readable
-                expect(spy_remove).to.have.been.first.called.with('Content-Length')
-            })
-
-            it('should treat other value as json object', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
                 response.body = json
                 expect(response.body).to.equal(json)
-                expect(response.status).to.equal(200)
-            })
-
-            it('should set Content-Type as application/json if given JSON object', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.body = json
-                expect(response.get('Content-Type')).to.equal('application/json; charset=utf-8')
-            })
-
-            it('should remove header Content-Length if given json', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                const spy_remove = chai.spy.on(response, 'remove', () => undefined)
-                response.body = json
-                expect(spy_remove).to.have.not.been.called
             })
         })
 
         describe('.status', function() {
+
+            it('should return status code of ServerResponse if never set', function() {
+                const { mock_res } = mock_server_response()
+                const response = new TpResponse(mock_res, {} as any)
+                expect(response.status).to.equal(400)
+            })
 
             it('should do nothing if header is sent', function() {
                 const { mock_res } = mock_server_response()
@@ -213,17 +103,6 @@ describe('tp-response.ts', function() {
                 expect(() => response.status = 99).to.throw('status code must be an integer within range of [100, 999]')
                 expect(() => response.status = 1000).to.throw('status code must be an integer within range of [100, 999]')
                 expect(() => response.status = 500.2).to.throw('status code must be an integer within range of [100, 999]')
-            })
-
-            it('should remove exist body if given status means empty', function() {
-                const { mock_res } = mock_server_response()
-                const response = new TpResponse(mock_res, {} as any)
-                response.body = 'abc'
-                expect(response.status).to.equal(200)
-                expect(response.body).to.equal('abc')
-                response.status = 204
-                expect(response.status).to.equal(204)
-                expect(response.body).to.be.null
             })
 
             it('should set empty string to status message if given status is unknown', function() {

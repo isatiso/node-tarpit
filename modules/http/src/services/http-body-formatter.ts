@@ -21,7 +21,7 @@ export class HttpBodyFormatter {
     ) {
     }
 
-    format(context: HttpContext): HttpResponseType | undefined {
+    format(context: HttpContext): HttpResponseType {
         if (context.result.status >= 400) {
             const preferred_media_type = context.request.accepts.preferred_media_types(['application/json', 'text/html', 'text/plain'])[0]
             if (preferred_media_type === 'application/json') {
@@ -33,7 +33,7 @@ export class HttpBodyFormatter {
                 return context.result.message
             }
         } else {
-            return context.result.body
+            return context.result.body ?? null
         }
     }
 }

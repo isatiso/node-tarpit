@@ -19,7 +19,7 @@ export type UpgradeHandler = (req: IncomingMessage, socket: Duplex, head: Buffer
 export type UpgradeHandlerWithPathArgs = (req: IncomingMessage, socket: Duplex, head: Buffer, parsed_url: UrlWithParsedQuery, path_args: object | undefined) => Promise<SocketHandler | undefined>
 export type SocketHandler = (req: IncomingMessage, ws: WebSocket) => Promise<void>
 
-export type TpHttpResponseType = null | string | Buffer | Stream | object
+export type TpHttpResponseType = null | string | Buffer | Uint8Array | Stream | object
 
 export interface HttpHandlerDescriptor {
     method: ApiMethod,
