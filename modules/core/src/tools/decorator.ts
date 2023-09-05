@@ -147,35 +147,35 @@ function get_set_own_property<T>(target: any, prop: string | number | symbol, de
     }
 }
 
-export function get_class_decorator<T>(target: any): any[] {
+export function get_class_decorator(target: any): any[] {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }
     return Object.getOwnPropertyDescriptor(target, Class_Decorator)?.value ?? []
 }
 
-export function get_class_parameter_decorator<T>(target: any): any[] {
+export function get_class_parameter_decorator(target: any): any[] {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }
     return Object.getOwnPropertyDescriptor(target, Parameter_Decorator)?.value ?? []
 }
 
-export function get_all_prop_decorator<T>(target: any): Map<string | symbol, any[]> | undefined {
+export function get_all_prop_decorator(target: any): Map<string | symbol, any[]> | undefined {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }
     return Object.getOwnPropertyDescriptor(target, Property_Decorator)?.value
 }
 
-export function get_prop_decorator<T>(target: any, prop: string | symbol): any[] {
+export function get_prop_decorator(target: any, prop: string | symbol): any[] {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }
     return Object.getOwnPropertyDescriptor(target, Property_Decorator)?.value?.get(prop) ?? []
 }
 
-export function get_method_parameter_decorator<T>(target: any, prop: string | symbol): any[] {
+export function get_method_parameter_decorator(target: any, prop: string | symbol): any[] {
     if (target.prototype?.constructor !== target) {
         throw new Error(`${stringify(target)} is not constructor.`)
     }

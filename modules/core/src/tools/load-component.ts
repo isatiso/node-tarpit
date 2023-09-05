@@ -60,7 +60,7 @@ function collect_worker(meta: TpAssembly, injector: Injector): ProviderTreeNode 
     }
 }
 
-export function load_component(meta: any, injector: Injector): ProviderTreeNode | undefined {
+export function load_component(meta: any, injector: Injector, auto_create?: boolean): ProviderTreeNode | undefined {
 
     if (meta instanceof TpComponent) {
 
@@ -77,13 +77,13 @@ export function load_component(meta: any, injector: Injector): ProviderTreeNode 
         if (meta instanceof TpEntry) {
             meta.injector = injector
         }
-        if (meta instanceof TpAssembly) {
+        if (auto_create || meta instanceof TpAssembly) {
             meta.instance = meta.provider.create()
         }
         if (meta instanceof TpRoot) {
-            meta.entries?.map(p => get_class_decorator(p).find(d => d instanceof TpEntry))
+            meta.entries?.map(p => get_class_decorator(p).find(d => d instanceof TpComponent))
                 .filter(meta => meta)
-                .forEach(meta => load_component(meta, injector))
+                .forEach(meta => load_component(meta, injector, true))
         }
         if (meta.token) {
             injector.get(TpLoader)!.create().load(meta)
