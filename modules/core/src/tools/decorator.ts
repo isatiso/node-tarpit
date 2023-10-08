@@ -76,7 +76,7 @@ export function make_decorator<ARGS extends any[], T, PR>(
             const is_parameter = typeof desc === 'number'
 
             if (is_constructor) {
-                if (!target.tarpit_id) {
+                if (!target[TarpitId]) {
                     target[TarpitId] = createHash('md5').update(Buffer.from(target.toString())).digest('base64url')
                 }
                 decorator_instance.cls = target

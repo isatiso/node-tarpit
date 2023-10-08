@@ -26,7 +26,7 @@ describe('platform.ts', function() {
     const sandbox = chai.spy.sandbox()
 
     before(function() {
-        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
+        // sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
     })
 
     after(function() {
@@ -39,6 +39,9 @@ describe('platform.ts', function() {
 
     @TpService()
     class Service1 {
+        get_5() {
+            return 5
+        }
     }
 
     @TpModule({ providers: [Service1] })

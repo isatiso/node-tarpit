@@ -46,6 +46,9 @@ export class Injector implements InjectorType, InjectorEventEmitter {
     }
 
     set_id<T>(id: string, provider: Provider<T>): Provider<T> {
+        if (!id) {
+            return provider
+        }
         this.providers_id_map.set(id, provider)
         return provider
     }
