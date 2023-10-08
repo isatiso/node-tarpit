@@ -6,6 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
+// istanbul ignore file
+
 import { AsyncResource } from 'async_hooks'
 import { EventEmitter } from 'events'
 import { isMainThread, parentPort, Worker } from 'worker_threads'

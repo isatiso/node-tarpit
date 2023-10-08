@@ -50,6 +50,13 @@ describe('injector.ts', function() {
             expect(injector.has(undefined as any)).to.be.false
             expect(injector.has(null as any)).to.be.false
         })
+
+        it('should set id if there is one on the given class', function() {
+            injector.set_id('test', injector.get('b')!)
+            expect(injector.get_id('test')).to.equal(injector.get('b'))
+            injector.set_id('', injector.get('b')!)
+            expect(injector.get_id('')).to.be.undefined
+        })
     })
 
     describe('Injector as EventEmitter', function() {

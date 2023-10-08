@@ -26,10 +26,7 @@ export class ClassProvider<M extends object> implements Provider<M> {
         private cls: Constructor<M>,
     ) {
         injector.set(token, this)
-        const tarpit_id = (this.cls as any)[TarpitId]
-        if (typeof tarpit_id === 'string') {
-            injector.set_id(tarpit_id, this)
-        }
+        injector.set_id((this.cls as any)[TarpitId], this)
         injector.emit('provider-change', token)
     }
 
