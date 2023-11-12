@@ -28,8 +28,8 @@ export class Cron {
         private parsed: ParsedFields & ParsedSpecials,
         private options?: ParseCronOptions,
     ) {
-        this._utc = options?.utc ?? false
-        this._tz = this._utc ? 'UTC' : options?.tz ?? Dora.guess_timezone()
+        this._utc = this.options?.utc ?? false
+        this._tz = this._utc ? 'UTC' : this.options?.tz ?? Dora.guess_timezone()
         this._now = Dora.now(this._tz)
         this._year = this._now.year()
         this._month = this._now.month() + 1
@@ -128,10 +128,10 @@ export class Cron {
     private _make_schedule(): MonthlySchedule {
         const days = new Set<number>()
         if (!this.parsed.day_of_month_wildcard || this.parsed.day_of_week_wildcard) {
-            this._deal_special_day_of_month(days, Dora.from([this._year, this._month - 1], this._tz))
+            this._deal_special_day_of_month(days, Dora.from([this._year, this._month - 1], { timezone: this._tz }))
         }
         if (!this.parsed.day_of_week_wildcard) {
-            this._deal_special_day_of_week(days, Dora.from([this._year, this._month - 1], this._tz))
+            this._deal_special_day_of_week(days, Dora.from([this._year, this._month - 1], { timezone: this._tz }))
         }
         return new MonthlySchedule(this._year, this._month - 1, this._now, this._tz, [
             Array.from(days).sort((a, b) => a - b),

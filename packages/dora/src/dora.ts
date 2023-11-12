@@ -91,8 +91,30 @@ export class Dora {
         return new Dora(Date.now(), timezone)
     }
 
-    static from(date_arr: DateTimeArray, timezone?: string) {
-        return new Dora(Date.UTC(...date_arr), timezone).dial_utc_offset()
+    static from(date_arr: DateTimeArray, options?: { timezone?: string, strict?: boolean }) {
+        const timezone = options?.timezone
+        const strict_mode = options?.strict ?? false
+        const utc = Date.UTC(...date_arr)
+        const utc_date = new Date(utc)
+        const last_offset = new Dora(utc - 24 * 60 * 60 * 1000, timezone).utc_offset()
+        const next_offset = new Dora(utc + 24 * 60 * 60 * 1000, timezone).utc_offset()
+        if (last_offset === next_offset) {
+            return new Dora(Date.UTC(...date_arr), timezone).add(last_offset, 'minute')
+        } else {
+            const d_with_last_offset = new Dora(Date.UTC(...date_arr), timezone).add(last_offset, 'minute')
+            const d_with_next_offset = new Dora(Date.UTC(...date_arr), timezone).add(next_offset, 'minute')
+            if (d_with_last_offset.hour() === utc_date.getUTCHours() && d_with_last_offset.minute() === utc_date.getUTCMinutes()) {
+                return d_with_last_offset
+            } else if (d_with_next_offset.hour() === utc_date.getUTCHours() && d_with_next_offset.minute() === utc_date.getUTCMinutes()) {
+                return new Dora(Date.UTC(...date_arr), timezone).add(next_offset, 'minute')
+            } else {
+                if (strict_mode) {
+                    throw new Error(`Invalid date: ${date_arr}, under timezone ${timezone}`)
+                } else {
+                    return new Dora(Date.UTC(...date_arr), timezone).dial_utc_offset()
+                }
+            }
+        }
     }
 
     static parse(date_str: string) {

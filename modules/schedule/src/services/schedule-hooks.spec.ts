@@ -25,7 +25,7 @@ describe('schedule-hooks.ts', function() {
         const context = TaskContext.from<{ process_start: number }>({
             id: 'bullet-1',
             unit: { task_name: 'task name whatever some' } as TaskUnit,
-            execution: Dora.from([2022, 6, 1, 13, 24, 56], 'Asia/Shanghai')
+            execution: Dora.from([2022, 6, 1, 13, 24, 56], { timezone: 'Asia/Shanghai' })
         } as Bullet)
         const spy_get = chai.spy.on(context, 'get')
         const spy_set = chai.spy.on(context, 'set')

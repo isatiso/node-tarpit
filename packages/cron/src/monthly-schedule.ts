@@ -33,7 +33,7 @@ export class MonthlySchedule implements Schedule {
 
     next() {
         if (this._has_next && this._current) {
-            const date = Dora.from([this._year, this._month, ...this._current], this._tz)
+            const date = Dora.from([this._year, this._month, ...this._current], { timezone: this._tz })
             this._current = this._tick()
             return date
         } else {
