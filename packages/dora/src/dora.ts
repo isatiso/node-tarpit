@@ -132,16 +132,10 @@ export class Dora {
     start_of(unit: DateTimeUnit | 'week' | 'isoWeek'): Dora {
         switch (unit) {
             case 'year': {
-                const d = new Date(this.$d)
-                d.setUTCFullYear(this.$y, 0, 1)
-                d.setUTCHours(0, 0, 0, 0)
-                return new Dora(d.setUTCMinutes(this.$utcOffset), this.$z)
+                return Dora.from([this.$y, 0, 1, 0, 0, 0, 0], { timezone: this.$z })
             }
             case 'month': {
-                const d = new Date(this.$d)
-                d.setUTCMonth(this.$M, 1)
-                d.setUTCHours(0, 0, 0, 0)
-                return new Dora(d.setUTCMinutes(this.$utcOffset), this.$z)
+                return Dora.from([this.$y, this.$M, 1, 0, 0, 0, 0], { timezone: this.$z })
             }
             case 'isoWeek': {
                 return this.subtract((this.$W + 6) % 7, 'day').start_of('day')
@@ -150,19 +144,19 @@ export class Dora {
                 return this.subtract(this.$W, 'day').start_of('day')
             }
             case 'day': {
-                return this.subtract(this.$H, 'hour').start_of('hour')
+                return Dora.from([this.$y, this.$M, this.$D, 0, 0, 0, 0], { timezone: this.$z })
             }
             case 'date': {
-                return this.subtract(this.$H, 'hour').start_of('hour')
+                return Dora.from([this.$y, this.$M, this.$D, 0, 0, 0, 0], { timezone: this.$z })
             }
             case 'hour': {
-                return this.subtract(this.$m, 'minute').start_of('minute')
+                return Dora.from([this.$y, this.$M, this.$D, this.$H, 0, 0, 0], { timezone: this.$z })
             }
             case 'minute': {
-                return new Dora(new Date(this.$d).setUTCSeconds(0, 0), this.$z)
+                return Dora.from([this.$y, this.$M, this.$D, this.$H, this.$m, 0, 0], { timezone: this.$z })
             }
             case 'second': {
-                return new Dora(new Date(this.$d).setUTCMilliseconds(0), this.$z)
+                return Dora.from([this.$y, this.$M, this.$D, this.$H, this.$m, this.$s, 0], { timezone: this.$z })
             }
             default:
                 return this
