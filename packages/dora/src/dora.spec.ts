@@ -40,16 +40,68 @@ describe('dora.ts', function() {
         describe('#from()', function() {
 
             it('should return Dora as DateTimeArray specified', function() {
-                const time_arr: DateTimeArray = [2020, 9, 8, 14, 32, 1, 332]
-                const m = Dora.from(time_arr, 'Asia/Shanghai')
+                const time_arr: DateTimeArray = [2020, 7, 8, 14, 32, 1, 332]
+                const m = Dora.from(time_arr)
                 expect(m.year()).to.equal(2020)
-                expect(m.month()).to.equal(9)
+                expect(m.month()).to.equal(7)
                 expect(m.date()).to.equal(8)
-                expect(m.day()).to.equal(4)
+                expect(m.day()).to.equal(6)
                 expect(m.hour()).to.equal(14)
                 expect(m.minute()).to.equal(32)
                 expect(m.second()).to.equal(1)
                 expect(m.millisecond()).to.equal(332)
+            })
+
+            it('should deal with time when Standard time switch to DST case 1', function() {
+                const time_arr: DateTimeArray = [2023, 2, 12, 2, 32]
+                expect(() => Dora.from(time_arr, { timezone: 'America/New_York', strict: true })).to.throw()
+                expect(Dora.from(time_arr, { timezone: 'America/New_York' })).to.be.instanceof(Dora)
+            })
+
+            it('should deal with time when Standard time switch to DST case 2', function() {
+                const time_arr: DateTimeArray = [2023, 9, 1, 2, 26]
+                expect(() => Dora.from(time_arr, { timezone: 'Australia/Lord_Howe', strict: true })).to.throw()
+                expect(Dora.from(time_arr, { timezone: 'Australia/Lord_Howe' })).to.be.instanceof(Dora)
+            })
+
+            it('should deal with time when DST switch to Standard time switch case 1', function() {
+                const time_arr: DateTimeArray = [2023, 10, 5, 2, 26]
+                const m = Dora.from(time_arr, { timezone: 'America/New_York' })
+                expect(m.year()).to.equal(2023)
+                expect(m.month()).to.equal(10)
+                expect(m.date()).to.equal(5)
+                expect(m.hour()).to.equal(2)
+                expect(m.minute()).to.equal(26)
+            })
+
+            it('should deal with time when DST switch to Standard time switch case 2', function() {
+                const time_arr: DateTimeArray = [2023, 3, 2, 1, 36]
+                const m = Dora.from(time_arr, { timezone: 'Australia/Lord_Howe' })
+                expect(m.year()).to.equal(2023)
+                expect(m.month()).to.equal(3)
+                expect(m.date()).to.equal(2)
+                expect(m.hour()).to.equal(1)
+                expect(m.minute()).to.equal(36)
+            })
+
+            it('should deal with time DST time case 1', function() {
+                const time_arr: DateTimeArray = [2023, 11, 1, 2, 26]
+                const m = Dora.from(time_arr, { timezone: 'Australia/Lord_Howe' })
+                expect(m.year()).to.equal(2023)
+                expect(m.month()).to.equal(11)
+                expect(m.date()).to.equal(1)
+                expect(m.hour()).to.equal(2)
+                expect(m.minute()).to.equal(26)
+            })
+
+            it('should deal with time DST time case 2', function() {
+                const time_arr: DateTimeArray = [2023, 5, 1, 2, 26]
+                const m = Dora.from(time_arr, { timezone: 'America/New_York' })
+                expect(m.year()).to.equal(2023)
+                expect(m.month()).to.equal(5)
+                expect(m.date()).to.equal(1)
+                expect(m.hour()).to.equal(2)
+                expect(m.minute()).to.equal(26)
             })
         })
 

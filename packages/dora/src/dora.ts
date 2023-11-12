@@ -93,6 +93,7 @@ export class Dora {
 
     static from(date_arr: DateTimeArray, options?: { timezone?: string, strict?: boolean }) {
         const timezone = options?.timezone
+        const strict_mode = options?.strict ?? false
         const utc = Date.UTC(...date_arr)
         const utc_date = new Date(utc)
         const last_offset = new Dora(utc - 24 * 60 * 60 * 1000, timezone).utc_offset()
@@ -107,7 +108,7 @@ export class Dora {
             } else if (d_with_next_offset.hour() === utc_date.getUTCHours() && d_with_next_offset.minute() === utc_date.getUTCMinutes()) {
                 return new Dora(Date.UTC(...date_arr), timezone).add(next_offset, 'minute')
             } else {
-                if (options?.strict) {
+                if (strict_mode) {
                     throw new Error(`Invalid date: ${date_arr}, under timezone ${timezone}`)
                 } else {
                     return new Dora(Date.UTC(...date_arr), timezone).dial_utc_offset()
