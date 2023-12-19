@@ -46,4 +46,10 @@ export interface InjectorEventEmitter {
     on<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]): this
 
     once<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]): this
+
+    off<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]): this
+
+    addListener<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]): this
+
+    removeListener<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]): this
 }
