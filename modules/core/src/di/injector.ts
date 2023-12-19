@@ -83,8 +83,23 @@ export class Injector implements InjectorType, InjectorEventEmitter {
         return this
     }
 
+    addListener<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
+        this.emitter.addListener(event, callback)
+        return this
+    }
+
     once<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
         this.emitter.once(event, callback)
+        return this
+    }
+
+    off<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
+        this.emitter.off(event, callback)
+        return this
+    }
+
+    removeListener<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
+        this.emitter.removeListener(event, callback)
         return this
     }
 }

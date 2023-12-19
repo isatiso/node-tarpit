@@ -61,15 +61,34 @@ describe('injector.ts', function() {
 
     describe('Injector as EventEmitter', function() {
 
-        it('could emit and listening event', function() {
+        it('could act as jquery style event emitter', function() {
             let mark1 = false
             let mark2 = false
-            injector.on('start', () => mark1 = true)
+            const start_listener = () => mark1 = true
+            injector.on('start', start_listener)
             injector.once('terminate', () => mark2 = true)
             injector.emit('start')
             injector.emit('terminate')
-            setTimeout(() => expect(mark1).to.be.true, 0)
-            setTimeout(() => expect(mark2).to.be.true, 0)
+            expect(mark1).to.be.true
+            expect(mark2).to.be.true
+
+            mark1 = false
+            injector.off('start', start_listener)
+            injector.emit('start')
+            expect(mark1).to.be.false
+        })
+
+        it('could act as node style event emitter', function() {
+            let mark1 = false
+            const start_listener = () => mark1 = true
+            injector.addListener('start', start_listener)
+            injector.emit('start')
+            expect(mark1).to.be.true
+
+            mark1 = false
+            injector.removeListener('start', start_listener)
+            injector.emit('start')
+            expect(mark1).to.be.false
         })
     })
 
