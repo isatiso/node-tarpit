@@ -273,13 +273,19 @@ describe('tp-websocket.ts', function() {
 
     describe('.off()', function() {
 
-        it('should call removeAllListeners of inner socket', function() {
+        it('should call off of inner socket', function() {
             const mock = new MockWebSocket()
             const ws = new TpWebSocket(mock as any)
             const listener = () => undefined
             ws.on('message', listener)
             ws.off('message', listener)
-            expect(mock.off).to.have.been.called.with('message')
+            expect(mock.off).to.have.been.called.with('message', listener)
+            ws.on('close', listener)
+            ws.off('close', listener)
+            expect(mock.off).to.have.been.called.with('close', listener)
+            ws.on('error', listener)
+            ws.off('error', listener)
+            expect(mock.off).to.have.been.called.with('error', listener)
         })
     })
 
