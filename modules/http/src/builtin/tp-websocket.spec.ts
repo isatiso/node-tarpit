@@ -17,8 +17,10 @@ chai.use(chai_spies)
 
 class MockWebSocket {
     spy_on: (...args: any[]) => void
+    spy_off: (...args: any[]) => void
     spy_once: (...args: any[]) => void
     on: (event: string, listener: (...args: any[]) => void) => void
+    off: (event: string, listener: (...args: any[]) => void) => void
     once: (event: string, listener: (...args: any[]) => void) => void
     send!: (data: any, options?: Record<string, string>, cb?: (err: Error | undefined) => void) => void
     close: (...args: any[]) => void
@@ -30,8 +32,10 @@ class MockWebSocket {
 
     constructor() {
         this.spy_on = chai.spy()
+        this.spy_off = chai.spy()
         this.spy_once = chai.spy()
         this.on = MockWebSocket.record_history(this.listen_history, this.spy_on)
+        this.off = MockWebSocket.record_history(this.listen_history, this.spy_off)
         this.once = MockWebSocket.record_history(this.listen_history, this.spy_once)
         this.send_normal()
         this.close = chai.spy()
@@ -272,7 +276,19 @@ describe('tp-websocket.ts', function() {
         it('should call removeAllListeners of inner socket', function() {
             const mock = new MockWebSocket()
             const ws = new TpWebSocket(mock as any)
-            ws.off('message')
+            const listener = () => undefined
+            ws.on('message', listener)
+            ws.off('message', listener)
+            expect(mock.off).to.have.been.called.with('message')
+        })
+    })
+
+    describe('.removeAllListener()', function() {
+
+        it('should call removeAllListeners of inner socket', function() {
+            const mock = new MockWebSocket()
+            const ws = new TpWebSocket(mock as any)
+            ws.removeAllListeners('message')
             expect(mock.removeAllListeners).to.have.been.called.with('message')
         })
     })
