@@ -54,9 +54,16 @@ export class TpWebSocket {
         return this.set_listener(event, true, listener)
     }
 
-    off(event: EventNeedToWrap): this {
-        this._socket.removeAllListeners(event)
+    off(event: 'close', listener: (code: number, reason: Buffer) => void): this
+    off(event: 'error', listener: (err: Error) => void): this
+    off(event: 'message', listener: (data: Buffer, isBinary: boolean) => void): this
+    off(event: string | symbol, listener: (...args: any[]) => void): this {
+        this._socket.off(event, listener)
         return this
+    }
+
+    removeAllListeners(event: EventNeedToWrap) {
+        this._socket.removeAllListeners(event)
     }
 
     close(code?: number, data?: string | Buffer): void {
