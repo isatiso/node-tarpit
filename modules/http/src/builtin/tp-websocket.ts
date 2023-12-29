@@ -63,7 +63,7 @@ export class TpWebSocket {
     }
 
     removeAllListeners(event: EventNeedToWrap) {
-        this._socket.removeAllListeners()
+        this._socket.removeAllListeners(event)
     }
 
     close(code?: number, data?: string | Buffer): void {
