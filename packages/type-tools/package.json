@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/type-tools",
-    "version": "0.5.63",
+    "version": "0.5.64",
     "description": "Some types that helped.",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -37,6 +37,6 @@
         "build": "rm -rf lib && rollup -c"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.63"
+        "@tarpit/rollup": "^0.5.64"
     }
 }
