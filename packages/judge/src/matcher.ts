@@ -131,7 +131,12 @@ export namespace Jtl {
         [key: string]: Matcher<any> | RegExp
     }>(matcher: T): Matcher<{ [key in keyof T]: MatcherInferType<T[key]> }> {
         return new Matcher(`an object containing properties of [${Object.entries(matcher).map(([k, v]) => `"${k}": ${get_rule(v)}`).join(', ')}]`,
-            (target: any) => Object.entries(matcher).every(([k, v]) => !Matcher.mismatch(target[k], v)))
+            (target: any) => {
+                if (typeof target !== 'object') {
+                    return false
+                }
+                return Object.entries(matcher).every(([k, v]) => !Matcher.mismatch(target[k], v))
+            })
     }
 
     export function property<P extends string, T extends Matcher<T> | RegExp>(prop: P, matcher: T): Matcher<{ [key in P]: MatcherInferType<T> }> {
