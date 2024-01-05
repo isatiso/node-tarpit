@@ -176,6 +176,15 @@ describe('matcher.ts', function() {
             })
         })
 
+        describe('#object_of()', function() {
+            it('should check value if the target type match the given', function() {
+                expect(Jtl.object_of({ a: Jtl.string, b: Jtl.number }).mismatch({ a: 1, b: 2 })).to.have.property('rule')
+                expect(Jtl.object_of({ a: Jtl.string, b: Jtl.number }).mismatch({ a: '1', b: 2 })).to.be.undefined
+                expect(Jtl.object_of({ a: Jtl.string, b: /^abc/ }).mismatch({ a: '1', b: 'ab' })).to.have.property('rule')
+                expect(Jtl.object_of({ a: Jtl.string, b: /^abc/ }).mismatch({ a: '1', b: 'abcd' })).to.be.undefined
+            })
+        })
+
         describe('#object', function() {
             it('should check value if is a object', function() {
                 expect(Jtl.object.mismatch({})).to.be.undefined
