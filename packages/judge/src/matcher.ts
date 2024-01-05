@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-
 export type MismatchDescription = {
     rule: string,
 }
@@ -59,12 +58,12 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
 
 export namespace Jtl {
 
-    export function some<T extends (Matcher<T> | RegExp)[]>(...rules: T): Matcher<MatcherInferType<T[number]>> {
+    export function some<T extends (Matcher<any> | RegExp)[]>(...rules: T): Matcher<MatcherInferType<T[number]>> {
         return new Matcher(`match at least one rule of [${rules.map(r => `"${get_rule(r)}"`).join('|')}]`,
             (target: any) => rules.some(rule => !Matcher.mismatch(target, rule)))
     }
 
-    export function every<T extends (Matcher<T> | RegExp)[]>(...rules: T): Matcher<UnionToIntersection<MatcherInferType<T[number]>>> {
+    export function every<T extends (Matcher<any> | RegExp)[]>(...rules: T): Matcher<UnionToIntersection<MatcherInferType<T[number]>>> {
         return new Matcher(`match every rule of [${rules.map(r => `"${get_rule(r)}"`).join('|')}]`,
             (target: any) => rules.every(rule => !Matcher.mismatch(target, rule)))
     }
@@ -123,9 +122,16 @@ export namespace Jtl {
         return new Matcher(`be multiple of factor ${factor}`, (target: any) => typeof target === 'number' && target % factor === 0)
     }
 
-    export function array_of<T extends Matcher<T> | RegExp>(matcher: T): Matcher<MatcherInferType<T>[]> {
+    export function array_of<T extends Matcher<any> | RegExp>(matcher: T): Matcher<MatcherInferType<T>[]> {
         return new Matcher(`an array containing elements of [${get_rule(matcher)}]`,
             (target: any) => target.every((item: any) => !Matcher.mismatch(item, matcher)))
+    }
+
+    export function object_of<T extends {
+        [key: string]: Matcher<any> | RegExp
+    }>(matcher: T): Matcher<{ [key in keyof T]: MatcherInferType<T[key]> }> {
+        return new Matcher(`an object containing properties of [${Object.entries(matcher).map(([k, v]) => `"${k}": ${get_rule(v)}`).join(', ')}]`,
+            (target: any) => Object.entries(matcher).every(([k, v]) => !Matcher.mismatch(target[k], v)))
     }
 
     export function property<P extends string, T extends Matcher<T> | RegExp>(prop: P, matcher: T): Matcher<{ [key in P]: MatcherInferType<T> }> {
