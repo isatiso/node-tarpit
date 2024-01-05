@@ -132,10 +132,10 @@ export namespace Jtl {
     }>(matcher: T): Matcher<{ [key in keyof T]: MatcherInferType<T[key]> }> {
         return new Matcher(`an object containing properties of [${Object.entries(matcher).map(([k, v]) => `"${k}": ${get_rule(v)}`).join(', ')}]`,
             (target: any) => {
-                if (typeof matcher !== 'object') {
+                if (typeof target !== 'object') {
                     return false
                 }
-                return Object.entries(matcher).every(([k, v]) => !Matcher.mismatch(target?.[k], v))
+                return Object.entries(matcher).every(([k, v]) => !Matcher.mismatch(target[k], v))
             })
     }
 

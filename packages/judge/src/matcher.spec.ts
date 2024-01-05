@@ -181,7 +181,10 @@ describe('matcher.ts', function() {
                 expect(Jtl.object_of({ a: Jtl.string, b: Jtl.number }).mismatch({ a: 1, b: 2 })).to.have.property('rule')
                 expect(Jtl.object_of({ a: Jtl.string, b: Jtl.number }).mismatch({ a: '1', b: 2 })).to.be.undefined
                 expect(Jtl.object_of({ a: Jtl.string, b: /^abc/ }).mismatch({ a: '1', b: 'ab' })).to.have.property('rule')
-                expect(Jtl.object_of({ a: Jtl.string, b: /^abc/ }).mismatch({ a: '1', b: 'abcd' })).to.be.undefined
+                expect(Jtl.object_of({ a: Jtl.string, b: /^abc/ }).mismatch({ a: '1', b: 'abc_lkj' })).to.be.undefined
+                expect(Jtl.object_of({ a: Jtl.string, b: /^abc/ }).mismatch(0)).to.have.property('rule')
+                expect(Jtl.object_of({ a: Jtl.string, b: Jtl.boolean }).mismatch({ a: '1', b: 'abc_lkj' })).to.have.property('rule')
+                expect(Jtl.object_of({ a: Jtl.string, b: Jtl.number }).mismatch(undefined)).to.have.property('rule')
             })
         })
 
