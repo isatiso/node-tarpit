@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/transformer",
-    "version": "0.5.64",
+    "version": "0.5.65",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -44,7 +44,7 @@
         "typescript": "^5.1.6"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.64",
+        "@tarpit/rollup": "^0.5.65",
         "@types/js-yaml": "^4.0.5",
         "@types/micromatch": "^4.0.2",
         "@types/node": "^20.4.2"
