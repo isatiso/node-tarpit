@@ -8,6 +8,7 @@
 
 // istanbul ignore file
 
+import { Callable, KeysOfType } from '@tarpit/type-tools'
 import { AsyncResource } from 'async_hooks'
 import { EventEmitter } from 'events'
 import { isMainThread, parentPort, Worker } from 'worker_threads'
@@ -24,7 +25,7 @@ export interface WorkerDescription {
     ins: Worker
 }
 
-type MethodOfClass<T> = { [K in keyof T]: T[K] extends (...args: any) => any ? K : never }[keyof T]
+type MethodOfClass<T extends {}> = KeysOfType<T, (...args: any) => any>
 
 export interface TaskDescription {
     tarpit_id: string
@@ -72,9 +73,9 @@ export class TpThread extends EventEmitter {
         }
     }
 
-    async run_task<T extends object, K extends MethodOfClass<T>>(
-        cls: Constructor<T>, method: K & string, ...args: Parameters<T[K]>
-    ): Promise<ReturnType<T[K]> extends Promise<infer R> ? R : ReturnType<T[K]>> {
+    async run_task<T extends {}, K extends MethodOfClass<T>>(
+        cls: Constructor<T>, method: K & string, ...args: Parameters<Extract<T[K], Callable>>
+    ): Promise<ReturnType<Extract<T[K], Callable>> extends Promise<infer R> ? R : ReturnType<Extract<T[K], Callable>>> {
         const tarpit_id = (cls as any)[TarpitId]
         if (typeof tarpit_id !== 'string') {
             throw new Error(`${cls.name} is not a TpComponent`)
@@ -85,7 +86,7 @@ export class TpThread extends EventEmitter {
             })
         } else {
             const instance: any = this.injector.get_id(tarpit_id)?.create()
-            const result = await instance?.[method]?.(...args)
+            const result = await instance?.[method]?.(...args as any[])
             return Promise.resolve(result)
         }
     }
