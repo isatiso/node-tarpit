@@ -53,3 +53,7 @@ export type PathValueMapOfType<T, M> = {
 }
 
 export const name = 'type-tools'
+
+export type KeysOfType<T extends {}, M> = keyof T & keyof { [K in keyof T as T[K] extends M ? K : never]: 0 }
+
+export type Callable = (...args: any) => any
