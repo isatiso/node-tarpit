@@ -40,7 +40,7 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "mongodb": "^5.7.0",
+        "mongodb": "^6.9.0",
         "tslib": "^2.6.0"
     },
     "devDependencies": {
