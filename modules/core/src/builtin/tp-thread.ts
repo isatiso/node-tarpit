@@ -60,6 +60,7 @@ export class TpThread extends EventEmitter {
         this.injector.on('start', () => this.start())
         this.injector.on('terminate', () => this.terminate())
         if (parentPort) {
+            console.log('worker parent port', parentPort)
             parentPort.on('message', async message => {
                 const { tarpit_id, method, args } = message
                 const instance: any = this.injector.get_id(tarpit_id)?.create()
@@ -73,6 +74,10 @@ export class TpThread extends EventEmitter {
         }
     }
 
+    get workers_count() {
+        return this.workers.length
+    }
+
     async run_task<T extends {}, K extends MethodOfClass<T>>(
         cls: Constructor<T>, method: K & string, ...args: Parameters<Extract<T[K], Callable>>
     ): Promise<ReturnType<Extract<T[K], Callable>> extends Promise<infer R> ? R : ReturnType<Extract<T[K], Callable>>> {
@@ -80,11 +85,13 @@ export class TpThread extends EventEmitter {
         if (typeof tarpit_id !== 'string') {
             throw new Error(`${cls.name} is not a TpComponent`)
         }
+        console.log('run task', tarpit_id, isMainThread, method, args)
         if (isMainThread) {
             return new Promise((resolve, reject) => {
                 this._run_task({ tarpit_id, method, args, callback: (err, result) => err ? reject(err) : resolve(result) })
             })
         } else {
+            console.log('worker task', tarpit_id, method, args)
             const instance: any = this.injector.get_id(tarpit_id)?.create()
             const result = await instance?.[method]?.(...args as any[])
             return Promise.resolve(result)
@@ -101,6 +108,8 @@ export class TpThread extends EventEmitter {
                     this._run_task(this.task_buffer.shift()!)
                 }
             })
+        } else {
+            console.log('worker started')
         }
     }
 
@@ -113,8 +122,10 @@ export class TpThread extends EventEmitter {
     private _run_task(task: TaskDescription) {
         const worker = this.free_workers.pop()
         if (!worker) {
+            console.log('buffer', task)
             this.task_buffer.push(task)
         } else {
+            console.log('execute', task)
             const { callback, ...other } = task
             worker.task = new TaskInfo(callback)
             worker.ins.postMessage({ ...other })
@@ -122,6 +133,7 @@ export class TpThread extends EventEmitter {
     }
 
     private _add_new_worker() {
+        console.log('worker name', require?.main?.filename)
         const worker: WorkerDescription = { ins: new Worker(require?.main?.filename ?? '') }
         worker.ins.on('message', msg => {
             worker.task?.done(msg.error, msg.result)
