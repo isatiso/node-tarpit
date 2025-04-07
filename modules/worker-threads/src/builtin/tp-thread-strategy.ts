@@ -6,11 +6,14 @@
  * found in the LICENSE file at source root.
  */
 
-// istanbul ignore file
-
-import { TpService } from '../annotations'
+import { TpService } from '@tarpit/core'
 
 @TpService()
 export class TpThreadStrategy {
-    public readonly max_threads = 4
+
+    public readonly max_threads: number = 4
+    public readonly worker_entry = require?.main?.filename ?? ''
+
+    constructor() {
+    }
 }

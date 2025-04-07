@@ -6,16 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-// istanbul ignore file
-
+import { Constructor, Injector, Optional, TarpitId, TpService } from '@tarpit/core'
 import { Callable, KeysOfType } from '@tarpit/type-tools'
 import { AsyncResource } from 'async_hooks'
 import { EventEmitter } from 'events'
 import { isMainThread, parentPort, Worker } from 'worker_threads'
-import { TpService } from '../annotations'
-import { Injector } from '../di'
-import { TarpitId } from '../tools/decorator'
-import { Constructor } from '../types'
 import { TpThreadStrategy } from './tp-thread-strategy'
 
 const worker_freed_event = Symbol('worker_freed_event')
@@ -53,12 +48,11 @@ export class TpThread extends EventEmitter {
     private task_buffer: TaskDescription[] = []
 
     constructor(
-        private strategy: TpThreadStrategy,
+        @Optional() private strategy: TpThreadStrategy,
         private injector: Injector,
     ) {
         super()
-        this.injector.on('start', () => this.start())
-        this.injector.on('terminate', () => this.terminate())
+        this.strategy = strategy ?? new TpThreadStrategy()
         if (parentPort) {
             parentPort.on('message', async message => {
                 const { tarpit_id, method, args } = message
@@ -71,6 +65,10 @@ export class TpThread extends EventEmitter {
                 }
             })
         }
+    }
+
+    get workers_count() {
+        return this.workers.length
     }
 
     async run_task<T extends {}, K extends MethodOfClass<T>>(
@@ -86,8 +84,12 @@ export class TpThread extends EventEmitter {
             })
         } else {
             const instance: any = this.injector.get_id(tarpit_id)?.create()
-            const result = await instance?.[method]?.(...args as any[])
-            return Promise.resolve(result)
+            try {
+                const result = await instance?.[method]?.(...args as any[])
+                return Promise.resolve(result)
+            } catch (e) {
+                return Promise.reject(e)
+            }
         }
     }
 
@@ -122,7 +124,7 @@ export class TpThread extends EventEmitter {
     }
 
     private _add_new_worker() {
-        const worker: WorkerDescription = { ins: new Worker(require?.main?.filename ?? '') }
+        const worker: WorkerDescription = { ins: new Worker(this.strategy.worker_entry, { env: process.env }) }
         worker.ins.on('message', msg => {
             worker.task?.done(msg.error, msg.result)
             worker.task = undefined
