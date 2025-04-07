@@ -16,12 +16,25 @@ export class HttpDict<T extends NodeJS.Dict<string | string[]> = NodeJS.Dict<str
     ) {
     }
 
-    get_first(key: keyof T): string | undefined {
+    get_first(key: keyof T, matcher?: Matcher<string> | RegExp): string | undefined {
         const item = this.data[key]
-        if (Array.isArray(item)) {
-            return item[0]
+        const value: string | undefined = Array.isArray(item) ? item[0] : item
+        if (matcher && Matcher.mismatch(value, matcher)) {
+            return void 0
+        }
+        return value
+    }
+
+    get_all(key: keyof T, matcher?: Matcher<string> | RegExp): string[] | undefined {
+        const item = this.data[key]
+        if (!item) {
+            return void 0
+        }
+        const values: string[] = Array.isArray(item) ? item : [item]
+        if (matcher) {
+            return values.filter(v => !Matcher.mismatch(v, matcher))
         } else {
-            return item
+            return values
         }
     }
 
