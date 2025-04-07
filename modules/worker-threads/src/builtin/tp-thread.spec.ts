@@ -46,6 +46,7 @@ describe('tp-thread.ts', function() {
             }
 
             const results = await Promise.all(cases.map(([a, b]) => TestTpThread.tp_thread.run_task(TestTpThread.TestService, 'plus', a, b)))
+            console.log('sync plus results', results)
             expect(results).to.have.lengthOf(cases.length)
             expect(results).to.deep.equal(cases.map(([, , res]) => res))
         })
@@ -59,6 +60,7 @@ describe('tp-thread.ts', function() {
             }
 
             const results = await Promise.all(cases.map(([a, b]) => TestTpThread.tp_thread.run_task(TestTpThread.TestService, 'async_plus', a, b)))
+            console.log('async plus results', results)
             expect(results).to.have.lengthOf(cases.length)
             expect(results).to.deep.equal(cases.map(([, , res]) => res))
         })
