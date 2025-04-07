@@ -42,6 +42,7 @@
     "dependencies": {
         "@tarpit/config": "^0.5.66",
         "@tarpit/core": "^0.5.66",
+        "@tarpit/type-tools": "^0.5.66",
         "reflect-metadata": "^0.1.13",
         "tslib": "^2.6.0"
     },
