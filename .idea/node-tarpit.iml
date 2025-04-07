@@ -3,34 +3,35 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/packages/transformer/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/config/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/dora/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/judge/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/barbeque/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/error/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/actions/upload-codecov/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/common/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/content-type/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/worker-threads/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/http/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/http/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/mongodb/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/mongodb/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/modules/schedule/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/schedule/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/modules/tora/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/barbeque/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/config/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/cron/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/cron/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/dora/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/error/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/judge/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/negotiator/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/transformer/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/type-tools/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/projects/router-test/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/projects/zoo/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/supports/abraham/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/supports/cli/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/modules/http/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/cron/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/modules/schedule/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/cron/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/supports/rollup/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/modules/mongodb/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/type-tools/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/projects/router-test/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/actions/upload-codecov/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/negotiator/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/modules/mongodb/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/actions/upload-codecov/lib" />
       <excludeFolder url="file://$MODULE_DIR$/docs" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
@@ -43,6 +44,9 @@
       <excludeFolder url="file://$MODULE_DIR$/modules/http/.cache" />
       <excludeFolder url="file://$MODULE_DIR$/modules/http/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/modules/http/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/worker-threads/.cache" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/worker-threads/.nyc_output" />
+      <excludeFolder url="file://$MODULE_DIR$/modules/worker-threads/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/mongodb/.cache" />
       <excludeFolder url="file://$MODULE_DIR$/modules/mongodb/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/modules/mongodb/lib" />

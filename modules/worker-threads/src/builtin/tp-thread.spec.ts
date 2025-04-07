@@ -9,7 +9,8 @@
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import spies from 'chai-spies'
-import { TestTpThread } from './test-worker'
+import { TestTpThread } from './fixture/test-worker'
+
 import { TpThreadStrategy } from './tp-thread-strategy'
 
 chai.use(cap)

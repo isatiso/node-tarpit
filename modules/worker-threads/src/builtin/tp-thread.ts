@@ -6,16 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-// istanbul ignore file
-
+import { Constructor, Injector, Optional, TarpitId, TpService } from '@tarpit/core'
 import { Callable, KeysOfType } from '@tarpit/type-tools'
 import { AsyncResource } from 'async_hooks'
 import { EventEmitter } from 'events'
 import { isMainThread, parentPort, Worker } from 'worker_threads'
-import { TpService } from '../annotations'
-import { Injector } from '../di'
-import { TarpitId } from '../tools/decorator'
-import { Constructor } from '../types'
 import { TpThreadStrategy } from './tp-thread-strategy'
 
 const worker_freed_event = Symbol('worker_freed_event')
@@ -53,12 +48,11 @@ export class TpThread extends EventEmitter {
     private task_buffer: TaskDescription[] = []
 
     constructor(
-        private strategy: TpThreadStrategy,
+        @Optional() private strategy: TpThreadStrategy,
         private injector: Injector,
     ) {
         super()
-        this.injector.on('start', () => this.start())
-        this.injector.on('terminate', () => this.terminate())
+        this.strategy = strategy ?? new TpThreadStrategy()
         if (parentPort) {
             parentPort.on('message', async message => {
                 const { tarpit_id, method, args } = message

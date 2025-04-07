@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
-import { TpService } from '../annotations'
-import { ClassProvider, Injector, ValueProvider } from '../di'
-import { TpThread } from './tp-thread'
-import { TpThreadStrategy } from './tp-thread-strategy'
+
+import { ClassProvider, Injector, TpService, ValueProvider } from '@tarpit/core'
+import { TpThread } from '../tp-thread'
+import { TpThreadStrategy } from '../tp-thread-strategy'
 
 export namespace TestTpThread {
 
