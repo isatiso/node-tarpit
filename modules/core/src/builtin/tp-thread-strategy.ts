@@ -12,8 +12,9 @@ import { TpService } from '../annotations'
 
 @TpService()
 export class TpThreadStrategy {
-    constructor(
-        public readonly max_threads = 4
-    ) {
+    public readonly max_threads: number = 4
+    public readonly worker_entry = require?.main?.filename ?? ''
+
+    constructor() {
     }
 }
