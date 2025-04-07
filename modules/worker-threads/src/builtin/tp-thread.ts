@@ -125,8 +125,8 @@ export class TpThread extends EventEmitter {
 
     private _add_new_worker() {
         console.log('add new worker', this.strategy.worker_entry)
-        console.log(process.env)
         const worker: WorkerDescription = { ins: new Worker(this.strategy.worker_entry, { env: process.env }) }
+        console.log('worker', typeof worker.ins)
         worker.ins.on('message', msg => {
             console.log('message', msg)
             worker.task?.done(msg.error, msg.result)
