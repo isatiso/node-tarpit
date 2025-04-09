@@ -9,6 +9,17 @@
 import { ProxyConfig } from './__types__'
 import { ResponseCacheControl } from './tools/cache-control'
 
+export interface HttpStaticConfig {
+    scope?: string
+    root?: string
+    index?: string[]
+    extensions?: `.${string}`[]
+    cache_size?: number
+    dotfile?: 'allow' | 'ignore' | 'deny'
+    vary?: string[] | '*'
+    cache_control?: ResponseCacheControl
+}
+
 declare module '@tarpit/core' {
 
     export interface TpConfigSchema {
@@ -16,15 +27,7 @@ declare module '@tarpit/core' {
             port: number
             proxy?: ProxyConfig
             expose_error?: boolean
-            static?: {
-                root?: string,
-                index?: string[],
-                extensions?: `.${string}`[],
-                cache_size?: number
-                dotfile?: 'allow' | 'ignore' | 'deny'
-                vary?: string[] | '*'
-                cache_control?: ResponseCacheControl
-            }
+            static?: HttpStaticConfig | HttpStaticConfig[]
             server?: {
                 keepalive_timeout?: number
                 terminate_timeout?: number
@@ -34,10 +37,10 @@ declare module '@tarpit/core' {
                 allow_headers: string
                 allow_methods: string
                 max_age: number
-            },
+            }
             body?: {
                 max_length?: number
-            },
+            }
         }
     }
 }

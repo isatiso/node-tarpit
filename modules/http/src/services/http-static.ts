@@ -11,6 +11,7 @@ import fs, { ReadStream } from 'fs'
 import mime_types from 'mime-types'
 import { TpRequest, TpResponse } from '../builtin'
 import { throw_forbidden, throw_not_found, throw_not_modified, throw_precondition_failed, TpHttpFinish } from '../errors'
+import { HttpStaticConfig } from '../index'
 import { ResponseCacheControl } from '../tools/cache-control'
 import { FileWatcher, SearchedFile } from '../tools/file-watcher'
 
@@ -78,6 +79,7 @@ export async function create_stream(filename: string): Promise<ReadStream> {
 }
 
 export interface ServeStaticOptions {
+    scope?: string
     dotfile?: 'allow' | 'ignore' | 'deny'
     cache_control?: ResponseCacheControl
     vary?: string[] | '*'
@@ -87,37 +89,51 @@ export interface ServeStaticOptions {
 @TpService({ inject_root: true })
 export class HttpStatic {
 
-    private root: string = this.config.get('http.static.root') ?? process.cwd()
-    private cache_size: number = this.config.get('http.static.cache_size') ?? 100
-    private dotfile = this.config.get('http.static.dotfile') ?? 'ignore'
-    private vary = this.config.get('http.static.vary')
-    private cache_control = this.config.get('http.static.cache_control')
-    private readonly file_watcher: FileWatcher
+    private readonly static_configs: Record<string, HttpStaticConfig> = {}
+    private readonly file_watchers: Record<string, FileWatcher> = {}
 
     constructor(
         private config: TpConfigData,
     ) {
-        const index = this.config.get('http.static.index') ?? ['index.html']
-        const extensions = this.config.get('http.static.extensions') ?? ['.html']
-        const root_stats = fs.statSync(this.root)
-        if (!root_stats.isDirectory()) {
-            throw new Error(`static file watching error: root_dir "${this.root}" is not a directory.`)
+        const static_config_data = this.config.get('http.static') ?? []
+        const static_config_list = Array.isArray(static_config_data) ? static_config_data : [static_config_data]
+        if (static_config_list.length === 0) {
+            static_config_list.push({})
         }
-        this.file_watcher = new FileWatcher(this.root, index, extensions, { cache_size: this.cache_size })
+        for (const c of static_config_list) {
+            c.root = c.root ?? process.cwd()
+            c.cache_size = c.cache_size ?? 100
+            c.dotfile = c.dotfile ?? 'ignore'
+            c.scope = c.scope ?? ''
+            c.index = c.index ?? ['index.html']
+            c.extensions = c.extensions ?? ['.html']
+            const root_stats = fs.statSync(c.root)
+            if (!root_stats.isDirectory()) {
+                throw new Error(`static file watching error: root_dir "${c.root}" is not a directory.`)
+            }
+            this.static_configs[c.scope] = c
+            this.file_watchers[c.scope] = new FileWatcher(c.root, c.index, c.extensions, { cache_size: c.cache_size })
+        }
     }
 
     async serve(request: TpRequest, response: TpResponse, options?: ServeStaticOptions) {
 
         const file = options?.path ?? request.path ?? '/'
+        const scope = options?.scope ?? ''
+        if (!this.static_configs[scope] || !this.file_watchers[scope]) {
+            throw_not_found()
+        }
 
+        const cfg = this.static_configs[scope]
         const decoded_file = decodeURI(file)
-        const searched_file = await this.file_watcher.lookup(decoded_file)
+
+        const searched_file = await this.file_watchers[scope].lookup(decoded_file)
         if (!searched_file) {
             throw_not_found()
         }
 
         if (searched_file.is_dot) {
-            const dotfile = options?.dotfile ?? this.dotfile
+            const dotfile = options?.dotfile ?? cfg.dotfile
             if (dotfile === 'deny') {
                 throw_forbidden()
             } else if (dotfile === 'ignore') {
@@ -127,7 +143,7 @@ export class HttpStatic {
 
         response.status = 200
 
-        this.init_header(searched_file, response, { ...options })
+        this.init_header(searched_file, scope, response, { ...options })
 
         if (is_precondition_failure(request, response)) {
             throw_precondition_failed()
@@ -141,10 +157,10 @@ export class HttpStatic {
         return create_stream(searched_file.name)
     }
 
-    private init_header(file: SearchedFile, res: TpResponse, options: Pick<ServeStaticOptions, 'vary' | 'cache_control'>) {
+    private init_header(file: SearchedFile, scope: string, res: TpResponse, options: Pick<ServeStaticOptions, 'vary' | 'cache_control'>) {
 
-        const vary = options.vary ?? this.vary
-        const cache_control = options.cache_control ?? this.cache_control ?? { public: true, 'max-age': 0 }
+        const vary = options.vary ?? this.static_configs[scope].vary
+        const cache_control = options.cache_control ?? this.static_configs[scope].cache_control ?? { public: true, 'max-age': 0 }
 
         if (!res.has('Content-Type')) {
             const type = mime_types.lookup(file.name) || ''
