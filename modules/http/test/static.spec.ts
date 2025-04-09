@@ -84,7 +84,6 @@ describe('static case', function() {
     const http_static = platform.expose(HttpStatic)
     const sandbox = chai.spy.sandbox()
 
-
     function mock_request_and_response(override: {
         if_match?: string
         if_none_match?: string
@@ -201,7 +200,7 @@ describe('static case', function() {
 
         it('should response with status 404 if configure as ignore dotfile', async function() {
             if (http_static) {
-                (http_static as any).dotfile = 'ignore'
+                (http_static as any).static_configs[''].dotfile = 'ignore'
             }
             await r.get('/assets/.dotfile')
                 .catch(err => err.response)
@@ -213,7 +212,7 @@ describe('static case', function() {
 
         it('should response as normal if configure as allow dotfile', async function() {
             if (http_static) {
-                (http_static as any).dotfile = 'allow'
+                (http_static as any).static_configs[''].dotfile = 'allow'
             }
             await r.get('/assets/.dotfile')
                 .catch(err => err.response)
@@ -240,8 +239,11 @@ describe('static case', function() {
 
         it('should startup with default config', function() {
             const http_static: any = new HttpStatic(new ConfigData({ http: { port: 3939 } }))
-            expect(http_static).to.have.property('root').which.to.equal(process.cwd())
-            expect(http_static).to.have.property('cache_size').which.to.equal(100)
+            expect(http_static).to.have.property('static_configs')
+            expect(http_static.static_configs).to.have.property('')
+            expect(http_static.static_configs['']).to.have.property('scope').which.to.equal('')
+            expect(http_static.static_configs['']).to.have.property('root').which.to.equal(process.cwd())
+            expect(http_static.static_configs['']).to.have.property('cache_size').which.to.equal(100)
         })
 
         it('should throw error if specified root path is not a directory', function() {
@@ -332,6 +334,173 @@ describe('static case', function() {
         it('should return true if Last-Modified not exists', function() {
             const { request, response } = mock_request_and_response({ if_unmodified_since: 1670000000 })
             expect(is_precondition_failure(request, response)).to.be.true
+        })
+    })
+})
+
+describe('static multi mount case', function() {
+
+    @TpRouter('/', { imports: [HttpServerModule] })
+    class MultiStaticRouter {
+
+        constructor(
+            private http_static: HttpStatic,
+        ) {
+        }
+
+        @Get('assets1/(.+)')
+        async get_txt1(req: TpRequest, res: TpResponse, params: Params<{ remove_etag: string }>) {
+            const remove_etag = params.get_first('remove_etag')
+            if (remove_etag) {
+                res.set('Etag', '')
+            }
+            return this.http_static.serve(req, res, { scope: 'test1', path: (req.path ?? '').replace('/assets1', '') })
+        }
+
+        @Get('assets2/(.+)')
+        async get_txt2(req: TpRequest, res: TpResponse, params: Params<{ remove_etag: string }>) {
+            const remove_etag = params.get_first('remove_etag')
+            if (remove_etag) {
+                res.set('Etag', '')
+            }
+            return this.http_static.serve(req, res, { scope: 'test2', path: (req.path ?? '').replace('/assets2', '') })
+        }
+
+        @Get('assets3/(.+)')
+        async get_txt3(req: TpRequest, res: TpResponse, params: Params<{ remove_etag: string }>) {
+            const remove_etag = params.get_first('remove_etag')
+            if (remove_etag) {
+                res.set('Etag', '')
+            }
+            return this.http_static.serve(req, res, { scope: 'test3', path: (req.path ?? '').replace('/assets3', '') })
+        }
+
+        @Get('custom/:filename(.+)')
+        async get_custom(req: TpRequest, res: TpResponse, path_args: PathArgs<{ filename: string }>) {
+            res.set('Content-Type', 'text/plain; charset=utf-8')
+            res.set('Content-Length', '8')
+            return this.http_static.serve(req, res, {
+                path: 'assets/' + path_args.get('filename'),
+                dotfile: 'allow',
+                vary: ['Date'],
+                cache_control: { public: true, 'max-age': 86400 }
+            })
+        }
+
+        @Get('dotfile')
+        async get_dotfile(req: TpRequest, res: TpResponse) {
+            res.set('Last-Modified', new Date().toUTCString())
+            res.set('Etag', '"abcde"')
+            res.set('Cache-Control', `public`)
+            res.set('Vary', 'Date')
+            return this.http_static.serve(req, res, { path: 'assets/.dotfile', dotfile: 'allow' })
+        }
+
+        @Get('')
+        async get_some_text_2(req: TpRequest, res: TpResponse) {
+            (req as any)._url.pathname = undefined
+            return this.http_static.serve(req, res, {})
+        }
+    }
+
+    const platform = new Platform(load_config<TpConfigSchema>({
+        http: {
+            port: 31254, expose_error: true,
+            static: [
+                {
+                    scope: 'test1',
+                    root: './test/assets',
+                    dotfile: 'deny',
+                    cache_size: 50,
+                    index: ['index.html'],
+                    extensions: ['.htm', '.html'],
+                    vary: '*'
+                }, {
+                    scope: 'test2',
+                    root: './test/assets1',
+                    dotfile: 'allow',
+                    cache_size: 50,
+                    index: ['index.html'],
+                    extensions: ['.htm', '.html'],
+                    vary: '*'
+                }
+            ]
+        }
+    })).bootstrap(MultiStaticRouter)
+
+    const inspector = platform.expose(TpInspector)!
+    const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
+    const http_static = platform.expose(HttpStatic)
+    const sandbox = chai.spy.sandbox()
+
+    function mock_request_and_response(override: {
+        if_match?: string
+        if_none_match?: string
+        if_modified_since?: number
+        if_unmodified_since?: number
+        cache_control?: CacheControl
+        etag?: string
+        last_modified?: number
+    }): { request: TpRequest; response: TpResponse } {
+        const request: any = {}
+        override?.if_match && (request.if_match = override.if_match)
+        override?.if_none_match && (request.if_none_match = override.if_none_match)
+        override?.if_modified_since && (request.if_modified_since = override.if_modified_since)
+        override?.if_unmodified_since && (request.if_unmodified_since = override.if_unmodified_since)
+        override?.cache_control && (request.cache_control = override.cache_control)
+        const response: any = {}
+        override?.etag && (response.etag = override.etag)
+        override?.last_modified && (response.last_modified = override.last_modified)
+        return { request, response }
+    }
+
+    before(async function() {
+        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
+        platform.start()
+        await inspector.wait_start()
+    })
+
+    after(async function() {
+        platform.terminate()
+        await inspector.wait_terminate()
+        sandbox.restore()
+    })
+
+    it('should serve static file from test1', async function() {
+        await r.get('/assets1/some.txt').then(res => {
+            expect(res.status).to.equal(200)
+            expect(res.headers['content-type']).to.equal('text/plain; charset=UTF-8')
+            expect(res.headers).to.have.property('etag')
+            expect(res.headers).to.have.property('last-modified')
+            expect(res.headers['content-length']).to.equal('8')
+            expect(res.data.trim()).to.equal('abcdefg')
+        })
+    })
+
+    it('should serve static file from test2', async function() {
+        await r.get('/assets2/some.txt').then(res => {
+            expect(res.status).to.equal(200)
+            expect(res.headers['content-type']).to.equal('text/plain; charset=UTF-8')
+            expect(res.headers).to.have.property('etag')
+            expect(res.headers).to.have.property('last-modified')
+            expect(res.headers['content-length']).to.equal('8')
+            expect(res.data.trim()).to.equal('abcdefg')
+        })
+    })
+
+    it('should use different strategy for different static', async function() {
+        await r.get('/assets2/.dotfile').catch(err => err.response).then(res => {
+            expect(res.status).to.equal(200)
+        })
+        await r.get('/assets1/.dotfile').catch(err => err.response).then(res => {
+            expect(res.status).to.equal(403)
+        })
+    })
+
+    it('should return 404 if no scope found', async function() {
+        await r.get('/assets3/some.txt').catch(err => err.response).then(res => {
+            expect(res.status).to.equal(404)
+            expect(res.data).to.eql({ error: { status: 404, code: '404', msg: 'Not Found', headers: {}, stack: '' } })
         })
     })
 })
