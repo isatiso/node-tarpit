@@ -46,7 +46,7 @@ async function too_big(dir: string, limit: number): Promise<boolean> {
 @TpService()
 export class HttpFileManager {
 
-    readonly data_path = this._config.get('http.file_manager.root') || ''
+    readonly data_path = this._config.get('http.file_manager.root') || path.resolve('./data')
     readonly download_size_limit = this._config.get('http.file_manager.download_limit') || 0
 
     private _file_locker = new FileLocker()
@@ -54,6 +54,7 @@ export class HttpFileManager {
     constructor(
         private _config: TpConfigData,
     ) {
+        fs.mkdirSync(this.data_path, { recursive: true })
     }
 
     /**

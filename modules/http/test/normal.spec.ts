@@ -15,13 +15,18 @@ import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
 import { IncomingMessage } from 'http'
 import { WebSocket } from 'ws'
-import { Delete, Get, HttpInspector, HttpServerModule, Params, PathArgs, Post, Put, RequestHeaders, TpHttpFinish, TpRequest, TpResponse, TpRouter, TpWebSocket, WS } from '../src'
+import { Delete, Get, HttpFileManager, HttpInspector, HttpServerModule, Params, PathArgs, Post, Put, RequestHeaders, TpHttpFinish, TpRequest, TpResponse, TpRouter, TpWebSocket, WS } from '../src'
 
 chai.use(cap)
 chai.use(chai_spies)
 
 @TpRouter('/', { imports: [HttpServerModule] })
 class NormalRouter {
+
+    constructor(
+        private file: HttpFileManager,
+    ) {
+    }
 
     @Get('user/:user_id')
     async get_user(params: Params<{ id: string }>, args: PathArgs<{ user_id: string }>) {

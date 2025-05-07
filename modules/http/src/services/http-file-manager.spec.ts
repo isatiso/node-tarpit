@@ -10,8 +10,10 @@ import { TpConfigData } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
+import { Server } from 'net'
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
+import net from 'node:net'
 import path from 'node:path'
 import stream from 'node:stream'
 import { HttpFileManager } from './http-file-manager'
@@ -23,6 +25,7 @@ describe('http-file-manager.ts', function() {
 
     let file_manager: HttpFileManager
     let mock_config: TpConfigData
+    let server: net.Server
     const test_dir = './test/file_manager_test'
     const test_file = 'test_file.txt'
     const test_content = 'Hello, World!'
@@ -32,6 +35,12 @@ describe('http-file-manager.ts', function() {
         await fsp.mkdir(test_dir, { recursive: true })
         await fsp.writeFile(path.join(test_dir, test_file), test_content)
         await fsp.symlink(path.join(test_dir, test_file), path.join(test_dir, 'link_to_test_file.txt'))
+
+        // Create a socket file for testing (only on Unix-like systems)
+        const net = require('node:net')
+        const socketPath = path.join(test_dir, 'test.sock')
+        server = net.createServer()
+        server.listen(socketPath)
 
         // Mock configuration
         mock_config = {
@@ -52,6 +61,7 @@ describe('http-file-manager.ts', function() {
     afterEach(async function() {
         // Clean up test directory
         await fsp.rm(test_dir, { recursive: true, force: true })
+        server.close()
     })
 
     describe('.zip()', function() {
@@ -96,6 +106,27 @@ describe('http-file-manager.ts', function() {
             const stream_result = await unlimited_manager.zip('')
             expect(stream_result).to.be.instanceof(stream.Transform)
         })
+
+        it('should use default path when data_path is empty', async function() {
+            // Mock configuration with empty data_path
+            const empty_path_config = {
+                get: (key: string) => {
+                    if (key === 'http.file_manager.root') {
+                        return ''
+                    }
+                    return undefined
+                }
+            } as TpConfigData
+
+            const spy = chai.spy.on(path, 'resolve', () => test_dir)
+            const empty_path_manager = new HttpFileManager(empty_path_config)
+            expect(spy).to.have.been.called.with('./data')
+
+            const stream_result = await empty_path_manager.zip('')
+            expect(stream_result).to.be.instanceof(stream.Transform)
+            chai.spy.restore(path, 'resolve')
+        })
+
     })
 
     describe('.read()', function() {
@@ -152,7 +183,7 @@ describe('http-file-manager.ts', function() {
 
             const files = await file_manager.ls('')
             expect(files).to.be.an('array')
-            expect(files.length).to.equal(3)
+            expect(files.length).to.equal(4)
 
             const file_entry = files.find(f => f.name === test_file)
             const dir_entry = files.find(f => f.name === 'subdir')
