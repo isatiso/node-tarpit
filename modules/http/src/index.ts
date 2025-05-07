@@ -20,6 +20,11 @@ export interface HttpStaticConfig {
     cache_control?: ResponseCacheControl
 }
 
+export interface HttpFileManagerConfig {
+    root?: string
+    download_limit?: number
+}
+
 declare module '@tarpit/core' {
 
     export interface TpConfigSchema {
@@ -28,6 +33,7 @@ declare module '@tarpit/core' {
             proxy?: ProxyConfig
             expose_error?: boolean
             static?: HttpStaticConfig | HttpStaticConfig[]
+            file_manager?: HttpFileManagerConfig
             server?: {
                 keepalive_timeout?: number
                 terminate_timeout?: number
