@@ -48,10 +48,11 @@
         "fresh": "^0.5.2",
         "lru-cache": "^10.0.0",
         "mime-types": "^2.1.35",
-        "path-to-regexp": "^6.2.1",
+        "path-to-regexp": "^6.3.0",
+        "tar": "^7.4.3",
         "tslib": "^2.6.0",
         "type-is": "^1.6.18",
-        "ws": "^8.13.0"
+        "ws": "^8.18.2"
     },
     "devDependencies": {
         "@tarpit/content-type": "^0.5.69",

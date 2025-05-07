@@ -48,3 +48,13 @@ export interface TpRouterOptions extends ImportsAndProviders {
 
 export interface TpWebSocketOptions extends ImportsAndProviders {
 }
+
+export type FileType = 'file' | 'directory' | 'block' | 'character' | 'link' | 'fifo' | 'socket' | 'unknown'
+
+export interface FileDesc {
+    type: FileType
+    name: string
+    mtimeMs: number
+    ctimeMs: number
+    size: number
+}

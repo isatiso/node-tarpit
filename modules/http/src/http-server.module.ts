@@ -12,6 +12,7 @@ import { TpHttpToken, TpRouter } from './annotations'
 import { HttpAuthenticator } from './services/http-authenticator'
 import { HttpBodyFormatter } from './services/http-body-formatter'
 import { HttpCacheProxy } from './services/http-cache-proxy'
+import { HttpFileManager } from './services/http-file-manager'
 import { HttpHooks } from './services/http-hooks'
 import { HttpInspector } from './services/http-inspector'
 import { HttpRouters } from './services/http-routers'
@@ -26,15 +27,16 @@ import { collect_routes } from './tools/collect-routes'
         ContentTypeModule,
     ],
     providers: [
-        HttpUrlParser,
-        HttpInspector,
-        HttpRouters,
-        HttpStatic,
-        HttpServer,
-        HttpCacheProxy,
-        HttpHooks,
         HttpAuthenticator,
         HttpBodyFormatter,
+        HttpCacheProxy,
+        HttpFileManager,
+        HttpHooks,
+        HttpInspector,
+        HttpRouters,
+        HttpServer,
+        HttpStatic,
+        HttpUrlParser,
     ]
 })
 export class HttpServerModule {
