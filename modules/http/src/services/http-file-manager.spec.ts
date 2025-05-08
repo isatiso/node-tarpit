@@ -20,7 +20,7 @@ import { HttpFileManager } from './http-file-manager'
 chai.use(cap)
 chai.use(chai_spies)
 
-describe.only('http-file-manager.ts', function() {
+describe('http-file-manager.ts', function() {
 
     let file_manager: HttpFileManager
     let mock_config: TpConfigData
