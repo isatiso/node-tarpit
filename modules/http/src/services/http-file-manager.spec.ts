@@ -35,6 +35,10 @@ describe('http-file-manager.ts', function() {
         await fsp.writeFile(path.join(test_dir, test_file), test_content)
         await fsp.symlink('./test_file.txt', path.join(test_dir, 'link_to_test_file.txt'))
 
+        // Create a socket file for testing (only on Unix-like systems)
+        const socket_path = path.join(test_dir, 'test.sock')
+        server = net.createServer()
+        server.listen(socket_path)
         // Mock configuration
         mock_config = {
             get: (key: string) => {
@@ -54,12 +58,16 @@ describe('http-file-manager.ts', function() {
     afterEach(async function() {
         // Clean up test directory
         await fsp.rm(test_dir, { recursive: true, force: true })
+        server.close()
     })
 
     describe('.zip()', function() {
         it('should create a zip archive of a directory', async function() {
+            console.log(fs.readdirSync(test_dir))
             const stream_result = await file_manager.zip('')
             expect(stream_result).to.be.instanceof(stream.Transform)
+            stream_result.destroy()
+            console.log(fs.readdirSync(test_dir))
         })
 
         it('should throw error if archive size exceeds limit', async function() {
@@ -170,10 +178,6 @@ describe('http-file-manager.ts', function() {
 
     describe('.ls()', function() {
         it('should list files in a directory', async function() {
-            // Create a socket file for testing (only on Unix-like systems)
-            const socket_path = path.join(test_dir, 'test.sock')
-            server = net.createServer()
-            server.listen(socket_path)
 
             // Create a subdirectory
             await fsp.mkdir(path.join(test_dir, 'subdir'), { recursive: true })
@@ -190,7 +194,6 @@ describe('http-file-manager.ts', function() {
             expect(dir_entry).to.exist
             expect(dir_entry?.type).to.equal('directory')
 
-            server.close()
         })
 
         it('should handle broken symbolic links gracefully', async function() {
