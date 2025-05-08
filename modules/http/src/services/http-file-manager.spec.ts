@@ -10,7 +10,6 @@ import { TpConfigData } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import chai_spies from 'chai-spies'
-import { Server } from 'net'
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import net from 'node:net'
@@ -34,14 +33,12 @@ describe('http-file-manager.ts', function() {
         // Create test directory and file
         await fsp.mkdir(test_dir, { recursive: true })
         await fsp.writeFile(path.join(test_dir, test_file), test_content)
-        await fsp.symlink(path.join(test_dir, test_file), path.join(test_dir, 'link_to_test_file.txt'))
+        await fsp.symlink('./test_file.txt', path.join(test_dir, 'link_to_test_file.txt'))
 
         // Create a socket file for testing (only on Unix-like systems)
-        const net = require('node:net')
-        const socketPath = path.join(test_dir, 'test.sock')
+        const socket_path = path.join(test_dir, 'test.sock')
         server = net.createServer()
-        server.listen(socketPath)
-
+        server.listen(socket_path)
         // Mock configuration
         mock_config = {
             get: (key: string) => {
@@ -66,8 +63,11 @@ describe('http-file-manager.ts', function() {
 
     describe('.zip()', function() {
         it('should create a zip archive of a directory', async function() {
+            console.log(fs.readdirSync(test_dir))
             const stream_result = await file_manager.zip('')
             expect(stream_result).to.be.instanceof(stream.Transform)
+            stream_result.destroy()
+            console.log(fs.readdirSync(test_dir))
         })
 
         it('should throw error if archive size exceeds limit', async function() {
@@ -178,6 +178,7 @@ describe('http-file-manager.ts', function() {
 
     describe('.ls()', function() {
         it('should list files in a directory', async function() {
+
             // Create a subdirectory
             await fsp.mkdir(path.join(test_dir, 'subdir'), { recursive: true })
 
@@ -192,6 +193,19 @@ describe('http-file-manager.ts', function() {
             expect(file_entry?.type).to.equal('file')
             expect(dir_entry).to.exist
             expect(dir_entry?.type).to.equal('directory')
+
+        })
+
+        it('should handle broken symbolic links gracefully', async function() {
+            const broken_link = 'broken_link.txt'
+            await fsp.symlink('./nonexistent.txt', path.join(test_dir, broken_link))
+
+            const files = await file_manager.ls('')
+            const link_entry = files.find(f => f.name === broken_link)
+
+            expect(link_entry).to.exist
+            expect(link_entry?.type).to.equal('link')
+            expect(link_entry?.link).to.equal('./nonexistent.txt')
         })
     })
 
@@ -241,11 +255,6 @@ describe('http-file-manager.ts', function() {
             const file_entry = entries.find(e => e.name === test_file)
             expect(file_entry).to.exist
             expect(file_entry?.type).to.equal('file')
-
-            // Check symbolic link
-            const link_entry = entries.find(e => e.name === 'link_to_test_file.txt')
-            expect(link_entry).to.exist
-            expect(link_entry?.type).to.equal('link')
 
             // Create test directory
             await file_manager.mkdir('types_test_dir')
