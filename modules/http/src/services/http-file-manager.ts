@@ -79,7 +79,7 @@ export class HttpFileManager {
      * @param p path to the file.
      * @returns File content as a Buffer.
      */
-    async read(p: string) {
+    async read(p: string): Promise<Buffer> {
         const filepath = path.join(this.data_path, p)
         return this._file_locker.with_read_lock([p], () => fsp.readFile(filepath))
     }
@@ -89,7 +89,7 @@ export class HttpFileManager {
      * @param p path to the file.
      * @param content Content to write to the file.
      */
-    async write(p: string, content: Buffer) {
+    async write(p: string, content: Buffer): Promise<void> {
         const filepath = path.join(this.data_path, p)
         return this._file_locker.with_write_lock([p], () => fsp.writeFile(filepath, content))
     }
@@ -99,7 +99,7 @@ export class HttpFileManager {
      * @param pre Previous path to the file.
      * @param cur New path to the file.
      */
-    async rename(pre: string, cur: string) {
+    async rename(pre: string, cur: string): Promise<void> {
         const old_filepath = path.join(this.data_path, pre)
         const new_filepath = path.join(this.data_path, cur)
         return this._file_locker.with_write_lock([pre, cur], () => fsp.rename(old_filepath, new_filepath))
@@ -110,7 +110,7 @@ export class HttpFileManager {
      * @param p path to the file or directory.
      * @returns True if the target exists, false otherwise.
      */
-    async exists(p: string) {
+    async exists(p: string): Promise<boolean> {
         const filepath = path.join(this.data_path, p)
         return await this._file_locker.with_read_lock([p], async () => {
             await fsp.lstat(filepath)
@@ -141,10 +141,30 @@ export class HttpFileManager {
     }
 
     /**
+     * Gets file or directory stat information.
+     * @param p path to the file or directory.
+     * @returns Stats object with file information.
+     */
+    async stat(p: string): Promise<fs.Stats> {
+        const filepath = path.join(this.data_path, p)
+        return this._file_locker.with_read_lock([p], () => fsp.stat(filepath))
+    }
+
+    /**
+     * Gets file or directory lstat information (doesn't follow symlinks).
+     * @param p path to the file or directory.
+     * @returns Stats object with file information.
+     */
+    async lstat(p: string): Promise<fs.Stats> {
+        const filepath = path.join(this.data_path, p)
+        return this._file_locker.with_read_lock([p], () => fsp.lstat(filepath))
+    }
+
+    /**
      * Removes a file or directory.
      * @param p path to the file or directory.
      */
-    async rm(p: string) {
+    async rm(p: string): Promise<void> {
         const filepath = path.join(this.data_path, p)
         return this._file_locker.with_write_lock([p], () => fsp.rm(filepath, { recursive: true, force: true }))
     }
@@ -153,7 +173,7 @@ export class HttpFileManager {
      * Creates a directory.
      * @param p Directory to create.
      */
-    async mkdir(p: string) {
+    async mkdir(p: string): Promise<string | undefined> {
         const filepath = path.join(this.data_path, p)
         return this._file_locker.with_write_lock([p], () => fsp.mkdir(filepath, { recursive: true }))
     }

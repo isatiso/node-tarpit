@@ -126,7 +126,46 @@ describe('http-file-manager.ts', function() {
             expect(stream_result).to.be.instanceof(stream.Transform)
             chai.spy.restore(path, 'resolve')
         })
+    })
 
+    describe('.stat()', function() {
+        it('should return stats for a file', async function() {
+            const stats = await file_manager.stat(test_file)
+            expect(stats).to.be.an('object')
+            expect(stats.isFile()).to.be.true
+        })
+
+        it('should return stats for a directory', async function() {
+            // Create a subdirectory
+            await fsp.mkdir(path.join(test_dir, 'subdir'), { recursive: true })
+            const stats = await file_manager.stat('subdir')
+            expect(stats).to.be.an('object')
+            expect(stats.isDirectory()).to.be.true
+        })
+
+        it('should reject if target does not exist', async function() {
+            await expect(file_manager.stat('nonexistent')).to.be.rejected
+        })
+    })
+
+    describe('.lstat()', function() {
+        it('should return stats for a file without following symlinks', async function() {
+            const stats = await file_manager.lstat('link_to_test_file.txt')
+            expect(stats).to.be.an('object')
+            expect(stats.isSymbolicLink()).to.be.true
+        })
+
+        it('should return different results than stat() for symlinks', async function() {
+            const lstat_result = await file_manager.lstat('link_to_test_file.txt')
+            const stat_result = await file_manager.stat('link_to_test_file.txt')
+
+            expect(lstat_result.isSymbolicLink()).to.be.true
+            expect(stat_result.isFile()).to.be.true
+        })
+
+        it('should reject if target does not exist', async function() {
+            await expect(file_manager.lstat('nonexistent')).to.be.rejected
+        })
     })
 
     describe('.read()', function() {
