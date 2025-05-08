@@ -126,12 +126,17 @@ export class HttpFileManager {
     async ls(p: string): Promise<FileDesc[]> {
         const filepath = path.join(this.data_path, p)
         return this._file_locker.with_read_lock([p], async () => {
-            const files = await fsp.readdir(filepath, { withFileTypes: true })
-            return Promise.all(files.map(async f => ({
-                name: f.name,
-                type: this.extract_type(f),
-                ...(await fsp.lstat(path.join(filepath, f.name)))
-            })))
+            return fsp.readdir(filepath, { withFileTypes: true })
+                .then(files => Promise.all(files.map(async f => {
+                    const target = path.join(filepath, f.name)
+                    const stats = await fsp.stat(target).catch(() => fsp.lstat(target))
+                    return {
+                        name: f.name,
+                        type: this.extract_type(stats),
+                        link: f.isSymbolicLink() ? await fsp.readlink(target) : undefined,
+                        ...stats,
+                    }
+                })))
         })
     }
 
@@ -158,7 +163,7 @@ export class HttpFileManager {
      * @param d Directory entry to analyze.
      * @returns The file type.
      */
-    private extract_type(d: fs.Dirent): FileType {
+    private extract_type(d: fs.Dirent | fs.Stats): FileType {
         if (d.isFile()) {
             return 'file'
         }
