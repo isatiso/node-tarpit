@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { ContentReaderService, text_deserialize } from '@tarpit/content-type'
+import { ContentReaderService, MIMEContent, text_deserialize } from '@tarpit/content-type'
 import { get_providers, Injector, TpConfigData, TpService } from '@tarpit/core'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Duplex, Readable, Transform, TransformCallback } from 'stream'
@@ -258,18 +258,21 @@ export class HttpRouters {
             await http_hooks.on_init(context).catch(() => undefined)
 
             try {
+                let content: MIMEContent<any>
 
-                const content = await reader.read(stream, {
-                    content_type: req.headers['content-type'] || '',
-                    content_encoding: req.headers['content-encoding'] || 'identity',
-                    skip_deserialize: true,
-                })
+                if (param_deps.some(d => [MimeBody, FormBody, JsonBody, TextBody, RawBody].includes(d.token))) {
+                    content = await reader.read(stream, {
+                        content_type: req.headers['content-type'] || '',
+                        content_encoding: req.headers['content-encoding'] || 'identity',
+                        skip_deserialize: true,
+                    })
 
-                request.type = content.type
-                request.charset = content.charset
+                    request.type = content.type
+                    request.charset = content.charset
 
-                if (param_deps.find(d => d.token === MimeBody)) {
-                    await reader.deserialize(content)
+                    if (param_deps.find(d => d.token === MimeBody)) {
+                        await reader.deserialize(content)
+                    }
                 }
 
                 const guard = need_guard ? new Guard(await authenticator.get_credentials(request)) : undefined
