@@ -155,5 +155,15 @@ describe('request body case', function() {
             })
     })
 
+    it('should treat content type as buffer if not specified', async function() {
+        await axios.post('http://localhost:31260/user/buffer', Buffer.from(JSON.stringify({ name: 'Leonard', nick: 'Leo' })),
+            { headers: { 'Content-Type': '' }, proxy: false })
+            .then(res => {
+                expect(res.status).to.equal(200)
+                expect(res.data).to.include({ name: 'Leonard', nick: 'Leo', type: 'application/octet-stream' })
+                expect(res.data).to.have.property('id').which.is.a('string').of.length(36)
+            })
+    })
+
 })
 
