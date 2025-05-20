@@ -7,6 +7,7 @@
  */
 
 import { Injector, TpService } from '@tarpit/core'
+import { takeUntil, tap } from 'rxjs'
 import { decompressor_token, deserializer_token } from '../tokens'
 import { filter_provider } from '../tools/filter-provider'
 import { MIMEContent } from '../types'
@@ -19,7 +20,10 @@ export class ContentDeserializerService {
     constructor(
         private injector: Injector,
     ) {
-        this.injector.on('provider-change', token => token === decompressor_token && this.load_deserializer())
+        this.injector.provider_change$.pipe(
+            tap(token => token === decompressor_token && this.load_deserializer()),
+            takeUntil(this.injector.off$),
+        ).subscribe()
         this.load_deserializer()
     }
 

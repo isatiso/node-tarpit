@@ -7,7 +7,7 @@
  */
 
 import { ConfigData, load_config } from '@tarpit/config'
-import { Platform, TpConfigData, TpConfigSchema, TpInspector } from '@tarpit/core'
+import { Platform, TpConfigData, TpConfigSchema } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
@@ -79,7 +79,6 @@ describe('static case', function() {
         }
     })).bootstrap(StaticRouter)
 
-    const inspector = platform.expose(TpInspector)!
     const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
     const http_static = platform.expose(HttpStatic)
     const sandbox = chai.spy.sandbox()
@@ -107,13 +106,11 @@ describe('static case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         sandbox.restore()
     })
 
@@ -428,7 +425,6 @@ describe('static multi mount case', function() {
         }
     })).bootstrap(MultiStaticRouter)
 
-    const inspector = platform.expose(TpInspector)!
     const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
     const http_static = platform.expose(HttpStatic)
     const sandbox = chai.spy.sandbox()
@@ -456,13 +452,11 @@ describe('static multi mount case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         sandbox.restore()
     })
 

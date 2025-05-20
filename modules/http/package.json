@@ -44,6 +44,7 @@
         "@tarpit/judge": "^0.5.73",
         "@tarpit/negotiator": "^0.5.73",
         "@types/ws": "^8.5.5",
+        "rxjs": "^7.8.2",
         "content-disposition": "^0.5.4",
         "fresh": "^0.5.2",
         "lru-cache": "^10.0.0",

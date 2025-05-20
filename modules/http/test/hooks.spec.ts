@@ -7,11 +7,11 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpInspector, TpService } from '@tarpit/core'
+import { Platform, TpConfigSchema, TpService } from '@tarpit/core'
 import axios from 'axios'
-import { WebSocket } from 'ws'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
+import { WebSocket } from 'ws'
 import { HttpContext, HttpHooks, HttpServerModule, Post, RawBody, TpRequest, TpRouter, TpWebSocket, WS } from '../src'
 
 chai.use(cap)
@@ -67,20 +67,18 @@ describe('throw error in hooks case', function() {
         .import({ provide: HttpHooks, useClass: CustomHooks })
         .bootstrap(TempRouter)
 
-    const inspector = platform.expose(TpInspector)!
     const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
 
     const sandbox = chai.spy.sandbox()
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
+
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         sandbox.restore()
     })
 

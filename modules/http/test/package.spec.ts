@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
+import { Platform, TpConfigSchema } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
@@ -76,22 +76,18 @@ describe('HttpServerModule', function() {
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31254, server: { keepalive_timeout: 3000, terminate_timeout: 300 } } }))
         .bootstrap(TestRouter)
 
-    const inspector = platform.expose(TpInspector)!
-
     const r = axios.create({ baseURL: 'http://127.0.0.1:31254', proxy: false })
 
     const sandbox = chai.spy.sandbox()
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
         axios.get('http://127.0.0.1:31254/delay', { proxy: false }).then()
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         sandbox.restore()
     })
 

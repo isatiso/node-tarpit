@@ -23,8 +23,8 @@ export class Injector implements InjectorType {
 
     readonly on$: Subject<void> = this.root.on$ ?? new Subject<void>()
     readonly off$: Subject<void> = this.root.off$ ?? new Subject<void>()
-    private _provider_change$ = new Subject<ProviderDef<any> | Constructor<any>>()
-    readonly provider_change$: Observable<ProviderDef<any> | Constructor<any>>
+    private _provider_change$ = new Subject<any>()
+    readonly provider_change$: Observable<any>
 
     constructor(
         protected parent: InjectorType,
@@ -39,9 +39,6 @@ export class Injector implements InjectorType {
             this.on$ = this.root.on$
             this.off$ = this.root.off$
         }
-        this.provider_change$.pipe(
-            takeUntil(this.off$),
-        ).subscribe()
     }
 
     static create(parent?: Injector): Injector {
