@@ -93,19 +93,19 @@ export function load_component(meta: any, injector: Injector, auto_create?: bool
     return
 }
 
-export function check_usage(injector: Injector, tree_node: ProviderTreeNode | undefined, path?: any[]): boolean {
+export function check_usage(injector: Injector, tree_node: ProviderTreeNode | undefined, unused_providers: Constructor<any>[][], path?: any[]): boolean {
     path = path ?? []
     if (tree_node) {
         path = path.slice()
         path.push(tree_node.self)
         const providers_used = Boolean(tree_node.providers?.find(p => p.used))
-        const children_used = tree_node.children?.map(node => check_usage(injector, node, path)).some(value => value)
+        const children_used = tree_node.children?.map(node => check_usage(injector, node, unused_providers, path)).some(value => value)
         if (children_used || providers_used) {
             return true
         }
     }
     if (path.length) {
-        injector.emit('unused-provider', path)
+        unused_providers.push(path)
     }
     return false
 }

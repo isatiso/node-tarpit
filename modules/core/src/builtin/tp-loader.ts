@@ -41,11 +41,17 @@ export class TpLoader {
         loader(meta)
     }
 
-    start(): Promise<void[]> {
-        return Promise.all(this._on_starts.map(f => f()))
+    async start(): Promise<void> {
+        await Promise.allSettled(this._on_starts.map((f) => f().catch(err => {
+            console.log(`Error occurred when starting: ${err.stack}`)
+        })))
+        return
     }
 
-    terminate(): Promise<void[]> {
-        return Promise.all(this._on_terminates.map(f => f()))
+    async terminate(): Promise<void> {
+        await Promise.allSettled(this._on_terminates.map((f) => f().catch(err => {
+            console.log(`Error occurred when terminating: ${err.stack}`)
+        })))
+        return
     }
 }

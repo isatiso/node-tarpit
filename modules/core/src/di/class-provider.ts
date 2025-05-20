@@ -27,7 +27,7 @@ export class ClassProvider<M extends object> implements Provider<M> {
     ) {
         injector.set(token, this)
         injector.set_id((this.cls as any)[TarpitId], this)
-        injector.emit('provider-change', token)
+        injector.provider_change(token)
     }
 
     static create<M extends object>(injector: Injector, def: ClassProviderDef<M>): ClassProvider<M> {
@@ -59,7 +59,7 @@ export class ClassProvider<M extends object> implements Provider<M> {
         const instance = new this.cls(...param_list)
 
         for (const [prop, decorators] of get_all_prop_decorator(this.cls) ?? []) {
-            const meta: OnTerminate = decorators.find(d => d instanceof OnTerminate)
+            const meta = decorators.find(d => d instanceof OnTerminate)
             if (meta) {
                 const destroy_method = Reflect.get(this.cls.prototype, prop)
                 if (typeof destroy_method === 'function') {

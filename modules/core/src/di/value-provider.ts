@@ -45,7 +45,7 @@ export class ValueProvider<M> implements Provider<M> {
         } else {
             provider.value = value
         }
-        provider.injector.emit('provider-change', provider.token)
+        provider.injector.provider_change(provider.token)
     }
 
     create() {

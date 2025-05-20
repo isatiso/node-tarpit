@@ -77,7 +77,7 @@ export function make_decorator<ARGS extends any[], T, PR>(
 
             if (is_constructor) {
                 if (!target[TarpitId]) {
-                    target[TarpitId] = createHash('md5').update(Buffer.from(target.toString())).digest('base64url')
+                    target[TarpitId] = createHash('md5').update(target.toString()).digest('base64url')
                 }
                 decorator_instance.cls = target
                 // istanbul ignore else

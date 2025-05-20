@@ -30,8 +30,6 @@ export {
 } from './annotations'
 
 export { TpConfigData } from './builtin/tp-config-data'
-export { TpInspector } from './builtin/tp-inspector'
-export { TpLogger } from './builtin/tp-logger'
 export { TpLoader, TpLoaderType } from './builtin/tp-loader'
 export { get_providers } from './tools/get-providers'
 
