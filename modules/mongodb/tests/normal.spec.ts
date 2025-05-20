@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpInspector, TpRoot } from '@tarpit/core'
+import { Platform, TpRoot } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { ObjectId, WithId } from 'mongodb'
@@ -37,7 +37,6 @@ describe('normal case', function() {
 
     const url = process.env.MONGODB_URL ?? ''
     let platform: Platform
-    let inspector: TpInspector
     let user_mongo: TestUserMongo
 
     const sandbox = chai.spy.sandbox()
@@ -48,17 +47,14 @@ describe('normal case', function() {
             .import(MongodbModule)
             .import(TempRoot)
 
-        inspector = platform.expose(TpInspector)!
         user_mongo = platform.expose(TestUserMongo)!
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
         await new Promise(resolve => setTimeout(resolve, 200))
     })
 
     after(async function() {
         await user_mongo.deleteMany({})
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         sandbox.restore()
     })
 
