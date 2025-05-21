@@ -24,7 +24,6 @@ export class RabbitNotifier {
     constructor(
         private injector: Injector,
     ) {
-        this.injector.off$.pipe(take(1)).subscribe(() => this._emitter.removeAllListeners())
     }
 
     on(event_name: string | symbol, listener: (...args: any[]) => void): this {
