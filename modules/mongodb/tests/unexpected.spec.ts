@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpInspector } from '@tarpit/core'
+import { Platform } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { GenericCollection, MongodbModule, TpMongo } from '../src'
@@ -28,7 +28,6 @@ describe('unexpected case', function() {
 
     const url = process.env.MONGODB_URL ?? ''
     let platform: Platform
-    let inspector: TpInspector
     let mongo: TestNoGenericMongo
 
     const sandbox = chai.spy.sandbox()
@@ -38,16 +37,13 @@ describe('unexpected case', function() {
         platform = new Platform(load_config({ mongodb: { url } }))
             .import(MongodbModule)
 
-        inspector = platform.expose(TpInspector)!
         mongo = platform.expose(TestNoGenericMongo)!
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
         await new Promise(resolve => setTimeout(resolve, 200))
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         sandbox.restore()
     })
 
