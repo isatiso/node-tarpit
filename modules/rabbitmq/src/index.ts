@@ -6,8 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { Connection } from 'amqplib'
-
 export interface AMQPConnect {
     /**
      * The to be used protocol
@@ -75,15 +73,6 @@ declare module '@tarpit/core' {
             prefetch?: number
             socket_options?: unknown
         }
-    }
-}
-
-declare module '@tarpit/core' {
-    export interface TpEventCollector {
-        'rabbitmq-channel-error': (err: any) => void
-        'rabbitmq-connecting-failed': (err: any) => void
-        'rabbitmq-connected': (connection: Connection) => void
-        'rabbitmq-checked-out': (connection: Connection) => void
     }
 }
 

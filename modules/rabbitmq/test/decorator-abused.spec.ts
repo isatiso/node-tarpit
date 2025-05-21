@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
+import { Platform, TpConfigSchema } from '@tarpit/core'
 import amqplib, { Connection, GetMessage } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_as_promised from 'chai-as-promised'
@@ -41,7 +41,6 @@ describe('decorator abused case', function() {
     const url = process.env.RABBITMQ_URL ?? ''
     let connection: Connection
     let platform: Platform
-    let inspector: TpInspector
     let producer: TempProducer
 
     const sandbox = chai.spy.sandbox()
@@ -54,16 +53,13 @@ describe('decorator abused case', function() {
             .import(RabbitmqModule)
             .import(TempProducer)
 
-        inspector = platform.expose(TpInspector)!
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
         producer = platform.expose(TempProducer)!
         await new Promise(resolve => setTimeout(resolve, 200))
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         const channel = await connection.createChannel()
         await channel.deleteExchange(D.X['tarpit.exchange.abused.a'], { ifUnused: false })
         await channel.deleteExchange(D.X['tarpit.exchange.abused.b'], { ifUnused: false })

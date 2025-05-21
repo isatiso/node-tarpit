@@ -6,36 +6,44 @@
  * found in the LICENSE file at source root.
  */
 
-import { EventEmitter } from 'events'
-import { AbstractConstructor, Constructor, InjectorEventEmitter, InjectorType, Provider, TpEvent, TpEventCollector } from '../types'
+import { merge, Observable, Subject, takeUntil } from 'rxjs'
+import { AbstractConstructor, Constructor, InjectorType, Provider, ProviderDef } from '../types'
 import { NullInjector } from './null-injector'
 import { ValueProvider } from './value-provider'
 
-export class Injector implements InjectorType, InjectorEventEmitter {
+export class Injector implements InjectorType {
 
     static instance_count = 1
 
     readonly id = Injector.instance_count++
     readonly children: Injector[] = []
-    readonly root: Injector
+    readonly root: Injector = this._root ?? this
     protected providers: Map<any, Provider<any>> = new Map([])
     protected providers_id_map: Map<string, Provider<any>> = new Map([])
 
+    readonly on$: Subject<void> = this.root.on$ ?? new Subject<void>()
+    readonly off$: Subject<void> = this.root.off$ ?? new Subject<void>()
+    private _provider_change$ = new Subject<any>()
+    readonly provider_change$: Observable<any>
+
     constructor(
         protected parent: InjectorType,
-        protected readonly emitter: EventEmitter,
-        root?: Injector,
+        private _root?: Injector,
     ) {
-        this.root = root ?? this
+        if (this.root === this) {
+            this.on$ = new Subject()
+            this.off$ = new Subject()
+            this.provider_change$ = this._provider_change$.pipe()
+        } else {
+            this.provider_change$ = merge(this._provider_change$, this.root._provider_change$)
+            this.on$ = this.root.on$
+            this.off$ = this.root.off$
+        }
     }
 
     static create(parent?: Injector): Injector {
-        const emitter = parent ? parent.emitter : new EventEmitter().setMaxListeners(9999)
-        const injector = new Injector(parent ?? new NullInjector(), emitter, parent?.root)
+        const injector = new Injector(parent ?? new NullInjector(), parent?.root)
         injector.parent.children.push(injector)
-        if (!parent) {
-            ValueProvider.create(injector, { provide: EventEmitter, useValue: emitter })
-        }
         ValueProvider.create(injector, { provide: Injector, useValue: injector })
         return injector
     }
@@ -74,32 +82,7 @@ export class Injector implements InjectorType, InjectorEventEmitter {
         return this.providers.has(token) || this.parent.has(token)
     }
 
-    emit<Event extends TpEvent>(event: Event, ...args: Parameters<TpEventCollector[Event]>) {
-        return this.emitter.emit(event, ...args)
-    }
-
-    on<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
-        this.emitter.on(event, callback)
-        return this
-    }
-
-    addListener<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
-        this.emitter.addListener(event, callback)
-        return this
-    }
-
-    once<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
-        this.emitter.once(event, callback)
-        return this
-    }
-
-    off<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
-        this.emitter.off(event, callback)
-        return this
-    }
-
-    removeListener<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]) {
-        this.emitter.removeListener(event, callback)
-        return this
+    provider_change(token: any) {
+        this._provider_change$.next(token)
     }
 }

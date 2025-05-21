@@ -6,11 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector } from '@tarpit/core'
+import { ClassProvider, Injector } from '@tarpit/core'
 import { Channel, Connection } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { EventEmitter } from 'events'
+import { RabbitNotifier } from '../services/rabbit-notifier'
 import { RabbitSession } from './rabbit-session'
 
 chai.use(chai_spies)
@@ -22,7 +23,9 @@ describe('rabbit-session.ts', function() {
         describe('.on_channel_create()', function() {
 
             it('should set _on_channel_create callback to RabbitSession', function() {
-                const session = new RabbitSession(Injector.create(), false)
+                const mock_injector = Injector.create()
+                ClassProvider.create(mock_injector, { provide: RabbitNotifier, useClass: RabbitNotifier })
+                const session = new RabbitSession(mock_injector, false)
                 const cb = (_channel: Channel) => {
                 }
                 expect((session as any)._on_channel_create).to.be.undefined
@@ -35,7 +38,12 @@ describe('rabbit-session.ts', function() {
 
             function create_mock() {
                 const spy_on_channel_create = chai.spy()
-                const mock_injector = new EventEmitter() as unknown as Injector
+                const mock_injector = Injector.create()
+                ClassProvider.create(mock_injector, { provide: RabbitNotifier, useClass: RabbitNotifier })
+                const notifier = mock_injector.get(RabbitNotifier)?.create()!
+                const spy_notifier_checkout_pipe = chai.spy.on(notifier.checkout$, 'pipe')
+                const spy_notifier_channel_error = chai.spy.on(notifier.channel_error$, 'next')
+                const spy_notifier_emit = chai.spy.on(notifier, 'emit')
                 const spy_injector_on = chai.spy.on(mock_injector, 'on')
                 const spy_injector_emit = chai.spy.on(mock_injector, 'emit')
                 const mock_channel = new EventEmitter() as Channel
@@ -43,14 +51,36 @@ describe('rabbit-session.ts', function() {
                 const mock_connection = {} as Connection
                 const spy_create_channel = chai.spy.on(mock_connection, 'createChannel', () => mock_channel)
                 const spy_create_confirm_channel = chai.spy.on(mock_connection, 'createConfirmChannel', () => mock_channel)
-                return { mock_channel, mock_connection, mock_injector, spy_injector_on, spy_injector_emit, spy_on_channel_create, spy_channel_once, spy_create_confirm_channel, spy_create_channel }
+                return {
+                    mock_channel,
+                    mock_connection,
+                    mock_injector,
+                    spy_notifier_channel_error,
+                    spy_notifier_checkout_next: spy_notifier_checkout_pipe,
+                    spy_notifier_emit,
+                    spy_injector_on,
+                    spy_injector_emit,
+                    spy_on_channel_create,
+                    spy_channel_once,
+                    spy_create_confirm_channel,
+                    spy_create_channel
+                }
             }
 
             it('should init channel', async function() {
-                const { mock_injector, mock_connection, mock_channel, spy_injector_on, spy_on_channel_create, spy_channel_once, spy_create_confirm_channel, spy_create_channel } = create_mock()
+                const {
+                    mock_injector,
+                    mock_connection,
+                    mock_channel,
+                    spy_notifier_checkout_next,
+                    spy_on_channel_create,
+                    spy_channel_once,
+                    spy_create_confirm_channel,
+                    spy_create_channel
+                } = create_mock()
                 const session = new RabbitSession(mock_injector, false)
                 session.on_channel_create(spy_on_channel_create)
-                expect(spy_injector_on).to.have.been.called.with('rabbitmq-checked-out')
+                expect(spy_notifier_checkout_next).to.have.been.called.once
                 const channel = await session.init(mock_connection)
                 expect(spy_create_confirm_channel).to.have.not.been.called()
                 expect(spy_create_channel).to.have.been.called.once
@@ -61,10 +91,19 @@ describe('rabbit-session.ts', function() {
             })
 
             it('should init confirm channel', async function() {
-                const { mock_injector, mock_connection, mock_channel, spy_injector_on, spy_on_channel_create, spy_channel_once, spy_create_confirm_channel, spy_create_channel } = create_mock()
+                const {
+                    mock_injector,
+                    mock_connection,
+                    mock_channel,
+                    spy_notifier_checkout_next,
+                    spy_on_channel_create,
+                    spy_channel_once,
+                    spy_create_confirm_channel,
+                    spy_create_channel
+                } = create_mock()
                 const session = new RabbitSession(mock_injector, true)
                 session.on_channel_create(spy_on_channel_create)
-                expect(spy_injector_on).to.have.been.called.with('rabbitmq-checked-out')
+                expect(spy_notifier_checkout_next).to.have.been.called.once
                 const channel = await session.init(mock_connection)
                 expect(spy_create_channel).to.have.not.been.called()
                 expect(spy_create_confirm_channel).to.have.been.called.once
@@ -78,7 +117,8 @@ describe('rabbit-session.ts', function() {
                 const { mock_injector, mock_connection } = create_mock()
                 const session = new RabbitSession(mock_injector, true)
                 const spy_session_init = chai.spy.on(session, 'init', () => undefined)
-                mock_injector.emit('rabbitmq-checked-out', mock_connection)
+                const notifier = mock_injector.get(RabbitNotifier)?.create()!
+                notifier.checkout$.next(mock_connection)
                 await new Promise(resolve => setTimeout(resolve, 0))
                 expect(spy_session_init).to.have.been.called.once
             })
@@ -94,15 +134,16 @@ describe('rabbit-session.ts', function() {
                 expect(spy_session_init).to.have.been.called.once
             })
 
-            it('should emit "channel-error" event to injector on channel event "error"', async function() {
-                const { mock_injector, mock_connection, spy_injector_emit } = create_mock()
-                mock_injector.on('error', err => undefined)
+            it('should emit "channel-error" event to notifier on channel event "error"', async function() {
+                const { mock_injector, mock_connection, spy_notifier_channel_error } = create_mock()
+                const notifier = mock_injector.get(RabbitNotifier)?.create()!
+                notifier.on('error', err => undefined)
                 const session = new RabbitSession(mock_injector, true)
                 const channel = await session.init(mock_connection)
                 expect(session.channel).to.equal(channel)
                 channel.emit('error', 'something')
                 await new Promise(resolve => setTimeout(resolve, 0))
-                expect(spy_injector_emit).to.have.been.called.once
+                expect(spy_notifier_channel_error).to.have.been.called.once
             })
         })
     })

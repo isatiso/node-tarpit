@@ -24,7 +24,7 @@ export class FactoryProvider<M> implements Provider<M> {
         private deps?: any[]
     ) {
         injector.set(token, this)
-        injector.emit('provider-change', token)
+        injector.provider_change(token)
     }
 
     static create<M>(injector: Injector, def: FactoryProviderDef<any>): FactoryProvider<M> {

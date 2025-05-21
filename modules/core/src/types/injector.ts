@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-import { Constructor } from './base'
 import { Provider } from './provider'
 
 export type TpError = {
@@ -16,11 +15,8 @@ export type TpError = {
 
 export interface TpEventCollector {
     'error': (desc: TpError) => void
-    'start-time': (duration: number) => void
     'start': () => void
-    'terminate-time': (duration: number) => void
     'terminate': () => void
-    'unused-provider': (path: Constructor<any>[]) => void
     'provider-change': (token: any) => void
 }
 
@@ -41,7 +37,7 @@ export interface InjectorType {
 
 export interface InjectorEventEmitter {
 
-    emit<Event extends TpEvent>(event: Event, ...args: Parameters<TpEventCollector[Event]>): boolean
+    emit<Event extends TpEvent>(event: Event, ...args: Parameters<TpEventCollector[Event]>): void
 
     on<Event extends TpEvent>(event: Event, callback: TpEventCollector[Event]): this
 

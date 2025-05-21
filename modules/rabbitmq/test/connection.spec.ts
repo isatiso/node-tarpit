@@ -7,12 +7,13 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Injector, Platform, TpConfigSchema, TpInspector, TpService } from '@tarpit/core'
+import { Injector, Platform, TpConfigSchema, TpService } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import chai_as_promised from 'chai-as-promised'
 import chai_spies from 'chai-spies'
 import { RabbitmqModule, RabbitRetryStrategy } from '../src'
 import { is_reachable, RabbitConnector } from '../src/services/rabbit-connector'
+import { RabbitNotifier } from '../src/services/rabbit-notifier'
 
 chai.use(chai_as_promised)
 chai.use(chai_spies)
@@ -46,20 +47,17 @@ describe('connection case', function() {
 
         let platform: Platform
         let injector: Injector
-        let inspector: TpInspector
         let connector: RabbitConnector
 
         beforeEach(async function() {
             platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url: {}, timeout: 200 } }))
 
             injector = platform.expose(Injector)!
-            inspector = platform.expose(TpInspector)!
             connector = platform.expose(RabbitConnector)!
         })
 
         afterEach(async function() {
-            platform.terminate()
-            await inspector.wait_terminate()
+            await platform.terminate()
         })
 
         it('should use custom strategy if provided, will stop retry if throw error from on_failed', async function() {
@@ -76,9 +74,9 @@ describe('connection case', function() {
             const spy_error: (...args: any[]) => void = chai.spy()
             platform.import({ provide: RabbitRetryStrategy, useClass: CustomRetryStrategy })
             platform.import(RabbitmqModule)
-            injector.on('error', ({ type, error }) => console.error(type, error))
-            platform.start()
-            await inspector.wait_start()
+            const notifier = platform.expose(RabbitNotifier)!
+            notifier.on('error', ({ type, error }) => console.error(type, error))
+            await platform.start()
             expect(spy_error).to.have.been.called.once
         })
 
@@ -98,9 +96,9 @@ describe('connection case', function() {
 
             platform.import({ provide: RabbitRetryStrategy, useClass: CustomRetryStrategy })
             platform.import(RabbitmqModule)
-            injector.on('error', ({ type, error }) => console.error(type, error))
-            platform.start()
-            await inspector.wait_start()
+            const notifier = platform.expose(RabbitNotifier)!
+            notifier.on('error', ({ type, error }) => console.error(type, error))
+            await platform.start()
             expect(spy_error).to.have.been.called.exactly(5)
         })
     })
@@ -110,17 +108,14 @@ describe('connection case', function() {
         it('should mark connector closed if error occurred with code 320 or 200', async function() {
             const url = process.env.RABBITMQ_URL ?? ''
             const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url, timeout: 200 } })).import(RabbitmqModule)
-            const injector = platform.expose(Injector)!
-            injector.on('error', ({ type, error }) => console.error(type, error))
-            const inspector = platform.expose(TpInspector)!
+            const notifier = platform.expose(RabbitNotifier)!
+            notifier.on('error', ({ type, error }) => console.error(type, error))
             const connector = platform.expose(RabbitConnector)!
-            platform.start()
-            await inspector.wait_start()
+            await platform.start()
             const mock_error = new Error()
             mock_error['code' as keyof Error] = 320 as any
             connector.connection!.emit('error', mock_error)
-            platform.terminate()
-            await inspector.wait_terminate()
+            await platform.terminate()
         })
     })
 })

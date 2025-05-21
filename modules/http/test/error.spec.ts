@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
+import { Platform, TpConfigSchema } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
@@ -76,20 +76,17 @@ describe('errors case', function() {
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31254, expose_error: true } }))
         .bootstrap(NormalRouter)
 
-    const inspector = platform.expose(TpInspector)!
     const r = axios.create({ baseURL: 'http://localhost:31254/error', proxy: false })
 
     const sandbox = chai.spy.sandbox()
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         sandbox.restore()
     })
 

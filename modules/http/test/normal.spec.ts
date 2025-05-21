@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
+import { Platform, TpConfigSchema } from '@tarpit/core'
 import { Jtl } from '@tarpit/judge'
 import axios from 'axios'
 import chai, { expect } from 'chai'
@@ -69,7 +69,7 @@ class NormalRouter {
     @WS('subscribe-user')
     async subscribe_user2(
         ws: TpWebSocket,
-        tp_inspector: TpInspector,
+        platform: Platform,
         incoming_message: IncomingMessage,
         request: TpRequest,
         headers: RequestHeaders,
@@ -78,7 +78,7 @@ class NormalRouter {
         ws.on('message', data => {
             ws.send(JSON.stringify({
                 message: data.toString(),
-                time: tp_inspector.start_time,
+                time: platform.start_time,
                 method: incoming_message.method,
                 request: request.method,
                 header: headers.get_first('tarpit'),
@@ -93,7 +93,6 @@ describe('normal case', function() {
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31254, expose_error: true } }))
         .bootstrap(NormalRouter)
 
-    const inspector = platform.expose(TpInspector)!
     const http_inspector = platform.expose(HttpInspector)!
     const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
 
@@ -101,13 +100,12 @@ describe('normal case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
+
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         sandbox.restore()
     })
 
@@ -204,7 +202,7 @@ describe('normal case', function() {
             const obj = JSON.parse(data.toString())
             expect(obj).to.eql({
                 message: msg,
-                time: inspector.start_time,
+                time: platform.start_time,
                 method: 'GET',
                 request: 'GET',
                 param_id: 'qwe987',

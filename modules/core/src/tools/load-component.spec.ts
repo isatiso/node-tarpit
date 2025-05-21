@@ -129,7 +129,7 @@ describe('load-component.ts', function() {
             set_inner_loader(temp_injector)
             const meta = get_class_decorator(DecoratedModule1)?.find(d => d instanceof TpModule)
             const tree_node = load_component(meta, temp_injector)
-            check_usage(temp_injector, tree_node)
+            check_usage(temp_injector, tree_node, [])
 
             expect(temp_injector.get(DecoratedModule1)).to.be.instanceof(ClassProvider)
             expect(temp_injector.get(DecoratedModule1)?.create()).to.be.instanceof(DecoratedModule1)
@@ -174,7 +174,7 @@ describe('load-component.ts', function() {
             const tree_node = load_component(meta, temp_injector)
 
             check_usage(temp_injector, tree_node, [])
-            check_usage(temp_injector, undefined)
+            check_usage(temp_injector, undefined, [])
 
             expect(meta.instance).to.be.instanceof(DecoratedRoot)
         })

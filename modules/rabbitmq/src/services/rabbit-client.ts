@@ -6,10 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, TpConfigData, TpService } from '@tarpit/core'
+import { Injector, TpService } from '@tarpit/core'
 import { Connection } from 'amqplib'
+import { takeUntil, tap } from 'rxjs'
 import { RabbitConnector } from './rabbit-connector'
 import { RabbitDefine, RabbitDefineToken } from './rabbit-define'
+import { RabbitNotifier } from './rabbit-notifier'
 
 @TpService({ inject_root: true })
 export class RabbitClient {
@@ -17,16 +19,15 @@ export class RabbitClient {
     private definition = new RabbitDefine()
 
     constructor(
-        private config_data: TpConfigData,
         private connector: RabbitConnector,
+        private notifier: RabbitNotifier,
         private injector: Injector,
     ) {
+        this.injector.provider_change$.pipe(
+            tap(token => token === RabbitDefineToken && this.merge_definition()),
+            takeUntil(this.injector.off$),
+        ).subscribe()
         this.merge_definition()
-        this.injector.on('provider-change', token => {
-            if (token === RabbitDefineToken) {
-                this.merge_definition()
-            }
-        })
     }
 
     async start() {
@@ -36,26 +37,22 @@ export class RabbitClient {
             return error = err as any
         })
         if (error) {
-            this.emit('error', { type: 'rabbitmq.connecting.failed', error: error })
+            this.notifier.emit('error', { type: 'rabbitmq.connecting.failed', error: error })
             return
         }
         await this.assert_definition(connection).catch(err => {
             return error = err as any
         })
         if (error) {
-            this.injector.emit('error', { type: 'rabbitmq.assert.definition.failed', error: error })
+            this.notifier.emit('error', { type: 'rabbitmq.assert.definition.failed', error: error })
             return
         }
-        this.injector.emit('rabbitmq-checked-out', connection)
+        this.notifier.checkout$.next(connection)
         return
     }
 
     async terminate() {
         return this.connector.close()
-    }
-
-    private emit(event: any, data: any) {
-        this.injector.emit(event, data)
     }
 
     private merge_definition() {

@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpInspector } from '@tarpit/core'
+import { Platform } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { ScheduleHooks, ScheduleModule, Task, TaskRetry, throw_task_retry, TpSchedule } from '../src'
@@ -35,7 +35,6 @@ describe('retry case', function() {
 
     let fake_time = 1658395732508
     let platform: Platform
-    let inspector: TpInspector
     let hooks: ScheduleHooks
 
     const sandbox = chai.spy.sandbox()
@@ -44,18 +43,15 @@ describe('retry case', function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         chai.spy.on(Date, 'now', () => fake_time)
         platform = new Platform(load_config({})).bootstrap(TempSchedule)
-        inspector = platform.expose(TpInspector)!
         hooks = platform.expose(ScheduleHooks)!
         chai.spy.on(hooks, 'on_init')
         chai.spy.on(hooks, 'on_error')
         chai.spy.on(hooks, 'on_finish')
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         chai.spy.restore(Date)
         sandbox.restore()
     })

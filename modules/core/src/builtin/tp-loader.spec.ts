@@ -22,6 +22,11 @@ describe('tp-loader.ts', function() {
 
         beforeEach(() => {
             loader = new TpLoader()
+            chai.spy.on(console, 'log', () => void 0)
+        })
+
+        afterEach(() => {
+            chai.spy.restore(console, 'log')
         })
 
         it('should register loader', async function() {
@@ -49,7 +54,7 @@ describe('tp-loader.ts', function() {
             expect((loader as any)._loaders.size).to.equal(1)
         })
 
-        it('should ignore errors thrown by hooks', () => {
+        it('should ignore errors thrown by hooks', async function () {
             loader.register(Symbol.for('test'), {
                 on_start: async () => {
                     throw new Error()
@@ -59,8 +64,10 @@ describe('tp-loader.ts', function() {
                 },
                 on_load: async () => undefined,
             })
-            expect(loader.start()).not.to.be.rejected
-            expect(loader.terminate()).not.to.be.rejected
+            await expect(loader.start()).not.to.be.rejected
+            expect(console.log).to.have.been.called.once
+            await expect(loader.terminate()).not.to.be.rejected
+            expect(console.log).to.have.been.called.twice
         })
 
         it('should throw error if loader not exists', function() {

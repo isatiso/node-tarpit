@@ -11,7 +11,6 @@ import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import spies from 'chai-spies'
 import { Debug, TpEntry, TpModule, TpRoot, TpService, TpUnit } from './annotations'
-import { TpInspector } from './builtin/tp-inspector'
 import { TpLoader } from './builtin/tp-loader'
 import { Injector } from './di'
 import { Platform } from './platform'
@@ -116,8 +115,9 @@ describe('platform.ts', function() {
     describe('.expose()', function() {
         it('should expose things from root injector', function() {
             const platform = new Platform(load_config({}))
-            const inspector = platform.expose(TpInspector)
-            expect(inspector).to.be.instanceof(TpInspector)
+                .import({ provide: Service1, useClass: Service1 })
+            const inspector = platform.expose(Service1)
+            expect(inspector).to.be.instanceof(Service1)
         })
 
         it('should expose undefined from provided not exists', function() {
@@ -134,6 +134,10 @@ describe('platform.ts', function() {
         const SomeDecorator = make_decorator('SomeDecorator', () => ({ token: some_module_token }), TpEntry)
         const SomeUnit = make_decorator('SomeUnit', () => ({}), TpUnit)
 
+        @TpService()
+        class SomeService {
+        }
+
         @SomeDecorator()
         class SomeEntry {
             @SomeUnit()
@@ -141,7 +145,9 @@ describe('platform.ts', function() {
             }
         }
 
-        @TpModule()
+        @TpModule({
+            providers: [SomeService],
+        })
         class SomeModule {
             public start_called = false
             public terminate_called = false
@@ -178,23 +184,43 @@ describe('platform.ts', function() {
         }
 
         @TpRoot({
-            entries: [SomeEntry]
+            entries: [SomeEntry],
         })
         class SomeRoot {
-
+            constructor(
+                private s: SomeService,
+            ) {
+            }
         }
 
         it('should call all hooks', async function() {
             const platform = new Platform(load_config({}))
             platform.import(SomeModule)
             platform.bootstrap(SomeRoot)
-            const inspector = platform.expose(TpInspector)
-            platform.start(() => console.debug('started'))
-            platform.start()
-            await inspector?.wait_start()
-            platform.terminate(() => console.debug('terminate'))
-            platform.terminate()
-            await inspector?.wait_terminate()
+            void platform.start()
+            await platform.start()
+            void platform.terminate()
+            await platform.terminate()
+            const instance = platform.expose(SomeModule)
+            expect(instance?.start_called).to.be.true
+            expect(instance?.terminate_called).to.be.true
+            expect(instance?.load_called).to.be.true
+        })
+
+        it('should record time after started and terminated', async function() {
+            const platform = new Platform(load_config({}))
+            platform.import(SomeModule)
+            platform.bootstrap(SomeRoot)
+            expect(platform.started_at).to.equal(-1)
+            void platform.start(() => console.debug('started'))
+            expect(platform.started_at).to.closeTo(Date.now(), 10)
+            await platform.start()
+            expect(platform.start_time).to.closeTo(Date.now() - platform.started_at, 50)
+            expect(platform.terminated_at).to.equal(-1)
+            void platform.terminate(() => console.debug('terminate'))
+            expect(platform.terminated_at).to.closeTo(Date.now(), 10)
+            await platform.terminate()
+            expect(platform.terminate_time).to.closeTo(Date.now() - platform.terminated_at, 50)
             const instance = platform.expose(SomeModule)
             expect(instance?.start_called).to.be.true
             expect(instance?.terminate_called).to.be.true

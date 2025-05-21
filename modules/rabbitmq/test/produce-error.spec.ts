@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpInspector, TpRoot } from '@tarpit/core'
+import { Platform, TpConfigSchema, TpRoot } from '@tarpit/core'
 import amqplib, { Connection } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_as_promised from 'chai-as-promised'
@@ -42,7 +42,6 @@ describe('produce error case', function() {
     const url = process.env.RABBITMQ_URL ?? ''
     let connection: Connection
     let platform: Platform
-    let inspector: TpInspector
     let producer: TempProducer
 
     const sandbox = chai.spy.sandbox()
@@ -54,16 +53,13 @@ describe('produce error case', function() {
             .import(RabbitmqModule)
             .import(TempRoot)
 
-        inspector = platform.expose(TpInspector)!
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
         producer = platform.expose(TempProducer)!
         await new Promise(resolve => setTimeout(resolve, 200))
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         await connection.close()
         sandbox.restore()
     })

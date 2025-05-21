@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
+import { Platform, TpConfigSchema } from '@tarpit/core'
 import axios from 'axios'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
@@ -60,19 +60,16 @@ describe('content type case', function() {
 
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31260, expose_error: true } }))
         .bootstrap(TempRouter)
-    const inspector = platform.expose(TpInspector)!
     const sandbox = chai.spy.sandbox()
     const r = axios.create({ baseURL: 'http://localhost:31260', proxy: false })
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform.start()
-        await inspector.wait_start()
+        await platform.start()
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         sandbox.restore()
     })
 

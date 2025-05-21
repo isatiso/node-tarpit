@@ -7,6 +7,7 @@
  */
 
 import { Injector, TpService } from '@tarpit/core'
+import { takeUntil, tap } from 'rxjs'
 import { PassThrough, Readable } from 'stream'
 import { decompressor_token } from '../tokens'
 import { filter_provider } from '../tools/filter-provider'
@@ -24,7 +25,10 @@ export class ContentDecompressorService {
     constructor(
         private injector: Injector,
     ) {
-        this.injector.on('provider-change', token => token === decompressor_token && this.load_decompressor())
+        this.injector.provider_change$.pipe(
+            tap(token => token === decompressor_token && this.load_decompressor()),
+            takeUntil(this.injector.off$),
+        ).subscribe()
         this.load_decompressor()
     }
 

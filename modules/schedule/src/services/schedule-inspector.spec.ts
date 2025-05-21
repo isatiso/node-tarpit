@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpInspector } from '@tarpit/core'
+import { Platform } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { Task, TpSchedule } from '../annotations'
@@ -34,7 +34,6 @@ describe('schedule-inspector.ts', function() {
 
         let fake_time = 1658395732508
         let platform: Platform
-        let inspector: TpInspector
         let schedule_inspector: ScheduleInspector
 
         const sandbox = chai.spy.sandbox()
@@ -49,15 +48,12 @@ describe('schedule-inspector.ts', function() {
             sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
             chai.spy.on(Date, 'now', () => fake_time)
             platform = new Platform(load_config({})).bootstrap(TempSchedule)
-            inspector = platform.expose(TpInspector)!
             schedule_inspector = platform.expose(ScheduleInspector)!
-            platform.start()
-            await inspector.wait_start()
+            await platform.start()
         })
 
         after(async function() {
-            platform.terminate()
-            await inspector.wait_terminate()
+            await platform.terminate()
             chai.spy.restore(Date)
             sandbox.restore()
         })
