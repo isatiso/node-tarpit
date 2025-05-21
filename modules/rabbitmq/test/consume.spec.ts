@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpInspector, TpService } from '@tarpit/core'
+import { Platform, TpConfigSchema, TpService } from '@tarpit/core'
 import amqplib, { Connection } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
@@ -101,7 +101,6 @@ describe('consume case', function() {
     const url = process.env.RABBITMQ_URL ?? ''
     let connection: Connection
     let platform: Platform
-    let inspector: TpInspector
     let consumer: TempConsumer
     const sandbox = chai.spy.sandbox()
 
@@ -112,18 +111,14 @@ describe('consume case', function() {
             .import(RabbitmqModule)
             .import(TempConsumer)
 
-        inspector = platform.expose(TpInspector)!
         consumer = platform.expose(TempConsumer)!
         // const injector = platform.expose(Injector)!
         // injector.on('channel-error', err => console.log('channel-error', err))
-        platform.start()
-        await inspector.wait_start()
-
+        await platform.start()
     })
 
     after(async function() {
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         const channel = await connection.createChannel()
         await channel.deleteQueue(D.Q['tarpit.queue.ack'], { ifEmpty: false, ifUnused: false })
         await channel.deleteQueue(D.Q['tarpit.queue.ack.native'], { ifEmpty: false, ifUnused: false })

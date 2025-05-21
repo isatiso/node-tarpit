@@ -14,6 +14,7 @@ import { RabbitConnector } from './services/rabbit-connector'
 import { RabbitConsumer } from './services/rabbit-consumer'
 import { RabbitDefine, RabbitDefineToken } from './services/rabbit-define'
 import { RabbitHooks } from './services/rabbit-hooks'
+import { RabbitNotifier } from './services/rabbit-notifier'
 import { RabbitProducer } from './services/rabbit-producer'
 import { RabbitRetryStrategy } from './services/rabbit-retry-strategy'
 import { RabbitSessionCollector } from './services/rabbit-session-collector'
@@ -26,6 +27,7 @@ import { collect_produces } from './tools/collect-produces'
         ContentTypeModule,
     ],
     providers: [
+        RabbitNotifier,
         RabbitClient,
         RabbitConnector,
         RabbitConsumer,
@@ -40,6 +42,7 @@ export class RabbitmqModule {
 
     constructor(
         private client: RabbitClient,
+        private _notifier: RabbitNotifier,
         private loader: TpLoader,
         private consumers: RabbitConsumer,
         private producers: RabbitProducer,

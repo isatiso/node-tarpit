@@ -7,11 +7,13 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Injector, Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
+import { Platform, TpConfigSchema } from '@tarpit/core'
 import amqplib, { Connection } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
+import { takeUntil } from 'rxjs'
 import { ConfirmProducer, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitmqModule, TpProducer } from '../src'
+import { RabbitNotifier } from '../src/services/rabbit-notifier'
 
 chai.use(chai_spies)
 
@@ -52,7 +54,6 @@ describe('produce drain case', function() {
     const buf = Buffer.from(`Stops the server from accepting new connections and keeps existing connections. This function is asynchronous, the server is finally closed when all connections are ended and the server emits a 'close' event. The optional callback will be called once the 'close' event occurs. Unlike that event, it will be called with an Error as its only argument if the server was not open when it was closed.`)
     let connection: Connection
     let platform: Platform
-    let inspector: TpInspector
     let producer: TempProducer
 
     const sandbox = chai.spy.sandbox()
@@ -64,20 +65,17 @@ describe('produce drain case', function() {
             .import(RabbitmqModule)
             .import(TempProducer)
 
-        inspector = platform.expose(TpInspector)!
-        const injector = platform.expose(Injector)!
-        injector.on('rabbitmq-channel-error', err => console.error('channel-error', err))
-        injector.on('error', err => console.error('error', err))
-        platform.start()
-        await inspector.wait_start()
+        const notifier = platform.expose(RabbitNotifier)!
+        notifier.channel_error$.pipe(takeUntil(notifier.off$)).subscribe(err => console.error('channel-error', err))
+        notifier.on('error', err => console.error('error', err))
+        await platform.start()
         producer = platform.expose(TempProducer)!
         await new Promise(resolve => setTimeout(resolve, 200))
     })
 
     after(async function() {
         await new Promise(resolve => setTimeout(resolve, 2000))
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
         const channel = await connection.createChannel()
         await channel.deleteExchange(D.X['tarpit.exchange.bench.confirm'], { ifUnused: false })
         await channel.deleteExchange(D.X['tarpit.exchange.bench.normal'], { ifUnused: false })

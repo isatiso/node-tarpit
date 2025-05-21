@@ -7,11 +7,12 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Injector, Platform, TpConfigSchema, TpInspector } from '@tarpit/core'
+import { Injector, Platform, TpConfigSchema } from '@tarpit/core'
 import { connect } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { RabbitDefine, RabbitDefineToken, RabbitmqModule } from '../src'
+import { RabbitNotifier } from '../src/services/rabbit-notifier'
 
 chai.use(chai_spies)
 
@@ -59,9 +60,8 @@ describe('assert definition case', function() {
         const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import({ provide: RabbitDefineToken, useValue: D, multi: true, root: true })
             .import(RabbitmqModule)
-        const inspector = platform.expose(TpInspector)!
-        platform.start()
-        await inspector.wait_start()
+
+        await platform.start()
         const connection = await connect(url)
         const channel = await connection.createChannel()
         const [a, b, c, d, e, f] = await Promise.all([
@@ -79,29 +79,28 @@ describe('assert definition case', function() {
         expect(e).to.eql({ consumerCount: 0, messageCount: 0, queue: 'tarpit.queue.b' })
         expect(f).to.eql({ consumerCount: 0, messageCount: 0, queue: 'tarpit.queue.c' })
         await channel.close()
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.terminate()
+
         await connection.close()
     })
 
     it('should throw error if definition conflicted', async function() {
         const D = new RabbitDefine().define_exchange('tarpit.exchange.a', 'direct', { durable: true })
         const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
-        const inspector = platform.expose(TpInspector)!
-        const injector = platform.expose(Injector)!
-        injector.on('error', ({ type }) => {
+        platform.import({ provide: RabbitDefineToken, useValue: D, multi: true, root: true })
+            .import(RabbitmqModule)
+
+        const notifier = platform.expose(RabbitNotifier)!
+        notifier.on('error', ({ type }) => {
             if (type === 'rabbitmq.connection.error' || type === 'rabbitmq.assert.definition.failed') {
                 spy_on_error(type)
             }
         })
-        platform.import({ provide: RabbitDefineToken, useValue: D, multi: true, root: true })
-            .import(RabbitmqModule)
         const spy_on_error: (...args: any[]) => void = chai.spy()
 
-        platform.start()
-        await inspector.wait_start()
-        platform.terminate()
-        await inspector.wait_terminate()
+        await platform.start()
+        await platform.terminate()
+
         expect(spy_on_error).to.have.been.first.called.with('rabbitmq.connection.error')
         expect(spy_on_error).to.have.been.second.called.with('rabbitmq.assert.definition.failed')
     })

@@ -43,6 +43,7 @@
         "@tarpit/barbeque": "^0.5.73",
         "@tarpit/judge": "^0.5.73",
         "amqplib": "^0.10.3",
+        "rxjs": "^7.8.2",
         "tslib": "^2.6.0"
     },
     "devDependencies": {

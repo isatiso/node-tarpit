@@ -6,10 +6,11 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, TpConfigData, TpService } from '@tarpit/core'
+import { TpConfigData, TpService } from '@tarpit/core'
 import { connect as connect_rabbitmq, Connection, Options } from 'amqplib'
 import net from 'net'
 import url from 'url'
+import { RabbitNotifier } from './rabbit-notifier'
 import { RabbitRetryStrategy } from './rabbit-retry-strategy'
 import { RabbitSessionCollector } from './rabbit-session-collector'
 
@@ -55,7 +56,7 @@ export class RabbitConnector {
     constructor(
         private config: TpConfigData,
         private sessions: RabbitSessionCollector,
-        private injector: Injector,
+        private notifier: RabbitNotifier,
         private retry_strategy: RabbitRetryStrategy,
     ) {
     }
@@ -84,7 +85,7 @@ export class RabbitConnector {
         do {
             try {
                 this._connection = await this._try_connect_server()
-                this.injector.emit('rabbitmq-connected', this._connection)
+                this.notifier.connected$.next(this._connection)
                 return this._connection
             } catch (err) {
                 await this.retry_strategy.on_failed(err).catch(err => {
@@ -108,7 +109,7 @@ export class RabbitConnector {
                     this._connection = undefined
                     this.closed = true
                 }
-                this.injector.emit('error', { type: 'rabbitmq.connection.error', error: err })
+                this.notifier.emit('error', { type: 'rabbitmq.connection.error', error: err })
             })
     }
 }
