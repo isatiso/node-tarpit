@@ -7,6 +7,7 @@
  */
 
 import { Injector, TpLoader, TpModule } from '@tarpit/core'
+import { tap } from 'rxjs'
 import { TpThreadToken } from './annotations/__token__'
 import { TpThread } from './builtin/tp-thread'
 
@@ -18,8 +19,12 @@ export class WorkerThreadsModule {
         private loader: TpLoader,
         private thread: TpThread,
     ) {
-        this.injector.on('start', () => this.thread.start())
-        this.injector.on('terminate', () => this.thread.terminate())
+        this.injector.on$.pipe(
+            tap(() => this.thread.start()),
+        ).subscribe()
+        this.injector.off$.pipe(
+            tap(() => this.thread.terminate()),
+        ).subscribe()
         this.loader.register(TpThreadToken, {
             on_start: async () => this.thread.start(),
             on_terminate: async () => this.thread.terminate(),
