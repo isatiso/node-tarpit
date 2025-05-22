@@ -43,6 +43,9 @@ async function too_big(dir: string, limit: number): Promise<boolean> {
     return false
 }
 
+/**
+ * Manages file operations such as reading, writing, copying, and archiving within a restricted data path.
+ */
 @TpService()
 export class HttpFileManager {
 
@@ -58,12 +61,15 @@ export class HttpFileManager {
     }
 
     /**
-     * Creates a zip archive of a directory.
-     * @param p Directory to zip.
-     * @returns A stream of the zip archive.
+     * Creates a tar.gz archive of a directory.
+     * @param p Directory to archive.
+     * @returns A stream of the tar.gz archive.
      */
     async zip(p: string): Promise<stream.Transform> {
         const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
         if (await too_big(filepath, this.download_size_limit)) {
             throw new Error('Archive size exceeds limit')
         }
@@ -75,43 +81,81 @@ export class HttpFileManager {
     }
 
     /**
-     * Reads a file's content.
-     * @param p path to the file.
-     * @returns File content as a Buffer.
+     * Reads the content of a file.
+     * @param p Path to the file.
+     * @returns A promise that resolves to the file's content as a Buffer.
      */
     async read(p: string): Promise<Buffer> {
         const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
         return this._file_locker.with_read_lock([p], () => fsp.readFile(filepath))
     }
 
     /**
      * Writes content to a file.
-     * @param p path to the file.
+     * @param p Path to the file.
      * @param content Content to write to the file.
+     * @returns A promise that resolves when the file has been successfully written.
      */
     async write(p: string, content: Buffer): Promise<void> {
         const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
         return this._file_locker.with_write_lock([p], () => fsp.writeFile(filepath, content))
     }
 
     /**
-     * Renames a file.
-     * @param pre Previous path to the file.
-     * @param cur New path to the file.
+     * Renames a file, directory, or symbolic link.
+     * @param pre Previous path to the file, directory, or symbolic link.
+     * @param cur New path for the file, directory, or symbolic link.
      */
     async rename(pre: string, cur: string): Promise<void> {
         const old_filepath = path.join(this.data_path, pre)
         const new_filepath = path.join(this.data_path, cur)
+        if (!new_filepath.startsWith(this.data_path) || !old_filepath.startsWith(this.data_path)) {
+            throw new Error('Rename operation is not allowed outside the data path')
+        }
         return this._file_locker.with_write_lock([pre, cur], () => fsp.rename(old_filepath, new_filepath))
     }
 
     /**
+     * Copies a file, directory, or symbolic link from the source path to the destination path.
+     * If the source is a symbolic link, the link itself is copied rather than the target it points to.
+     * Otherwise, the content of the source (file or directory) is recursively copied to the destination.
+     *
+     * @param pre Source path of the file, directory, or symbolic link.
+     * @param cur Destination path for the file, directory, or symbolic link.
+     */
+    async cp(pre: string, cur: string): Promise<void> {
+        const old_filepath = path.join(this.data_path, pre)
+        const new_filepath = path.join(this.data_path, cur)
+        if (!new_filepath.startsWith(this.data_path) || !old_filepath.startsWith(this.data_path)) {
+            throw new Error('Copy operation is not allowed outside the data path')
+        }
+        return this._file_locker.with_write_lock([pre, cur], async () => {
+            const stat = await fsp.lstat(old_filepath)
+            if (stat.isSymbolicLink()) {
+                const link = await fsp.readlink(old_filepath)
+                await fsp.symlink(link, new_filepath)
+            } else {
+                await fsp.cp(old_filepath, new_filepath, { recursive: true })
+            }
+        })
+    }
+
+    /**
      * Checks if a file or directory exists.
-     * @param p path to the file or directory.
-     * @returns True if the target exists, false otherwise.
+     * @param p Path to the file or directory.
+     * @returns True if the file or directory exists, false otherwise.
      */
     async exists(p: string): Promise<boolean> {
         const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            return false
+        }
         return await this._file_locker.with_read_lock([p], async () => {
             await fsp.lstat(filepath)
             return true
@@ -119,12 +163,15 @@ export class HttpFileManager {
     }
 
     /**
-     * Lists files in a directory.
-     * @param p path to the directory.
-     * @returns Array of file descriptions.
+     * Lists files and directories in the specified directory.
+     * @param p Path to the directory.
+     * @returns An array of file and directory descriptions, including their type, name, size, modification time, creation time, and symbolic link target (if applicable).
      */
     async ls(p: string): Promise<FileDesc[]> {
         const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
         return this._file_locker.with_read_lock([p], async () => {
             return fsp.readdir(filepath, { withFileTypes: true })
                 .then(files => Promise.all(files.map(async f => {
@@ -141,47 +188,59 @@ export class HttpFileManager {
     }
 
     /**
-     * Gets file or directory stat information.
-     * @param p path to the file or directory.
-     * @returns Stats object with file information.
+     * Retrieves stat information of a file or directory, following symbolic links.
+     * @param p Path to the file or directory.
+     * @returns A Promise that resolves to a Stats object containing file or directory information.
      */
     async stat(p: string): Promise<fs.Stats> {
         const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
         return this._file_locker.with_read_lock([p], () => fsp.stat(filepath))
     }
 
     /**
-     * Gets file or directory lstat information (doesn't follow symlinks).
-     * @param p path to the file or directory.
-     * @returns Stats object with file information.
+     * Retrieves lstat information of a file or directory without following symbolic links.
+     * @param p Path to the file or directory.
+     * @returns A Promise that resolves to a Stats object containing file or directory information.
      */
     async lstat(p: string): Promise<fs.Stats> {
         const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
         return this._file_locker.with_read_lock([p], () => fsp.lstat(filepath))
     }
 
     /**
-     * Removes a file or directory.
-     * @param p path to the file or directory.
+     * Removes a file or directory. The operation is restricted to paths within the data path.
+     * @param p Path to the file or directory to be removed.
      */
     async rm(p: string): Promise<void> {
         const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
         return this._file_locker.with_write_lock([p], () => fsp.rm(filepath, { recursive: true, force: true }))
     }
 
     /**
-     * Creates a directory.
-     * @param p Directory to create.
+     * Creates a directory at the specified path. The operation is restricted to paths within the data path.
+     * @param p Path of the directory to create.
      */
     async mkdir(p: string): Promise<string | undefined> {
         const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
         return this._file_locker.with_write_lock([p], () => fsp.mkdir(filepath, { recursive: true }))
     }
 
     /**
-     * Extracts the type of file or directory.
-     * @param d Directory entry to analyze.
-     * @returns The file type.
+     * Extracts the type of file or directory based on the provided stats or directory entry.
+     * @param d Stats or directory entry to analyze.
+     * @returns The determined file type as a `FileType`.
      */
     private extract_type(d: fs.Dirent | fs.Stats): FileType {
         if (d.isFile()) {
