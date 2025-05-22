@@ -36,12 +36,15 @@ describe('decorator.ts', function() {
     @TestDecorator('a', 123)
     @TestDecorator('a', 123)
     class A {
+        @TestDecorator('a', 123)
+        d?: P = undefined
+
         constructor(
             @TestDecorator('a', 123)
             @TestDecorator('a', 123)
-                a: number,
+            a: number,
             @TestDecorator('a', 123)
-                b: string,
+            b: string,
             _c: P) {
         }
 
@@ -51,16 +54,13 @@ describe('decorator.ts', function() {
             a: string,
             b: string,
             @TestDecorator('a', 123)
-                c: number,
+            c: number,
             @TestDecorator('a', 123)
             @TestDecorator('a', 123)
-                d: boolean,
+            d: boolean,
         ) {
 
         }
-
-        @TestDecorator('a', 123)
-        d?: P = undefined
     }
 
     describe('#make_decorator()', function() {

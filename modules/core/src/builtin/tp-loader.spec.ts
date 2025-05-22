@@ -54,7 +54,7 @@ describe('tp-loader.ts', function() {
             expect((loader as any)._loaders.size).to.equal(1)
         })
 
-        it('should ignore errors thrown by hooks', async function () {
+        it('should ignore errors thrown by hooks', async function() {
             loader.register(Symbol.for('test'), {
                 on_start: async () => {
                     throw new Error()

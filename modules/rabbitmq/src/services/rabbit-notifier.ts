@@ -9,7 +9,7 @@
 import { Injector, TpService } from '@tarpit/core'
 import { Connection } from 'amqplib'
 import { EventEmitter } from 'events'
-import { Subject, take } from 'rxjs'
+import { Subject } from 'rxjs'
 
 @TpService({ inject_root: true })
 export class RabbitNotifier {

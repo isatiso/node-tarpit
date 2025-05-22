@@ -25,7 +25,7 @@ describe('http-file-manager.ts', function() {
     let file_manager: HttpFileManager
     let mock_config: TpConfigData
     let server: net.Server
-    const test_dir = './test/file_manager_test'
+    const test_dir = path.resolve('./test/file_manager_test')
     const test_file = 'test_file.txt'
     const test_content = 'Hello, World!'
 
@@ -342,6 +342,98 @@ describe('http-file-manager.ts', function() {
 
             // @ts-ignore Accessing private method for testing
             expect(file_manager.extract_type(unknownDirent)).to.equal('unknown')
+        })
+    })
+
+    describe('path boundary checks', function() {
+
+        it('should reject paths outside of datapath in .stat()', async function() {
+            await expect(file_manager.stat('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+
+        it('should reject paths outside of datapath in .lstat()', async function() {
+            await expect(file_manager.lstat('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+
+        it('should reject paths outside of datapath in .read()', async function() {
+            await expect(file_manager.read('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+
+        it('should reject paths outside of datapath in .write()', async function() {
+            await expect(file_manager.write('../outside.txt', Buffer.from(''))).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+
+        it('should reject paths outside of datapath in .rename()', async function() {
+            await expect(file_manager.rename(test_file, '../outside.txt')).to.be.rejectedWith('Rename operation is not allowed outside the data path')
+        })
+
+        it('should return false for paths outside of datapath in .exists()', async function() {
+            const result = await file_manager.exists('../outside.txt')
+            expect(result).to.be.false
+        })
+
+        it('should reject paths outside of datapath in .ls()', async function() {
+            await expect(file_manager.ls('../')).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+
+        it('should reject paths outside of datapath in .rm()', async function() {
+            await expect(file_manager.rm('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+
+        it('should reject paths outside of datapath in .mkdir()', async function() {
+            await expect(file_manager.mkdir('../outside_dir')).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+
+        it('should reject paths outside of datapath in .zip()', async function() {
+            await expect(file_manager.zip('../')).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+    })
+
+    describe('.cp()', function() {
+        it('should copy a file to a new location', async function() {
+            const target_file = 'copied_file.txt'
+            await file_manager.cp(test_file, target_file)
+
+            // Check if the file was copied correctly
+            const source_content = await fsp.readFile(path.join(test_dir, test_file), 'utf8')
+            const target_content = await fsp.readFile(path.join(test_dir, target_file), 'utf8')
+            expect(target_content).to.equal(source_content)
+        })
+
+        it('should copy a directory recursively', async function() {
+            // Create a subdirectory with files
+            const subdir = 'cp_test_dir'
+            const subfile = 'subfile.txt'
+            await fsp.mkdir(path.join(test_dir, subdir), { recursive: true })
+            await fsp.writeFile(path.join(test_dir, subdir, subfile), 'test content')
+
+            // Copy the directory
+            const target_dir = 'copied_dir'
+            await file_manager.cp(subdir, target_dir)
+
+            // Check if directory and its contents were copied correctly
+            const exists = await fsp.stat(path.join(test_dir, target_dir)).catch(() => false)
+            expect(exists).to.not.equal(false)
+
+            const subfile_content = await fsp.readFile(path.join(test_dir, target_dir, subfile), 'utf8')
+            expect(subfile_content).to.equal('test content')
+        })
+
+        it('should copy symbolic links correctly', async function() {
+            const target_link = 'copied_link.txt'
+            await file_manager.cp('link_to_test_file.txt', target_link)
+
+            // Check if the link was copied correctly (the link itself, not the target)
+            const link_target = await fsp.readlink(path.join(test_dir, target_link))
+            expect(link_target).to.equal('./test_file.txt')
+        })
+
+        it('should reject paths outside of datapath in .cp()', async function() {
+            await expect(file_manager.cp(test_file, '../outside.txt')).to.be.rejectedWith('Copy operation is not allowed outside the data path')
+        })
+
+        it('should reject if source path is outside of datapath in .cp()', async function() {
+            await expect(file_manager.cp('../outside.txt', 'inside.txt')).to.be.rejectedWith('Copy operation is not allowed outside the data path')
         })
     })
 })
