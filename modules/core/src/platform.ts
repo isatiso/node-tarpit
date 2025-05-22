@@ -30,6 +30,7 @@ export class Platform {
         this.start$.pipe(
             filter(() => this._started_at < 0),
             tap(() => this._started_at = Date.now()),
+            tap(() => this.root_injector.on$.next()),
             switchMap(after_start => of(null).pipe(
                 switchMap(() => this.loader.start()),
                 map(() => this._start_time = (Date.now() - this._started_at) / 1000),
@@ -41,6 +42,7 @@ export class Platform {
         this.terminate$.pipe(
             filter(() => this._terminated_at < 0),
             tap(() => this._terminated_at = Date.now()),
+            tap(() => this.root_injector.off$.next()),
             switchMap(after_terminate => of(null).pipe(
                 switchMap(() => this.started$.pipe(find(Boolean))),
                 switchMap(() => this.loader.terminate()),

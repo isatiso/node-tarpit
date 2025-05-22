@@ -6,8 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import { merge, Observable, Subject, takeUntil } from 'rxjs'
-import { AbstractConstructor, Constructor, InjectorType, Provider, ProviderDef } from '../types'
+import { merge, Observable, Subject } from 'rxjs'
+import { AbstractConstructor, Constructor, InjectorType, Provider } from '../types'
 import { NullInjector } from './null-injector'
 import { ValueProvider } from './value-provider'
 
