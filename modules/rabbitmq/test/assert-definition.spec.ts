@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Injector, Platform, TpConfigSchema } from '@tarpit/core'
+import { Platform, TpConfigSchema } from '@tarpit/core'
 import { connect } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'

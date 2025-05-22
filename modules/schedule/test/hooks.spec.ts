@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform,  TpService } from '@tarpit/core'
+import { Platform, TpService } from '@tarpit/core'
 import chai from 'chai'
 import chai_spies from 'chai-spies'
 import { ScheduleHooks, ScheduleModule, Task, TaskContext, throw_task_retry, TpSchedule } from '../src'

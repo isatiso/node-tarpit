@@ -7,7 +7,6 @@
  */
 
 import * as ts from 'typescript'
-import { SyntaxKind } from 'typescript'
 
 /**
  * {

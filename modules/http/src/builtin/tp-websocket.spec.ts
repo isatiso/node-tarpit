@@ -45,6 +45,16 @@ class MockWebSocket {
         this.terminate = chai.spy()
     }
 
+    static record_history(history: { [event: string]: any[][] }, spy: any) {
+        return (event: string, listener: (...args: any[]) => void) => {
+            if (!history[event]) {
+                history[event] = []
+            }
+            history[event].push([event, listener])
+            spy(event, listener)
+        }
+    }
+
     send_normal() {
         this.send = (data: any, options?: Record<string, string>, cb?: (err: Error | undefined) => void) => {
             this.send_history.push([data, options])
@@ -56,16 +66,6 @@ class MockWebSocket {
         this.send = (data: any, options?: Record<string, string>, cb?: (err: Error | undefined) => void) => {
             this.send_history.push([data, options])
             cb?.(new Error(msg))
-        }
-    }
-
-    static record_history(history: { [event: string]: any[][] }, spy: any) {
-        return (event: string, listener: (...args: any[]) => void) => {
-            if (!history[event]) {
-                history[event] = []
-            }
-            history[event].push([event, listener])
-            spy(event, listener)
         }
     }
 }

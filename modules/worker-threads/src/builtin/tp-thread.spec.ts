@@ -38,7 +38,7 @@ describe('tp-thread.ts', function() {
         })
 
         it('should execute task', async function() {
-            this.timeout(10000);
+            this.timeout(10000)
             const cases: number[][] = []
             for (let i = 0; i < 100; i++) {
                 const a = Math.floor(Math.random() * 1000)

@@ -59,6 +59,14 @@ export class RabbitDefine<Exchange extends string = DefaultRabbitmqExchange, Que
         return this.exchange_key_set as any
     }
 
+    get Q() {
+        return this.queue
+    }
+
+    get queue(): Readonly<{ [Q in Queue]: Q }> {
+        return this.queue_key_set as any
+    }
+
     bind_exchange(source: Exchange, destination: Exchange, routing_key: string, args?: any): RabbitDefine<Exchange, Queue> {
         const key = source + destination + routing_key
         if (!this.exchange_binding_key_set.has(key)) {
@@ -75,14 +83,6 @@ export class RabbitDefine<Exchange extends string = DefaultRabbitmqExchange, Que
             this.queue_bindings.push([queue, source, routing_key, args])
         }
         return this
-    }
-
-    get Q() {
-        return this.queue
-    }
-
-    get queue(): Readonly<{ [Q in Queue]: Q }> {
-        return this.queue_key_set as any
     }
 
     define_exchange<T extends string>(exchange: T extends Exchange ? never : T, type: 'topic' | 'direct' | 'fanout' | string, options?: ExchangeOptions): RabbitDefine<Exchange | T, Queue> {

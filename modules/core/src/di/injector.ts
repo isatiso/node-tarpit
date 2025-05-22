@@ -18,13 +18,12 @@ export class Injector implements InjectorType {
     readonly id = Injector.instance_count++
     readonly children: Injector[] = []
     readonly root: Injector = this._root ?? this
-    protected providers: Map<any, Provider<any>> = new Map([])
-    protected providers_id_map: Map<string, Provider<any>> = new Map([])
-
     readonly on$: Subject<void> = this.root.on$ ?? new Subject<void>()
     readonly off$: Subject<void> = this.root.off$ ?? new Subject<void>()
-    private _provider_change$ = new Subject<any>()
     readonly provider_change$: Observable<any>
+    protected providers: Map<any, Provider<any>> = new Map([])
+    protected providers_id_map: Map<string, Provider<any>> = new Map([])
+    private _provider_change$ = new Subject<any>()
 
     constructor(
         protected parent: InjectorType,
