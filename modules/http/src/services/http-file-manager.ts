@@ -123,8 +123,8 @@ export class HttpFileManager {
 
     /**
      * Copies a file, directory, or symbolic link from the source path to the destination path.
-     * If the source is a symbolic link, the link itself is copied rather than the target it points to.
-     * Otherwise, the content of the source (file or directory) is recursively copied to the destination.
+     * If the source is a symbolic link, the symbolic link itself is copied rather than the target it references.
+     * For files and directories, the content is recursively copied to the destination while preserving symbolic links.
      *
      * @param pre Source path of the file, directory, or symbolic link.
      * @param cur Destination path for the file, directory, or symbolic link.
@@ -141,7 +141,7 @@ export class HttpFileManager {
                 const link = await fsp.readlink(old_filepath)
                 await fsp.symlink(link, new_filepath)
             } else {
-                await fsp.cp(old_filepath, new_filepath, { recursive: true })
+                await fsp.cp(old_filepath, new_filepath, { verbatimSymlinks: true, recursive: true })
             }
         })
     }
