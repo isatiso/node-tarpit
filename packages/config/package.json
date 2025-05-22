@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/config",
-    "version": "0.5.74",
+    "version": "0.5.75",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -40,10 +40,10 @@
         "test": "tp cover --reporter=json --reporter=text --clean"
     },
     "dependencies": {
-        "@tarpit/judge": "^0.5.74"
+        "@tarpit/judge": "^0.5.75"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.74",
-        "@tarpit/type-tools": "^0.5.74"
+        "@tarpit/rollup": "^0.5.75",
+        "@tarpit/type-tools": "^0.5.75"
     }
 }
