@@ -190,6 +190,243 @@ describe('http-file-manager.ts', function() {
         })
     })
 
+    describe('.read_stream()', function() {
+        it('should create a readable stream for a file', async function() {
+            const readable_stream = await file_manager.read_stream(test_file)
+            expect(readable_stream).to.be.instanceof(stream.Readable)
+
+            let content = ''
+            readable_stream.on('data', (chunk) => {
+                content += chunk.toString()
+            })
+
+            await new Promise<void>((resolve, reject) => {
+                readable_stream.on('end', () => {
+                    expect(content).to.equal(test_content)
+                    resolve()
+                })
+                readable_stream.on('error', reject)
+            })
+        })
+
+        it('should reject if file does not exist', async function() {
+            const readable_stream = await file_manager.read_stream('nonexistent.txt')
+            
+            await new Promise<void>((resolve, reject) => {
+                readable_stream.on('error', (error) => {
+                    expect(error.message).to.include('ENOENT')
+                    resolve()
+                })
+                readable_stream.on('end', () => {
+                    reject(new Error('Expected an error but stream ended successfully'))
+                })
+            })
+        })
+
+        it('should reject paths outside of datapath in .read_stream()', async function() {
+            await expect(file_manager.read_stream('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+
+        it('should maintain file lock during stream reading', async function() {
+            // Create a larger test file to ensure stream takes some time
+            const large_file = 'large_test_file.txt'
+            const large_content = 'x'.repeat(50000) // 50KB content to ensure longer read time
+            await fsp.writeFile(path.join(test_dir, large_file), large_content)
+
+            const events: string[] = []
+            
+            // Start read stream operation
+            const read_promise = (async () => {
+                events.push('read_started')
+                const readable_stream = await file_manager.read_stream(large_file)
+                
+                return new Promise<void>((resolve, reject) => {
+                    let received_content = ''
+                    
+                    // Slow down the reading by pausing every chunk
+                    readable_stream.on('data', (chunk) => {
+                        received_content += chunk.toString()
+                        // Pause and resume to slow down the reading process
+                        readable_stream.pause()
+                        setTimeout(() => {
+                            readable_stream.resume()
+                        }, 5) // 5ms delay per chunk
+                    })
+                    
+                    readable_stream.on('end', () => {
+                        events.push('read_finished')
+                        expect(received_content).to.equal(large_content)
+                        resolve()
+                    })
+                    
+                    readable_stream.on('error', reject)
+                })
+            })()
+
+            // Wait for read to definitely start
+            await new Promise(resolve => setTimeout(resolve, 100))
+            
+            // Try to write to the same file while reading
+            const write_promise = (async () => {
+                events.push('write_started')
+                await file_manager.write(large_file, Buffer.from('modified content'))
+                events.push('write_finished')
+            })()
+
+            // Wait for both operations to complete
+            await Promise.all([read_promise, write_promise])
+
+            // Verify the order of events - read should complete before write starts
+            expect(events).to.deep.equal(['read_started', 'read_finished', 'write_started', 'write_finished'])
+
+            // Verify the file was eventually modified by the write operation
+            const final_content = await fsp.readFile(path.join(test_dir, large_file), 'utf8')
+            expect(final_content).to.equal('modified content')
+        })
+    })
+
+    describe('.write_stream()', function() {
+        it('should write content from a readable stream to a file', async function() {
+            const new_content = 'Stream content for testing'
+            const new_file = 'stream_test_file.txt'
+            
+            // Create a readable stream from a string
+            const readable_stream = new stream.Readable({
+                read() {
+                    this.push(new_content)
+                    this.push(null) // End the stream
+                }
+            })
+
+            await file_manager.write_stream(new_file, readable_stream)
+
+            const file_content = await fsp.readFile(path.join(test_dir, new_file), 'utf8')
+            expect(file_content).to.equal(new_content)
+        })
+
+        it('should handle empty streams', async function() {
+            const new_file = 'empty_stream_file.txt'
+            
+            // Create an empty readable stream
+            const empty_stream = new stream.Readable({
+                read() {
+                    this.push(null) // End the stream immediately
+                }
+            })
+
+            await file_manager.write_stream(new_file, empty_stream)
+
+            const file_content = await fsp.readFile(path.join(test_dir, new_file), 'utf8')
+            expect(file_content).to.equal('')
+        })
+
+        it('should handle large streams', async function() {
+            const new_file = 'large_stream_file.txt'
+            const chunk_size = 1024
+            const chunk_count = 10
+            const expected_size = chunk_size * chunk_count
+            
+            // Create a stream that produces multiple chunks
+            let chunks_sent = 0
+            const large_stream = new stream.Readable({
+                read() {
+                    if (chunks_sent < chunk_count) {
+                        this.push(Buffer.alloc(chunk_size, 'a'))
+                        chunks_sent++
+                    } else {
+                        this.push(null)
+                    }
+                }
+            })
+
+            await file_manager.write_stream(new_file, large_stream)
+
+            const stats = await fsp.stat(path.join(test_dir, new_file))
+            expect(stats.size).to.equal(expected_size)
+        })
+
+        it('should reject paths outside of datapath in .write_stream()', async function() {
+            const readable_stream = new stream.Readable({
+                read() {
+                    this.push('test')
+                    this.push(null)
+                }
+            })
+
+            await expect(file_manager.write_stream('../outside.txt', readable_stream)).to.be.rejectedWith('Access outside the data path is not allowed')
+        })
+
+        it('should handle stream errors gracefully', async function() {
+            const new_file = 'error_stream_file.txt'
+            
+            // Create a stream that will emit an error
+            const error_stream = new stream.Readable({
+                read() {
+                    this.push('some data')
+                    // Emit an error after some data
+                    setImmediate(() => {
+                        this.destroy(new Error('Stream error for testing'))
+                    })
+                }
+            })
+
+            await expect(file_manager.write_stream(new_file, error_stream)).to.be.rejected
+        })
+
+        it('should maintain file lock during stream writing', async function() {
+            const test_file_name = 'write_lock_test_file.txt'
+            const large_content = 'y'.repeat(50000) // 50KB content
+            
+            const events: string[] = []
+            
+            // Create a slow readable stream to ensure write takes time
+            let chunks_sent = 0
+            const total_chunks = 100
+            const slow_write_stream = new stream.Readable({
+                read() {
+                    if (chunks_sent < total_chunks) {
+                        this.push(large_content.substring(chunks_sent * 500, (chunks_sent + 1) * 500))
+                        chunks_sent++
+                        // Add delay between chunks to slow down the write process
+                        setTimeout(() => {
+                            // Continue reading
+                        }, 5)
+                    } else {
+                        this.push(null) // End the stream
+                    }
+                }
+            })
+
+            // Start write stream operation
+            const write_promise = (async () => {
+                events.push('write_started')
+                await file_manager.write_stream(test_file_name, slow_write_stream)
+                events.push('write_finished')
+            })()
+
+            // Wait for write to definitely start
+            await new Promise(resolve => setTimeout(resolve, 100))
+            
+            // Try to read the same file while writing
+            const read_promise = (async () => {
+                events.push('read_started')
+                const content = await file_manager.read(test_file_name)
+                events.push('read_finished')
+                return content
+            })()
+
+            // Wait for both operations to complete
+            await Promise.all([write_promise, read_promise])
+
+            // Verify the order of events - write should complete before read starts
+            expect(events).to.deep.equal(['write_started', 'write_finished', 'read_started', 'read_finished'])
+
+            // Verify the file was written correctly
+            const final_content = await file_manager.read(test_file_name)
+            expect(final_content.toString()).to.equal(large_content)
+        })
+    })
+
     describe('.rename()', function() {
         it('should rename a file', async function() {
             const new_name = 'renamed_file.txt'

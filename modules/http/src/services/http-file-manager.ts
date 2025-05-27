@@ -10,10 +10,13 @@ import { TpConfigData, TpService } from '@tarpit/core'
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
-import stream from 'node:stream'
+import stream, { pipeline } from 'node:stream'
+import { promisify } from 'node:util'
 import * as tar from 'tar'
 import { FileDesc, FileType } from '../__types__'
 import { FileLocker } from '../tools/file-locker'
+
+const pipelineAsync = promisify(pipeline)
 
 async function too_big(dir: string, limit: number): Promise<boolean> {
     if (!limit) {
@@ -94,6 +97,30 @@ export class HttpFileManager {
     }
 
     /**
+     * Creates a readable stream for a file.
+     * @param p Path to the file.
+     * @returns A readable stream of the file's content.
+     */
+    async read_stream(p: string): Promise<stream.Readable> {
+        const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
+        
+        const pass_through = new stream.PassThrough()
+        
+        // Acquire the lock and keep it until the stream is finished
+        this._file_locker.with_read_lock([p], async () => {
+            const read_stream = fs.createReadStream(filepath)
+            await pipelineAsync(read_stream, pass_through)
+        }).catch((error) => {
+            pass_through.destroy(error)
+        })
+        
+        return pass_through
+    }
+
+    /**
      * Writes content to a file.
      * @param p Path to the file.
      * @param content Content to write to the file.
@@ -105,6 +132,23 @@ export class HttpFileManager {
             throw new Error('Access outside the data path is not allowed')
         }
         return this._file_locker.with_write_lock([p], () => fsp.writeFile(filepath, content))
+    }
+
+    /**
+     * Writes content from a readable stream to a file.
+     * @param p Path to the file.
+     * @param input_stream Readable stream containing the content to write.
+     * @returns A promise that resolves when the file has been successfully written.
+     */
+    async write_stream(p: string, input_stream: stream.Readable): Promise<void> {
+        const filepath = path.join(this.data_path, p)
+        if (!filepath.startsWith(this.data_path)) {
+            throw new Error('Access outside the data path is not allowed')
+        }
+        return this._file_locker.with_write_lock([p], async () => {
+            const write_stream = fs.createWriteStream(filepath)
+            await pipelineAsync(input_stream, write_stream)
+        })
     }
 
     /**
