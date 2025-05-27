@@ -1,6 +1,6 @@
 {
     "name": "upload-codecov",
-    "version": "0.5.76",
+    "version": "0.5.77",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -45,7 +45,7 @@
         "openpgp": "5.10.2"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.76",
+        "@tarpit/rollup": "^0.5.77",
         "@types/node": "^20.4.2"
     }
 }
