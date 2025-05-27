@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/core",
-    "version": "0.5.77",
+    "version": "0.5.78",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -40,13 +40,13 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.77",
+        "@tarpit/config": "^0.5.78",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.8.2",
         "tslib": "^2.6.0"
     },
     "devDependencies": {
-        "@tarpit/cli": "^0.5.77",
-        "@tarpit/rollup": "^0.5.77"
+        "@tarpit/cli": "^0.5.78",
+        "@tarpit/rollup": "^0.5.78"
     }
 }
