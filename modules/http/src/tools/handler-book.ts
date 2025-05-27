@@ -7,7 +7,6 @@
  */
 
 import { LRUCache } from 'lru-cache'
-import * as console from 'node:console'
 import { match, MatchFunction, MatchResult, parse } from 'path-to-regexp'
 import { ApiMethod, HttpHandlerDescriptor, RequestHandler, RequestHandlerWithPathArgs, UpgradeHandler, UpgradeHandlerWithPathArgs } from '../__types__'
 
