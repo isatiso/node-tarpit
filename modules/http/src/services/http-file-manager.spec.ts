@@ -63,11 +63,9 @@ describe('http-file-manager.ts', function() {
 
     describe('.zip()', function() {
         it('should create a zip archive of a directory', async function() {
-            console.log(fs.readdirSync(test_dir))
             const stream_result = await file_manager.zip('')
             expect(stream_result).to.be.instanceof(stream.Transform)
             stream_result.destroy()
-            console.log(fs.readdirSync(test_dir))
         })
 
         it('should throw error if archive size exceeds limit', async function() {
@@ -211,7 +209,7 @@ describe('http-file-manager.ts', function() {
 
         it('should reject if file does not exist', async function() {
             const readable_stream = await file_manager.read_stream('nonexistent.txt')
-            
+
             await new Promise<void>((resolve, reject) => {
                 readable_stream.on('error', (error) => {
                     expect(error.message).to.include('ENOENT')
@@ -234,15 +232,15 @@ describe('http-file-manager.ts', function() {
             await fsp.writeFile(path.join(test_dir, large_file), large_content)
 
             const events: string[] = []
-            
+
             // Start read stream operation
             const read_promise = (async () => {
                 events.push('read_started')
                 const readable_stream = await file_manager.read_stream(large_file)
-                
+
                 return new Promise<void>((resolve, reject) => {
                     let received_content = ''
-                    
+
                     // Slow down the reading by pausing every chunk
                     readable_stream.on('data', (chunk) => {
                         received_content += chunk.toString()
@@ -252,20 +250,20 @@ describe('http-file-manager.ts', function() {
                             readable_stream.resume()
                         }, 5) // 5ms delay per chunk
                     })
-                    
+
                     readable_stream.on('end', () => {
                         events.push('read_finished')
                         expect(received_content).to.equal(large_content)
                         resolve()
                     })
-                    
+
                     readable_stream.on('error', reject)
                 })
             })()
 
             // Wait for read to definitely start
             await new Promise(resolve => setTimeout(resolve, 100))
-            
+
             // Try to write to the same file while reading
             const write_promise = (async () => {
                 events.push('write_started')
@@ -289,7 +287,7 @@ describe('http-file-manager.ts', function() {
         it('should write content from a readable stream to a file', async function() {
             const new_content = 'Stream content for testing'
             const new_file = 'stream_test_file.txt'
-            
+
             // Create a readable stream from a string
             const readable_stream = new stream.Readable({
                 read() {
@@ -306,7 +304,7 @@ describe('http-file-manager.ts', function() {
 
         it('should handle empty streams', async function() {
             const new_file = 'empty_stream_file.txt'
-            
+
             // Create an empty readable stream
             const empty_stream = new stream.Readable({
                 read() {
@@ -325,7 +323,7 @@ describe('http-file-manager.ts', function() {
             const chunk_size = 1024
             const chunk_count = 10
             const expected_size = chunk_size * chunk_count
-            
+
             // Create a stream that produces multiple chunks
             let chunks_sent = 0
             const large_stream = new stream.Readable({
@@ -358,7 +356,7 @@ describe('http-file-manager.ts', function() {
 
         it('should handle stream errors gracefully', async function() {
             const new_file = 'error_stream_file.txt'
-            
+
             // Create a stream that will emit an error
             const error_stream = new stream.Readable({
                 read() {
@@ -376,9 +374,9 @@ describe('http-file-manager.ts', function() {
         it('should maintain file lock during stream writing', async function() {
             const test_file_name = 'write_lock_test_file.txt'
             const large_content = 'y'.repeat(50000) // 50KB content
-            
+
             const events: string[] = []
-            
+
             // Create a slow readable stream to ensure write takes time
             let chunks_sent = 0
             const total_chunks = 100
@@ -406,7 +404,7 @@ describe('http-file-manager.ts', function() {
 
             // Wait for write to definitely start
             await new Promise(resolve => setTimeout(resolve, 100))
-            
+
             // Try to read the same file while writing
             const read_promise = (async () => {
                 events.push('read_started')

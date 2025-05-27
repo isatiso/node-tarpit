@@ -7,6 +7,7 @@
  */
 
 import { LRUCache } from 'lru-cache'
+import * as console from 'node:console'
 import { match, MatchFunction, MatchResult, parse } from 'path-to-regexp'
 import { ApiMethod, HttpHandlerDescriptor, RequestHandler, RequestHandlerWithPathArgs, UpgradeHandler, UpgradeHandlerWithPathArgs } from '../__types__'
 
@@ -187,6 +188,12 @@ export class HandlerBook {
         if (node.map) {
             return { type: 'path', map: node.map }
         } else {
+            for (const matcher of node.matchers) {
+                const result = matcher.match(path)
+                if (result) {
+                    return { type: 'matcher', map: matcher.map, result }
+                }
+            }
             return { type: 'no_result' }
         }
     }

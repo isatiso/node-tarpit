@@ -107,11 +107,22 @@ describe('handler-book.ts', function() {
             const data: [ApiMethod, string, any][] = [
                 ['POST', '/some/c', async () => undefined],
                 ['GET', '/some/d', async () => undefined],
+                ['GET', '/some/ls/:filepath*', async () => undefined],
+                ['GET', '/some/ab/:filepath+', async () => undefined],
             ]
 
             for (const d of data) {
                 book.record(d[1], { type: d[0], handler: d[2] })
             }
+
+            it('should return wildcard matcher if path is "/"', function() {
+                expect(book.find('GET', '/some/ls/')).to.not.be.undefined
+                expect(book.find('GET', '/some/ab/')).to.be.undefined
+            })
+
+            it('should return handler of method GET and specified path if given method is GET', function() {
+                expect(book.find('GET', '/some/ls/abc/def')).to.not.be.undefined
+            })
 
             it('should find and return handler of given path and method', function() {
                 // TODO: fix it
