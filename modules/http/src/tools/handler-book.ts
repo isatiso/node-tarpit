@@ -187,6 +187,12 @@ export class HandlerBook {
         if (node.map) {
             return { type: 'path', map: node.map }
         } else {
+            for (const matcher of node.matchers) {
+                const result = matcher.match(path)
+                if (result) {
+                    return { type: 'matcher', map: matcher.map, result }
+                }
+            }
             return { type: 'no_result' }
         }
     }
