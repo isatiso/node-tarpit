@@ -60,14 +60,14 @@ export interface PackageJson extends Package {
 export async function create_cli(package_json: PackageJson) {
 
     const cli = program.version(package_json.version)
-        .option('--config <file>', '指定配置文件, 默认会查找 package.json 同级的 tt-cli.json')
-        .option('--show-error-detail', '是否展示详细错误信息')
-        .option('--workdir <workdir>', '工作目录')
+        .option('--config <file>', 'Specify config file, defaults to tt-cli.json in the same directory as package.json')
+        .option('--show-error-detail', 'Show detailed error information')
+        .option('--workdir <workdir>', 'Working directory')
 
     cli.command('cover')
-        .option('-c, --clean', '清除缓存文件')
-        .option('--no-clean', '不清除缓存文件')
-        .option('-r, --reporter <reporter...>', '设置 reporter')
+        .option('-c, --clean', 'Clean cache files')
+        .option('--no-clean', 'Do not clean cache files')
+        .option('-r, --reporter <reporter...>', 'Set reporter')
         .action(action_cover)
 
     cli.command('docs')

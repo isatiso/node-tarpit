@@ -565,7 +565,7 @@ describe('http-file-manager.ts', function() {
             expect(file_manager.extract_type(mockDirent('socket'))).to.equal('socket')
 
             // Test unknown type
-            // 测试未知类型
+            // Test unknown type
             const unknownDirent = {
                 name: 'test',
                 isFile: () => false,
