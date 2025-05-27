@@ -238,16 +238,10 @@ export class HttpRouters {
             const context = new HttpContext(request, response)
 
             let stream: Readable = req
-            req.on('error', (err: Error) => {
-                console.log(err)
-            })
-            req.on('close', () => {
-                console.log('close')
-            })
             if (body_max_length) {
                 let received = 0
                 stream = stream.pipe(new Transform({
-                    transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
+                    transform(chunk: any, _: BufferEncoding, callback: TransformCallback) {
                         received += chunk.byteLength
                         if (received > body_max_length) {
                             stream.pause()
