@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { Injector, TpService } from '@tarpit/core'
+import { TpService } from '@tarpit/core'
 import mime_types from 'mime-types'
 import { Readable } from 'stream'
 import { parse_content_type } from '../tools/parse-content-type'
@@ -28,7 +28,6 @@ export type ParseContentOptions = {
 export class ContentReaderService {
 
     constructor(
-        private injector: Injector,
         private decompressor: ContentDecompressorService,
         private deserializer: ContentDeserializerService,
     ) {

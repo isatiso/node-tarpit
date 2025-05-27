@@ -14,6 +14,8 @@ import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import crypto from 'crypto'
 import iconv_lite from 'iconv-lite'
+import { setTimeout as sleep } from 'node:timers/promises'
+import { PassThrough } from 'stream'
 import { FormBody, HttpServerModule, JsonBody, MimeBody, Post, RawBody, TextBody, throw_bad_request, TpRequest, TpRouter } from '../src'
 
 chai.use(cap)
@@ -66,6 +68,20 @@ class RequestBodyRouter {
         const name = body.checker!.ensure('name', /^秦始皇$/)
         const nick = body.checker!.ensure('nick', /^嬴政$/)
         return { name, nick, type: body.type, charset: body.charset }
+    }
+
+    @Post('raw')
+    async add_user_raw(request: TpRequest) {
+        console.log('add_user_raw')
+        request.req.once('error', (err) => {
+            console.log('error', err)
+        })
+        request.req.once('close', () => {
+            console.log('close')
+        })
+        await sleep(400)
+        const id = crypto.randomUUID()
+        return { id }
     }
 }
 
@@ -161,5 +177,23 @@ describe('request body case', function() {
             })
     })
 
+    it('should handle aborted requests gracefully', async function() {
+        const controller = new AbortController()
+        const body = new PassThrough()
+        body.write(Buffer.alloc(1024 * 1024))
+        const request = axios.post('http://localhost:31260/user/raw',
+            body,
+            {
+                signal: controller.signal,
+                proxy: false
+            }
+        )
+        await sleep(200)
+        controller.abort()
+        body.end()
+        const res = await request.catch(err => err)
+        expect(res.status).to.be.undefined
+        expect(res.statusText).to.be.undefined
+    })
 })
 

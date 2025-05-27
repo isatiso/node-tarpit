@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 import { ConfigData } from '@tarpit/config'
-import { BehaviorSubject, filter, find, map, of, Subject, switchMap, tap } from 'rxjs'
+import { BehaviorSubject, filter, finalize, find, map, of, Subject, switchMap, tap } from 'rxjs'
 import { TpEntry } from './annotations'
 import { TpConfigData } from './builtin/tp-config-data'
 import { TpLoader } from './builtin/tp-loader'
@@ -34,9 +34,9 @@ export class Platform {
             switchMap(after_start => of(null).pipe(
                 switchMap(() => this.loader.start()),
                 map(() => this._start_time = (Date.now() - this._started_at) / 1000),
-                tap(() => this.started$.next(true)),
                 tap(() => after_start?.()),
                 tap(duration => console.info(`Tarpit server started at ${new Date().toISOString()}, during ${duration}s`)),
+                finalize(() => this.started$.next(true)),
             )),
         ).subscribe()
         this.terminate$.pipe(
@@ -47,9 +47,9 @@ export class Platform {
                 switchMap(() => this.started$.pipe(find(Boolean))),
                 switchMap(() => this.loader.terminate()),
                 map(() => this._terminate_time = (Date.now() - this._terminated_at) / 1000),
-                tap(() => this.terminated$.next(true)),
                 tap(() => after_terminate?.()),
                 tap(duration => console.info(`Tarpit server destroyed at ${new Date().toISOString()}, during ${duration}s`)),
+                finalize(() => this.terminated$.next(true)),
             )),
         ).subscribe()
         ValueProvider.create(this.root_injector, { provide: TpConfigData, useValue: data })

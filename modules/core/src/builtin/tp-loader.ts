@@ -49,7 +49,9 @@ export class TpLoader {
     }
 
     async terminate(): Promise<void> {
-        await Promise.allSettled(this._on_terminates.map((f) => f().catch(err => {
+        await Promise.allSettled(this._on_terminates.map((f) => f().then(res => {
+            console.log(f, 'settled')
+        }).catch(err => {
             console.log(`Error occurred when terminating: ${err.stack}`)
         })))
         return
