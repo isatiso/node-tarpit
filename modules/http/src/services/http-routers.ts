@@ -238,6 +238,12 @@ export class HttpRouters {
             const context = new HttpContext(request, response)
 
             let stream: Readable = req
+            req.on('error', (err: Error) => {
+                console.log(err)
+            })
+            req.on('close', () => {
+                console.log('close')
+            })
             if (body_max_length) {
                 let received = 0
                 stream = stream.pipe(new Transform({
