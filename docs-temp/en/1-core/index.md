@@ -1,341 +1,120 @@
 ---
 layout: default
-title: Core
+title: Core Concepts
 nav_order: 2
 has_children: true
 ---
 
-# Concepts
-{:.mb-5.no_toc}
+# Core Concepts
+{:.no_toc}
 
+The `@tarpit/core` module is the foundation of the Tarpit framework. It provides the essential dependency injection system, decorator-based architecture, and platform management that powers all Tarpit applications.
+
+<details open markdown="block">
+  <summary>Table of contents</summary>{: .text-delta }
 - TOC
 {:toc}
+</details>
 
-## Dependency Injection
-{:.mb-5}
+---
 
-As a DI Framework, there should be a mechanism to match dependencies and inject them into the place.
-That is to say where and what to inject.
+## Overview
 
-Usually, a process of dependency injection is as follows:
+Tarpit's core is built around several key concepts:
 
-1. Declare services.
+- **Dependency Injection** - Automatic resolution and injection of dependencies
+- **Decorators** - TypeScript decorators for marking classes and methods
+- **Platform** - The main application container and lifecycle manager
+- **Providers** - Various ways to provide dependencies to the DI system
+- **Built-in Services** - Core services like configuration and module loading
 
-    ```typescript
-    @TpService()
-    class FirstService {
-        do_something() {
-            console.log("I'm the First!")
-        }
-    }
+## Quick Example
 
-    @TpService()
-    class SecondService {
-        constructor(public first: FirstService) {}
-    }
-    ```
-
-1. Deliver these services to Tarpit.
-
-    ```typescript
-    const platform = new Platform({}).import(FirstService).import(SecondService)
-    ```
-
-1. Get instance of services from Tarpit.
-
-    ```typescript
-    const service = platform.expose(SecondService)!
-    service.first.do_something() // I'm the First!
-    ```
-
-It is a simplified process but contains all essentials.
-
-### Where to Inject
-{:.mb-5}
-
-In Tarpit, we called the place to inject dependencies an Injection Point.
-You can annotate dependencies at the Injection Point, and Tarpit will search them and put the result in place.
-
-In the above example, the Injection Point is the parameter first of the constructor of SecondService.
-With package reflect-metadata, Tarpit can get the type of first parameter which is FirstService.
-Then, Tarpit search and found the Provider of FirstService, created an instance and delivered it to the constructor of SecondService.
-
-Going further, a Injection Point could be a parameter of the TpComponent constructor or a TpUnit function.
-
-### What to Inject
-{:.mb-5}
-
-There are two ways to mark dependencies:
-
-1. Implicitly specified the dependency by type annotation as the above example.
-2. Explicitly specified the dependency by decorator as follows.
-
-    ```typescript
-    @TpService()
-    class SecondService {
-        constructor(
-            // @Inject(MaxInstance) means this parameter needs the value of MaxInstance,
-            // which is a number.
-            @Inject(MaxInstance) public max_instance: number
-        ) {}
-    }
-    ```
-
-We called the mark of dependency Injection Token. Tarpit uses Injection Token to find the matched Provider.
-`FirstService` and `@Inject(MaxInstance)` mark each dependencies as FirstService and MaxInstance.
-
-Injection Token should have a certain uniqueness, which could let you know what to offer by the given single value.
-It's like you can't just say you need a number. No one knows what you actually need.
-
-### Inject by Type Annotation
-{:.mb-5}
-
-This way usually uses the class as the Injection Token for reasons as follows.
-
-It access the value that emitted from type annotation, meaning the mark should be a type that Tarpit can put at the place.
-And also, The mark should be a value that can perform a comparison operation.
-
-Refer to the [table from the TypeScript document](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#basic-concepts) below.
-Only class and enum satisfy the condition to be both types and values.
-
-| Declaration Type | Namespace | Type | Value |
-|:-----------------|:---------:|:----:|:-----:|
-| Namespace        | X         |      | X     |
-| Class            |           | X    | X     |
-| Enum             |           | X    | X     |
-| Interface        |           | X    |       |
-| Type Alias       |           | X    |       |
-| Function         |           |      | X     |
-| Variable         |           |      | X     |
-
-E.g.
+Here's a basic example showing the core concepts in action:
 
 ```typescript
-enum Colors {
-   red = '#ff0000',
-   green = '#00ff00',
-   blue = '#0000ff',
+import { load_config } from '@tarpit/config'
+import { Platform, TpConfigSchema, TpService, TpModule } from '@tarpit/core'
+
+@TpService()
+class UserService {
+    get_users() {
+        return ['Alice', 'Bob', 'Charlie']
+    }
 }
 
 @TpService()
-class XXService {
-   constructor(
-           a: SomeService,                 // a -> [class SomeService]
-           b: number,                      // b -> [Function: Number]
-           c: string,                      // c -> [Function: String]
-           d: { a: string, b: number },    // d -> [Function: Object]
-           e: Colors,                      // e -> [Function: String]
-   ) {
-   }
+class UserController {
+    constructor(private user_service: UserService) {}
+    
+    list_users() {
+        return this.user_service.get_users()
+    }
 }
+
+@TpModule({
+    providers: [UserService, UserController]
+})
+class AppModule {}
+
+const config = load_config<TpConfigSchema>({})
+const platform = new Platform(config)
+    .import(AppModule)
+    .start()
+
+// Access services from the platform
+const controller = platform.expose(UserController)
+console.log(controller.list_users()) // ['Alice', 'Bob', 'Charlie']
 ```
 
-Only type of parameter **a** indicates the exact value to provide which should be an instance of **class SomeService**.
+## Core Principles
 
-Class is the only choice.
+### Type-Safe Dependency Injection
 
-### Inject by Decorator
-{:.mb-5}
-
-In this situation, we put the token directly on the Injection Point with barely a limit to the token.
-Usually, use string or symbol as the token as they are lightweight and meaningful.
+Tarpit leverages TypeScript's type system and decorators to provide compile-time type safety for dependency injection:
 
 ```typescript
-const DecompressorToken = Symbol.for('cc.tarpit.DecompressorToken')
+@TpService()
+class DatabaseService {
+    connect() { /* ... */ }
+}
 
 @TpService()
-class XXService {
-   constructor(
-           @Inject(Location) location: string,
-           @Inject(DecompressorToken) decompressor: Function,
-   ) {
-   }
+class UserService {
+    // TypeScript automatically infers the dependency type
+    constructor(private db: DatabaseService) {}
 }
 ```
 
----
+### Decorator-Based Architecture
 
-## Decorator
-{:.mb-5}
+Use decorators to declare how classes should be treated by the DI system:
 
-There are five types of decorators：
+- `@TpService()` - Injectable service classes
+- `@TpModule()` - Grouping and organization
+- `@TpRoot()` - Application entry points
 
-- Class Decorator
-- Method Decorator
-- Property Decorator
-- Accessor Decorator
-- Paramerter Decorator
+### Hierarchical Injectors
 
-Type of the decorator means the position where the decorator is placed.
+The DI system uses a hierarchical injector structure, allowing for scoped dependencies and module isolation.
 
-E.g.
+### Lifecycle Management
 
-```typescript
-@ClassDecorator
-class Temp {
-   constructor(
-           @ParameterDecorator private a: number
-   ) {
-   }
+The Platform class manages the entire application lifecycle with hooks for startup and shutdown operations.
 
-   @PropertyDecorator
-   public producer: Producer
+## What You'll Learn
 
-   @AccessorDecorator
-   set property() {
-   }
+In this section, you'll learn about:
 
-   @MethodDecorator
-   async do_something(
-           @ParameterDecorator id: string
-   ) {
-   }
-}
-```
+1. **[Dependency Injection](1-dependency-injection.html)** - Core DI concepts, injection tokens, and how dependencies are resolved
+2. **[Decorators](2-decorators.html)** - All available decorators and their usage patterns
+3. **[Platform & Lifecycle](3-platform-lifecycle.html)** - Application bootstrapping, startup, and shutdown
+4. **[Providers](4-providers.html)** - Different types of providers and how to register dependencies
+5. **[Built-in Services](5-builtin-services.html)** - Core services like TpLoader and TpConfigData
 
-### Abstract Decorators
-{:.mb-5}
+## Next Steps
 
-Tarpit use decorator to mark the way to use class, and there are five abstract decorators:
-
-1. **TpComponent**
-
-   A TpComponent is the most basic abstract class decorator.
-   All decorators that mark the type of the class here are inherited from the TpComponent.
-
-1. **TpWorker**
-
-   A TpWorker is an abstract class decorator inherited from TpComponent,
-   indicating that the class is pure and could be collected and injected.
-
-1. **TpAssembly**
-
-   A TpAssembly is an abstract class decorator inherited from TpComponent,
-   indicating that the class is a worker container that bundles workers together.
-
-1. **TpEntry**
-
-   A TpEntry is an abstract class decorator inherited from TpAssembly,
-   indicating that the class is a worker container with a list of functional entry points.
-   An entry point is a event emitter, like TpRouter make request as an event, and Schedule make the time trigger as an event.
-
-1. **TpUnit**
-
-   A TpUnit is a most basic abstract method decorator.
-   It is used to mark the entry point of the class.
-
-### Implements
-
-{:.mb-5}
-
-Based on the above concepts, there are some implements:
-
-1. **TpService**
-
-   It is an implement of TpWorker, as same as TpWorker.
-
-1. **TpModule**
-
-   It is an implement of TpAssembly, as same as TpAssembly.
-
-1. **TpRoot**
-
-   It is an implement of TpEntry, as same as TpEntry.
-
-See [Decorator](/1-core/1-decorators.html).
-
----
-
-## Provider
-{:.mb-5}
-
-A Provider is a wrapper of dependency which generate value as defined.
-There are three types of Providers:
-
-1. **[ClassProvider](/1-core/2-injector-and-provider.html#classprovider)**
-
-   It provides the instance of the given class.
-
-    ```typescript
-    platform.import({ provide: FirstService, useClass: SecondService })
-
-    platform.import(FirstService)
-    // equals to
-    platform.import({ provide: FirstService, useClass: FirstService })
-    ```
-
-1. **[FactoryProvider](/1-core/2-injector-and-provider.html#factoryprovider)**
-
-   It provides the result of the given function.
-
-    ```typescript
-    platform.import({ provide: FirstService, useFactory: () => new FirstService() })
-    ```
-
-1. **[ValueProvider](/1-core/2-injector-and-provider.html#valueprovider)**
-
-   It provides the given value.
-
-    ```typescript
-    platform.import({ provide: 'locale', useValue: 'zh-CN' })
-    ```
-
-See [Provider](/1-core/2-injector-and-provider.html#provider).
-
----
-
-## Injector
-{:.mb-5}
-
-An injector is the record of Tokens and Providers, which provides the method to search dependencies.
-
-The first injector created by Platform is called the **root injector**. All other injectors are its child.
-
-An injector should have a parent, the parent of the root injector is the **NullInjector**,
-which is an injector-like object that provides the same search method as an injector except all result is null.
-And an injector maybe have children.
-
-You can record the Token and Provider pair to the injector.
-
-When you request a dependency from Injector, the injector searches itself first, then its parent, the parent of the parent, and so on. Until the Null injector.
-
-As a special case, you always got the injector itself if you are searching for an injector.
-
-See [Injector](/1-core/2-injector-and-provider.html#injector).
-
----
-
-## Platform
-{:.mb-5}
-
-The class Platform is a runtime container which provide several method to interact with framework.
-
-When you create an instance of Platform, it loads config data and creates an injector with NullInjector as the parent.
-
-```typescript
-const platform = new Platform({})
-```
-
-### As DI Controller
-
-It provides two methods to load components which are `import` and `bootstrap`. They are both record providers.
-The difference is that `import` record to the root injector, and `bootstrap` will create a child from the root injector first.
-
-```typescript
-platform.import(FirstService) // this will record FirstService to the root injector.
-platform.bootstrap(FirstEntry) // this will create a child injector and record First to it.
-```
-
-Because dependency looking up doesn't include the brother injector, `bootstrap` means to create an isolation area.
-
-You can expose a service from root injector directly.
-
-```typescript
-platform.expose(FirstService)!
-```
-
-### As Application Controller
-
-It provides methods `start` and `terminate` to control the Application.
-
-See [Platform](/1-core/3-platform.html)
+- Start with [Dependency Injection](1-dependency-injection.html) to understand the core concepts
+- Explore [Decorators](2-decorators.html) to learn about the available annotations
+- See [Platform & Lifecycle](3-platform-lifecycle.html) for application management
+- Check out the [HTTP Server](/2-http-server/) module for practical examples

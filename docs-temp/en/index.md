@@ -320,11 +320,11 @@ Tarpit comes with several production-ready modules:
 
 Ready to dive deeper? Explore these topics:
 
-- **[Core Concepts](/1-core/)** - Learn about DI mechanisms, services, and modules
-- **[HTTP Server](/2-http-server/)** - Build REST APIs and web applications  
-- **[RabbitMQ Client](/3-rabbitmq-client/)** - Implement message-driven architecture
-- **[Schedule Module](/4-schedule/)** - Create background jobs and cron tasks
-- **[Content Types](/5-content-type/)** - Handle request/response data transformation
+- **[Core Concepts](/en/1-core/)** - Learn about DI mechanisms, services, and modules
+- **[HTTP Server](/en/2-http-server/)** - Build REST APIs and web applications  
+- **[RabbitMQ Client](/en/3-rabbitmq-client/)** - Implement message-driven architecture
+- **[Schedule Module](/en/4-schedule/)** - Create background jobs and cron tasks
+- **[Content Types](/en/5-content-type/)** - Handle request/response data transformation
 
 ## Community & Support
 

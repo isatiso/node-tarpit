@@ -12,6 +12,7 @@ This directory contains working examples that demonstrate the core features of t
 The examples are organized into the following categories:
 
 - **`basic/`** - Core framework concepts and basic usage
+- **`core/`** - Dependency injection, decorators, and platform lifecycle
 - **`http-server/`** - HTTP server module examples
 - **`rabbitmq/`** - RabbitMQ client module examples
 - **`schedule/`** - Schedule module examples
@@ -22,7 +23,7 @@ The examples are organized into the following categories:
 Each example directory contains its own `package.json` and `tsconfig.json`. Navigate to the specific example directory and install dependencies:
 
 ```bash
-cd basic  # or http-server, rabbitmq, etc.
+cd basic  # or core, http-server, rabbitmq, etc.
 npm install
 ```
 
@@ -51,6 +52,45 @@ curl http://localhost:4100/hello
 
 # Parameterized endpoint
 curl http://localhost:4100/user/123
+```
+
+### Core Concepts Examples (`core/`)
+
+Comprehensive examples demonstrating the core dependency injection system:
+
+#### Dependency Injection Basic (`dependency-injection-basic.ts`)
+- Service declaration and registration
+- Constructor injection
+- Basic service usage
+
+#### Dependency Resolution (`dependency-resolution.ts`)
+- Complex dependency chains
+- Singleton behavior demonstration
+- Shared service instances
+
+#### Decorators (`decorators.ts`)
+- `@TpService`, `@TpModule`, `@Inject`, `@Optional`
+- Lifecycle hooks with `@OnTerminate`
+- Token-based injection
+
+#### Providers (`providers.ts`)
+- ClassProvider, FactoryProvider, ValueProvider
+- Interface-based dependency injection
+- Conditional service implementations
+
+#### Platform Lifecycle (`platform-lifecycle.ts`)
+- Platform startup and shutdown
+- Service instantiation order
+- Error handling
+
+**Run any example:**
+```bash
+cd core
+npx ts-node dependency-injection-basic.ts
+npx ts-node dependency-resolution.ts
+npx ts-node decorators.ts
+npx ts-node providers.ts
+npx ts-node platform-lifecycle.ts
 ```
 
 ### HTTP Server Examples (`http-server/`)
