@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: home
 title: Introduction
 nav_order: 1
 ---
@@ -45,7 +45,7 @@ To use Tarpit framework you should be familiar with the following:
 - [Node.js](https://nodejs.org/dist/latest-v16.x/docs/api/) with its package manager NPM
 - [TypeScript](https://www.typescriptlang.org/)
 
-Assuming you've already installed Node.js and TypeScript,
+Assuming you’ve already installed Node.js and TypeScript,
 create a directory to hold your application, and make that your working directory.
 
 ```shell
@@ -54,7 +54,7 @@ $ cd myapp
 ```
 
 Use the `npm init` command to create a `package.json` file for your application.
-For more information on how `package.json` works, see [Specifics of npm's package.json handling](https://docs.npmjs.com/cli/v8/configuring-npm/package-json).
+For more information on how `package.json` works, see [Specifics of npm’s package.json handling](https://docs.npmjs.com/cli/v8/configuring-npm/package-json).
 
 ```shell
 $ npm init -y
@@ -124,7 +124,7 @@ $ ts-node ./index.ts
 # Tarpit server started at 2022-XX-XXTXX:XX:XX.XXXZ, during 0.001s
 ```
 
-Let's test the API with the following code:
+Let’s test the API with the following code:
 
 ```shell
 $ curl -X GET 'http://localhost:3000/hello'

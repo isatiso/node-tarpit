@@ -1,20 +1,14 @@
 title: TARPIT
 email: sieglive@gmail.com
 description: >-
-  Simple but Awesome TypeScript DI Framework for Node.js. 
-  Build reusable, testable and maintainable applications with powerful dependency injection,
-  HTTP server, scheduling, and more.
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
 
 logo: /assets/tarpit.svg
 remote_theme: just-the-docs/just-the-docs
 color_scheme: foo
-
-# Plugins
-plugins:
-  - jekyll-feed
-  - jekyll-seo-tag
-  - jekyll-sitemap
-  - jekyll-remote-theme
+#theme: just-the-docs
 
 footer_content: "Copyright &copy; 2022 Cao Jiahang. Distributed by an <a href=\"https://raw.githubusercontent.com/isatiso/node-tarpit/main/LICENSE\">MIT license.</a>"
 aux_links_new_tab: true
@@ -26,7 +20,7 @@ gh_edit_link: true
 gh_edit_link_text: "Edit this page on GitHub."
 gh_edit_repository: https://github.com/isatiso/node-tarpit
 gh_edit_branch: main
-gh_edit_source: docs-i18n
+gh_edit_source: docs
 gh_edit_view_mode: tree
 
 back_to_top: true

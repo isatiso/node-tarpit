@@ -1,0 +1,5 @@
+title: TARPIT
+baseurl: "/"
+lang: "zh"
+include: ["zh"]
+exclude: ["en"]
