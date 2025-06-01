@@ -134,43 +134,7 @@ const config = load_config<TpConfigSchema>({
 })
 ```
 
-## What's Next
-
-The HTTP Server documentation covers the following topics:
-
-- **[Routing](1-routing.html)** - URL routing, path parameters, and HTTP methods
-- **[Request Handling](2-request-handling.html)** - Parse bodies, headers, and query parameters
-- **[Response Handling](3-response-handling.html)** - Send responses, set headers, and handle errors  
-- **[Authentication](4-authentication.html)** - Implement authentication and authorization
-- **[WebSocket](5-websocket.html)** - Real-time communication with WebSockets
-- **[Static Files](6-static-files.html)** - Serve static assets and files
-- **[Advanced Features](7-advanced.html)** - Caching, hooks, and middleware
-
-## Examples
-
-All HTTP Server concepts are demonstrated with working examples in the [http-server directory](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/). Each example can be run independently and shows real-world usage patterns.
-
-## Directory
-
-### Core Features
-- [**Routing System**](./1-routing.md) - HTTP method decorators, path parameters, and route registration
-- [**Request Handling**](./2-request-handling.md) - Request body parsing, validation, and file upload
-- [**Response Handling**](./3-response-handling.md) - Response formatting, error handling, and streaming response
-
-### Advanced Features  
-- [**Static File Service**](./4-static-files.md) - Static resource service, cache control, and performance optimization
-- [**File Manager**](./5-file-manager.md) - File operations, upload and download, and archive compression
-- [**Authentication and Authorization**](./6-authentication.md) - Authentication, permission control, and session management
-- [**Caching System**](./7-caching.md) - HTTP caching, proxy caching, and performance optimization
-
-### Extended Features
-- [**WebSocket Support**](./8-websocket.md) - Real-time communication and connection management
-- [**Middleware System**](./9-middleware.md) - Request hooks, response handling, and global middleware
-- [**CORS Configuration**](./10-cors.md) - Cross-origin resource sharing and security policies
-
-## Configuration Options
-
-### HTTP Server Configuration
+### Configuration Options
 
 ```typescript
 interface HttpConfig {
@@ -184,59 +148,21 @@ interface HttpConfig {
     body?: {
         max_length?: number        // Maximum request body size
     }
+    cors?: {                       // CORS configuration
+        allow_origin: string       // Allowed origins
+        allow_headers: string      // Allowed headers
+        allow_methods: string      // Allowed methods
+        max_age: number           // Preflight cache time
+    }
 }
 ```
-
-### Static File Configuration
-
-```typescript
-interface HttpStaticConfig {
-    scope?: string                 // Scope
-    root?: string                 // Root directory
-    index?: string[]              // Default files
-    extensions?: `.${string}`[]   // Supported extensions
-    cache_size?: number           // Cache size
-    dotfile?: 'allow' | 'ignore' | 'deny'  // Hidden file handling
-    vary?: string[] | '*'         // Vary header
-    cache_control?: ResponseCacheControl    // Cache control
-}
-```
-
-### File Manager Configuration
-
-```typescript
-interface HttpFileManagerConfig {
-    root?: string                 // Data root directory
-    download_limit?: number       // Download size limit
-}
-```
-
-### CORS Configuration
-
-```typescript
-interface CorsConfig {
-    allow_origin: string          // Allowed sources
-    allow_headers: string         // Allowed headers
-    allow_methods: string         // Allowed methods
-    max_age: number              // Preflight request cache time
-}
-```
-
-## Working Examples
-
-View complete examples in the `example/http-server/` directory:
-
-- [Basic Routing](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/basic-routing.ts) - HTTP methods and basic routing
-- [Path Parameters](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/path-parameters.ts) - Dynamic routing and parameter handling
-- [Request Parsing](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/request-parsing.ts) - Request body parsing and validation
-- [Form Handling](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/form-handling.ts) - Form data and file upload
-- [Static File Service](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/static-files.ts) - Static resource service
-- [File Manager](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/file-manager.ts) - File operations and management
-- [Authentication](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/authentication.ts) - User authentication and authorization
 
 ## Next Steps
 
-1. Start with the [Routing System](./1-routing.md) to learn about the core concepts of the HTTP server
-2. Explore the [Request Handling](./2-request-handling.md) to understand how to handle different types of requests
-3. Dive into the [Static File Service](./4-static-files.md) and [File Manager](./5-file-manager.md) features
-4. Deepen your understanding of the [Authentication](./6-authentication.md) and [Caching System](./7-caching.md) advanced features
+### Core Features
+- **[Routing](1-routing.html)** - HTTP method decorators, path parameters, and route registration
+- **[Request Handling](2-request-handling.html)** - Request body parsing, validation, and file upload
+- **[Response Handling](3-response-handling.html)** - Response formatting, error handling, and streaming
+- **[Static File Service](4-static-files.html)** - Static resource serving and cache control
+
+Start with [Routing](1-routing.html) to understand the fundamentals, then explore the other features based on your application needs.

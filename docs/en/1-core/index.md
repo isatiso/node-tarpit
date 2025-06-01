@@ -102,19 +102,11 @@ The DI system uses a hierarchical injector structure, allowing for scoped depend
 
 The Platform class manages the entire application lifecycle with hooks for startup and shutdown operations.
 
-## What You'll Learn
-
-In this section, you'll learn about:
-
-1. **[Dependency Injection](1-dependency-injection.html)** - Core DI concepts, injection tokens, and how dependencies are resolved
-2. **[Decorators](2-decorators.html)** - All available decorators and their usage patterns
-3. **[Platform & Lifecycle](3-platform-lifecycle.html)** - Application bootstrapping, startup, and shutdown
-4. **[Providers](4-providers.html)** - Different types of providers and how to register dependencies
-5. **[Built-in Services](5-builtin-services.html)** - Core services like TpLoader and TpConfigData
-
 ## Next Steps
 
-- Start with [Dependency Injection](1-dependency-injection.html) to understand the core concepts
-- Explore [Decorators](2-decorators.html) to learn about the available annotations
-- See [Platform & Lifecycle](3-platform-lifecycle.html) for application management
-- Check out the [HTTP Server](/2-http-server/) module for practical examples
+- Start with **[Dependency Injection](1-dependency-injection.html)** to understand the core concepts
+- Explore **[Decorators](2-decorators.html)** to learn about the available annotations
+- See **[Platform & Lifecycle](3-platform-lifecycle.html)** for application management
+- Understand **[Providers](4-providers.html)** and different ways to register dependencies
+- Check **[Built-in Services](5-builtin-services.html)** for core framework services
+- Try the **[HTTP Server](/en/2-http-server/)** module for practical examples
