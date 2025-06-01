@@ -1,0 +1,184 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* Custom properties for Tarpit branding */
+:root {
+  --tarpit-primary: #fc7930;
+  --tarpit-primary-hover: #e85a1a;
+  --tarpit-primary-light: rgba(252, 121, 48, 0.1);
+  --tarpit-primary-border: rgba(252, 121, 48, 0.3);
+  
+  /* Override Docusaurus colors */
+  --ifm-color-primary: #fc7930;
+  --ifm-color-primary-dark: #e85a1a;
+  --ifm-color-primary-darker: #db520f;
+  --ifm-color-primary-darkest: #b4430c;
+  --ifm-color-primary-light: #fd8a4d;
+  --ifm-color-primary-lighter: #fd9258;
+  --ifm-color-primary-lightest: #fea576;
+  
+  /* Link colors */
+  --ifm-link-color: var(--tarpit-primary);
+  --ifm-link-hover-color: var(--tarpit-primary-hover);
+  
+  /* Code block styling */
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark theme overrides */
+[data-theme='dark'] {
+  --tarpit-primary: #fd8a4d;
+  --tarpit-primary-hover: #fc7930;
+  --tarpit-primary-light: rgba(253, 138, 77, 0.1);
+  --tarpit-primary-border: rgba(253, 138, 77, 0.3);
+  
+  --ifm-color-primary: #fd8a4d;
+  --ifm-color-primary-dark: #fc7930;
+  --ifm-color-primary-darker: #e85a1a;
+  --ifm-color-primary-darkest: #b4430c;
+  --ifm-color-primary-light: #fd9258;
+  --ifm-color-primary-lighter: #fe9a63;
+  --ifm-color-primary-lightest: #fea576;
+  
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Logo styling */
+.navbar__logo {
+  height: 2rem;
+}
+
+/* Enhanced code blocks */
+.prism-code {
+  border-radius: 6px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+}
+
+/* Enhanced tables */
+.table-wrapper table {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge styling for admonitions */
+.admonition {
+  border-radius: 6px;
+}
+
+.admonition-heading {
+  font-weight: 600;
+}
+
+/* Button enhancements */
+.button--primary {
+  background-color: var(--tarpit-primary);
+  border-color: var(--tarpit-primary);
+}
+
+.button--primary:hover {
+  background-color: var(--tarpit-primary-hover);
+  border-color: var(--tarpit-primary-hover);
+}
+
+/* Navigation enhancements */
+.navbar__item--active {
+  color: var(--tarpit-primary);
+}
+
+.menu__link--active {
+  color: var(--tarpit-primary);
+}
+
+/* Custom homepage styling */
+.hero--primary {
+  background: linear-gradient(135deg, 
+    var(--tarpit-primary-light) 0%, 
+    rgba(252, 121, 48, 0.05) 100%);
+}
+
+/* Enhanced blockquotes */
+blockquote {
+  border-left: 4px solid var(--tarpit-primary);
+  background-color: var(--tarpit-primary-light);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 6px 6px 0;
+}
+
+blockquote p:first-child {
+  margin-top: 0;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Code in blockquotes */
+blockquote code {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme='dark'] blockquote code {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Homepage logo */
+.hero__title img {
+  max-width: 300px;
+  width: 40%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .hero__title img {
+    width: 60%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__title img {
+    width: 80%;
+  }
+}
+
+/* Enhance syntax highlighting */
+.token.keyword {
+  color: var(--tarpit-primary);
+}
+
+/* Footer enhancements */
+.footer {
+  background-color: var(--ifm-color-gray-900);
+}
+
+.footer__link-item:hover {
+  color: var(--tarpit-primary);
+}
+
+/* Search box enhancement */
+.navbar__search-input {
+  border-radius: 20px;
+}
+
+/* Enhanced cards */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive typography */
+@media (max-width: 996px) {
+  .hero__title {
+    font-size: 2rem;
+  }
+}
