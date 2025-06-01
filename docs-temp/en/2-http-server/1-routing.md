@@ -8,135 +8,512 @@ parent: HTTP Server
 # Routing
 {:.no_toc}
 
+> **💡 Working Examples**: See [basic-routing.ts](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/basic-routing.ts) and [path-parameters.ts](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/path-parameters.ts) for complete working examples.
+
+Routing determines how an application responds to client requests to specific endpoints. In Tarpit, routing is defined using decorators on router classes and their methods, making URL handling declarative and type-safe.
+
+<details open markdown="block">
+  <summary>Table of contents</summary>{: .text-delta }
 - TOC
 {:toc}
+</details>
 
-Routing refers to determining how an application responds to a client request to a particular endpoint, 
-which is a URI (or path) and a specific HTTP request method (GET, POST, and so on).
+---
 
-## Basic Example
-{:.mb-5}
+## Basic Routing
 
-Route definition takes the following structure:
+### TpRouter Decorator
+
+The `@TpRouter()` decorator marks a class as an HTTP router and defines the base path:
+
+> **📁 Example**: [basic-routing.ts](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/basic-routing.ts)
 
 ```typescript
-@TpRouter('/user')
-class TempRouter {
-    @Get() async get() {
+import { TpRouter, Get, Post, Put, Delete } from '@tarpit/http'
+
+@TpRouter('/api/users')
+class UserRouter {
+    @Get('list')
+    async list_users() {
+        return { users: [] }
+    }
+    
+    @Post('create')
+    async create_user() {
+        return { id: 1, name: 'New User' }
     }
 }
 ```
 
-where:
+**URL Structure**: `{router_path}/{method_path}`
 
-- `@TpRouter()` - marks class to be a Router with the basic url `/user`.
-- `@Get()` - marks the method `get` of `TempRouter` is a handler of a request with HTTP method GET, and URL `/user/get`.
+- Router path: `/api/users`
+- Method path: `list` 
+- Final URL: `/api/users/list`
 
-## Request URL
-{:.mb-5}
+### HTTP Method Decorators
 
-A TpRouter accepts the parameter `path` which should start with '/'.
+Tarpit supports all standard HTTP methods:
 
-The decorators like Get, Post..., accept the parameter `path_tail`, which will use the property name if given value is empty.
-The final url is `path + '/' + path_tail`.
+> **📁 Example**: [basic-routing.ts](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/basic-routing.ts)
 
-## Methods
-{:.mb-5}
-
-Supported methods are GET, POST, PUT, DELETE, HEAD, OPTIONS.
-
-- **GET**
-
-    A TpUnit with the decorator `@Get()` means this TpUnit will handle a GET request.
-
-- **HEAD**
-
-    A Handler handles method GET will also take method HEAD. It will execute the handler and response with no body.
-
-- **POST**
-
-    A TpUnit with the decorator `@Post()` means this TpUnit will handle a POST request.
-
-- **PUT**
-
-    A TpUnit with the decorator `@Put()` means this TpUnit will handle a PUT request.
-
-- **DELETE**
-
-    A TpUnit with the decorator `@Delete()` means this TpUnit will handle a DELETE request.
-
-- **OPTIONS**
-
-    The method OPTIONS is handled by Tarpit. If the request URL exists,
-    It will return the CORS Headers as configuration and Header Allow contains allowed method.
-
-E.g.
 ```typescript
-import { Platform, TpInspector } from '@tarpit/core'
-import { HttpServerModule, TpRouter, Get, Post, Put, Delete } from '@tarpit/http'
-import axios from 'axios'
-
-@TpRouter('/user', { imports: [HttpServerModule] })
-class FirstRouter {
-
-    @Get()
-    async get() {
-        return { method: 'GET' }
+@TpRouter('/api/resources')
+class ResourceRouter {
+    @Get('list')           // GET /api/resources/list
+    async get_resources() {
+        return { method: 'GET', resources: [] }
     }
 
-    @Post()
+    @Post('create')        // POST /api/resources/create
+    async create_resource() {
+        return { method: 'POST', id: 1 }
+    }
+
+    @Put('update')         // PUT /api/resources/update
+    async update_resource() {
+        return { method: 'PUT', updated: true }
+    }
+
+    @Delete('remove')      // DELETE /api/resources/remove
+    async delete_resource() {
+        return { method: 'DELETE', deleted: true }
+    }
+}
+```
+
+### Default Method Names
+
+If no path is specified, the method name is used:
+
+```typescript
+@TpRouter('/api/users')
+class UserRouter {
+    @Get()           // Uses method name: GET /api/users/list
+    async list() {
+        return []
+    }
+    
+    @Post()          // Uses method name: POST /api/users/create
     async create() {
-        return { method: 'POST' }
+        return { id: 1 }
     }
+}
+```
 
-    @Put()
-    async modify() {
-        return { method: 'PUT' }
+## Path Parameters
+
+### Basic Path Parameters
+
+Use `:parameter` syntax for dynamic URL segments:
+
+> **📁 Example**: [path-parameters.ts](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/path-parameters.ts)
+
+```typescript
+import { PathArgs } from '@tarpit/http'
+import { Jtl } from '@tarpit/judge'
+
+@TpRouter('/api/users')
+class UserRouter {
+    @Get(':id')
+    async get_user(args: PathArgs<{ id: string }>) {
+        const id = args.ensure('id', Jtl.string)
+        return { id, name: `User ${id}` }
     }
+    
+    @Put(':id/profile')
+    async update_profile(args: PathArgs<{ id: string }>) {
+        const id = args.ensure('id', Jtl.string)
+        return { id, updated: true }
+    }
+}
+```
 
-    @Delete()
-    async remove() {
-        return { method: 'DELETE' }
+### Multiple Path Parameters
+
+Handle multiple parameters in a single route:
+
+> **📁 Example**: [path-parameters.ts](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/path-parameters.ts)
+
+```typescript
+@TpRouter('/api/teams')
+class TeamRouter {
+    @Get(':team_id/members/:member_id')
+    async get_team_member(args: PathArgs<{ team_id: string, member_id: string }>) {
+        const team_id = args.ensure('team_id', Jtl.string)
+        const member_id = args.ensure('member_id', Jtl.string)
+        
+        return {
+            team_id,
+            member_id,
+            name: `Member ${member_id} of Team ${team_id}`
+        }
+    }
+}
+```
+
+### Type Validation
+
+Use `@tarpit/judge` for runtime type validation:
+
+```typescript
+import { Jtl } from '@tarpit/judge'
+
+@TpRouter('/api/posts')
+class PostRouter {
+    @Get(':id')
+    async get_post(args: PathArgs<{ id: string }>) {
+        // Validate and convert to number
+        const id = args.ensure('id', Jtl.integer.min(1))
+        return { id, title: `Post ${id}` }
+    }
+}
+```
+
+## Query Parameters
+
+### Basic Query Parameters
+
+Access query parameters using `TpRequest`:
+
+```typescript
+import { TpRequest } from '@tarpit/http'
+
+@TpRouter('/api/posts')
+class PostRouter {
+    @Get('search')
+    async search_posts(req: TpRequest) {
+        const query = req.query.get('q') || ''
+        const page = parseInt(req.query.get('page') || '1')
+        const limit = parseInt(req.query.get('limit') || '10')
+        
+        return {
+            query,
+            page,
+            limit,
+            results: []
+        }
+    }
+}
+```
+
+### Query Parameter Validation
+
+Validate query parameters with proper error handling:
+
+```typescript
+@TpRouter('/api/users')
+class UserRouter {
+    @Get('list')
+    async list_users(req: TpRequest) {
+        const page_str = req.query.get('page')
+        const limit_str = req.query.get('limit')
+        
+        // Validate with defaults
+        const page = page_str ? Math.max(1, parseInt(page_str)) : 1
+        const limit = limit_str ? Math.min(100, Math.max(1, parseInt(limit_str))) : 10
+        
+        return {
+            page,
+            limit,
+            total: 0,
+            users: []
+        }
+    }
+}
+```
+
+## Route Registration
+
+### Module-based Registration
+
+Register routers through modules for better organization:
+
+```typescript
+import { TpModule } from '@tarpit/core'
+import { HttpServerModule } from '@tarpit/http'
+
+@TpModule({
+    imports: [HttpServerModule],
+    providers: [UserRouter, PostRouter, TeamRouter]
+})
+class ApiModule {}
+
+const platform = new Platform(config)
+    .import(ApiModule)
+    .start()
+```
+
+### Direct Registration
+
+Register individual routers directly:
+
+```typescript
+const platform = new Platform(config)
+    .import(HttpServerModule)
+    .import(UserRouter)
+    .import(PostRouter)
+    .start()
+```
+
+## Advanced Routing
+
+### Nested Routes
+
+Create hierarchical URL structures:
+
+```typescript
+@TpRouter('/api/v1')
+class V1Router {
+    @Get('status')
+    async get_status() {
+        return { version: 'v1', status: 'ok' }
     }
 }
 
-const platform = new Platform({ http: { port: 3000 } })
-    .import(FirstRouter)
-    .start()
-
-const inspector = platform.expose(TpInspector)!
-
-;(async () => {
-    await inspector.wait_start()
-    const res_get = await axios.get('http://localhost:3000/user/get')
-    console.log(res_get.data) // { method: 'GET' }
-    const res_post = await axios.post('http://localhost:3000/user/create')
-    console.log(res_post.data) // { method: 'POST' }
-    const res_put = await axios.put('http://localhost:3000/user/modify')
-    console.log(res_put.data) // { method: 'PUT' }
-    const res_delete = await axios.delete('http://localhost:3000/user/remove')
-    console.log(res_delete.data) // { method: 'DELETE' }
-    const res_head = await axios.head('http://localhost:3000/user/get')
-    console.log(res_head.headers)
-    // {
-    //   'content-length': '16',
-    //   connection: 'keep-alive',
-    //   'content-type': 'application/json; charset=utf-8',
-    //   date: 'Mon, 01 Aug 2022 13:37:59 GMT',
-    //   'keep-alive': 'timeout=4',
-    //   'proxy-connection': 'keep-alive',
-    //   'x-duration': '0'
-    // }
-    const res_options = await axios.options('http://localhost:3000/user/get')
-    console.log(res_options.headers)
-    // {
-    //   allow: 'OPTIONS,HEAD,GET',
-    //   connection: 'keep-alive',
-    //   date: 'Mon, 01 Aug 2022 13:37:59 GMT',
-    //   'keep-alive': 'timeout=4',
-    //   'proxy-connection': 'keep-alive'
-    // }
-    platform.terminate()
-    await inspector.wait_terminate()
-})()
+@TpRouter('/api/v2')
+class V2Router {
+    @Get('status')
+    async get_status() {
+        return { version: 'v2', status: 'ok', features: ['new-auth'] }
+    }
+}
 ```
+
+### Route Patterns
+
+Use various pattern matching for flexible routing:
+
+```typescript
+@TpRouter('/api/files')
+class FileRouter {
+    // Static routes
+    @Get('list')
+    async list_files() {
+        return []
+    }
+    
+    // Parameter routes
+    @Get(':id')
+    async get_file(args: PathArgs<{ id: string }>) {
+        return { id: args.ensure('id', Jtl.string) }
+    }
+    
+    // Nested parameters
+    @Get(':folder/:filename')
+    async get_file_in_folder(args: PathArgs<{ folder: string, filename: string }>) {
+        return {
+            folder: args.ensure('folder', Jtl.string),
+            filename: args.ensure('filename', Jtl.string)
+        }
+    }
+}
+```
+
+### Optional Parameters
+
+Handle optional route segments:
+
+```typescript
+@TpRouter('/api/docs')
+class DocsRouter {
+    // Handle both /api/docs/page and /api/docs/page/section
+    @Get('page/:section?')
+    async get_docs(args: PathArgs<{ section?: string }>) {
+        const section = args.get('section') // Returns undefined if not present
+        
+        if (section) {
+            return { page: 'docs', section }
+        } else {
+            return { page: 'docs', sections: ['intro', 'api', 'examples'] }
+        }
+    }
+}
+```
+
+## Route Conflicts and Resolution
+
+### Resolution Order
+
+Routes are matched in registration order. More specific routes should be registered first:
+
+```typescript
+@TpRouter('/api/users')
+class UserRouter {
+    // Specific route - register first
+    @Get('profile')
+    async get_current_user_profile() {
+        return { profile: 'current user' }
+    }
+    
+    // Parameter route - register after specific routes
+    @Get(':id')
+    async get_user(args: PathArgs<{ id: string }>) {
+        return { id: args.ensure('id', Jtl.string) }
+    }
+}
+```
+
+### Avoiding Conflicts
+
+Design routes to avoid ambiguity:
+
+```typescript
+// ✅ Good - Clear distinction
+@TpRouter('/api/users')
+class UserRouter {
+    @Get('search')        // /api/users/search
+    async search() {}
+    
+    @Get(':id')          // /api/users/123
+    async get_by_id() {}
+    
+    @Get(':id/posts')    // /api/users/123/posts
+    async get_user_posts() {}
+}
+
+// ❌ Avoid - Potential conflicts
+@TpRouter('/api/users')
+class ConflictingRouter {
+    @Get(':action')      // Could conflict with specific routes
+    async handle_action() {}
+    
+    @Get('search')       // This might not be reachable
+    async search() {}
+}
+```
+
+## Error Handling
+
+### Route Not Found
+
+Tarpit automatically returns 404 for unmatched routes. You can customize this behavior:
+
+```typescript
+import { TpHttpFinish } from '@tarpit/http'
+
+@TpRouter('/api/users')
+class UserRouter {
+    @Get(':id')
+    async get_user(args: PathArgs<{ id: string }>) {
+        const id = args.ensure('id', Jtl.string)
+        
+        // Simulate user lookup
+        const user = await this.find_user(id)
+        if (!user) {
+            throw new TpHttpFinish({ 
+                status: 404, 
+                code: 'USER_NOT_FOUND',
+                msg: `User with id ${id} not found` 
+            })
+        }
+        
+        return user
+    }
+}
+```
+
+### Parameter Validation Errors
+
+Handle invalid path parameters gracefully:
+
+```typescript
+@TpRouter('/api/posts')
+class PostRouter {
+    @Get(':id')
+    async get_post(args: PathArgs<{ id: string }>) {
+        try {
+            const id = args.ensure('id', Jtl.integer.min(1))
+            return { id, title: `Post ${id}` }
+        } catch (error) {
+            throw new TpHttpFinish({
+                status: 400,
+                code: 'INVALID_POST_ID',
+                msg: 'Post ID must be a positive integer'
+            })
+        }
+    }
+}
+```
+
+## Best Practices
+
+### 1. Use Consistent Naming
+
+```typescript
+// ✅ Good - Consistent and descriptive
+@TpRouter('/api/users')
+class UserRouter {
+    @Get('list')         // GET /api/users/list
+    @Post('create')      // POST /api/users/create
+    @Get(':id')         // GET /api/users/:id
+    @Put(':id')         // PUT /api/users/:id
+    @Delete(':id')      // DELETE /api/users/:id
+}
+
+// ❌ Avoid - Inconsistent naming
+@TpRouter('/api/users')
+class InconsistentRouter {
+    @Get('getAll')      // Inconsistent with REST conventions
+    @Post('new')        // Should be 'create'
+    @Get(':id/show')    // Redundant 'show'
+}
+```
+
+### 2. Group Related Routes
+
+```typescript
+// ✅ Good - Logical grouping
+@TpRouter('/api/users')
+class UserRouter {
+    // User CRUD operations
+}
+
+@TpRouter('/api/posts')
+class PostRouter {
+    // Post CRUD operations
+}
+
+@TpRouter('/api/auth')
+class AuthRouter {
+    // Authentication operations
+}
+```
+
+### 3. Use Descriptive Parameter Names
+
+```typescript
+// ✅ Good - Clear parameter names
+@Get(':user_id/posts/:post_id/comments/:comment_id')
+async get_comment(args: PathArgs<{ user_id: string, post_id: string, comment_id: string }>) {
+    // Clear what each parameter represents
+}
+
+// ❌ Avoid - Generic parameter names
+@Get(':id1/:id2/:id3')
+async get_something(args: PathArgs<{ id1: string, id2: string, id3: string }>) {
+    // Unclear what each parameter represents
+}
+```
+
+### 4. Validate Input Early
+
+```typescript
+@TpRouter('/api/users')
+class UserRouter {
+    @Get(':id')
+    async get_user(args: PathArgs<{ id: string }>) {
+        // Validate immediately
+        const id = args.ensure('id', Jtl.integer.min(1))
+        
+        // Continue with business logic
+        return await this.user_service.find_by_id(id)
+    }
+}
+```
+
+## Next Steps
+
+- Learn about [Request Handling](2-request-handling.html) for parsing request bodies and headers
+- Explore [Response Handling](3-response-handling.html) for sending responses and handling errors
+- See [Authentication](4-authentication.html) for securing your routes
