@@ -1,0 +1,45 @@
+// Custom styles for Tarpit documentation
+// Theme color: #fc7930 (Tarpit Orange)
+
+// Custom color variables for Tarpit branding
+$tarpit-primary: #fc7930;
+$tarpit-primary-hover: #e85a1a;
+$tarpit-primary-light: rgba(252, 121, 48, 0.1);
+$tarpit-primary-border: rgba(252, 121, 48, 0.3);
+
+// Override just-the-docs color variables for light theme
+$link-color: $tarpit-primary;
+$btn-primary-color: $tarpit-primary;
+
+a {
+    color: $tarpit-primary;
+}
+
+a:not([class]):hover {
+    text-decoration-color: #fc7930cc;
+}
+
+// Navigation active state
+.nav-list-link.active {
+    color: $tarpit-primary !important;
+}
+
+.nav-list-link:hover {
+    color: $tarpit-primary-hover;
+}
+
+.nav-list .nav-list-item .nav-list-expander {
+    color: $tarpit-primary !important;
+}
+
+.main-content .anchor-heading svg {
+    color: $tarpit-primary !important;
+}
+
+.search-input:focus+.search-label .search-icon {
+    color: $tarpit-primary !important;
+}
+
+.search-result-doc .search-result-icon {
+    color: $tarpit-primary !important;
+}

@@ -40,13 +40,15 @@ Tarpit is a modern **Dependency Injection (DI) Framework** built specifically fo
 
 ### Core Concepts
 
-**Services** (`@TpService`): Business logic components that can be injected into other services or controllers.
+Tarpit's Dependency Injection system is built around three fundamental concepts:
 
-**Modules** (`@TpModule`): Organizational units that group related services and define their scope.
+**Platform** - The application container that manages the entire dependency injection system. It orchestrates module imports, controls the application lifecycle, and serves as the central registry for all services and providers.
 
-**Routers** (`@TpRouter`): HTTP endpoint controllers that handle web requests (when using HTTP module).
+**Providers** - The recipes that tell the DI system how to create and supply dependencies. Providers define how services, values, and factories are registered and resolved, whether through class constructors, factory functions, or pre-existing values.
 
-**Platform**: The main application container that manages the entire dependency graph.
+**Injector** - The core engine that resolves dependencies by matching injection tokens to providers. It maintains a hierarchical chain of dependency lookups and acts as the runtime dependency resolution mechanism.
+
+These three concepts work together: the **Platform** registers **Providers** with the **Injector**, which then resolves dependencies when services are requested.
 
 ## Quick Start
 
