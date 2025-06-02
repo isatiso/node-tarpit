@@ -4,15 +4,48 @@
  */
 
 .heroBanner {
-  padding: 4rem 0;
+  padding: 2rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.logoContainer {
+  margin-bottom: 2rem;
+}
+
+.heroLogo {
+  max-width: 400px;
+  width: 55%;
+  height: auto;
+  margin-bottom: 1rem;
 }
 
 @media screen and (max-width: 996px) {
   .heroBanner {
-    padding: 2rem;
+    padding: 1rem;
+  }
+  
+  .heroLogo {
+    width: 60%;
+    max-width: 330px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .heroBanner {
+    padding: 1rem;
+  }
+  
+  .heroLogo {
+    width: 65%;
+    max-width: 270px;
   }
 }
 
@@ -20,4 +53,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
 }

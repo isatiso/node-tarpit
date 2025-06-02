@@ -78,11 +78,13 @@
 .button--primary {
   background-color: var(--tarpit-primary);
   border-color: var(--tarpit-primary);
+  color: white;
 }
 
 .button--primary:hover {
   background-color: var(--tarpit-primary-hover);
   border-color: var(--tarpit-primary-hover);
+  color: white;
 }
 
 /* Navigation enhancements */
@@ -101,13 +103,86 @@
     rgba(252, 121, 48, 0.05) 100%);
 }
 
+/* Ensure homepage takes full height without scrolling */
+html[data-theme='light'] .homepage,
+html[data-theme='dark'] .homepage {
+  overflow: hidden;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main wrapper should be flex and grow to fill space between navbar and footer */
+html[data-theme='light'] .homepage .main-wrapper,
+html[data-theme='dark'] .homepage .main-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+/* Navbar stays at top with fixed height */
+html[data-theme='light'] .homepage .navbar,
+html[data-theme='dark'] .homepage .navbar {
+  flex-shrink: 0;
+}
+
+/* Footer stays at bottom with fixed height */
+html[data-theme='light'] .homepage .footer,
+html[data-theme='dark'] .homepage .footer {
+  flex-shrink: 0;
+}
+
+/* Main content (header section) grows to fill remaining space */
+html[data-theme='light'] .homepage main,
+html[data-theme='dark'] .homepage main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero section text contrast */
+html[data-theme='light'] .hero--primary .hero__title,
+html[data-theme='light'] .hero--primary .hero__subtitle {
+  color: #1c1e21;
+}
+
+html[data-theme='dark'] .hero--primary .hero__title,
+html[data-theme='dark'] .hero--primary .hero__subtitle {
+  color: #ffffff;
+}
+
+/* Ensure buttons in hero section have proper contrast */
+html[data-theme='light'] .hero--primary .button--secondary {
+  background-color: var(--tarpit-primary);
+  border-color: var(--tarpit-primary);
+  color: white;
+}
+
+html[data-theme='dark'] .hero--primary .button--secondary {
+  background-color: var(--tarpit-primary);
+  border-color: var(--tarpit-primary);
+  color: white;
+}
+
 /* Enhanced blockquotes */
 blockquote {
   border-left: 4px solid var(--tarpit-primary);
-  background-color: var(--tarpit-primary-light);
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
   border-radius: 0 6px 6px 0;
+}
+
+/* Light theme blockquotes */
+html[data-theme='light'] blockquote {
+  background-color: rgba(252, 121, 48, 0.08);
+  color: #1c1e21;
+}
+
+/* Dark theme blockquotes */
+html[data-theme='dark'] blockquote {
+  background-color: rgba(253, 138, 77, 0.12);
+  color: #ffffff;
 }
 
 blockquote p:first-child {
@@ -118,13 +193,15 @@ blockquote p:last-child {
   margin-bottom: 0;
 }
 
-/* Code in blockquotes */
-blockquote code {
-  background-color: rgba(255, 255, 255, 0.8);
+/* Code in blockquotes - improved contrast */
+html[data-theme='light'] blockquote code {
+  background-color: rgba(252, 121, 48, 0.15);
+  color: #1c1e21;
 }
 
-[data-theme='dark'] blockquote code {
-  background-color: rgba(0, 0, 0, 0.3);
+html[data-theme='dark'] blockquote code {
+  background-color: rgba(253, 138, 77, 0.2);
+  color: #ffffff;
 }
 
 /* Homepage logo */
@@ -151,11 +228,7 @@ blockquote code {
   color: var(--tarpit-primary);
 }
 
-/* Footer enhancements */
-.footer {
-  background-color: var(--ifm-color-gray-900);
-}
-
+/* Footer enhancements - remove forced dark background */
 .footer__link-item:hover {
   color: var(--tarpit-primary);
 }
@@ -181,4 +254,81 @@ blockquote code {
   .hero__title {
     font-size: 2rem;
   }
+}
+
+/* Ensure proper text contrast in all themes */
+html[data-theme='light'] {
+  --ifm-font-color-base: #1c1e21;
+  --ifm-background-color: #ffffff;
+}
+
+html[data-theme='dark'] {
+  --ifm-font-color-base: #ffffff;
+  --ifm-background-color: #1b1b1d;
+}
+
+/* Additional contrast improvements */
+html[data-theme='light'] .navbar,
+html[data-theme='light'] .footer {
+  background-color: #ffffff;
+  color: #1c1e21;
+}
+
+html[data-theme='dark'] .navbar,
+html[data-theme='dark'] .footer {
+  background-color: #1b1b1d;
+  color: #ffffff;
+}
+
+/* Menu and navigation text contrast */
+html[data-theme='light'] .menu__list-item > .menu__link,
+html[data-theme='light'] .navbar__item {
+  color: #1c1e21;
+}
+
+html[data-theme='dark'] .menu__list-item > .menu__link,
+html[data-theme='dark'] .navbar__item {
+  color: #ffffff;
+}
+
+/* Ensure main content area has proper contrast */
+html[data-theme='light'] .main-wrapper {
+  background-color: #ffffff;
+  color: #1c1e21;
+}
+
+html[data-theme='dark'] .main-wrapper {
+  background-color: #1b1b1d;
+  color: #ffffff;
+}
+
+/* Fix pagination and other elements */
+html[data-theme='light'] .pagination-nav__item {
+  color: #1c1e21;
+}
+
+html[data-theme='dark'] .pagination-nav__item {
+  color: #ffffff;
+}
+
+/* Homepage features section text contrast */
+html[data-theme='light'] .features h3,
+html[data-theme='light'] .features p {
+  color: #1c1e21;
+}
+
+html[data-theme='dark'] .features h3,
+html[data-theme='dark'] .features p {
+  color: #ffffff;
+}
+
+/* Ensure main content sections have proper background and text color */
+html[data-theme='light'] main {
+  background-color: #ffffff;
+  color: #1c1e21;
+}
+
+html[data-theme='dark'] main {
+  background-color: #1b1b1d;
+  color: #ffffff;
 }

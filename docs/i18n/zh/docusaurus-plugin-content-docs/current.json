@@ -1,0 +1,26 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Core Concepts": {
+    "message": "核心概念",
+    "description": "The label for category Core Concepts in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.HTTP Server": {
+    "message": "HTTP 服务器",
+    "description": "The label for category HTTP Server in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Schedule": {
+    "message": "任务调度",
+    "description": "The label for category Schedule in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.RabbitMQ Client": {
+    "message": "RabbitMQ 客户端",
+    "description": "The label for category RabbitMQ Client in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Content Type": {
+    "message": "内容类型",
+    "description": "The label for category Content Type in sidebar tutorialSidebar"
+  }
+}

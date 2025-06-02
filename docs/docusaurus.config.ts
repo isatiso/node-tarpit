@@ -18,7 +18,7 @@ const config: Config = {
   url: 'https://isatiso.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: process.env.NODE_ENV === 'development' ? '/' : '/node-tarpit/',
+  baseUrl: '/',
 
   // GitHub pages deployment config.
   organizationName: 'isatiso',
@@ -74,10 +74,12 @@ const config: Config = {
   themeConfig: {
     image: 'img/tarpit-social-card.jpg',
     navbar: {
-      title: 'TARPIT',
+      title: 'Tarpit',
       logo: {
         alt: 'Tarpit Logo',
-        src: 'img/tarpit.svg',
+        src: 'img/tarpit-logo.svg',
+        href: '/',
+        target: '_self',
       },
       items: [
         {
@@ -98,7 +100,7 @@ const config: Config = {
       ],
     },
     footer: {
-      style: 'dark',
+      style: 'light',
       links: [
         {
           title: 'Docs',
