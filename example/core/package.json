@@ -1,0 +1,21 @@
+{
+  "name": "test-examples",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@tarpit/config": "^0.5.78",
+    "@tarpit/http": "^0.5.78",
+    "@tarpit/judge": "^0.5.78",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
