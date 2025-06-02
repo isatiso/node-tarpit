@@ -13,7 +13,7 @@ sidebar_position: 1
 </div>
 
 <div style={{textAlign: 'center', marginBottom: '2rem'}}>
-  <a href="https://github.com/isatiso/node-tarpit/actions/workflows/build.yml"><img src="https://github.com/isatiso/node-tarpit/actions/workflows/build.yml/badge.svg" alt="build" /></a>
+  <a href="https://github.com/isatiso/node-tarpit/actions/workflows/ci.yml"><img src="https://img.shields.io/github/check-runs/isatiso/node-tarpit/main" alt="build" /></a>
   {' '}
   <a href="https://codecov.io/gh/isatiso/node-tarpit"><img src="https://codecov.io/gh/isatiso/node-tarpit/branch/main/graph/badge.svg?token=9S3UQPNS3Y" alt="coverage" /></a>
   {' '}
