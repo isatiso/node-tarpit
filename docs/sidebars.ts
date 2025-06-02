@@ -14,33 +14,25 @@ const sidebars: SidebarsConfig = {
     'intro',
     {
       type: 'category',
-      label: 'Core Concepts',
+      label: 'Core',
       items: [
         'core/index',
         'core/dependency-injection',
+        'core/decorators',
         'core/platform-lifecycle',
         'core/providers',
-        'core/decorators',
-        'core/built-in-services',
+        'core/built-in-services'
       ],
     },
     {
-      type: 'category',
+      type: 'category', 
       label: 'HTTP Server',
       items: [
         'http-server/index',
         'http-server/routing',
         'http-server/request-handling',
         'http-server/response-handling',
-        'http-server/static-files',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Schedule',
-      items: [
-        'schedule/index',
-        // 'schedule/basic-usage', // TODO: Migrate when needed
+        'http-server/static-files'
       ],
     },
     {
@@ -48,10 +40,17 @@ const sidebars: SidebarsConfig = {
       label: 'RabbitMQ Client',
       items: [
         'rabbitmq-client/index',
-        // TODO: Add additional RabbitMQ pages when needed
-        // 'rabbitmq-client/basic-usage',
-        // 'rabbitmq-client/topology',
-        // 'rabbitmq-client/acknowledgment',
+        'rabbitmq-client/basic-usage',
+        'rabbitmq-client/topology',
+        'rabbitmq-client/acknowledgment'
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Schedule',
+      items: [
+        'schedule/index',
+        'schedule/basic-usage'
       ],
     },
     {
@@ -59,11 +58,10 @@ const sidebars: SidebarsConfig = {
       label: 'Content Type',
       items: [
         'content-type/index',
-        // TODO: Add additional Content Type pages when needed
-        // 'content-type/basic-usage',
-        // 'content-type/url-encoding',
-        // 'content-type/deserializers',
-        // 'content-type/advanced-features',
+        'content-type/basic-usage',
+        'content-type/url-encoding',
+        'content-type/deserializers',
+        'content-type/advanced-features'
       ],
     },
   ],
