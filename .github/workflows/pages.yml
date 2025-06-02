@@ -1,4 +1,4 @@
-name: Deploy Pages
+name: Deploy Docusaurus Pages
 
 on:
   workflow_dispatch:
@@ -15,6 +15,9 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: '18'
+
 jobs:
   deploy:
     environment:
@@ -25,38 +28,41 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
+          cache-dependency-path: docs/yarn.lock
 
-      - name: Install
-        run: yarn --frozen-lockfile
+      - name: Install dependencies
+        working-directory: ./docs
+        run: |
+          echo "Installing Docusaurus dependencies..."
+          yarn install --frozen-lockfile
+          echo "Dependencies installed successfully"
 
-      - name: Build
-        run: lerna run build
-
-      - name: Generate API Docs
-        run: lerna run docs
-
-      - name: Build Jekyll
-        uses: actions/jekyll-build-pages@v1.0.6
-        with:
-          source: ./docs
-          destination: ./docs/_site
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docusaurus
+        working-directory: ./docs
+        run: |
+          echo "Building Docusaurus site..."
+          yarn build
+          echo "Build completed successfully"
+          echo "Generated files:"
+          ls -la build/
+        env:
+          NODE_ENV: production
 
       - name: Setup Pages
-        uses: actions/configure-pages@v2
+        uses: actions/configure-pages@v4
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: './docs/_site'
+          path: './docs/build'
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
