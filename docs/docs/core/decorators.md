@@ -4,10 +4,6 @@ sidebar_position: 4
 
 # Decorators
 
-:::info Working Examples
-See [decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts) for complete working examples.
-:::
-
 Tarpit uses TypeScript decorators to mark classes and methods, making the dependency injection system declarative and easy to understand. Decorators tell Tarpit how to treat your classes and what role they play in your application.
 
 ## Overview
