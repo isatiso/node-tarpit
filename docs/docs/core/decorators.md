@@ -4,21 +4,148 @@ sidebar_position: 4
 
 # Decorators
 
-Tarpit uses TypeScript decorators to mark classes and methods, making the dependency injection system declarative and easy to understand. Decorators tell Tarpit how to treat your classes and what role they play in your application.
+Tarpit uses TypeScript decorators to create a powerful and hierarchical component system. Understanding the decorator architecture is key to mastering Tarpit's dependency injection and component organization.
 
-## Overview
+## Decorator Architecture Overview
 
-Tarpit provides several decorators for different purposes:
+Tarpit's decorator system follows a clear inheritance hierarchy:
 
-- **Component Decorators** - Mark classes for DI system
-- **Parameter Decorators** - Control dependency injection behavior
-- **Lifecycle Decorators** - Hook into application lifecycle events
+<div className="mb-8">
 
-## Component Decorators
+```
+TpComponent (Base class for all Tp decorators)
+│
+├── TpWorker (Functional units - can be injected)
+│   │
+│   └── @TpService (Injectable services)
+│
+├── TpAssembly (Module assembly units - with imports/providers)
+│   │
+│   ├── @TpModule (Dependency organization modules)
+│   │
+│   └── TpEntry (Injection hierarchy boundaries - creates child injectors)
+│       │
+│       └── @TpRoot (Application entry points)
+│
+└── TpUnit (Special method markers)
+    │
+    ├── @OnStart (Lifecycle initialization)
+    │
+    ├── @OnTerminate (Cleanup operations)
+    │
+    └── HTTP decorators (in @tarpit/http)
+```
 
-### @TpService
+</div>
 
-The `@TpService()` decorator marks a class as an injectable service:
+### Core Component Types
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
+
+<div>
+
+**🔧 TpWorker** - *Functional Units*
+
+- Can be injected as dependencies
+- Building blocks of application logic
+- Singleton by default
+
+*Example: `@TpService()`*
+
+</div>
+
+<div>
+
+**📦 TpAssembly** - *Module Organization*
+
+- Module assembly with imports/providers
+- Controls service exposure
+- Groups related functionality
+
+*Example: `@TpModule()`*
+
+</div>
+
+</div>
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
+
+<div>
+
+**🚪 TpEntry** - *Injection Boundaries*
+
+- Creates child injectors
+- Application structure boundaries
+- Scoped service isolation
+
+*Example: `@TpRoot()`*
+
+</div>
+
+<div>
+
+**⚡ TpUnit** - *Method Markers*
+
+- Special method behaviors
+- Lifecycle management
+- Feature extensions
+
+*Example: `@OnStart`, `@OnTerminate`*
+
+</div>
+
+</div>
+
+### Key Benefits
+
+- **Clear separation of concerns** - Each decorator type has a specific role
+- **Predictable behavior** - Child decorators inherit parent capabilities  
+- **Flexible composition** - Decorators can be combined effectively
+- **Scalable architecture** - Easy to extend and maintain as applications grow
+
+## Base Components
+
+### TpComponent
+
+`TpComponent` is the foundation of all Tarpit class decorators. It provides:
+
+- **Unique identification** via tokens
+- **Instance management** capabilities  
+- **Integration with DI system**
+
+All Tarpit class decorators inherit from `TpComponent`, ensuring consistent behavior across the framework.
+
+### TpWorker - Functional Units
+
+`TpWorker` extends `TpComponent` to represent **functional units** that can be injected as dependencies. Workers are the building blocks of your application logic.
+
+### TpAssembly - Module Organization  
+
+`TpAssembly` extends `TpComponent` to support **module assembly** with:
+
+- **imports** - Ability to import other modules
+- **providers** - Declaration of services provided by the module
+
+### TpEntry - Injection Boundaries
+
+`TpEntry` extends `TpAssembly` to create **injection hierarchy boundaries**. When the platform encounters a `TpEntry`, it creates a child injector, enabling:
+
+- **Scoped services** - Services limited to specific parts of the application
+- **Isolation** - Separate concerns across application layers
+
+### TpUnit - Method Markers
+
+`TpUnit` is used to mark **special methods** with specific behaviors, particularly for lifecycle management and feature extensions.
+
+## Working Components
+
+### @TpService (extends TpWorker)
+
+The `@TpService()` decorator marks classes as injectable services:
+
+:::info Complete Example
+[example/core/decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
+:::
 
 ```typescript
 import { TpService } from '@tarpit/core'
@@ -40,25 +167,30 @@ class UserService {
 ```
 
 **Key characteristics:**
-- Can be injected into other services
-- Singleton by default (one instance per injector)
-- Can have dependencies injected via constructor
+- **Injectable** - Can be injected into other services via constructor
+- **Singleton by default** - One instance per injector scope
+- **Dependency resolution** - Dependencies injected automatically
 
 #### Service Options
 
 ```typescript
 @TpService({
-    scope: 'transient',  // Create new instance each time
-    tags: ['database', 'repository']  // Optional tags for organization
+    scope: 'transient',      // Create new instance each time
+    tags: ['database', 'repository'],  // Optional tags for organization
+    inject_root: true        // Inject from root injector instead of current
 })
 class UserRepository {
     // New instance created for each injection
 }
 ```
 
-### @TpModule
+### @TpModule (extends TpAssembly)
 
-The `@TpModule()` decorator groups related services and provides configuration:
+The `@TpModule()` decorator groups related services and manages dependencies:
+
+:::info Complete Example  
+[example/core/decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
+:::
 
 ```typescript
 import { TpModule, TpService } from '@tarpit/core'
@@ -67,31 +199,37 @@ import { TpModule, TpService } from '@tarpit/core'
 class UserService { /* ... */ }
 
 @TpService()
-class OrderService { /* ... */ }
+class UserRepository { /* ... */ }
 
 @TpModule({
-    providers: [UserService, OrderService],
-    imports: [DatabaseModule]
+    providers: [UserService, UserRepository],  // Services this module provides
+    imports: [DatabaseModule],                 // Other modules to import
+    exports: [UserService]                     // Services to expose to importers
 })
 class UserModule {}
 ```
 
-**Module options:**
-- `providers` - Services provided by this module
-- `imports` - Other modules to import
-- `exports` - Services to make available to importing modules
+**Module capabilities:**
+- **Provider registration** - Declare which services the module provides
+- **Module composition** - Import functionality from other modules  
+- **Selective exposure** - Control which services are available to importers
+- **Dependency organization** - Group related functionality
 
-### @TpRoot
+### @TpRoot (extends TpEntry)
 
-The `@TpRoot()` decorator marks an entry point for bootstrapping applications:
+The `@TpRoot()` decorator marks application entry points and creates injection boundaries:
+
+:::info Complete Example
+[example/core/decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
+:::
 
 ```typescript
 import { TpRoot } from '@tarpit/core'
-import { HttpServerModule } from '@tarpit/http'
 
 @TpRoot({
-    imports: [HttpServerModule, UserModule],
-    entries: [UserController]
+    imports: [UserModule, DatabaseModule],    // Modules to import
+    entries: [UserController],               // Entry point classes  
+    providers: [GlobalService]               // Additional root-level services
 })
 class AppRoot {}
 
@@ -101,20 +239,16 @@ const platform = new Platform(config)
     .start()
 ```
 
-**Root options:**
-- `imports` - Modules to import
-- `entries` - Entry point classes (like HTTP routers)
-- `providers` - Additional services
+**Root characteristics:**
+- **Creates child injector** - Establishes new injection scope
+- **Entry point management** - Automatically loads specified entry classes
+- **Application boundary** - Defines the top-level application structure
 
 ## Parameter Decorators
 
 ### @Inject
 
 Use `@Inject()` to specify custom injection tokens:
-
-:::info Complete Example
-[decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
-:::
 
 ```typescript
 import { Inject, TpService } from '@tarpit/core'
@@ -127,8 +261,12 @@ const MAX_RETRIES = Symbol('MAX_RETRIES')
 class DatabaseService {
     constructor(
         @Inject(DATABASE_URL) private url: string,
-        @Inject(MAX_RETRIES) private maxRetries: number
+        @Inject(MAX_RETRIES) private max_retries: number
     ) {}
+    
+    connect() {
+        console.log(`Connecting to: ${this.url} (max retries: ${this.max_retries})`)
+    }
 }
 
 // Register the values
@@ -140,11 +278,7 @@ platform
 
 ### @Optional
 
-Mark dependencies as optional with `@Optional()`:
-
-:::info Complete Example
-[decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
-:::
+Mark dependencies as optional:
 
 ```typescript
 import { Optional, TpService } from '@tarpit/core'
@@ -153,13 +287,13 @@ import { Optional, TpService } from '@tarpit/core'
 class EmailService {
     constructor(
         private logger: LoggerService,
-        @Optional() private metrics?: MetricsService
+        @Optional() private metrics?: MetricsService  // Optional dependency
     ) {}
     
     send_email(to: string, subject: string) {
         this.logger.log(`Sending email to ${to}`)
         
-        // Metrics service might not be available
+        // Safe to use - might be undefined
         this.metrics?.increment('emails_sent')
     }
 }
@@ -167,7 +301,7 @@ class EmailService {
 
 ### @Disabled
 
-The `@Disabled()` decorator marks a parameter to be skipped during injection:
+Skip injection for specific parameters:
 
 ```typescript
 import { Disabled, TpService } from '@tarpit/core'
@@ -176,56 +310,50 @@ import { Disabled, TpService } from '@tarpit/core'
 class FileService {
     constructor(
         private logger: LoggerService,
-        @Disabled() private baseDir: string = '/tmp'
+        @Disabled() private base_dir: string = '/tmp'  // Not injected, uses default
     ) {}
 }
 ```
 
-## Lifecycle Decorators
+## Method Decorators (TpUnit-based)
 
-### @OnInit
+### @OnStart
 
 Mark methods to be called when a service is created:
 
-:::info Complete Example
-[decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
-:::
-
 ```typescript
-import { OnInit, TpService } from '@tarpit/core'
+import { TpService, OnStart } from '@tarpit/core'
 
 @TpService()
-class DatabaseService implements OnInit {
+class DatabaseService {
     private connection: any
     
-    async on_init() {
+    @OnStart()
+    async initialize() {
         console.log('DatabaseService: Connecting to database...')
-        this.connection = await this.createConnection()
+        this.connection = await this.create_connection()
         console.log('DatabaseService: Connected successfully')
     }
     
-    private async createConnection() {
+    private async create_connection() {
         // Database connection logic
     }
 }
 ```
 
-### @OnTerminate
+### @OnTerminate  
 
 Mark methods to be called during application shutdown:
 
-:::info Complete Example
-[decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
-:::
-
 ```typescript
-import { OnTerminate, TpService } from '@tarpit/core'
+import { TpService, OnTerminate } from '@tarpit/core'
 
 @TpService()
-class DatabaseService implements OnTerminate {
+class DatabaseService {
     private connection: any
     
-    async on_terminate() {
+    @OnTerminate()
+    async cleanup() {
         console.log('DatabaseService: Closing connection...')
         if (this.connection) {
             await this.connection.close()
@@ -235,198 +363,193 @@ class DatabaseService implements OnTerminate {
 }
 ```
 
-## Decorator Combinations
+## Advanced Patterns
 
-### Common Patterns
+### Hierarchical Module Organization
 
-You can combine multiple decorators for powerful effects:
+Leverage the decorator hierarchy for clean architecture:
 
 ```typescript
-import { TpService, Optional, Inject, OnInit, OnTerminate } from '@tarpit/core'
-
+// Low-level services (TpWorker)
 @TpService()
-class AdvancedService implements OnInit, OnTerminate {
+class DatabaseService { /* ... */ }
+
+@TpService() 
+class UserRepository { /* ... */ }
+
+// Mid-level module organization (TpAssembly)
+@TpModule({
+    providers: [DatabaseService, UserRepository],
+    exports: [UserRepository]
+})
+class DatabaseModule {}
+
+@TpModule({
+    imports: [DatabaseModule],
+    providers: [UserService],
+    exports: [UserService]
+})
+class UserModule {}
+
+// Top-level application entry (TpEntry) 
+@TpRoot({
+    imports: [UserModule],
+    entries: [UserController]
+})
+class AppRoot {}
+```
+
+### Complex Service with Multiple Decorators
+
+```typescript
+@TpService({ inject_root: true })
+class AdvancedService {
     constructor(
         private logger: LoggerService,
-        @Optional() @Inject('feature-flag') private featureEnabled?: boolean,
-        @Disabled() private debugMode: boolean = false
+        @Optional() @Inject('feature-flag') private feature_enabled?: boolean,
+        @Disabled() private debug_mode: boolean = false
     ) {}
     
-    async on_init() {
+    @OnStart()
+    async initialize() {
         this.logger.log('AdvancedService initializing...')
-        if (this.featureEnabled) {
-            await this.enableAdvancedFeatures()
+        if (this.feature_enabled) {
+            await this.enable_advanced_features()
         }
     }
     
-    async on_terminate() {
+    @OnTerminate()
+    async cleanup() {
         this.logger.log('AdvancedService shutting down...')
-        await this.cleanup()
+        await this.perform_cleanup()
     }
     
-    private async enableAdvancedFeatures() {
+    private async enable_advanced_features() {
         // Feature initialization
     }
     
-    private async cleanup() {
+    private async perform_cleanup() {
         // Cleanup logic
     }
 }
 ```
 
-### Service with Complex Dependencies
+### Injection Boundary Management
+
+Use `TpEntry` decorators to create isolated scopes:
 
 ```typescript
+// Global scope
 @TpService()
-class OrderService implements OnInit {
-    constructor(
-        private userService: UserService,
-        private paymentService: PaymentService,
-        @Inject('order-config') private config: OrderConfig,
-        @Optional() private notificationService?: NotificationService,
-        @Optional() @Inject('analytics-enabled') private analyticsEnabled?: boolean
-    ) {}
-    
-    async on_init() {
-        console.log('OrderService initialized with config:', this.config)
-        if (this.analyticsEnabled) {
-            console.log('Analytics tracking enabled')
-        }
-    }
-    
-    async create_order(userId: number, items: OrderItem[]) {
-        const user = await this.userService.find_user(userId)
-        if (!user) throw new Error('User not found')
-        
-        const payment = await this.paymentService.process(items)
-        const order = { user, items, payment, createdAt: new Date() }
-        
-        // Optional notification
-        if (this.notificationService) {
-            await this.notificationService.notify_order_created(order)
-        }
-        
-        return order
-    }
-}
+class GlobalConfigService { /* ... */ }
+
+// HTTP request scope  
+@TpRoot({
+    imports: [UserModule],
+    providers: [RequestContextService]  // Scoped to this injector
+})
+class HttpRequestHandler {}
+
+// Background job scope
+@TpRoot({
+    imports: [UserModule], 
+    providers: [JobContextService]      // Different instance than HTTP scope
+})
+class BackgroundJobHandler {}
 ```
 
 ## Best Practices
 
-### 1. Use Descriptive Service Names
+### 1. Follow the Hierarchy
+
+Understand which decorator to use based on purpose:
 
 ```typescript
-// ✅ Good - Clear, descriptive names
+// ✅ Good - Service for business logic
 @TpService()
-class UserRegistrationService {}
+class UserService { /* ... */ }
 
-@TpService()
-class EmailDeliveryService {}
-
-// ❌ Avoid - Vague names
-@TpService()
-class Manager {}
-
-@TpService()
-class Handler {}
-```
-
-### 2. Implement Lifecycle Interfaces
-
-```typescript
-// ✅ Good - Explicit interface implementation
-@TpService()
-class DatabaseService implements OnInit, OnTerminate {
-    async on_init() { /* ... */ }
-    async on_terminate() { /* ... */ }
-}
-
-// ❌ Less clear - Just the decorator without interface
-@TpService()
-class DatabaseService {
-    async on_init() { /* ... */ }  // Not obvious this is a lifecycle method
-}
-```
-
-### 3. Use Optional Judiciously
-
-```typescript
-// ✅ Good - Truly optional features
-@TpService()
-class EmailService {
-    constructor(
-        private sender: EmailSender,
-        @Optional() private analytics?: AnalyticsService  // Feature enhancement
-    ) {}
-}
-
-// ❌ Avoid - Core dependencies as optional
-@TpService()
-class UserService {
-    constructor(
-        @Optional() private database?: DatabaseService  // Required for basic functionality
-    ) {}
-}
-```
-
-### 4. Organize with Modules
-
-```typescript
-// ✅ Good - Logical grouping
+// ✅ Good - Module for organization
 @TpModule({
-    providers: [
-        UserService,
-        UserRepository,
-        UserValidator
-    ],
-    exports: [UserService]  // Only expose the main service
+    providers: [UserService, UserRepository],
+    exports: [UserService]
 })
 class UserModule {}
 
+// ✅ Good - Root for application entry
+@TpRoot({
+    imports: [UserModule],
+    entries: [AppController]
+})
+class AppRoot {}
+
+// ❌ Wrong - Don't use TpService for modules
+@TpService()  // Should be @TpModule
+class UserModule {}
+```
+
+### 2. Organize by Domain
+
+Group related services in modules:
+
+```typescript
+// User domain
 @TpModule({
-    providers: [
-        OrderService,
-        PaymentService,
-        InventoryService
-    ],
-    imports: [UserModule],  // Use services from other modules
+    providers: [UserService, UserRepository, UserValidator],
+    exports: [UserService]
+})
+class UserModule {}
+
+// Order domain  
+@TpModule({
+    providers: [OrderService, OrderRepository, PaymentService],
+    imports: [UserModule],  // Use services from other domains
     exports: [OrderService]
 })
 class OrderModule {}
 ```
 
-## Debugging Decorators
+### 3. Use Injection Boundaries Strategically
 
-### Development Helpers
-
-You can create custom decorators for debugging:
+Create child injectors for different contexts:
 
 ```typescript
-function Debug(target: any) {
-    console.log(`Creating service: ${target.name}`)
-    return target
-}
+// Main application
+@TpRoot({
+    imports: [DatabaseModule],
+    providers: [GlobalService]
+})
+class MainApp {}
 
-@TpService()
-@Debug
-class UserService {
-    // Will log when this service is created
-}
+// Testing context - isolated from main app
+@TpRoot({
+    imports: [DatabaseModule],
+    providers: [MockService]  // Different implementations
+})
+class TestApp {}
 ```
 
-### Service Tags
+### 4. Implement Lifecycle Properly
 
-Use tags to organize and debug services:
+Always implement interfaces for lifecycle methods:
 
 ```typescript
-@TpService({ tags: ['repository', 'database'] })
-class UserRepository {}
+// ✅ Good - Interface provides type safety
+@TpService()
+class DatabaseService implements OnInit, OnTerminate {
+    @OnStart()
+    async on_init() { /* ... */ }
+    
+    @OnTerminate()
+    async on_terminate() { /* ... */ }
+}
 
-@TpService({ tags: ['service', 'business-logic'] })
-class UserService {}
-
-@TpService({ tags: ['controller', 'http'] })
-class UserController {}
+// ❌ Less clear - No interface contract
+@TpService()
+class DatabaseService {
+    @OnStart()
+    async some_init_method() { /* ... */ }  // Not obvious this is lifecycle
+}
 ```
 
 ## TypeScript Configuration
@@ -448,6 +571,6 @@ Decorators require specific TypeScript configuration:
 
 ## Next Steps
 
-- [**Built-in Services**](./built-in-services) - Discover core services provided by Tarpit
-- [**Providers**](./providers) - Learn about different provider types
-- [**Platform & Lifecycle**](./platform-lifecycle) - Understand application lifecycle 
+- [**Dependency Injection**](./dependency-injection) - Master the injection system
+- [**Platform & Lifecycle**](./platform-lifecycle) - Understand application lifecycle
+- [**Providers**](./providers) - Learn advanced provider patterns 
