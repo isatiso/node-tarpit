@@ -14,13 +14,13 @@ sidebar_position: 1
 
 <div style={{textAlign: 'center', marginBottom: '2rem'}}>
   <a href="https://github.com/isatiso/node-tarpit/actions/workflows/ci.yml"><img src="https://img.shields.io/github/check-runs/isatiso/node-tarpit/main" alt="build" /></a>
-  {' '}
+  
   <a href="https://codecov.io/gh/isatiso/node-tarpit"><img src="https://codecov.io/gh/isatiso/node-tarpit/branch/main/graph/badge.svg?token=9S3UQPNS3Y" alt="coverage" /></a>
-  {' '}
+
   <a href="https://github.com/isatiso/node-tarpit/blob/main/LICENSE"><img src="https://img.shields.io/github/license/isatiso/node-tarpit" alt="license:mit" /></a>
-  {' '}
+  
   <a href="https://www.npmjs.com/package/@tarpit/core"><img src="https://img.shields.io/npm/dm/@tarpit/core" alt="downloads" /></a>
-  {' '}
+  
   <a href="https://nodejs.org/en/"><img src="https://img.shields.io/node/v/@tarpit/core" alt="node" /></a>
 </div>
 

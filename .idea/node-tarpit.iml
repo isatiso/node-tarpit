@@ -33,7 +33,6 @@
       <sourceFolder url="file://$MODULE_DIR$/supports/cli/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/supports/rollup/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/actions/upload-codecov/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/docs" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/content-type/.cache" />
       <excludeFolder url="file://$MODULE_DIR$/modules/content-type/.nyc_output" />
