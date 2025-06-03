@@ -12,16 +12,39 @@ sidebar_position: 1
 🥦 Simple but Awesome <a href="https://www.typescriptlang.org/">TypeScript</a> DI Framework for Node.js 🥦
 </div>
 
-<div style={{textAlign: 'center', marginBottom: '2rem'}}>
-  <a href="https://github.com/isatiso/node-tarpit/actions/workflows/ci.yml"><img src="https://img.shields.io/github/check-runs/isatiso/node-tarpit/main" alt="build" /></a>
-  
-  <a href="https://codecov.io/gh/isatiso/node-tarpit"><img src="https://codecov.io/gh/isatiso/node-tarpit/branch/main/graph/badge.svg?token=9S3UQPNS3Y" alt="coverage" /></a>
+{/* Metrics Badges (with numbers) */}
+<div style={{textAlign: 'center', marginBottom: '1rem'}}>
+  <a href="https://www.npmjs.com/package/@tarpit/core"><img src="https://img.shields.io/npm/v/@tarpit/core" alt="NPM Version" /></a>
+  {' '}
+  <a href="https://www.npmjs.com/package/@tarpit/core"><img src="https://img.shields.io/npm/dm/@tarpit/core" alt="Monthly Downloads" /></a>
+  {' '}
+  <a href="https://nodejs.org/en/"><img src="https://img.shields.io/node/v/@tarpit/core" alt="Node.js Version" /></a>
+  {' '}
+  <a href="https://codecov.io/gh/isatiso/node-tarpit"><img src="https://codecov.io/gh/isatiso/node-tarpit/branch/main/graph/badge.svg?token=9S3UQPNS3Y" alt="Code Coverage" /></a>
+  {' '}
+  <a href="https://bundlephobia.com/package/@tarpit/core"><img src="https://img.shields.io/bundlephobia/minzip/@tarpit/core" alt="Bundle Size" /></a>
+  {' '}
+  <a href="https://github.com/isatiso/node-tarpit/commits/main"><img src="https://img.shields.io/github/last-commit/isatiso/node-tarpit" alt="Last Commit" /></a>
+</div>
 
-  <a href="https://github.com/isatiso/node-tarpit/blob/main/LICENSE"><img src="https://img.shields.io/github/license/isatiso/node-tarpit" alt="license:mit" /></a>
-  
-  <a href="https://www.npmjs.com/package/@tarpit/core"><img src="https://img.shields.io/npm/dm/@tarpit/core" alt="downloads" /></a>
-  
-  <a href="https://nodejs.org/en/"><img src="https://img.shields.io/node/v/@tarpit/core" alt="node" /></a>
+{/* Status/Identity Badges (without numbers) */}
+<div style={{textAlign: 'center', marginBottom: '1rem'}}>
+  <a href="https://github.com/isatiso/node-tarpit/actions/workflows/ci.yml"><img src="https://img.shields.io/github/check-runs/isatiso/node-tarpit/main" alt="Build Status" /></a>
+  {' '}
+  <a href="https://github.com/isatiso/node-tarpit"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  {' '}
+  <a href="https://github.com/isatiso/node-tarpit/blob/main/LICENSE"><img src="https://img.shields.io/github/license/isatiso/node-tarpit" alt="MIT License" /></a>
+  {' '}
+  <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg" alt="Lerna" /></a>
+  {' '}
+  <a href="https://deepwiki.com/isatiso/node-tarpit"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
+</div>
+
+{/* Social Badges */}
+<div style={{textAlign: 'center', marginBottom: '2rem'}}>
+  <a href="https://github.com/isatiso/node-tarpit"><img src="https://img.shields.io/github/stars/isatiso/node-tarpit?style=social" alt="GitHub Stars" /></a>
+  {' '}
+  <a href="https://github.com/isatiso/node-tarpit/network/members"><img src="https://img.shields.io/github/forks/isatiso/node-tarpit?style=social" alt="GitHub Forks" /></a>
 </div>
 
 ## What is Tarpit?

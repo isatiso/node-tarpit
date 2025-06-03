@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'TARPIT',
   tagline: 'Simple but Awesome TypeScript DI Framework for Node.js',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/tarpit-logo.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
