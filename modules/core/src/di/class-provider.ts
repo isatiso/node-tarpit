@@ -7,6 +7,7 @@
  */
 
 import { OnTerminate } from '../annotations'
+import { OnStart } from '../annotations/on-start'
 import { TpLoader } from '../builtin/tp-loader'
 import { get_all_prop_decorator, TarpitId } from '../tools/decorator'
 import { detect_cycle_ref } from '../tools/detect-cycle-ref'
@@ -59,12 +60,18 @@ export class ClassProvider<M extends object> implements Provider<M> {
         const instance = new this.cls(...param_list)
 
         for (const [prop, decorators] of get_all_prop_decorator(this.cls) ?? []) {
-            const meta = decorators.find(d => d instanceof OnTerminate)
-            if (meta) {
-                const destroy_method = Reflect.get(this.cls.prototype, prop)
-                if (typeof destroy_method === 'function') {
-                    this.injector.get(TpLoader)!.create().on_terminate(destroy_method.bind(instance))
-                    break
+            const start_meta = decorators.find(d => d instanceof OnStart)
+            if (start_meta) {
+                const init_method = Reflect.get(this.cls.prototype, prop)
+                if (typeof init_method === 'function') {
+                    this.injector.get(TpLoader)!.create().on_start(init_method.bind(instance))
+                }
+            }
+            const terminate_meta = decorators.find(d => d instanceof OnTerminate)
+            if (terminate_meta) {
+                const quit_method = Reflect.get(this.cls.prototype, prop)
+                if (typeof quit_method === 'function') {
+                    this.injector.get(TpLoader)!.create().on_terminate(quit_method.bind(instance))
                 }
             }
         }
