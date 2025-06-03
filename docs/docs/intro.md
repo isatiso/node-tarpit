@@ -1,8 +1,8 @@
 ---
+title: Quick Start
 sidebar_position: 1
+hide_title: true
 ---
-
-# Introduction
 
 <div style={{textAlign: 'center', marginBottom: '2rem'}}>
   <img src="/img/tarpit-full.svg" alt="Tarpit Logo" style={{width: '40%', maxWidth: '300px'}} />
@@ -99,7 +99,16 @@ Initialize your project:
 
 ```bash
 npm init -y
-tsc --init
+```
+
+Install TypeScript and development dependencies:
+
+```bash
+# Install TypeScript globally or as dev dependency
+npm install -D typescript ts-node @types/node
+
+# Initialize TypeScript configuration
+npx tsc --init
 ```
 
 Configure TypeScript for decorators in `tsconfig.json`:
@@ -112,7 +121,9 @@ Configure TypeScript for decorators in `tsconfig.json`:
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   }
 }
 ```
@@ -178,91 +189,164 @@ curl http://localhost:4100/hello
 curl http://localhost:4100/user/123
 ```
 
+This example demonstrates:
+- **Basic Routing**: Using `@TpRouter` to define route prefixes
+- **HTTP Methods**: Using `@Get` decorator for GET endpoints
+- **Path Parameters**: Extracting and validating URL parameters
+- **JSON Responses**: Returning structured data from endpoints
+
 ### Service Injection Example
 
 :::info Complete Example
-[`example/http-server/service-injection.ts`](https://github.com/isatiso/node-tarpit/blob/main/example/http-server/service-injection.ts)
+[`example/basic/service-injection.ts`](https://github.com/isatiso/node-tarpit/blob/main/example/basic/service-injection.ts)
 :::
 
-Create reusable services with dependency injection:
+For more complex applications, you'll want to organize your code using dependency injection. Here's how to create injectable services with HTTP routing:
 
 ```typescript
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema, TpService } from '@tarpit/core'
-import { HttpServerModule, TpRouter, Get, Post, JsonBody, PathArgs } from '@tarpit/http'
+import { HttpServerModule, TpRouter, Get, PathArgs } from '@tarpit/http'
 import { Jtl } from '@tarpit/judge'
 
-// Business logic service
+// 1. Declaration - Mark classes as injectable services
 @TpService()
-class UserService {
-    private users = new Map<string, any>()
-    
-    create_user(user_data: any) {
-        const id = Math.random().toString(36).substr(2, 9)
-        this.users.set(id, { id, ...user_data })
-        return this.users.get(id)
+class DatabaseService {
+    connect() {
+        console.log('Connected to database')
     }
     
-    get_user(id: string) {
-        return this.users.get(id)
+    query(sql: string) {
+        console.log(`Executing query: ${sql}`)
+        return []
     }
     
-    list_users() {
-        return Array.from(this.users.values())
+    find_user(id: string) {
+        console.log(`Finding user with ID: ${id}`)
+        return { id, name: `User ${id}`, email: `user${id}@example.com` }
     }
 }
 
-// HTTP controller with injected service
+@TpService()
+class UserService {
+    // 2. Dependency will be injected automatically
+    constructor(private db: DatabaseService) {}
+    
+    create_user(name: string) {
+        this.db.connect()
+        const result = this.db.query(`INSERT INTO users (name) VALUES ('${name}')`)
+        console.log(`Created user: ${name}`)
+        return { id: Date.now(), name }
+    }
+    
+    get_user(id: string) {
+        this.db.connect()
+        return this.db.find_user(id)
+    }
+}
+
+// 3. HTTP Router using injected services
 @TpRouter('/api/users')
 class UserRouter {
+    // 4. Service injection in router
+    constructor(private userService: UserService) {}
     
-    constructor(private user_service: UserService) {}
-    
-    @Get('list')
+    @Get('')
     async list_users() {
-        return this.user_service.list_users()
+        return { 
+            message: 'User list endpoint',
+            users: ['Alice', 'Bob', 'Charlie']
+        }
     }
     
     @Get(':id')
     async get_user(args: PathArgs<{ id: string }>) {
-        const id = args.ensure('id', Jtl.string)
-        const user = this.user_service.get_user(id)
-        return user || { error: 'User not found' }
+        const user_id = args.ensure('id', Jtl.string)
+        const user = this.userService.get_user(user_id)
+        return user
     }
     
-    @Post('create')
-    async create_user(body: JsonBody) {
-        const user_data = body.ensure('data', Jtl.object)
-        return this.user_service.create_user(user_data)
+    @Get('hello/:name')
+    async greet_user(args: PathArgs<{ name: string }>) {
+        const name = args.ensure('name', Jtl.string)
+        this.userService.create_user(name)
+        return { 
+            message: `Hello, ${name}!`,
+            user: { name, created: true }
+        }
     }
 }
 
-const config = load_config<TpConfigSchema>({ 
-    http: { port: 4100 } 
-})
+async function main() {
+    // 5. Registration - Register services and router with platform
+    const config = load_config<TpConfigSchema>({ 
+        http: { port: 4100 } 
+    })
+    
+    const platform = new Platform(config)
+        .import(HttpServerModule)
+        .import(DatabaseService)
+        .import(UserService)
+        .import(UserRouter)
+    
+    await platform.start()
+    
+    console.log('Server started on http://localhost:4100')
+    console.log('Try these endpoints:')
+    console.log('  GET  http://localhost:4100/api/users')
+    console.log('  GET  http://localhost:4100/api/users/123')
+    console.log('  GET  http://localhost:4100/api/users/hello/Alice')
+}
 
-const platform = new Platform(config)
-    .import(HttpServerModule)
-    .import(UserService)
-    .import(UserRouter)
-    .start()
+main().catch(console.error)
+```
+
+Run the example:
+
+```bash
+npx ts-node example/basic/service-injection.ts
+```
+
+Test the API endpoints:
+
+```bash
+# List all users
+curl http://localhost:4100/api/users
+
+# Get a specific user
+curl http://localhost:4100/api/users/123
+
+# Create and greet a user
+curl http://localhost:4100/api/users/hello/Alice
 ```
 
 This example demonstrates:
-- **Service Definition**: `UserService` handles business logic
-- **Dependency Injection**: `UserRouter` receives `UserService` automatically  
-- **Automatic Wiring**: The platform connects everything together
+- **Service Declaration**: Using `@TpService()` to mark classes as injectable
+- **Dependency Injection**: Automatic injection of dependencies through constructor parameters
+- **Router Injection**: Injecting services into HTTP routers for API endpoints
+- **Service Registration**: Importing services and routers into the platform
+- **HTTP Integration**: Combining dependency injection with REST API endpoints
+- **Path Parameters**: Extracting and validating URL parameters with type safety
 
 ## Next Steps
 
-Ready to dive deeper? Check out our comprehensive guides:
+Ready to dive deeper? Explore our comprehensive documentation:
 
+### Core Framework
 - [**Core Concepts**](./core/) - Learn about dependency injection, providers, and the platform
+- [**Platform Lifecycle**](./core/platform-lifecycle) - Understanding application startup and shutdown
+- [**Dependency Injection**](./core/dependency-injection) - Advanced DI patterns and best practices
 
-:::tip More Modules Coming Soon
-We're actively migrating more documentation modules. The following will be available soon:
-- **HTTP Server** - Build web APIs with routing, middleware, and more
-- **RabbitMQ Client** - Integrate message queuing  
-- **Schedule** - Handle cron jobs and background tasks
-- **Content Type** - Work with different data formats
+### HTTP Server Module
+- [**HTTP Server**](./http/) - Web APIs, routing, middleware, and authentication
+- [**Request Handling**](./http/request-handling) - Processing HTTP requests and responses
+- [**Middleware**](./http/middleware) - Custom middleware and request processing
+
+### Other Modules
+- [**RabbitMQ Module**](./rabbitmq/) - Message queuing and event-driven architecture
+- [**Schedule Module**](./schedule/) - Cron jobs and background tasks
+- [**Content Type Module**](./content-type/) - Working with different data formats
+
+:::tip Complete Example Repository
+For hands-on learning, check out the [`example/`](https://github.com/isatiso/node-tarpit/tree/main/example) directory with runnable code samples for each module.
 :::
