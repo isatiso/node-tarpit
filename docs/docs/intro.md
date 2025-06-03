@@ -134,6 +134,10 @@ Install Tarpit HTTP module (includes core dependencies):
 npm install @tarpit/http @tarpit/judge @tarpit/config reflect-metadata
 ```
 
+:::note Why reflect-metadata?
+`reflect-metadata` is required for TypeScript decorator metadata reflection. Tarpit's dependency injection system uses this to automatically detect constructor parameter types and enable type-safe dependency resolution.
+:::
+
 ### Hello World Example
 
 :::info Complete Example

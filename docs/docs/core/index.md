@@ -17,7 +17,7 @@ Tarpit's core is built around several key concepts:
 - **Built-in Services** - Core services like logging, configuration, and event handling
 
 :::tip Examples Repository
-Working examples for core concepts can be found in [`example/basic/`](https://github.com/isatiso/node-tarpit/tree/main/example/basic).
+Working examples for core concepts can be found in [`example/core/`](https://github.com/isatiso/node-tarpit/tree/main/example/core).
 :::
 
 ## Installation
@@ -25,6 +25,10 @@ Working examples for core concepts can be found in [`example/basic/`](https://gi
 ```bash
 npm install @tarpit/core reflect-metadata
 ```
+
+:::note Why reflect-metadata?
+`reflect-metadata` is required for TypeScript decorator metadata reflection. Tarpit's dependency injection system uses this to automatically detect constructor parameter types and enable type-safe dependency resolution.
+:::
 
 :::caution TypeScript Configuration Required
 Tarpit requires TypeScript decorators. Make sure your `tsconfig.json` includes:
@@ -40,6 +44,10 @@ Tarpit requires TypeScript decorators. Make sure your `tsconfig.json` includes:
 :::
 
 ## Quick Example
+
+:::info Complete Example
+[`example/core/quick-start.ts`](https://github.com/isatiso/node-tarpit/blob/main/example/core/quick-start.ts)
+:::
 
 Here's a minimal example showing the core concepts in action:
 
