@@ -4,7 +4,11 @@ This directory contains examples demonstrating the core concepts of the Tarpit f
 
 ## Examples Overview
 
-### 1. Dependency Injection Basic (`dependency-injection-basic.ts`)
+### Dependency Injection (`di/` directory)
+
+Contains all dependency injection related examples:
+
+#### 1. Dependency Injection Basic (`di/dependency-injection-basic.ts`)
 
 **Purpose**: Demonstrates the fundamental dependency injection workflow.
 
@@ -14,9 +18,9 @@ This directory contains examples demonstrating the core concepts of the Tarpit f
 - Service registration with Platform
 - Service resolution and usage
 
-**Run**: `npx ts-node dependency-injection-basic.ts`
+**Run**: `npx ts-node di/dependency-injection-basic.ts`
 
-### 2. Dependency Resolution (`dependency-resolution.ts`)
+#### 2. Dependency Resolution (`di/dependency-resolution.ts`)
 
 **Purpose**: Shows how complex dependency chains are resolved and singleton behavior.
 
@@ -25,21 +29,44 @@ This directory contains examples demonstrating the core concepts of the Tarpit f
 - Singleton service instances
 - Shared dependencies across services
 
-**Run**: `npx ts-node dependency-resolution.ts`
+**Run**: `npx ts-node di/dependency-resolution.ts`
 
-### 3. Injection Tokens (`injection-tokens.ts`)
+#### 3. Type-Based Injection (`di/implicit-injection.ts`)
 
-**Purpose**: Demonstrates different types of injection tokens and their usage.
+**Purpose**: Demonstrates implicit injection using TypeScript types as tokens.
 
 **Key Concepts**:
-- Type-based injection (implicit tokens)
-- Token-based injection (explicit tokens)
+- Automatic type-based dependency resolution
+- Class types as injection tokens
+- Simple constructor injection without decorators
+
+**Run**: `npx ts-node di/implicit-injection.ts`
+
+#### 4. Token-Based Injection (`di/explicit-injection.ts`)
+
+**Purpose**: Shows explicit injection using custom tokens.
+
+**Key Concepts**:
+- `@Inject()` decorator usage
 - Symbol tokens for non-class dependencies
 - Custom token registration
 
-**Run**: `npx ts-node injection-tokens.ts`
+**Run**: `npx ts-node di/explicit-injection.ts`
 
-### 4. Best Practices (`best-practices.ts`)
+#### 5. Reflect Metadata (`di/reflect-metadata-example.ts`)
+
+**Purpose**: Explains how TypeScript metadata reflection works behind the scenes.
+
+**Key Concepts**:
+- Constructor parameter type extraction
+- Runtime type information
+- Why classes work as tokens
+
+**Run**: `npx ts-node di/reflect-metadata-example.ts`
+
+### Other Core Concepts
+
+#### 6. Best Practices (`best-practices.ts`)
 
 **Purpose**: Shows dependency injection best practices and common patterns.
 
@@ -51,7 +78,7 @@ This directory contains examples demonstrating the core concepts of the Tarpit f
 
 **Run**: `npx ts-node best-practices.ts`
 
-### 5. Decorators (`decorators.ts`)
+#### 7. Decorators (`decorators.ts`)
 
 **Purpose**: Demonstrates various decorators and their usage patterns.
 
@@ -64,7 +91,7 @@ This directory contains examples demonstrating the core concepts of the Tarpit f
 
 **Run**: `npx ts-node decorators.ts`
 
-### 6. Providers (`providers.ts`)
+#### 8. Providers (`providers.ts`)
 
 **Purpose**: Shows different provider types and advanced dependency configuration.
 
@@ -76,7 +103,7 @@ This directory contains examples demonstrating the core concepts of the Tarpit f
 
 **Run**: `npx ts-node providers.ts`
 
-### 7. Platform Lifecycle (`platform-lifecycle.ts`)
+#### 9. Platform Lifecycle (`platform-lifecycle.ts`)
 
 **Purpose**: Demonstrates platform lifecycle management and error handling.
 
@@ -89,31 +116,35 @@ This directory contains examples demonstrating the core concepts of the Tarpit f
 
 **Run**: `npx ts-node platform-lifecycle.ts`
 
+#### 10. Quick Start (`quick-start.ts`)
+
+**Purpose**: Simple getting started example.
+
+**Key Concepts**:
+- Basic service setup
+- Platform initialization
+- Simple dependency injection
+
+**Run**: `npx ts-node quick-start.ts`
+
 ## Running All Examples
 
 To run all examples in sequence:
 
 ```bash
-# Basic dependency injection
-npx ts-node dependency-injection-basic.ts
+# Dependency Injection Examples
+npx ts-node di/dependency-injection-basic.ts
+npx ts-node di/dependency-resolution.ts
+npx ts-node di/implicit-injection.ts
+npx ts-node di/explicit-injection.ts
+npx ts-node di/reflect-metadata-example.ts
 
-# Dependency resolution and singletons
-npx ts-node dependency-resolution.ts
-
-# Injection tokens usage
-npx ts-node injection-tokens.ts
-
-# Best practices demonstration
+# Other Core Concepts
 npx ts-node best-practices.ts
-
-# Decorator usage patterns
 npx ts-node decorators.ts
-
-# Provider types and patterns
 npx ts-node providers.ts
-
-# Platform lifecycle management
 npx ts-node platform-lifecycle.ts
+npx ts-node quick-start.ts
 ```
 
 ## Key Learning Points

@@ -5,3 +5,4 @@ alwaysApply: true
 ---
 1. The project uses Yarn as its package manager.
 2. Lerna is employed to manage the monorepo.
+3. Use snake_case naming convention for all function and variable names.
