@@ -4,10 +4,6 @@ sidebar_position: 1
 
 # Dependency Injection
 
-:::info Working Examples
-See [example/core/di/dependency-injection-basic.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/di/dependency-injection-basic.ts) and [example/core/di/dependency-resolution.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/di/dependency-resolution.ts) for complete working examples.
-:::
-
 Dependency Injection (DI) is the core mechanism of the Tarpit framework. It automatically resolves and injects dependencies where they are needed, making your code more modular, testable, and maintainable.
 
 ## What is Dependency Injection?
