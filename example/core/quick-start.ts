@@ -1,4 +1,3 @@
-import 'reflect-metadata'
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema, TpService, TpModule } from '@tarpit/core'
 
