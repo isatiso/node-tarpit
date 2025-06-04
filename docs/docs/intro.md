@@ -277,21 +277,21 @@ class UserRouter {
         return { 
             message: `Hello, ${name}!`,
             user: { name, created: true }
-        }
     }
+}
 }
 
 async function main() {
     // 5. Registration - Register services and router with platform
-    const config = load_config<TpConfigSchema>({ 
-        http: { port: 4100 } 
-    })
-    
-    const platform = new Platform(config)
-        .import(HttpServerModule)
+const config = load_config<TpConfigSchema>({ 
+    http: { port: 4100 } 
+})
+
+const platform = new Platform(config)
+    .import(HttpServerModule)
         .import(DatabaseService)
-        .import(UserService)
-        .import(UserRouter)
+    .import(UserService)
+    .import(UserRouter)
     
     await platform.start()
     

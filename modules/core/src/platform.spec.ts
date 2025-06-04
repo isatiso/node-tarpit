@@ -119,6 +119,18 @@ describe('platform.ts', function() {
         })
     })
 
+    describe('.print_provider_tree()', function() {
+        it('should return provider tree string from platform', function() {
+            const platform = new Platform(load_config({}))
+            platform.import(Service1)
+            const result = platform.print_provider_tree()
+            
+            expect(result).to.be.a('string')
+            expect(result).to.contain('Injector')
+            expect(result).to.contain('Service1 [TpWorker → @TpService]')
+        })
+    })
+
     describe('.start() && .terminate()', function() {
 
         const some_module_token = Symbol.for('œœ.token.SomeModule')

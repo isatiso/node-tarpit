@@ -5,7 +5,7 @@ sidebar_position: 5
 # Built-in Services
 
 :::info Related Examples
-See [platform-lifecycle.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform-lifecycle.ts) and [decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts) for examples using built-in services.
+See [platform-lifecycle.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/platform-lifecycle.ts) and [decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts) for examples using built-in services.
 :::
 
 Tarpit provides several built-in services that are automatically available in every application. These services provide core functionality like configuration access, module loading, and lifecycle management.

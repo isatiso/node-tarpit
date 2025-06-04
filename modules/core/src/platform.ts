@@ -7,13 +7,15 @@
  */
 import { ConfigData } from '@tarpit/config'
 import { BehaviorSubject, filter, finalize, find, map, of, Subject, switchMap, tap } from 'rxjs'
-import { TpEntry } from './annotations'
+import { TpComponent, TpWorker, TpAssembly, TpEntry } from './annotations/tp-base'
+import { TpService } from './annotations/tp-service'
+import { TpModule } from './annotations/tp-module'
+import { TpRoot } from './annotations/tp-root'
 import { TpConfigData } from './builtin/tp-config-data'
 import { TpLoader } from './builtin/tp-loader'
 import { ClassProvider, Injector, ValueProvider } from './di'
-import { get_class_decorator } from './tools/decorator'
-import { load_provider_def_or_component, load_component } from './tools/load-component'
-import { stringify } from './tools/stringify'
+import { load_provider_def_or_component } from './tools/load-component'
+import { print_provider_tree } from './tools/provider-tree-printer'
 import { AbstractConstructor, Constructor, ProviderDef, TpConfigSchema } from './types'
 
 export class Platform {
@@ -101,6 +103,10 @@ export class Platform {
 
     expose<T>(target: AbstractConstructor<T> | Constructor<T> | string | symbol): T | undefined {
         return this.root_injector.get(target as any)?.create() as any
+    }
+
+    print_provider_tree(): string {
+        return print_provider_tree(this.root_injector)
     }
 
     async started(): Promise<number> {

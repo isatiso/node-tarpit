@@ -29,7 +29,7 @@ npx ts-node hello-world.ts
 ```bash
 curl http://localhost:4100/hello
 curl http://localhost:4100/user/123
-```
+``` 
 
 **What you'll learn:**
 - Platform setup and HTTP routing

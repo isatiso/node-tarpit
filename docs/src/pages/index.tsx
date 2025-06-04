@@ -21,13 +21,13 @@ function HomepageHeader() {
                         <div className="flex justify-center gap-2 flex-wrap">
                             <a href="https://www.npmjs.com/package/@tarpit/core" target="_blank" rel="noopener noreferrer">
                                 <img src="https://img.shields.io/npm/v/@tarpit/core" alt="NPM Version"/>
-                            </a>
-                            <a href="https://www.npmjs.com/package/@tarpit/core" target="_blank" rel="noopener noreferrer">
-                                <img src="https://img.shields.io/npm/dm/@tarpit/core" alt="Monthly Downloads"/>
-                            </a>
-                            <a href="https://nodejs.org/en/" target="_blank" rel="noopener noreferrer">
-                                <img src="https://img.shields.io/node/v/@tarpit/core" alt="Node.js Version"/>
-                            </a>
+                        </a>
+                        <a href="https://www.npmjs.com/package/@tarpit/core" target="_blank" rel="noopener noreferrer">
+                            <img src="https://img.shields.io/npm/dm/@tarpit/core" alt="Monthly Downloads"/>
+                        </a>
+                        <a href="https://nodejs.org/en/" target="_blank" rel="noopener noreferrer">
+                            <img src="https://img.shields.io/node/v/@tarpit/core" alt="Node.js Version"/>
+                        </a>
                             <a href="https://codecov.io/gh/isatiso/node-tarpit" target="_blank" rel="noopener noreferrer">
                                 <img src="https://codecov.io/gh/isatiso/node-tarpit/branch/main/graph/badge.svg?token=9S3UQPNS3Y" alt="Code Coverage"/>
                             </a>
@@ -52,7 +52,7 @@ function HomepageHeader() {
                             </a>
                             <a href="https://lerna.js.org/" target="_blank" rel="noopener noreferrer">
                                 <img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg" alt="Lerna"/>
-                            </a>
+                        </a>
                             <a href="https://deepwiki.com/isatiso/node-tarpit" target="_blank" rel="noopener noreferrer">
                                 <img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"/>
                             </a>

@@ -16,6 +16,7 @@
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.4"
   }
 }

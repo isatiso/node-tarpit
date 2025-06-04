@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { load_config } from '@tarpit/config'
 import { 
     Platform, 

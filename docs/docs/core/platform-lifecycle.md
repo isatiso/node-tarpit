@@ -5,7 +5,7 @@ sidebar_position: 2
 # Platform & Lifecycle
 
 :::info Working Examples
-See [platform-lifecycle.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform-lifecycle.ts) for complete working examples.
+See [platform examples](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/) for complete working examples.
 :::
 
 The Platform class is the heart of every Tarpit application. It manages the dependency injection container, handles module imports, and controls the application lifecycle from startup to shutdown.
@@ -24,7 +24,7 @@ The Platform serves as:
 ### Creating a Platform
 
 :::info Complete Example
-[platform-lifecycle.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform-lifecycle.ts)
+[platform-lifecycle.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/platform-lifecycle.ts)
 :::
 
 ```typescript
@@ -167,22 +167,6 @@ await platform.terminate()
 
 // Calls @OnTerminate methods on all services
 // Cleans up resources
-```
-
-### .bootstrap()
-
-Bootstrap with a root module (alternative to .import()):
-
-```typescript
-@TpRoot({
-    imports: [HttpServerModule, UserModule],
-    entries: [UserController]
-})
-class AppRoot {}
-
-const platform = new Platform(config)
-    .bootstrap(AppRoot)
-    .start()
 ```
 
 ## Application Lifecycle
