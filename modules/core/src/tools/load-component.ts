@@ -64,8 +64,10 @@ export function load_component(meta: any, injector: Injector, auto_create?: bool
 
     if (meta instanceof TpComponent) {
 
-        if (meta instanceof TpRoot && !injector.has(meta.cls)) {
-            injector = Injector.create(injector)
+        if (meta instanceof TpRoot) {
+            if (!injector.has(meta.cls)) {
+                injector = Injector.create(injector)
+            }
         } else if (meta.inject_root) {
             injector = injector.root
         }
