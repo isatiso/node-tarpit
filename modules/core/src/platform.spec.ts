@@ -91,14 +91,6 @@ describe('platform.ts', function() {
         it('should import TpRoot to Platform', function() {
             const platform = new Platform(load_config({}))
             platform.import(Root1)
-            expect((platform as any).root_injector.get(Root1)?.create()).to.be.instanceof(Root1)
-        })
-    })
-
-    describe('.bootstrap()', function() {
-        it('should bootstrap TpRoot to Platform', function() {
-            const platform = new Platform(load_config({}))
-            platform.bootstrap(Root1)
             const meta = get_class_decorator(Root1)?.find(d => d instanceof TpEntry)
 
             expect(meta.injector!.get(Root1)?.create()).to.be.instanceof(Root1)
@@ -106,9 +98,9 @@ describe('platform.ts', function() {
             expect(meta.injector!.get(Service1)?.create()).to.be.instanceof(Service1)
         })
 
-        it('should throw error if provided is not "TpEntry"', function() {
+        it('should throw error if provided is not "TpComponent"', function() {
             const platform = new Platform(load_config({}))
-            expect(() => platform.bootstrap(Noop)).to.throw('Noop is not a "TpEntry"')
+            expect(() => platform.import(Noop)).to.throw('Noop is not a "TpComponent"')
         })
     })
 
@@ -196,7 +188,7 @@ describe('platform.ts', function() {
         it('should call all hooks', async function() {
             const platform = new Platform(load_config({}))
             platform.import(SomeModule)
-            platform.bootstrap(SomeRoot)
+            platform.import(SomeRoot)
             void platform.start()
             await platform.start()
             void platform.terminate()
@@ -210,7 +202,7 @@ describe('platform.ts', function() {
         it('should record time after started and terminated', async function() {
             const platform = new Platform(load_config({}))
             platform.import(SomeModule)
-            platform.bootstrap(SomeRoot)
+            platform.import(SomeRoot)
             expect(platform.started_at).to.equal(-1)
             void platform.start(() => console.debug('started'))
             expect(platform.started_at).to.closeTo(Date.now(), 10)

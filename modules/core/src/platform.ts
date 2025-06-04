@@ -12,7 +12,7 @@ import { TpConfigData } from './builtin/tp-config-data'
 import { TpLoader } from './builtin/tp-loader'
 import { ClassProvider, Injector, ValueProvider } from './di'
 import { get_class_decorator } from './tools/decorator'
-import { def_to_provider, load_component } from './tools/load-component'
+import { load_provider_def_or_component, load_component } from './tools/load-component'
 import { stringify } from './tools/stringify'
 import { AbstractConstructor, Constructor, ProviderDef, TpConfigSchema } from './types'
 
@@ -77,17 +77,7 @@ export class Platform {
     }
 
     import(def: ProviderDef<any> | Constructor<any>) {
-        def_to_provider(def, this.root_injector)
-        return this
-    }
-
-    bootstrap(tp_entry: Constructor<any>) {
-        const meta = get_class_decorator(tp_entry).find(d => d instanceof TpEntry)
-        if (!meta) {
-            throw new Error(`${stringify(tp_entry)} is not a "TpEntry"`)
-        }
-        meta.injector = Injector.create(this.root_injector)
-        load_component(meta, meta.injector)
+        load_provider_def_or_component(def, this.root_injector)
         return this
     }
 

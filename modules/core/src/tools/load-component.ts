@@ -25,7 +25,7 @@ function isValueProviderDef<T extends object>(def: ProviderDef<T> | Constructor<
     return def.constructor.name === 'Object' && (def as any).useValue
 }
 
-export function def_to_provider(def: (ProviderDef<any> | Constructor<any>), injector: Injector): Provider<unknown> {
+export function load_provider_def_or_component(def: (ProviderDef<any> | Constructor<any>), injector: Injector): Provider<unknown> {
     if (isValueProviderDef(def)) {
         return ValueProvider.create(injector, def)
     }
@@ -54,7 +54,7 @@ export function def_to_provider(def: (ProviderDef<any> | Constructor<any>), inje
 function collect_children(meta: TpAssembly, injector: Injector): ProviderTreeNode {
     return {
         self: meta.cls,
-        providers: meta.providers?.map(def => def_to_provider(def, injector)),
+        providers: meta.providers?.map(def => load_provider_def_or_component(def, injector)),
         children: meta.imports?.map(cls => load_component(get_class_decorator(cls).find(d => d instanceof TpAssembly), injector))
             .filter(data => data !== undefined)
     }
@@ -64,23 +64,31 @@ export function load_component(meta: any, injector: Injector, auto_create?: bool
 
     if (meta instanceof TpComponent) {
 
-        injector = meta.inject_root ? injector.root : injector
+        if (meta instanceof TpRoot && !injector.has(meta.cls)) {
+            injector = Injector.create(injector)
+        } else if (meta.inject_root) {
+            injector = injector.root
+        }
+
         if (injector.has(meta.cls)) {
             return
         }
 
-        // collect imports and providers
-        const provider_tree = meta instanceof TpAssembly ? collect_children(meta, injector) : undefined
+        let provider_tree: ProviderTreeNode | undefined = undefined
+
+        if (meta instanceof TpAssembly) {
+            provider_tree = collect_children(meta, injector)
+        }
+        if (meta instanceof TpEntry) {
+            meta.injector = injector
+        }
 
         meta.provider = ClassProvider.create(injector, { provide: meta.cls, useClass: meta.cls })
 
         if (meta instanceof TpRoot) {
-            meta.entries?.map(p => get_class_decorator(p).find(d => d instanceof TpComponent))
-                .filter(meta => meta)
-                .forEach(meta => load_component(meta, injector, true))
-        }
-        if (meta instanceof TpEntry) {
-            meta.injector = injector
+            meta.entries?.map(p => get_class_decorator(p).find(d => d instanceof TpEntry))
+                .filter(Boolean)
+                .forEach(m => load_component(m, injector, true))
         }
         if (auto_create || meta instanceof TpAssembly) {
             meta.instance = meta.provider.create()
