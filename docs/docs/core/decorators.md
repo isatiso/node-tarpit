@@ -143,10 +143,6 @@ All Tarpit class decorators inherit from `TpComponent`, ensuring consistent beha
 
 The `@TpService()` decorator marks classes as injectable services:
 
-:::info Complete Example
-[example/core/decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
-:::
-
 ```typescript
 import { TpService } from '@tarpit/core'
 
@@ -188,10 +184,6 @@ class UserRepository {
 
 The `@TpModule()` decorator groups related services and manages dependencies:
 
-:::info Complete Example  
-[example/core/decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
-:::
-
 ```typescript
 import { TpModule, TpService } from '@tarpit/core'
 
@@ -219,9 +211,6 @@ class UserModule {}
 
 The `@TpRoot()` decorator marks application entry points and creates injection boundaries:
 
-:::info Complete Example
-[example/core/decorators.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/decorators.ts)
-:::
 
 ```typescript
 import { TpRoot } from '@tarpit/core'

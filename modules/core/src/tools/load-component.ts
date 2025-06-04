@@ -51,7 +51,7 @@ export function def_to_provider(def: (ProviderDef<any> | Constructor<any>), inje
     return meta.provider
 }
 
-function collect_worker(meta: TpAssembly, injector: Injector): ProviderTreeNode {
+function collect_children(meta: TpAssembly, injector: Injector): ProviderTreeNode {
     return {
         self: meta.cls,
         providers: meta.providers?.map(def => def_to_provider(def, injector)),
@@ -70,20 +70,20 @@ export function load_component(meta: any, injector: Injector, auto_create?: bool
         }
 
         // collect imports and providers
-        const provider_tree = meta instanceof TpAssembly ? collect_worker(meta, injector) : undefined
+        const provider_tree = meta instanceof TpAssembly ? collect_children(meta, injector) : undefined
 
         meta.provider = ClassProvider.create(injector, { provide: meta.cls, useClass: meta.cls })
 
+        if (meta instanceof TpRoot) {
+            meta.entries?.map(p => get_class_decorator(p).find(d => d instanceof TpComponent))
+                .filter(meta => meta)
+                .forEach(meta => load_component(meta, injector, true))
+        }
         if (meta instanceof TpEntry) {
             meta.injector = injector
         }
         if (auto_create || meta instanceof TpAssembly) {
             meta.instance = meta.provider.create()
-        }
-        if (meta instanceof TpRoot) {
-            meta.entries?.map(p => get_class_decorator(p).find(d => d instanceof TpComponent))
-                .filter(meta => meta)
-                .forEach(meta => load_component(meta, injector, true))
         }
         if (meta.token) {
             injector.get(TpLoader)!.create().load(meta)
