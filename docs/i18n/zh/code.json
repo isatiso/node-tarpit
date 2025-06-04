@@ -321,5 +321,21 @@
   "theme.tags.tagsPageTitle": {
     "message": "标签",
     "description": "The title of the tag list page"
+  },
+  "homepage.tagline": {
+    "message": "简洁而强大的 TypeScript DI 框架，专为 Node.js 打造",
+    "description": "The tagline displayed on the homepage"
+  },
+  "homepage.getStarted": {
+    "message": "快速开始 →",
+    "description": "The get started button text on the homepage"
+  },
+  "homepage.title": {
+    "message": "TARPIT - 简洁而强大的 TypeScript DI 框架",
+    "description": "The homepage title"
+  },
+  "homepage.description": {
+    "message": "简洁而强大的 TypeScript DI 框架，专为 Node.js 打造",
+    "description": "The homepage description"
   }
 }

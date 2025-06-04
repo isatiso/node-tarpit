@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import Link from '@docusaurus/Link'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
 import Layout from '@theme/Layout'
+import Translate, { translate } from '@docusaurus/Translate'
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext()
@@ -13,7 +14,11 @@ function HomepageHeader() {
                              className="max-w-md w-3/5 h-auto mb-4 mx-auto lg:max-w-lg md:max-w-sm md:w-3/5 sm:max-w-xs sm:w-2/3"
                         />
                     </div>
-                    <p className="text-xl font-medium text-gray-800 dark:text-white mb-8">{siteConfig.tagline}</p>
+                    <p className="text-xl font-medium text-gray-800 dark:text-white mb-8">
+                        <Translate id="homepage.tagline">
+                            Simple but Awesome TypeScript DI Framework for Node.js
+                        </Translate>
+                    </p>
 
                     {/* Badges Section */}
                     <div className="flex flex-col items-center gap-3 my-8 lg:my-6 md:my-4">
@@ -73,7 +78,9 @@ function HomepageHeader() {
                         <Link
                                 className="inline-flex items-center px-6 py-3 text-lg font-semibold text-white bg-orange-500 hover:bg-orange-600 border rounded-lg transition-colors duration-200 no-underline hover:no-underline"
                                 to="/docs/intro">
-                            Get Started →
+                            <Translate id="homepage.getStarted">
+                                Get Started →
+                            </Translate>
                         </Link>
                     </div>
                 </div>
@@ -85,8 +92,16 @@ export default function Home(): ReactNode {
     const { siteConfig } = useDocusaurusContext()
     return (
             <Layout
-                    title={`${siteConfig.title} - Simple but Awesome TypeScript DI Framework`}
-                    description="Simple but Awesome TypeScript DI Framework for Node.js"
+                    title={translate({
+                        id: 'homepage.title',
+                        message: `${siteConfig.title} - Simple but Awesome TypeScript DI Framework`,
+                        description: 'The homepage title'
+                    })}
+                    description={translate({
+                        id: 'homepage.description', 
+                        message: 'Simple but Awesome TypeScript DI Framework for Node.js',
+                        description: 'The homepage description'
+                    })}
                     wrapperClassName="homepage">
                 <main>
                     <HomepageHeader/>
