@@ -149,22 +149,22 @@ describe('provider-tree-printer.ts', function() {
         })
 
         it('should print single level child injector', function() {
-            // Add built-in services to root
+            // Root level with Platform provider
             ValueProvider.create(root_injector, { provide: TpConfigData, useValue: {} })
             ValueProvider.create(root_injector, { provide: Platform, useValue: new Platform() })
 
-            // Create child injector
-            const child_injector = Injector.create(root_injector)
-            ClassProvider.create(child_injector, { provide: Level1Service, useClass: Level1Service })
-            ClassProvider.create(child_injector, { provide: Level1Root, useClass: Level1Root })
+            // Child injector
+            const child = Injector.create(root_injector)
+            ClassProvider.create(child, { provide: Level1Service, useClass: Level1Service })
+            ClassProvider.create(child, { provide: Level1Root, useClass: Level1Root })
 
             const result = print_provider_tree(root_injector)
             expect(result).to.contain('Injector')
-            expect(result).to.contain('├── TpConfigData [Built-in]')
-            expect(result).to.contain('├── Platform [Built-in]')
+            expect(result).to.contain('├── ○ TpConfigData [Built-in]')
+            expect(result).to.contain('├── ○ Platform [Built-in]')
             expect(result).to.contain('└── Injector (Level1Root)')
-            expect(result).to.contain('    ├── Level1Service [TpWorker → @TpService]')
-            expect(result).to.contain('    └── Level1Root [TpEntry → @TpRoot]')
+            expect(result).to.contain('    ├── ○ Level1Service [TpWorker → @TpService]')
+            expect(result).to.contain('    └── ○ Level1Root [TpEntry → @TpRoot]')
         })
 
         it('should print multi-level nested injectors', function() {
@@ -183,13 +183,13 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
             expect(result).to.contain('Injector')
-            expect(result).to.contain('├── TpConfigData [Built-in]')
+            expect(result).to.contain('├── ○ TpConfigData [Built-in]')
             expect(result).to.contain('└── Injector (Level2Root)')
-            expect(result).to.contain('    ├── Level1Module [TpAssembly → @TpModule]')
-            expect(result).to.contain('    ├── Level2Root [TpEntry → @TpRoot]')
+            expect(result).to.contain('    ├── ○ Level1Module [TpAssembly → @TpModule]')
+            expect(result).to.contain('    ├── ○ Level2Root [TpEntry → @TpRoot]')
             expect(result).to.contain('    └── Injector (Level1Root)')
-            expect(result).to.contain('        ├── Level2Service [TpWorker → @TpService]')
-            expect(result).to.contain('        └── Level1Root [TpEntry → @TpRoot]')
+            expect(result).to.contain('        ├── ○ Level2Service [TpWorker → @TpService]')
+            expect(result).to.contain('        └── ○ Level1Root [TpEntry → @TpRoot]')
         })
 
         it('should print multiple child injectors at same level', function() {
@@ -207,12 +207,12 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
             expect(result).to.contain('Injector')
-            expect(result).to.contain('├── TpConfigData [Built-in]')
+            expect(result).to.contain('├── ○ TpConfigData [Built-in]')
             expect(result).to.contain('├── Injector (Level1Root)')
-            expect(result).to.contain('│   ├── Level1Service [TpWorker → @TpService]')
-            expect(result).to.contain('│   └── Level1Root [TpEntry → @TpRoot]')
+            expect(result).to.contain('│   ├── ○ Level1Service [TpWorker → @TpService]')
+            expect(result).to.contain('│   └── ○ Level1Root [TpEntry → @TpRoot]')
             expect(result).to.contain('└── Injector (Level2Root)')
-            expect(result).to.contain('    └── Level2Root [TpEntry → @TpRoot]')
+            expect(result).to.contain('    └── ○ Level2Root [TpEntry → @TpRoot]')
         })
 
         it('should handle injector without TpRoot', function() {
@@ -223,7 +223,7 @@ describe('provider-tree-printer.ts', function() {
             const result = print_provider_tree(root_injector)
             expect(result).to.contain('└── Injector')
             expect(result).not.to.contain('Injector (')
-            expect(result).to.contain('    └── Level1Service [TpWorker → @TpService]')
+            expect(result).to.contain('    └── ○ Level1Service [TpWorker → @TpService]')
         })
 
         it('should handle child injector with no providers', function() {
@@ -234,7 +234,7 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
             expect(result).to.contain('Injector')
-            expect(result).to.contain('├── TpConfigData [Built-in]')
+            expect(result).to.contain('├── ○ TpConfigData [Built-in]')
             expect(result).to.contain('└── Injector')
             expect(result).to.contain('    └── (no providers)')
         })
@@ -296,12 +296,12 @@ describe('provider-tree-printer.ts', function() {
             const lines = result.split('\n')
             expect(lines[0]).to.equal('Injector')
             // Don't check exact order of built-in services, just check they exist
-            expect(result).to.contain('TpLoader [Built-in]')
-            expect(result).to.contain('TpConfigData [Built-in]')
-            expect(result).to.contain('Platform [Built-in]')
+            expect(result).to.contain('○ TpLoader [Built-in]')
+            expect(result).to.contain('○ TpConfigData [Built-in]')
+            expect(result).to.contain('○ Platform [Built-in]')
             expect(result).to.contain('└── Injector (Level2Root)')
             expect(result).to.contain('    └── Injector (Level1Root)')
-            expect(result).to.contain('        └── Level1Root [TpEntry → @TpRoot]')
+            expect(result).to.contain('        └── ○ Level1Root [TpEntry → @TpRoot]')
         })
 
         it('should handle anonymous function names', function() {

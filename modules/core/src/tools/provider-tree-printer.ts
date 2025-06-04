@@ -88,12 +88,13 @@ function find_tp_root_for_injector(injector: Injector): string | null {
 function get_provider_name_with_type(token: any, provider: any): string {
     const base_name = get_provider_name(token, provider)
     const type_info = get_provider_type(token)
+    const used_status = provider.used ? '✓ ' : '○ '
 
     if (type_info) {
-        return `${base_name} [${type_info}]`
+        return `${used_status}${base_name} [${type_info}]`
     }
 
-    return base_name
+    return `${used_status}${base_name}`
 }
 
 function get_provider_type(token: any): string | null {

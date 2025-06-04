@@ -7,10 +7,6 @@
  */
 import { ConfigData } from '@tarpit/config'
 import { BehaviorSubject, filter, finalize, find, map, of, Subject, switchMap, tap } from 'rxjs'
-import { TpComponent, TpWorker, TpAssembly, TpEntry } from './annotations/tp-base'
-import { TpService } from './annotations/tp-service'
-import { TpModule } from './annotations/tp-module'
-import { TpRoot } from './annotations/tp-root'
 import { TpConfigData } from './builtin/tp-config-data'
 import { TpLoader } from './builtin/tp-loader'
 import { ClassProvider, Injector, ValueProvider } from './di'
@@ -105,7 +101,7 @@ export class Platform {
         return this.root_injector.get(target as any)?.create() as any
     }
 
-    print_provider_tree(): string {
+    inspect_injector(): string {
         return print_provider_tree(this.root_injector)
     }
 

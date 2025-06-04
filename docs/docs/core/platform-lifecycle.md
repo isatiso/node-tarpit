@@ -24,7 +24,7 @@ The Platform serves as:
 ### Creating a Platform
 
 :::info Complete Example
-[basic-usage.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/basic-usage.ts)
+[example/core/platform/01-basic-usage.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/01-basic-usage.ts)
 :::
 
 ```typescript
@@ -45,14 +45,13 @@ const platform = new Platform(config)
 ```typescript
 import { UserService, UserModule } from './user'
 import { DatabaseService } from './database'
+import { EmailService, NotificationService } from './services'
 
 const platform = new Platform(config)
     .import(DatabaseService)      // Import individual service
     .import(UserModule)           // Import entire module
-    .import([                     // Import multiple at once
-        EmailService,
-        NotificationService
-    ])
+    .import(EmailService)         // Import each service individually
+    .import(NotificationService)  // import() doesn't support arrays
 ```
 
 ### Starting the Application
@@ -171,6 +170,10 @@ const platform = new Platform(config)
 
 ### Environment-Based Configuration
 
+:::info Complete Example
+[example/core/platform/02-configuration.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/02-configuration.ts)
+:::
+
 A practical configuration pattern with environment variables:
 
 ```typescript
@@ -180,7 +183,7 @@ import '@tarpit/http'
 
 const config = load_config<TpConfigSchema>({
     http: {
-        port: parseInt(process.env.PORT) || 3000,
+        port: parseInt(process.env.PORT || '3000'),
         hostname: process.env.HOST || '0.0.0.0',
         cors: {
             enabled: process.env.CORS_ENABLED !== 'false',
@@ -251,7 +254,7 @@ const config = load_config<TpConfigSchema>({
     // Your custom configuration
     database: {
         url: process.env.DATABASE_URL || 'postgresql://localhost:5432/myapp',
-        poolSize: 10
+        poolSize: parseInt(process.env.DB_POOL_SIZE || '10')
     },
     
     features: {
@@ -262,10 +265,6 @@ const config = load_config<TpConfigSchema>({
 ```
 
 ### Configuration Access in Services
-
-:::info Complete Example
-[configuration.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/configuration.ts)
-:::
 
 Services access configuration through `TpConfigData` using the `get()` method with JSON path notation:
 
@@ -279,11 +278,11 @@ class HttpConfigService {
     
     get_server_port() {
         // Access nested configuration using JSON path
-        return this.config.get('http.port') || 3000
+        return this.config.get('http.port') ?? 3000
     }
     
     get_cors_origin() {
-        return this.config.get('http.cors.origin') || '*'
+        return this.config.get('http.cors.origin') ?? '*'
     }
     
     is_cors_enabled() {
@@ -291,7 +290,7 @@ class HttpConfigService {
     }
     
     get_file_manager_root() {
-        return this.config.get('http.file_manager.root') || './data'
+        return this.config.get('http.file_manager.root') ?? './data'
     }
 }
 ```
@@ -317,13 +316,13 @@ class DatabaseConfigService {
     
     // Custom configuration access
     get_database_pool_size() {
-        return this.config.get('database.poolSize') || 10
+        return this.config.get('database.poolSize') ?? 10
     }
     
     get_feature_flags() {
         return {
-            emailEnabled: this.config.get('features.emailEnabled') || false,
-            analyticsEnabled: this.config.get('features.analyticsEnabled') || false
+            emailEnabled: this.config.get('features.emailEnabled') ?? false,
+            analyticsEnabled: this.config.get('features.analyticsEnabled') ?? false
         }
     }
 }
@@ -411,6 +410,10 @@ The declaration merging configuration system provides:
 
 ## Platform Methods
 
+:::info Complete Example
+[example/core/platform/03-platform-methods.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/03-platform-methods.ts)
+:::
+
 ### .import()
 
 Import services, modules, or providers:
@@ -434,9 +437,6 @@ platform.import({
     useFactory: (config: TpConfigData) => new ApiClient(config.api.baseUrl),
     deps: [TpConfigData]
 })
-
-// Import multiple
-platform.import([ServiceA, ServiceB, ServiceC])
 ```
 
 ### .start()
@@ -506,24 +506,46 @@ try {
 }
 ```
 
-### .print_provider_tree()
+### .inspect_injector()
 
 Debug the dependency injection hierarchy:
 
 ```typescript
-// Print the entire provider tree
-console.log(platform.print_provider_tree())
+// Before using any services
+console.log('=== Provider Tree (Before) ===')
+console.log(platform.inspect_injector())
 
-// Example output:
+// After starting the platform
+await platform.start()
+
+// Use some services
+const userService = platform.expose(UserService)
+const dbService = platform.expose(DatabaseService)
+
+// Print the dependency tree
+console.log('=== Provider Tree (After) ===')
+console.log(platform.inspect_injector())
+
+// Example output for debugging:
 // Injector
-// ├── TpConfigData [Built-in]
-// ├── TpLoader [Built-in]  
-// ├── DatabaseService [TpWorker → @TpService]
-// ├── UserService [TpWorker → @TpService]
+// ├── ○ TpConfigData [Built-in]
+// ├── ✓ TpLoader [Built-in]
+// ├── ✓ DatabaseService [TpWorker → @TpService]
+// ├── ○ CacheService [TpWorker → @TpService]
+// ├── ✓ UserService [TpWorker → @TpService]
 // └── Injector (UserModule)
-//     ├── UserRepository [TpWorker → @TpService]
-//     └── UserModule [TpAssembly → @TpModule]
+//     ├── ○ UserRepository [TpWorker → @TpService]
+//     ├── ○ UserValidator [TpWorker → @TpService]
+//     └── ✓ UserModule [TpAssembly → @TpModule]
 ```
+
+#### Used Status Analysis
+
+The usage indicators help identify:
+- **✓ Used services** - These have been instantiated and are active
+- **○ Unused services** - These are registered but not yet needed
+- **Performance optimization** - Remove unused services to reduce startup time
+- **Dependency tracking** - Understand which services trigger others
 
 ## Application Lifecycle
 
@@ -560,6 +582,10 @@ During termination, the platform:
 
 ### Service Lifecycle Hooks
 
+:::info Complete Example
+[example/core/platform/04-lifecycle-hooks.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/04-lifecycle-hooks.ts)
+:::
+
 Services can implement lifecycle hooks to manage their initialization and cleanup. These hooks are automatically called by the platform during the corresponding lifecycle phases.
 
 #### Startup Hook: @OnStart
@@ -591,10 +617,6 @@ class DatabaseService {
 #### Cleanup Hook: @OnTerminate
 
 Called during the shutdown phase when services need to clean up:
-
-:::info Complete Example
-[platform-lifecycle.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/platform-lifecycle.ts)
-:::
 
 ```typescript
 import { TpService, OnTerminate } from '@tarpit/core'
@@ -677,335 +699,148 @@ class CacheService {
 }
 ```
 
-## Process Signal Handling
-
-### Basic Signal Handling
-
-```typitten
-import { Platform } from '@tarpit/core'
-
-let platform: Platform
-
-async function start_application() {
-    platform = new Platform(config)
-        .import(DatabaseService)
-        .import(UserService)
-    
-    await platform.start()
-    console.log('Application running...')
-}
-
-// Handle graceful shutdown
-async function shutdown(signal: string) {
-    console.log(`Received ${signal}, shutting down gracefully...`)
-    
-    try {
-        if (platform) {
-            await platform.terminate()
-        }
-        console.log('Application stopped gracefully')
-        process.exit(0)
-    } catch (error) {
-        console.error('Error during shutdown:', error)
-        process.exit(1)
-    }
-}
-
-// Listen for termination signals
-process.on('SIGTERM', () => shutdown('SIGTERM'))
-process.on('SIGINT', () => shutdown('SIGINT'))
-
-// Handle unhandled rejections
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason)
-    shutdown('unhandledRejection')
-})
-
-// Start the application
-start_application().catch(error => {
-    console.error('Failed to start application:', error)
-    process.exit(1)
-})
-```
-
-### Advanced Signal Handling
-
-```typescript
-class ApplicationManager {
-    private platform?: Platform
-    private shutdownTimeout = 30000 // 30 seconds
-    private isShuttingDown = false
-    
-    async start() {
-        this.platform = new Platform(config)
-            .import(DatabaseService)
-            .import(UserService)
-        
-        await this.platform.start()
-        this.setup_signal_handlers()
-        console.log('Application started successfully')
-    }
-    
-    private setup_signal_handlers() {
-        // Graceful shutdown signals
-        process.on('SIGTERM', () => this.shutdown('SIGTERM'))
-        process.on('SIGINT', () => this.shutdown('SIGINT'))
-        
-        // Force shutdown signal
-        process.on('SIGUSR2', () => this.force_shutdown('SIGUSR2'))
-        
-        // Error handling
-        process.on('unhandledRejection', (reason) => {
-            console.error('Unhandled Rejection:', reason)
-            this.shutdown('unhandledRejection')
-        })
-        
-        process.on('uncaughtException', (error) => {
-            console.error('Uncaught Exception:', error)
-            this.force_shutdown('uncaughtException')
-        })
-    }
-    
-    private async shutdown(signal: string) {
-        if (this.isShuttingDown) {
-            console.log('Shutdown already in progress...')
-            return
-        }
-        
-        this.isShuttingDown = true
-        console.log(`Received ${signal}, shutting down gracefully...`)
-        
-        // Set a timeout for forced shutdown
-        const timeoutId = setTimeout(() => {
-            console.error('Graceful shutdown timeout, forcing exit...')
-            process.exit(1)
-        }, this.shutdownTimeout)
-        
-        try {
-            if (this.platform) {
-                await this.platform.terminate()
-            }
-            
-            clearTimeout(timeoutId)
-            console.log('Application stopped gracefully')
-            process.exit(0)
-        } catch (error) {
-            clearTimeout(timeoutId)
-            console.error('Error during shutdown:', error)
-            process.exit(1)
-        }
-    }
-    
-    private force_shutdown(signal: string) {
-        console.log(`Received ${signal}, forcing immediate shutdown...`)
-        process.exit(1)
-    }
-}
-
-// Usage
-const app = new ApplicationManager()
-app.start().catch(error => {
-    console.error('Failed to start application:', error)
-    process.exit(1)
-})
-```
-
 ## Debugging and Monitoring
+
+:::info Complete Example
+[example/core/platform/05-debugging-monitoring.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/05-debugging-monitoring.ts)
+:::
 
 ### Provider Tree Visualization
 
-Use `.print_provider_tree()` to debug dependency injection:
+Use `.inspect_injector()` to debug dependency injection:
 
 ```typescript
+// Before using any services
+console.log('=== Provider Tree (Before) ===')
+console.log(platform.inspect_injector())
+
 // After starting the platform
 await platform.start()
 
+// Use some services
+const userService = platform.expose(UserService)
+const dbService = platform.expose(DatabaseService)
+
 // Print the dependency tree
-console.log('=== Provider Tree ===')
-console.log(platform.print_provider_tree())
+console.log('=== Provider Tree (After) ===')
+console.log(platform.inspect_injector())
 
 // Example output for debugging:
 // Injector
-// ├── TpConfigData [Built-in]
-// ├── TpLoader [Built-in]
-// ├── DatabaseService [TpWorker → @TpService]
-// ├── CacheService [TpWorker → @TpService]
-// ├── UserService [TpWorker → @TpService]
+// ├── ○ TpConfigData [Built-in]
+// ├── ✓ TpLoader [Built-in]
+// ├── ✓ DatabaseService [TpWorker → @TpService]
+// ├── ○ CacheService [TpWorker → @TpService]
+// ├── ✓ UserService [TpWorker → @TpService]
 // └── Injector (UserModule)
-//     ├── UserRepository [TpWorker → @TpService]
-//     ├── UserValidator [TpWorker → @TpService]
-//     └── UserModule [TpAssembly → @TpModule]
+//     ├── ○ UserRepository [TpWorker → @TpService]
+//     ├── ○ UserValidator [TpWorker → @TpService]
+//     └── ✓ UserModule [TpAssembly → @TpModule]
 ```
 
-### Startup Time Monitoring
+#### Used Status Analysis
+
+The usage indicators help identify:
+- **✓ Used services** - These have been instantiated and are active
+- **○ Unused services** - These are registered but not yet needed
+- **Performance optimization** - Remove unused services to reduce startup time
+- **Dependency tracking** - Understand which services trigger others
+
+### Built-in Performance Monitoring
+
+Platform automatically tracks startup and shutdown times:
 
 ```typescript
-@TpService()
-class PerformanceMonitor {
-    private startTime = Date.now()
-    
-    @OnStart()
-    async initialize() {
-        console.log(`PerformanceMonitor initialized at ${Date.now() - this.startTime}ms`)
-    }
-}
+// Start the platform - returns startup time in seconds
+const startupTime = await platform.start()
+console.log(`Platform started in ${startupTime}s`)
 
-// In main application
-const platformStartTime = Date.now()
+// Access timing properties
+console.log('Started at:', platform.started_at)  // timestamp
+console.log('Startup duration:', platform.start_time)  // seconds
 
-const platform = new Platform(config)
-    .import(PerformanceMonitor)
-    .import(DatabaseService)
-    .import(UserService)
+// Terminate the platform - returns shutdown time in seconds  
+const shutdownTime = await platform.terminate()
+console.log(`Platform terminated in ${shutdownTime}s`)
 
-await platform.start()
-
-const startupTime = Date.now() - platformStartTime
-console.log(`Platform startup completed in ${startupTime}ms`)
+// Access shutdown timing
+console.log('Terminated at:', platform.terminated_at)  // timestamp
+console.log('Shutdown duration:', platform.terminate_time)  // seconds
 ```
 
-### Memory Usage Monitoring
-
-```typescript
-@TpService()
-class MemoryMonitor {
-    private interval?: NodeJS.Timeout
-    
-    @OnStart()
-    async initialize() {
-        this.log_memory_usage()
-        
-        // Monitor memory every 30 seconds
-        this.interval = setInterval(() => {
-            this.log_memory_usage()
-        }, 30000)
-    }
-    
-    @OnTerminate()
-    async cleanup() {
-        if (this.interval) {
-            clearInterval(this.interval)
-        }
-    }
-    
-    private log_memory_usage() {
-        const usage = process.memoryUsage()
-        console.log('Memory Usage:', {
-            rss: `${Math.round(usage.rss / 1024 / 1024)}MB`,
-            heapTotal: `${Math.round(usage.heapTotal / 1024 / 1024)}MB`,
-            heapUsed: `${Math.round(usage.heapUsed / 1024 / 1024)}MB`,
-            external: `${Math.round(usage.external / 1024 / 1024)}MB`
-        })
-    }
-}
+Platform also automatically logs timing information:
+```
+Tarpit server started at 2023-12-01T10:30:45.123Z, during 0.234s
+Tarpit server destroyed at 2023-12-01T10:35:20.456Z, during 0.067s
 ```
 
 ## Best Practices
 
-### 1. Use Configuration Objects
+:::info Complete Example
+[example/core/platform/06-best-practices.ts](https://github.com/isatiso/node-tarpit/blob/main/example/core/platform/06-best-practices.ts)
+:::
 
-Always use configuration objects for customizable behavior:
+### 1. Use Platform Configuration Properly
+
+Always use the TpConfigSchema pattern for configurable behavior:
 
 ```typescript
-// ✅ Good - Configurable and environment-aware
-const config = load_config<MyAppConfig>({
-    database: { 
-        url: process.env.DATABASE_URL || 'postgresql://localhost:5432/myapp',
-        poolSize: parseInt(process.env.DB_POOL_SIZE) || 10
+// ✅ Good - Proper Platform configuration
+const config = load_config<TpConfigSchema>({
+    http: {
+        port: parseInt(process.env.PORT || '3000'),
+        hostname: process.env.HOST || '0.0.0.0'
     },
-    debug: process.env.NODE_ENV === 'development',
-    name: process.env.APP_NAME || 'my-app',
-    version: process.env.APP_VERSION || '1.0.0'
+    // Add other module configurations as needed
 })
 
 const platform = new Platform(config)
 ```
 
-### 2. Implement Lifecycle Hooks
-
-Use lifecycle hooks for proper resource management:
+Access configuration in services using TpConfigData:
 
 ```typescript
-// ✅ Good - Proper lifecycle management
 @TpService()
-class RedisService implements OnStart, OnTerminate {
-    private client?: Redis
+class ApiService {
+    constructor(private config: TpConfigData) {}
+    
+    get_base_url() {
+        const port = this.config.get('http.port') ?? 3000
+        const hostname = this.config.get('http.hostname') ?? 'localhost'
+        return `http://${hostname}:${port}/api`
+    }
+}
+```
+
+### 2. Implement Lifecycle Hooks
+
+Use lifecycle hook decorators for proper resource management:
+
+```typescript
+// ✅ Good - Proper lifecycle management using decorators
+@TpService()
+class DatabaseService {
+    private client?: DatabaseClient
+    private tempFiles: string[] = []
+    private activeStreams: Stream[] = []
     
     @OnStart()
     async initialize() {
         this.client = await this.connect()
-        console.log('Redis connected')
+        console.log('DatabaseService: Connected successfully')
     }
     
     @OnTerminate()
     async cleanup() {
+        // Close database connection
         if (this.client) {
-            await this.client.quit()
-            console.log('Redis disconnected')
-        }
-    }
-    
-    private async connect() {
-        // Redis connection logic
-    }
-}
-```
-
-### 3. Handle Errors Gracefully
-
-Always handle startup and shutdown errors:
-
-```typescript
-// ✅ Good - Comprehensive error handling
-async function start_application() {
-    try {
-        await platform.start()
-        console.log('Application started successfully')
-        
-        // Setup monitoring
-        setup_health_checks()
-        setup_metrics()
-        
-    } catch (error) {
-        console.error('Failed to start application:', error)
-        
-        // Log detailed error information
-        if (error.stack) {
-            console.error('Stack trace:', error.stack)
+            await this.client.close()
+            console.log('DatabaseService: Connection closed')
         }
         
-        process.exit(1)
-    }
-}
-
-// Handle shutdown signals
-process.on('SIGTERM', async () => {
-    try {
-        await platform.terminate()
-        console.log('Application stopped gracefully')
-    } catch (error) {
-        console.error('Error during shutdown:', error)
-    }
-    process.exit(0)
-})
-```
-
-### 4. Resource Management
-
-Always clean up resources in terminate hooks:
-
-```typescript
-// ✅ Good - Resource cleanup
-@TpService()
-class FileUploadService implements OnTerminate {
-    private tempFiles: string[] = []
-    private uploadStreams: Stream[] = []
-    
-    @OnTerminate()
-    async cleanup() {
         // Close all active streams
         await Promise.all(
-            this.uploadStreams.map(stream => 
+            this.activeStreams.map(stream => 
                 new Promise(resolve => stream.destroy(resolve))
             )
         )
@@ -1015,12 +850,16 @@ class FileUploadService implements OnTerminate {
             this.tempFiles.map(file => fs.unlink(file).catch(console.error))
         )
         
-        console.log('FileUploadService: Cleanup completed')
+        console.log('DatabaseService: Cleanup completed')
+    }
+    
+    private async connect() {
+        // Database connection logic
     }
 }
 ```
 
-### 5. Service Dependencies
+### 3. Service Dependencies
 
 Organize service dependencies clearly:
 
@@ -1043,80 +882,12 @@ class UserService {
         const user = await this.database.save(userData)
         
         // Update cache if enabled
-        if (this.config.cache?.enabled) {
+        const cacheEnabled = this.config.get('cache.enabled') ?? false
+        if (cacheEnabled) {
             await this.cache.set(`user:${user.id}`, user)
         }
         
         return user
-    }
-}
-```
-
-## Common Patterns
-
-### Health Check Service
-
-```typescript
-@TpService()
-class HealthCheckService {
-    private checks = new Map<string, () => Promise<boolean>>()
-    
-    @OnStart()
-    async initialize() {
-        // Register health checks
-        this.register('database', () => this.database.ping())
-        this.register('cache', () => this.cache.ping())
-        this.register('external-api', () => this.api.health())
-    }
-    
-    register(name: string, check: () => Promise<boolean>) {
-        this.checks.set(name, check)
-    }
-    
-    async get_health_status() {
-        const results = new Map<string, boolean>()
-        
-        for (const [name, check] of this.checks) {
-            try {
-                results.set(name, await check())
-            } catch (error) {
-                results.set(name, false)
-            }
-        }
-        
-        return results
-    }
-}
-```
-
-### Feature Flag Service
-
-```typescript
-@TpService()
-class FeatureFlagService {
-    constructor(private config: TpConfigData) {}
-    
-    is_enabled(feature: string): boolean {
-        return this.config.get('features.' + feature) === true
-    }
-    
-    with_feature<T>(feature: string, callback: () => T): T | undefined {
-        return this.is_enabled(feature) ? callback() : undefined
-    }
-}
-
-// Usage in other services
-@TpService()
-class EmailService {
-    constructor(private features: FeatureFlagService) {}
-    
-    async send_email(to: string, content: string) {
-        if (!this.features.is_enabled('emailEnabled')) {
-            console.log('Email feature disabled, skipping send')
-            return
-        }
-        
-        // Send email logic
     }
 }
 ```

@@ -119,11 +119,11 @@ describe('platform.ts', function() {
         })
     })
 
-    describe('.print_provider_tree()', function() {
-        it('should return provider tree string from platform', function() {
+    describe('.inspect_injector()', function() {
+        it('should return provider tree', function() {
             const platform = new Platform(load_config({}))
             platform.import(Service1)
-            const result = platform.print_provider_tree()
+            const result = platform.inspect_injector()
             
             expect(result).to.be.a('string')
             expect(result).to.contain('Injector')
