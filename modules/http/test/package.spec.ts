@@ -74,7 +74,7 @@ describe('HttpServerModule', function() {
     this.timeout(8000)
 
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31254, server: { keepalive_timeout: 3000, terminate_timeout: 300 } } }))
-        .bootstrap(TestRouter)
+        .import(TestRouter)
 
     const r = axios.create({ baseURL: 'http://127.0.0.1:31254', proxy: false })
 

@@ -33,7 +33,7 @@ describe('context case', function() {
             expose_error: true,
         }
     }))
-        .bootstrap(TempRouter)
+        .import(TempRouter)
 
     const r = axios.create({ baseURL: 'http://localhost:31260/user', proxy: false })
 

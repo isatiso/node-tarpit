@@ -77,7 +77,7 @@ describe('static case', function() {
                 vary: '*'
             }
         }
-    })).bootstrap(StaticRouter)
+    })).import(StaticRouter)
 
     const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
     const http_static = platform.expose(HttpStatic)
@@ -423,7 +423,7 @@ describe('static multi mount case', function() {
                 }
             ]
         }
-    })).bootstrap(MultiStaticRouter)
+    })).import(MultiStaticRouter)
 
     const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
     const http_static = platform.expose(HttpStatic)

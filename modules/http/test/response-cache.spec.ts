@@ -50,7 +50,7 @@ describe('response cache case', function() {
 
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31260, expose_error: true } }))
         .import(SomeMongo)
-        .bootstrap(TempRouter)
+        .import(TempRouter)
 
     const sandbox = chai.spy.sandbox()
 

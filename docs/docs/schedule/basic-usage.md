@@ -19,7 +19,7 @@ class MyScheduler {
 }
 
 // Bootstrap the platform
-const platform = new Platform({}).bootstrap(MyScheduler)
+const platform = new Platform({}).import(MyScheduler)
 await platform.start()
 ```
 
@@ -30,7 +30,7 @@ The simplest task uses the `@Task` decorator with a cron expression:
 ```typescript
 @TpSchedule({ imports: [ScheduleModule] })
 class SimpleScheduler {
-    
+
     @Task('*/5 * * * * *', 'hello_world')
     async say_hello(context: TaskContext) {
         console.log(`Hello from scheduled task at ${new Date().toISOString()}`)
@@ -51,17 +51,17 @@ async example_task(context: TaskContext) {
     console.log('Task name:', context.unit.task_name)
     console.log('Cron expression:', context.unit.crontab_str)
     console.log('Position:', context.unit.position)
-    
+
     // Failure count (for retry scenarios)
     console.log('Failure count:', context.count)
-    
+
     // Custom data storage
     context.set('start_time', Date.now())
     const start = context.get('start_time')
-    
+
     // Your task logic here
     await this.do_work()
-    
+
     const duration = Date.now() - start
     console.log(`Task completed in ${duration}ms`)
 }
@@ -87,37 +87,37 @@ Tarpit uses 6-field cron expressions (including seconds):
 ```typescript
 @TpSchedule({ imports: [ScheduleModule] })
 class CronExamples {
-    
+
     // Every 30 seconds
     @Task('*/30 * * * * *', 'every_30_seconds')
     async frequent_task() {
         console.log('Running every 30 seconds')
     }
-    
+
     // Every minute at :00 seconds
     @Task('0 * * * * *', 'every_minute')
     async minute_task() {
         console.log('Running every minute')
     }
-    
+
     // Every hour at 15 minutes past
     @Task('0 15 * * * *', 'hourly_at_15')
     async hourly_task() {
         console.log('Running at 15 minutes past every hour')
     }
-    
+
     // Daily at 3:30 AM
     @Task('0 30 3 * * *', 'daily_maintenance')
     async daily_task() {
         console.log('Daily maintenance at 3:30 AM')
     }
-    
+
     // Monday through Friday at 9:00 AM
     @Task('0 0 9 * * 1-5', 'weekday_morning')
     async weekday_task() {
         console.log('Weekday morning task')
     }
-    
+
     // First day of every month at midnight
     @Task('0 0 0 1 * *', 'monthly_report')
     async monthly_task() {
@@ -133,25 +133,25 @@ Specify timezone for tasks to ensure they run at the correct local time:
 ```typescript
 @TpSchedule({ imports: [ScheduleModule] })
 class TimezoneExamples {
-    
+
     // Run at 9 AM Beijing time
     @Task('0 0 9 * * *', 'beijing_morning', { tz: 'Asia/Shanghai' })
     async beijing_task() {
         console.log('Good morning from Beijing!')
     }
-    
+
     // Run at 9 AM New York time
     @Task('0 0 9 * * *', 'ny_morning', { tz: 'America/New_York' })
     async ny_task() {
         console.log('Good morning from New York!')
     }
-    
+
     // Run at 9 AM UTC
     @Task('0 0 9 * * *', 'utc_morning', { utc: true })
     async utc_task() {
         console.log('Good morning UTC!')
     }
-    
+
     // System timezone (default)
     @Task('0 0 9 * * *', 'local_morning')
     async local_task() {
@@ -174,7 +174,7 @@ class DatabaseService {
         console.log('Cleaning up old database records...')
         // Database cleanup logic
     }
-    
+
     async backup_data() {
         console.log('Backing up data...')
         // Backup logic
@@ -195,18 +195,18 @@ class EmailService {
     providers: [DatabaseService, EmailService]
 })
 class ServiceScheduler {
-    
+
     constructor(
         private database_service: DatabaseService,
         private email_service: EmailService
     ) {}
-    
+
     @Task('0 0 2 * * *', 'nightly_cleanup')
     async nightly_cleanup(context: TaskContext) {
         await this.database_service.cleanup_old_records()
         console.log('Nightly database cleanup completed')
     }
-    
+
     @Task('0 0 6 * * 1', 'weekly_backup')
     async weekly_backup(context: TaskContext) {
         const data = await this.database_service.backup_data()
@@ -223,11 +223,11 @@ Tasks can handle errors and implement retry logic:
 ```typescript
 @TpSchedule({ imports: [ScheduleModule] })
 class ErrorHandlingScheduler {
-    
+
     @Task('*/10 * * * * *', 'retry_example')
     async task_with_retries(context: TaskContext) {
         const max_retries = 3
-        
+
         if (context.count < max_retries) {
             try {
                 await this.risky_operation()
@@ -241,7 +241,7 @@ class ErrorHandlingScheduler {
             // Log to error monitoring, send alert, etc.
         }
     }
-    
+
     private async risky_operation() {
         // Simulated operation that might fail
         if (Math.random() > 0.7) {
@@ -260,4 +260,4 @@ class ErrorHandlingScheduler {
 4. **Keep tasks lightweight** - offload heavy work to services
 5. **Use dependency injection** for testability
 6. **Log task execution** for monitoring and debugging
-7. **Be careful with overlapping executions** - tasks may run longer than their interval 
+7. **Be careful with overlapping executions** - tasks may run longer than their interval

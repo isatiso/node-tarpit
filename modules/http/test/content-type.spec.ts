@@ -59,7 +59,7 @@ class TempRouter {
 describe('content type case', function() {
 
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31260, expose_error: true } }))
-        .bootstrap(TempRouter)
+        .import(TempRouter)
     const sandbox = chai.spy.sandbox()
     const r = axios.create({ baseURL: 'http://localhost:31260', proxy: false })
 

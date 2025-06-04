@@ -29,13 +29,13 @@ import { ScheduleModule, TpSchedule, Task, TaskContext } from '@tarpit/schedule'
     imports: [ScheduleModule]
 })
 class MyScheduler {
-    
+
     @Task('0 */10 * * * *', 'data_cleanup')
     async cleanup_old_data(context: TaskContext) {
         console.log('Cleaning up old data...')
         // Task implementation
     }
-    
+
     @Task('0 0 9 * * MON-FRI', 'daily_report', { tz: 'Asia/Shanghai' })
     async send_daily_report(context: TaskContext) {
         console.log('Sending daily report...')
@@ -43,7 +43,7 @@ class MyScheduler {
     }
 }
 
-const platform = new Platform({}).bootstrap(MyScheduler)
+const platform = new Platform({}).import(MyScheduler)
 await platform.start()
 ```
 
@@ -145,29 +145,29 @@ import { ScheduleInspector } from '@tarpit/schedule'
 
 @TpService()
 class TaskManager {
-    
+
     constructor(private inspector: ScheduleInspector) {}
-    
+
     async manage_tasks() {
         // List all active tasks
         const tasks = this.inspector.list_task()
         console.log('Active tasks:', tasks)
-        
+
         // Get specific task info
         const task = this.inspector.get_task('task-id')
         if (task) {
             console.log('Task details:', task)
         }
-        
+
         // Cancel a task
         await this.inspector.cancel('task-id')
-        
+
         // Run a task immediately
         await this.inspector.run('task-id')
-        
+
         // Reload a suspended task
         await this.inspector.reload('task-id')
-        
+
         // List suspended tasks
         const suspended = this.inspector.list_suspended()
         console.log('Suspended tasks:', suspended)
@@ -260,7 +260,7 @@ class EmailService {
 })
 class ReportScheduler {
     constructor(private email_service: EmailService) {}
-    
+
     @Task('0 0 9 * * 1', 'weekly_sales_report')
     async send_weekly_report(context: TaskContext) {
         const report_data = await this.generate_report()
@@ -293,4 +293,4 @@ const config = load_config({
 
 - Check out the [examples repository](https://github.com/isatiso/node-tarpit/tree/main/example/schedule) for real-world use cases
 - Learn about error handling and task management strategies
-- Explore the Schedule module API documentation 
+- Explore the Schedule module API documentation

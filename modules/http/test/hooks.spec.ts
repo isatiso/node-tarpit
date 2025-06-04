@@ -65,7 +65,7 @@ describe('throw error in hooks case', function() {
 
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31254, expose_error: true, body: { max_length: 10 } } }))
         .import({ provide: HttpHooks, useClass: CustomHooks })
-        .bootstrap(TempRouter)
+        .import(TempRouter)
 
     const r = axios.create({ baseURL: 'http://localhost:31254', proxy: false })
 
