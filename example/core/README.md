@@ -31,42 +31,26 @@ Contains all dependency injection related examples:
 
 **Run**: `npx ts-node di/dependency-resolution.ts`
 
-#### 3. Type-Based Injection (`di/implicit-injection.ts`)
+### Platform Examples (`platform/` directory)
 
-**Purpose**: Demonstrates implicit injection using TypeScript types as tokens.
+Contains platform lifecycle and management examples:
 
-**Key Concepts**:
-- Automatic type-based dependency resolution
-- Class types as injection tokens
-- Simple constructor injection without decorators
+#### 3. Platform Lifecycle (`platform/platform-lifecycle.ts`)
 
-**Run**: `npx ts-node di/implicit-injection.ts`
-
-#### 4. Token-Based Injection (`di/explicit-injection.ts`)
-
-**Purpose**: Shows explicit injection using custom tokens.
+**Purpose**: Demonstrates platform lifecycle management and error handling.
 
 **Key Concepts**:
-- `@Inject()` decorator usage
-- Symbol tokens for non-class dependencies
-- Custom token registration
+- Platform creation and startup
+- Service instantiation order
+- Lifecycle hooks with `@OnTerminate()`
+- Graceful shutdown
+- Error handling for missing dependencies
 
-**Run**: `npx ts-node di/explicit-injection.ts`
-
-#### 5. Reflect Metadata (`di/reflect-metadata-example.ts`)
-
-**Purpose**: Explains how TypeScript metadata reflection works behind the scenes.
-
-**Key Concepts**:
-- Constructor parameter type extraction
-- Runtime type information
-- Why classes work as tokens
-
-**Run**: `npx ts-node di/reflect-metadata-example.ts`
+**Run**: `npx ts-node platform/platform-lifecycle.ts`
 
 ### Other Core Concepts
 
-#### 6. Best Practices (`best-practices.ts`)
+#### 4. Best Practices (`best-practices.ts`)
 
 **Purpose**: Shows dependency injection best practices and common patterns.
 
@@ -78,7 +62,7 @@ Contains all dependency injection related examples:
 
 **Run**: `npx ts-node best-practices.ts`
 
-#### 7. Decorators (`decorators.ts`)
+#### 5. Decorators (`decorators.ts`)
 
 **Purpose**: Demonstrates various decorators and their usage patterns.
 
@@ -91,7 +75,7 @@ Contains all dependency injection related examples:
 
 **Run**: `npx ts-node decorators.ts`
 
-#### 8. Providers (`providers.ts`)
+#### 6. Providers (`providers.ts`)
 
 **Purpose**: Shows different provider types and advanced dependency configuration.
 
@@ -103,20 +87,7 @@ Contains all dependency injection related examples:
 
 **Run**: `npx ts-node providers.ts`
 
-#### 9. Platform Lifecycle (`platform-lifecycle.ts`)
-
-**Purpose**: Demonstrates platform lifecycle management and error handling.
-
-**Key Concepts**:
-- Platform creation and startup
-- Service instantiation order
-- Lifecycle hooks with `@OnTerminate()`
-- Graceful shutdown
-- Error handling for missing dependencies
-
-**Run**: `npx ts-node platform-lifecycle.ts`
-
-#### 10. Quick Start (`quick-start.ts`)
+#### 7. Quick Start (`quick-start.ts`)
 
 **Purpose**: Simple getting started example.
 
@@ -135,15 +106,14 @@ To run all examples in sequence:
 # Dependency Injection Examples
 npx ts-node di/dependency-injection-basic.ts
 npx ts-node di/dependency-resolution.ts
-npx ts-node di/implicit-injection.ts
-npx ts-node di/explicit-injection.ts
-npx ts-node di/reflect-metadata-example.ts
+
+# Platform Examples
+npx ts-node platform/platform-lifecycle.ts
 
 # Other Core Concepts
 npx ts-node best-practices.ts
 npx ts-node decorators.ts
 npx ts-node providers.ts
-npx ts-node platform-lifecycle.ts
 npx ts-node quick-start.ts
 ```
 
