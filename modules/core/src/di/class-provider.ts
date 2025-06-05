@@ -6,9 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import { OnTerminate } from '../annotations'
-import { TpLoader } from '../builtin/tp-loader'
-import { get_all_prop_decorator, TarpitId } from '../tools/decorator'
+import { TarpitId } from '../tools/decorator'
 import { detect_cycle_ref } from '../tools/detect-cycle-ref'
 import { get_providers } from '../tools/get-providers'
 import { stringify } from '../tools/stringify'
@@ -56,19 +54,6 @@ export class ClassProvider<M extends object> implements Provider<M> {
         const param_deps = get_providers({ cls: this.cls, position }, this.injector)
         const last = parents.pop()
         const param_list = param_deps.map(({ provider }, index) => provider?.create([...parents.map(p => ({ ...p })), { ...last, index }]))
-        const instance = new this.cls(...param_list)
-
-        for (const [prop, decorators] of get_all_prop_decorator(this.cls) ?? []) {
-            const meta = decorators.find(d => d instanceof OnTerminate)
-            if (meta) {
-                const destroy_method = Reflect.get(this.cls.prototype, prop)
-                if (typeof destroy_method === 'function') {
-                    this.injector.get(TpLoader)!.create().on_terminate(destroy_method.bind(instance))
-                    break
-                }
-            }
-        }
-
-        return instance
+        return new this.cls(...param_list)
     }
 }

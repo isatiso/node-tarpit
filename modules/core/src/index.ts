@@ -16,6 +16,7 @@ export {
     Debug,
     Disabled,
     Inject,
+    OnStart,
     OnTerminate,
     Optional,
     TpAssembly,

@@ -46,17 +46,17 @@ async function main() {
     await platform.start()
     
     // 4. Resolution - Get fully injected instances
-    const userService = platform.expose(UserService)
-    if (!userService) {
+    const user_service = platform.expose(UserService)
+    if (!user_service) {
         throw new Error('UserService not found')
     }
     
     console.log('Creating users...')
-    userService.create_user('Alice')
-    userService.create_user('Bob')
+    user_service.create_user('Alice')
+    user_service.create_user('Bob')
     
     console.log('\nFinding users...')
-    userService.find_user('Alice')
+    user_service.find_user('Alice')
     
     await platform.terminate()
     console.log('\n=== Example completed ===')

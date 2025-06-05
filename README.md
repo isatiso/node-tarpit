@@ -1,14 +1,27 @@
 <p>
-    <img src="https://www.tarpit.cc/assets/tarpit.svg" alt="tarpit" height="60">
+    <img src="https://www.tarpit.cc/img/tarpit.svg" alt="tarpit" height="60">
 </p>
 
 🥦 Simple but Awesome [TypeScript](https://www.typescriptlang.org/) DI Framework for Node.js 🥦
 
-[![build:?][build badge]][build link]
-[![coverage:?][coverage badge]][coverage link]
-[![license:mit][license badge]][license link]
-[![downloads:?][downloads badge]][downloads link]
-[![node:?][node badge]][node link]
+<!-- Metrics Badges (with numbers) -->
+[![npm version][npm-version-badge]][npm-link]
+[![monthly downloads][downloads-badge]][npm-link]
+[![node version][node-badge]][npm-link]
+[![coverage][coverage-badge]][coverage-link]
+[![bundle size][bundle-size-badge]][bundle-size-link]
+[![last commit][last-commit-badge]][github-link]
+
+<!-- Status/Identity Badges (without numbers) -->
+[![build status][build-badge]][build-link]
+[![typescript][typescript-badge]][github-link]
+[![license][license-badge]][license-link]
+[![lerna][lerna-badge]][lerna-link]
+[![ask deepwiki][deepwiki-badge]][deepwiki-link]
+
+<!-- Social Badges -->
+[![github stars][stars-badge]][github-link]
+[![github forks][forks-badge]][forks-link]
 
 ---
 
@@ -26,7 +39,7 @@ To use Tarpit framework you should be familiar with the following:
 - [Node.js](https://nodejs.org/dist/latest-v16.x/docs/api/) with its package manager NPM
 - [TypeScript](https://www.typescriptlang.org/)
 
-Assuming you’ve already installed Node.js and TypeScript,
+Assuming you've already installed Node.js and TypeScript,
 create a directory to hold your application, and make that your working directory.
 
 ```shell
@@ -35,7 +48,7 @@ $ cd myapp
 ```
 
 Use the `npm init` command to create a `package.json` file for your application.
-For more information on how `package.json` works, see [Specifics of npm’s package.json handling](https://docs.npmjs.com/cli/v8/configuring-npm/package-json).
+For more information on how `package.json` works, see [Specifics of npm's package.json handling](https://docs.npmjs.com/cli/v8/configuring-npm/package-json).
 
 ```shell
 $ npm init -y
@@ -105,7 +118,7 @@ $ ts-node ./index.ts
 # Tarpit server started at 2022-XX-XXTXX:XX:XX.XXXZ, during 0.001s
 ```
 
-Let’s test the API with the following code:
+Let's test the API with the following code:
 
 ```shell
 $ curl -X GET 'http://localhost:3000/hello'
@@ -121,14 +134,28 @@ Guess you want to know about these things
 - [Make crontab-style Schedule](https://www.tarpit.cc/3-rabbitmq-client)
 - [Create Producer and Consumer base-on RabbitMQ](https://www.tarpit.cc/4-schedule/)
 
-[build badge]: https://img.shields.io/github/workflow/status/isatiso/node-tarpit/Build%20and%20Test?style=flat-square
-[build link]: https://github.com/isatiso/node-tarpit/actions/workflows/ci.yml
-[coverage badge]: https://img.shields.io/codecov/c/github/isatiso/node-tarpit?style=flat-square
-[coverage link]: https://app.codecov.io/gh/isatiso/node-tarpit
-[license badge]: https://img.shields.io/npm/l/@tarpit/core?style=flat-square
-[license link]: https://github.com/isatiso/node-tarpit/blob/main/LICENSE
-[downloads badge]: https://img.shields.io/npm/dm/@tarpit/core?style=flat-square
-[downloads link]: https://www.npmjs.com/package/@tarpit/core
-[node badge]: https://img.shields.io/node/v-lts/@tarpit/core?style=flat-square
-[node link]: https://www.npmjs.com/package/@tarpit/core
+<!-- Badge Links -->
+[npm-version-badge]: https://img.shields.io/npm/v/@tarpit/core
+[downloads-badge]: https://img.shields.io/npm/dm/@tarpit/core
+[node-badge]: https://img.shields.io/node/v/@tarpit/core
+[coverage-badge]: https://codecov.io/gh/isatiso/node-tarpit/branch/main/graph/badge.svg?token=9S3UQPNS3Y
+[bundle-size-badge]: https://img.shields.io/bundlephobia/minzip/@tarpit/core
+[last-commit-badge]: https://img.shields.io/github/last-commit/isatiso/node-tarpit
+[build-badge]: https://img.shields.io/github/check-runs/isatiso/node-tarpit/main
+[typescript-badge]: https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white
+[license-badge]: https://img.shields.io/github/license/isatiso/node-tarpit
+[lerna-badge]: https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg
+[deepwiki-badge]: https://deepwiki.com/badge.svg
+[stars-badge]: https://img.shields.io/github/stars/isatiso/node-tarpit?style=social
+[forks-badge]: https://img.shields.io/github/forks/isatiso/node-tarpit?style=social
+
+[npm-link]: https://www.npmjs.com/package/@tarpit/core
+[github-link]: https://github.com/isatiso/node-tarpit
+[coverage-link]: https://codecov.io/gh/isatiso/node-tarpit
+[bundle-size-link]: https://bundlephobia.com/package/@tarpit/core
+[build-link]: https://github.com/isatiso/node-tarpit/actions/workflows/ci.yml
+[license-link]: https://github.com/isatiso/node-tarpit/blob/main/LICENSE
+[lerna-link]: https://lerna.js.org/
+[deepwiki-link]: https://deepwiki.com/isatiso/node-tarpit
+[forks-link]: https://github.com/isatiso/node-tarpit/network/members
 

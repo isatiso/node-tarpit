@@ -47,7 +47,7 @@ describe('schedule-inspector.ts', function() {
         before(async function() {
             sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
             chai.spy.on(Date, 'now', () => fake_time)
-            platform = new Platform(load_config({})).bootstrap(TempSchedule)
+            platform = new Platform(load_config({})).import(TempSchedule)
             schedule_inspector = platform.expose(ScheduleInspector)!
             await platform.start()
         })

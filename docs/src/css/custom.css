@@ -4,6 +4,9 @@
  * work well for content-centric websites.
  */
 
+@tailwind utilities;
+
+
 /* Custom properties for Tarpit branding */
 :root {
   --tarpit-primary: #fc7930;

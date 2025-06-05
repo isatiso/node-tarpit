@@ -57,7 +57,7 @@ describe('hooks case', function() {
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         chai.spy.on(Date, 'now', () => fake_time)
-        platform = new Platform(load_config({})).bootstrap(TempSchedule)
+        platform = new Platform(load_config({})).import(TempSchedule)
         hooks = platform.expose(ScheduleHooks)!
         chai.spy.on(hooks, 'on_init')
         chai.spy.on(hooks, 'on_error')

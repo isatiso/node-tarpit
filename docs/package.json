@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
+    "start": "docusaurus start --port 9000",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
@@ -25,10 +25,12 @@
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.8.0",
-    "@docusaurus/tsconfig": "3.8.0",
-    "@docusaurus/types": "3.8.0",
+    "@docusaurus/tsconfig": "^3.8.0",
+    "@docusaurus/types": "^3.8.0",
+    "@types/node": "^22.15.29",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.4",
+    "postcss-loader": "^8.1.1",
     "tailwindcss": "^3.4.0",
     "typescript": "~5.6.2"
   },

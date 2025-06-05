@@ -54,7 +54,7 @@ class NormalRouter {
 describe('service replace case', function() {
 
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31254, expose_error: true } }))
-        .bootstrap(NormalRouter)
+        .import(NormalRouter)
 
     const sandbox = chai.spy.sandbox()
 

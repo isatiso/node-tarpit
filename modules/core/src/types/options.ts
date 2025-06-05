@@ -22,6 +22,6 @@ export interface TpServiceOptions extends TpBaseOptions {
     echo_dependencies?: boolean
 }
 
-export interface TpRootOptions extends ImportsAndProviders, TpBaseOptions {
+export interface TpRootOptions extends ImportsAndProviders {
     entries?: Constructor<any>[]
 }

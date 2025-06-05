@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpRoot } from '@tarpit/core'
+import { Platform, TpConfigSchema, TpModule } from '@tarpit/core'
 import amqplib, { Connection, GetMessage } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
@@ -67,10 +67,10 @@ class TempConsumer {
     }
 }
 
-@TpRoot({
+@TpModule({
     imports: [TempProducer, TempConsumer]
 })
-class TempRoot {
+class TempModule {
 
     constructor(
         private producer: TempProducer
@@ -97,7 +97,7 @@ describe('normal case', function() {
         connection = await amqplib.connect(url)
         platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
             .import(RabbitmqModule)
-            .import(TempRoot)
+            .import(TempModule)
 
         await platform.start()
         producer = platform.expose(TempProducer)!

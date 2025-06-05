@@ -6,10 +6,12 @@
  * found in the LICENSE file at source root.
  */
 
+import { load_config } from '@tarpit/config'
 import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
-import { Disabled, OnTerminate, Optional, TpService } from '../annotations'
+import { Disabled, OnTerminate, OnStart, Optional, TpService } from '../annotations'
 import { TpLoader } from '../builtin/tp-loader'
+import { Platform } from '../platform'
 import { ClassProvider } from './class-provider'
 import { Injector } from './injector'
 
@@ -43,8 +45,13 @@ describe('class-provider.ts', function() {
     class CLS {
 
         terminated = false
-        @OnTerminate()
+        started = false
+
+        @OnStart()
         some_property = 123
+
+        @OnTerminate()
+        some_other_property = 123
 
         constructor(
             public a: A,
@@ -58,8 +65,13 @@ describe('class-provider.ts', function() {
         async some_other() {
         }
 
+        @OnStart()
+        async on_start() {
+            this.started = true
+        }
+
         @OnTerminate()
-        async test() {
+        async on_terminate() {
             this.terminated = true
         }
     }
@@ -90,11 +102,18 @@ describe('class-provider.ts', function() {
             expect(cls.b).to.be.instanceof(B)
         })
 
-        // it('should set terminate listener if exists', async function() {
-        //     const cls = injector.get(CLS)?.create()
-        //     injector.emit('terminate')
-        //     await injector.wait_all_quit()
-        //     expect(cls?.terminated).to.be.true
-        // })
+        it('should set start and terminate listener if exists', async function() {
+            const platform = new Platform(load_config({}))
+                .import(A)
+                .import(B)
+                .import(AA)
+                .import(CLS)
+
+            const cls = platform.expose(CLS)
+            await platform.start()
+            expect(cls?.started).to.be.true
+            await platform.terminate()
+            expect(cls?.terminated).to.be.true
+        })
     })
 })

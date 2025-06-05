@@ -12,7 +12,7 @@ import { TpModule, TpRoot, TpService } from '../annotations'
 import { TpLoader } from '../builtin/tp-loader'
 import { ClassProvider, FactoryProvider, Injector, ValueProvider } from '../di'
 import { get_class_decorator } from './decorator'
-import { check_usage, def_to_provider, load_component } from './load-component'
+import { check_usage, load_component, load_provider_def_or_component } from './load-component'
 
 chai.use(cap)
 
@@ -74,27 +74,27 @@ describe('load-component.ts', function() {
 
     describe('#def_to_provider()', function() {
         it('should parse ProviderDef to Provider', function() {
-            const provider1 = def_to_provider({ provide: Decorated, useClass: Decorated }, injector)
+            const provider1 = load_provider_def_or_component({ provide: Decorated, useClass: Decorated }, injector)
             expect(provider1).to.be.instanceof(ClassProvider)
             expect(provider1?.create()).to.be.instanceof(Decorated)
             expect(provider1?.create()).to.equal(provider1?.create())
-            const provider2 = def_to_provider(Decorated, injector)
+            const provider2 = load_provider_def_or_component(Decorated, injector)
             expect(provider2).to.be.instanceof(ClassProvider)
             expect(provider2?.create()).to.be.instanceof(Decorated)
             expect(provider2?.create()).to.equal(provider2?.create())
-            const provider3 = def_to_provider({ provide: Decorated, useFactory: () => new Decorated }, injector)
+            const provider3 = load_provider_def_or_component({ provide: Decorated, useFactory: () => new Decorated }, injector)
             expect(provider3).to.be.instanceof(FactoryProvider)
             expect(provider3?.create()).to.be.instanceof(Decorated)
             expect(provider3?.create()).to.not.equal(provider3?.create())
-            const provider4 = def_to_provider({ provide: 'Decorated', useValue: 'Decorated' }, injector)
+            const provider4 = load_provider_def_or_component({ provide: 'Decorated', useValue: 'Decorated' }, injector)
             expect(provider4).to.be.instanceof(ValueProvider)
             expect(provider4?.create()).to.equal('Decorated')
 
-            expect(() => def_to_provider({ provide: 'Decorated', useValue: 'Decorated', multi: true }, injector)).to.throw()
+            expect(() => load_provider_def_or_component({ provide: 'Decorated', useValue: 'Decorated', multi: true }, injector)).to.throw()
 
-            const provider5 = def_to_provider({ provide: 'Decorated multi', useValue: 'a', multi: true }, injector)
-            const provider6 = def_to_provider({ provide: 'Decorated multi', useValue: 'b', multi: true }, injector)
-            const provider7 = def_to_provider({ provide: 'Decorated multi', useValue: 'c', multi: true }, injector)
+            const provider5 = load_provider_def_or_component({ provide: 'Decorated multi', useValue: 'a', multi: true }, injector)
+            const provider6 = load_provider_def_or_component({ provide: 'Decorated multi', useValue: 'b', multi: true }, injector)
+            const provider7 = load_provider_def_or_component({ provide: 'Decorated multi', useValue: 'c', multi: true }, injector)
             expect(provider5).to.be.instanceof(ValueProvider)
             expect(provider6).to.equal(provider5)
             expect(provider7).to.equal(provider5)
@@ -102,9 +102,9 @@ describe('load-component.ts', function() {
         })
 
         it('should throw error if given useClass of Constructor is not a TpWorker', function() {
-            expect(() => def_to_provider({ provide: Decorated, useClass: NotDecorated }, injector))
+            expect(() => load_provider_def_or_component({ provide: Decorated, useClass: NotDecorated }, injector))
                 .to.throw('Property \'useClass\' of ClassProviderDef must be a "TpWorker", received NotDecorated')
-            expect(() => def_to_provider(NotDecorated, injector)).to.throw('NotDecorated is not a "TpComponent"')
+            expect(() => load_provider_def_or_component(NotDecorated, injector)).to.throw('NotDecorated is not a "TpComponent"')
         })
     })
 
@@ -142,16 +142,20 @@ describe('load-component.ts', function() {
             const temp_injector = Injector.create()
             const meta = get_class_decorator(DecoratedRoot)?.find(d => d instanceof TpRoot)
             load_component(meta, temp_injector)
+            const new_injector = meta.injector
 
-            expect(temp_injector.get(DecoratedRoot)).to.be.instanceof(ClassProvider)
-            expect(temp_injector.get(DecoratedRoot)?.create()).to.be.instanceof(DecoratedRoot)
+            expect(new_injector.get(DecoratedRoot)).to.be.instanceof(ClassProvider)
+            expect(temp_injector.get(DecoratedRoot)).to.be.undefined
+            expect(new_injector.get(DecoratedRoot)?.create()).to.be.instanceof(DecoratedRoot)
             expect(meta.provider?.create()).to.be.instanceof(DecoratedRoot)
 
-            expect(temp_injector.get(DecoratedModule1)).to.be.instanceof(ClassProvider)
-            expect(temp_injector.get(DecoratedModule1)?.create()).to.be.instanceof(DecoratedModule1)
+            expect(new_injector.get(DecoratedModule1)).to.be.instanceof(ClassProvider)
+            expect(temp_injector.get(DecoratedModule1)).to.be.undefined
+            expect(new_injector.get(DecoratedModule1)?.create()).to.be.instanceof(DecoratedModule1)
 
-            expect(temp_injector.get(DecoratedService1)).to.be.instanceof(ClassProvider)
-            expect(temp_injector.get(DecoratedService1)?.create()).to.be.instanceof(DecoratedService1)
+            expect(new_injector.get(DecoratedService1)).to.be.instanceof(ClassProvider)
+            expect(temp_injector.get(DecoratedService1)).to.be.undefined
+            expect(new_injector.get(DecoratedService1)?.create()).to.be.instanceof(DecoratedService1)
 
         })
 

@@ -29,6 +29,10 @@ export class TpLoader {
         }
     }
 
+    on_start(init_method: () => Promise<any>) {
+        this._on_starts.push(init_method)
+    }
+
     on_terminate(quit_method: () => Promise<any>) {
         this._on_terminates.push(quit_method)
     }

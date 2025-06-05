@@ -84,7 +84,7 @@ export class TestRoot {
     })).import(HttpServerModule)
     // .import(MongodbModule)
 
-    platform.bootstrap(TestRoot).start()
+    platform.import(TestRoot).start()
     await platform.expose(TpInspector)?.wait_start()
 })()
 

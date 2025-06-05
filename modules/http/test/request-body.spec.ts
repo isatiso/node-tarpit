@@ -88,7 +88,7 @@ class RequestBodyRouter {
 describe('request body case', function() {
 
     const platform = new Platform(load_config<TpConfigSchema>({ http: { port: 31260, expose_error: true } }))
-        .bootstrap(RequestBodyRouter)
+        .import(RequestBodyRouter)
 
     const sandbox = chai.spy.sandbox()
 
