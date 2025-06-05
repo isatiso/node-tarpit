@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpRoot } from '@tarpit/core'
+import { Platform, TpModule } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { ObjectId, WithId } from 'mongodb'
@@ -22,13 +22,13 @@ class TestUserMongo extends GenericCollection<{ name: string, age: number, creat
     }
 }
 
-@TpRoot({
+@TpModule({
     providers: [
         TestUserMongo,
         // TestInnerUserMongo,
     ]
 })
-class TempRoot {
+class TempModule {
 }
 
 describe('normal case', function() {
@@ -45,7 +45,7 @@ describe('normal case', function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
         platform = new Platform(load_config({ mongodb: { url } }))
             .import(MongodbModule)
-            .import(TempRoot)
+            .import(TempModule)
 
         user_mongo = platform.expose(TestUserMongo)!
         await platform.start()
