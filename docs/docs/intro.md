@@ -342,12 +342,11 @@ Ready to dive deeper? Explore our comprehensive documentation:
 - [**Dependency Injection**](./core/dependency-injection) - Advanced DI patterns and best practices
 
 ### HTTP Server Module
-- [**HTTP Server**](./http/) - Web APIs, routing, middleware, and authentication
-- [**Request Handling**](./http/request-handling) - Processing HTTP requests and responses
-- [**Middleware**](./http/middleware) - Custom middleware and request processing
+- [**HTTP Server**](./http-server/) - Web APIs, routing, middleware, and authentication
+- [**Request Handling**](./http-server/request-handling) - Processing HTTP requests and responses
 
 ### Other Modules
-- [**RabbitMQ Module**](./rabbitmq/) - Message queuing and event-driven architecture
+- [**RabbitMQ Module**](./rabbitmq-client/) - Message queuing and event-driven architecture
 - [**Schedule Module**](./schedule/) - Cron jobs and background tasks
 - [**Content Type Module**](./content-type/) - Working with different data formats
 

@@ -342,12 +342,11 @@ curl http://localhost:4100/api/users/hello/Alice
 - [**依赖注入**](./core/dependency-injection) - 高级 DI 模式和最佳实践
 
 ### HTTP 服务器模块
-- [**HTTP 服务器**](./http/) - Web API、路由、中间件和身份验证
-- [**请求处理**](./http/request-handling) - 处理 HTTP 请求和响应
-- [**中间件**](./http/middleware) - 自定义中间件和请求处理
+- [**HTTP 服务器**](./http-server/) - Web API、路由、中间件和身份验证
+- [**请求处理**](./http-server/request-handling) - 处理 HTTP 请求和响应
 
 ### 其他模块
-- [**RabbitMQ 模块**](./rabbitmq/) - 消息队列和事件驱动架构
+- [**RabbitMQ 模块**](./rabbitmq-client/) - 消息队列和事件驱动架构
 - [**调度模块**](./schedule/) - Cron 作业和后台任务
 - [**内容类型模块**](./content-type/) - 处理不同的数据格式
 
