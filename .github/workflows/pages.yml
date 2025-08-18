@@ -33,24 +33,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
-          cache-dependency-path: docs/yarn.lock
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Install dependencies
-        working-directory: ./docs
         run: |
           echo "Installing Docusaurus dependencies..."
-          yarn install --frozen-lockfile
+          pnpm install --frozen-lockfile
           echo "Dependencies installed successfully"
 
       - name: Build Docusaurus
-        working-directory: ./docs
         run: |
           echo "Building Docusaurus site..."
-          yarn build
+          pnpm --filter docs build
           echo "Build completed successfully"
           echo "Generated files:"
-          ls -la build/
+          ls -la docs/build/
         env:
           NODE_ENV: production
 

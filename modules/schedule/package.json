@@ -40,15 +40,15 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "@tarpit/cron": "^0.5.79",
-        "@tarpit/dora": "^0.5.79",
+        "@tarpit/cron": "workspace:*",
+        "@tarpit/dora": "workspace:*",
         "tslib": "^2.6.0"
     },
     "devDependencies": {
-        "@tarpit/core": "^0.5.79",
-        "@tarpit/rollup": "^0.5.79"
+        "@tarpit/core": "workspace:*",
+        "@tarpit/rollup": "workspace:*"
     },
     "peerDependencies": {
-        "@tarpit/core": "0.x"
+        "@tarpit/core": "workspace:*"
     }
 }

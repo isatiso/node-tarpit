@@ -39,6 +39,6 @@
         "docs": "tp docs"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.79"
+        "@tarpit/rollup": "workspace:*"
     }
 }

@@ -44,7 +44,7 @@
         "typescript": "~5.1.6"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.79",
+        "@tarpit/rollup": "workspace:*",
         "@types/js-yaml": "^4.0.5",
         "@types/micromatch": "^4.0.2",
         "@types/node": "^20.4.2"

@@ -36,11 +36,11 @@
         "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.79",
-        "@tarpit/core": "^0.5.79",
-        "@tarpit/http": "^0.5.79",
-        "@tarpit/judge": "^0.5.79",
-        "@tarpit/mongodb": "^0.5.79",
+        "@tarpit/config": "workspace:*",
+        "@tarpit/core": "workspace:*",
+        "@tarpit/http": "workspace:*",
+        "@tarpit/judge": "workspace:*",
+        "@tarpit/mongodb": "workspace:*",
         "tslib": "^2.6.0"
     }
 }

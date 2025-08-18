@@ -40,15 +40,15 @@
         "test": "tp cover --reporter=json --reporter=text"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.79",
-        "@tarpit/core": "^0.5.79",
-        "@tarpit/type-tools": "^0.5.79",
+        "@tarpit/config": "workspace:*",
+        "@tarpit/core": "workspace:*",
+        "@tarpit/type-tools": "workspace:*",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.8.2",
         "tslib": "^2.6.0"
     },
     "devDependencies": {
-        "@tarpit/cli": "^0.5.79",
-        "@tarpit/rollup": "^0.5.79"
+        "@tarpit/cli": "workspace:*",
+        "@tarpit/rollup": "workspace:*"
     }
 }

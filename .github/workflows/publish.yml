@@ -14,10 +14,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 22.x
-          cache: 'yarn'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Install
-        run: yarn --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Configure CI Git User
         run: |
@@ -27,9 +32,10 @@ jobs:
 
       - name: Publish package
         run: |
-          npm set registry=https://registry.npmjs.org
-          npm set "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}"
-          lerna run build
-          lerna publish patch --no-verify-access --registry https://registry.npmjs.org -y
+          pnpm config set -- '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
+          pnpm -r build
+          pnpm version patch -m "chore(release): publish %s"
+          pnpm -r publish --no-git-checks
+          git push --follow-tags
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -3,11 +3,11 @@
     "private": true,
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "scripts": {
-        "reset": "yarn clean && yarn && lerna run build",
-        "clean": "npm run clean-docs && npm run clean-dest && npm run clean-coverage && lerna clean -y && rm -rf node_modules",
+        "reset": "pnpm run clean && pnpm install && pnpm -r build",
+        "clean": "pnpm run clean-docs && pnpm run clean-dest && pnpm run clean-coverage && pnpm -r exec -- rm -rf node_modules && rm -rf node_modules",
         "clean-docs": "rm -rf ./docs/_site && rm -rf ./docs/apis/*/",
-        "clean-coverage": "lerna exec 'rm -rf ./coverage ./.cache ./.nyc_output'",
-        "clean-dest": "lerna exec 'rm -rf ./lib'"
+        "clean-coverage": "pnpm -r exec -- 'rm -rf ./coverage ./.cache ./.nyc_output'",
+        "clean-dest": "pnpm -r exec -- 'rm -rf ./lib'"
     },
     "workspaces": [
         "actions/*",
@@ -32,7 +32,6 @@
         "chai-spies": "^1.0.0",
         "fast-glob": "^3.3.0",
         "jsonwebtoken": "^9.0.1",
-        "lerna": "^7.1.1",
         "mocha": "^10.2.0",
         "normalize-package-data": "^5.0.0",
         "npm-check-updates": "^16.10.15",

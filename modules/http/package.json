@@ -40,9 +40,9 @@
         "test": "tp cover --reporter=json --reporter=text --clean"
     },
     "dependencies": {
-        "@tarpit/dora": "^0.5.79",
-        "@tarpit/judge": "^0.5.79",
-        "@tarpit/negotiator": "^0.5.79",
+        "@tarpit/dora": "workspace:*",
+        "@tarpit/judge": "workspace:*",
+        "@tarpit/negotiator": "workspace:*",
         "@types/ws": "^8.5.5",
         "content-disposition": "^0.5.4",
         "fresh": "^0.5.2",
@@ -56,16 +56,16 @@
         "ws": "^8.18.2"
     },
     "devDependencies": {
-        "@tarpit/content-type": "^0.5.79",
-        "@tarpit/core": "^0.5.79",
-        "@tarpit/rollup": "^0.5.79",
+        "@tarpit/content-type": "workspace:*",
+        "@tarpit/core": "workspace:*",
+        "@tarpit/rollup": "workspace:*",
         "@types/content-disposition": "^0.5.5",
         "@types/fresh": "^0.5.0",
         "@types/mime-types": "^2.1.1",
         "@types/type-is": "^1.6.3"
     },
     "peerDependencies": {
-        "@tarpit/content-type": "0.x",
-        "@tarpit/core": "0.x"
+        "@tarpit/content-type": "workspace:*",
+        "@tarpit/core": "workspace:*"
     }
 }

@@ -47,19 +47,24 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Install
-        run: yarn --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: lerna run build
+        run: pnpm -r build
 
       - name: Test
         env:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
           MONGODB_URL: mongodb://admin:admin_password@localhost:${{ job.services.mongodb.ports[27017] }}/admin
-        run: lerna run test --verbose
+        run: pnpm -r test --verbose
 
       - name: Upload coverage files
         if: ${{ github.ref == 'refs/heads/main' }}

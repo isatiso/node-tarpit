@@ -37,6 +37,6 @@
         "build": "rm -rf lib && rollup -c"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.79"
+        "@tarpit/rollup": "workspace:*"
     }
 }

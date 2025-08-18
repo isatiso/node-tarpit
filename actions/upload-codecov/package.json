@@ -45,7 +45,7 @@
         "openpgp": "5.10.2"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.79",
+        "@tarpit/rollup": "workspace:*",
         "@types/node": "^20.4.2"
     }
 }
