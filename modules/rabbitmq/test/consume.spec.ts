@@ -13,18 +13,16 @@ import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import crypto from 'crypto'
 import { Ack, ack_message, Consume, kill_message, MessageDead, MessageRequeue, RabbitDefine, RabbitDefineToken, RabbitMessage, RabbitmqModule, requeue_message, TpConsumer } from '../src'
+import { rabbitmq_url } from './helpers/test-helper'
 
 chai.use(chai_spies)
 
 const predefined_message: string[] = []
-
 for (let i = 0; i < 50; i++) {
     predefined_message.push(crypto.randomUUID())
 }
 
 describe('consume case', function() {
-
-    this.slow(200)
 
     let spy_ack: (...args: any[]) => void = chai.spy()
     let spy_requeue: (...args: any[]) => void = chai.spy()
@@ -98,7 +96,6 @@ describe('consume case', function() {
         }
     }
 
-    const url = process.env.RABBITMQ_URL ?? ''
     let connection: Connection
     let platform: Platform
     let consumer: TempConsumer
@@ -106,14 +103,12 @@ describe('consume case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        connection = await amqplib.connect(url)
-        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url, prefetch: 10 } }))
+        connection = await amqplib.connect(rabbitmq_url)
+        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url: rabbitmq_url, prefetch: 10 } }))
             .import(RabbitmqModule)
             .import(TempConsumer)
 
         consumer = platform.expose(TempConsumer)!
-        // const injector = platform.expose(Injector)!
-        // injector.on('channel-error', err => console.log('channel-error', err))
         await platform.start()
     })
 

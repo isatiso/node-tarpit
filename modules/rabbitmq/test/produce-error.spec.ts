@@ -12,6 +12,7 @@ import amqplib, { Connection } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_as_promised from 'chai-as-promised'
 import { ConfirmProducer, Publish, RabbitmqModule, TpProducer } from '../src'
+import { rabbitmq_url } from './helpers/test-helper'
 
 chai.use(chai_as_promised)
 
@@ -37,9 +38,6 @@ describe('produce error case', function() {
         }
     }
 
-    this.timeout(8000)
-
-    const url = process.env.RABBITMQ_URL ?? ''
     let connection: Connection
     let platform: Platform
     let producer: TempProducer
@@ -48,8 +46,8 @@ describe('produce error case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        connection = await amqplib.connect(url)
-        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
+        connection = await amqplib.connect(rabbitmq_url)
+        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url: rabbitmq_url } }))
             .import(RabbitmqModule)
             .import(TempModule)
 

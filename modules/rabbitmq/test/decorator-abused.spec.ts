@@ -12,6 +12,7 @@ import amqplib, { Connection, GetMessage } from 'amqplib'
 import chai, { expect } from 'chai'
 import chai_as_promised from 'chai-as-promised'
 import { ConfirmProducer, Enqueue, Publish, RabbitDefine, RabbitDefineToken, RabbitmqModule, TpProducer } from '../src'
+import { rabbitmq_url } from './helpers/test-helper'
 
 chai.use(chai_as_promised)
 
@@ -36,9 +37,6 @@ describe('decorator abused case', function() {
         seized_enqueue!: ConfirmProducer<string>
     }
 
-    this.timeout(8000)
-
-    const url = process.env.RABBITMQ_URL ?? ''
     let connection: Connection
     let platform: Platform
     let producer: TempProducer
@@ -47,8 +45,8 @@ describe('decorator abused case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        connection = await amqplib.connect(url)
-        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
+        connection = await amqplib.connect(rabbitmq_url)
+        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url: rabbitmq_url } }))
             .import({ provide: RabbitDefineToken, useValue: D, multi: true, root: true })
             .import(RabbitmqModule)
             .import(TempProducer)

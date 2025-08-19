@@ -14,6 +14,7 @@ import chai_spies from 'chai-spies'
 import { takeUntil } from 'rxjs'
 import { ConfirmProducer, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitmqModule, TpProducer } from '../src'
 import { RabbitNotifier } from '../src/services/rabbit-notifier'
+import { rabbitmq_url } from './helpers/test-helper'
 
 chai.use(chai_spies)
 
@@ -47,10 +48,6 @@ class TempProducer {
 
 describe('produce drain case', function() {
 
-    this.timeout(10000)
-    this.slow(1500)
-
-    const url = process.env.RABBITMQ_URL ?? ''
     const buf = Buffer.from(`Stops the server from accepting new connections and keeps existing connections. This function is asynchronous, the server is finally closed when all connections are ended and the server emits a 'close' event. The optional callback will be called once the 'close' event occurs. Unlike that event, it will be called with an Error as its only argument if the server was not open when it was closed.`)
     let connection: Connection
     let platform: Platform
@@ -60,8 +57,8 @@ describe('produce drain case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        connection = await amqplib.connect(url)
-        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
+        connection = await amqplib.connect(rabbitmq_url)
+        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url: rabbitmq_url } }))
             .import(RabbitmqModule)
             .import(TempProducer)
 

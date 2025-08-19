@@ -13,24 +13,23 @@ import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { RabbitDefine, RabbitDefineToken, RabbitmqModule } from '../src'
 import { RabbitNotifier } from '../src/services/rabbit-notifier'
+import { rabbitmq_url } from './helpers/test-helper'
 
 chai.use(chai_spies)
 
 describe('assert definition case', function() {
 
     this.slow(200)
-    this.timeout(8000)
-
-    const url = process.env.RABBITMQ_URL ?? ''
+    this.timeout(20000)
 
     const sandbox = chai.spy.sandbox()
 
-    before(function() {
+    before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
     })
 
     after(async function() {
-        const connection = await connect(url)
+        const connection = await connect(rabbitmq_url)
         const channel = await connection.createChannel()
         await channel.deleteExchange('tarpit.exchange.a', { ifUnused: false })
         await channel.deleteExchange('tarpit.exchange.b', { ifUnused: false })
@@ -57,12 +56,12 @@ describe('assert definition case', function() {
             .bind_queue('tarpit.exchange.b', 'tarpit.queue.b', 'bb')
             .bind_queue('tarpit.exchange.c', 'tarpit.queue.c', 'cc')
 
-        const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
+        const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url: rabbitmq_url } }))
             .import({ provide: RabbitDefineToken, useValue: D, multi: true, root: true })
             .import(RabbitmqModule)
 
         await platform.start()
-        const connection = await connect(url)
+        const connection = await connect(rabbitmq_url)
         const channel = await connection.createChannel()
         const [a, b, c, d, e, f] = await Promise.all([
             channel.checkExchange(D.X['tarpit.exchange.a']),
@@ -86,7 +85,7 @@ describe('assert definition case', function() {
 
     it('should throw error if definition conflicted', async function() {
         const D = new RabbitDefine().define_exchange('tarpit.exchange.a', 'direct', { durable: true })
-        const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
+        const platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url: rabbitmq_url } }))
         platform.import({ provide: RabbitDefineToken, useValue: D, multi: true, root: true })
             .import(RabbitmqModule)
 

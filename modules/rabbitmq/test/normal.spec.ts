@@ -13,12 +13,12 @@ import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import crypto from 'crypto'
 import { ConfirmProducer, Consume, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitMessage, RabbitmqModule, TpConsumer, TpProducer } from '../src'
+import { rabbitmq_url } from './helpers/test-helper'
 
 chai.use(chai_spies)
 
 const consume_result: string[] = []
 const predefined_message: string[] = []
-
 for (let i = 0; i < 50; i++) {
     predefined_message.push(crypto.randomUUID())
 }
@@ -84,9 +84,6 @@ class TempModule {
 
 describe('normal case', function() {
 
-    this.slow(200)
-
-    const url = process.env.RABBITMQ_URL ?? ''
     let connection: Connection
     let platform: Platform
     let producer: TempProducer
@@ -94,8 +91,8 @@ describe('normal case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        connection = await amqplib.connect(url)
-        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url } }))
+        connection = await amqplib.connect(rabbitmq_url)
+        platform = new Platform(load_config<TpConfigSchema>({ rabbitmq: { url: rabbitmq_url } }))
             .import(RabbitmqModule)
             .import(TempModule)
 
