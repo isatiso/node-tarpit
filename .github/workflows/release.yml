@@ -1,10 +1,14 @@
-name: Publish
+name: Release
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - docs-improvement
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,11 +23,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Publish to npm
+      - name: Create Release Pull Request
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm run publish:ci
+          # This expects you to have a script called "release" in your root package.json
+          version: pnpm changeset version
+          title: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

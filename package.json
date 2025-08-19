@@ -7,7 +7,8 @@
         "clean": "pnpm run clean-docs && pnpm run clean-dest && pnpm run clean-coverage && pnpm -r exec -- rm -rf node_modules && rm -rf node_modules",
         "clean-docs": "rm -rf ./docs/_site && rm -rf ./docs/apis/*/",
         "clean-coverage": "pnpm -r exec -- 'rm -rf ./coverage ./.cache ./.nyc_output'",
-        "clean-dest": "pnpm -r exec -- 'rm -rf ./lib'"
+        "clean-dest": "pnpm -r exec -- 'rm -rf ./lib'",
+        "publish:ci": "pnpm -r build && pnpm changeset publish"
     },
     "workspaces": [
         "actions/*",
@@ -17,6 +18,7 @@
         "supports/*"
     ],
     "devDependencies": {
+        "@changesets/cli": "^2.29.6",
         "@istanbuljs/nyc-config-typescript": "^1.0.2",
         "@rollup/plugin-json": "^6.0.0",
         "@rollup/plugin-typescript": "^11.1.2",
