@@ -11,6 +11,7 @@ import { Platform } from '@tarpit/core'
 import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { GenericCollection, MongodbModule, TpMongo } from '../src'
+import { mongodb_url } from './helpers/test-helper'
 
 chai.use(chai_spies)
 
@@ -24,9 +25,6 @@ class TestNotExistClientMongo extends GenericCollection<{ a: string }>() {
 
 describe('unexpected case', function() {
 
-    // this.slow(200)
-
-    const url = process.env.MONGODB_URL ?? ''
     let platform: Platform
     let mongo: TestNoGenericMongo
 
@@ -34,7 +32,7 @@ describe('unexpected case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform = new Platform(load_config({ mongodb: { url } }))
+        platform = new Platform(load_config({ mongodb: { url: mongodb_url } }))
             .import(MongodbModule)
 
         mongo = platform.expose(TestNoGenericMongo)!
@@ -48,13 +46,13 @@ describe('unexpected case', function() {
     })
 
     it('should throw an error if TpMongo is not inherit from GenericCollection', async function() {
-        const p = new Platform(load_config({ mongodb: { url } }))
+        const p = new Platform(load_config({ mongodb: { url: mongodb_url } }))
             .import(MongodbModule)
         expect(() => p.import(TestNoGenericMongo)).to.throw('A TpMongo class must inherit from GenericCollection directly.')
     })
 
     it('should throw an error if specified a client_name of nothing', async function() {
-        const p = new Platform(load_config({ mongodb: { url } }))
+        const p = new Platform(load_config({ mongodb: { url: mongodb_url } }))
             .import(MongodbModule)
         expect(() => p.import(TestNotExistClientMongo)).to.throw('Can not find specified MongoClient of name not_exists.')
     })

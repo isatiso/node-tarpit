@@ -12,6 +12,7 @@ import chai, { expect } from 'chai'
 import chai_spies from 'chai-spies'
 import { ObjectId, WithId } from 'mongodb'
 import { GenericCollection, MongodbModule, TpMongo } from '../src'
+import { mongodb_url } from './helpers/test-helper'
 
 chai.use(chai_spies)
 
@@ -25,7 +26,6 @@ class TestUserMongo extends GenericCollection<{ name: string, age: number, creat
 @TpModule({
     providers: [
         TestUserMongo,
-        // TestInnerUserMongo,
     ]
 })
 class TempModule {
@@ -33,9 +33,6 @@ class TempModule {
 
 describe('normal case', function() {
 
-    // this.slow(200)
-
-    const url = process.env.MONGODB_URL ?? ''
     let platform: Platform
     let user_mongo: TestUserMongo
 
@@ -43,7 +40,7 @@ describe('normal case', function() {
 
     before(async function() {
         sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform = new Platform(load_config({ mongodb: { url } }))
+        platform = new Platform(load_config({ mongodb: { url: mongodb_url } }))
             .import(MongodbModule)
             .import(TempModule)
 
