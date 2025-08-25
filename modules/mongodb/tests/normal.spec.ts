@@ -24,10 +24,9 @@ class TestMongo extends GenericCollection<{ name: string, age: number, created_a
 describe('normal case', function() {
 
     let platform: Platform
-    let mongodb_url: string
+    const mongodb_url = process.env.MONGODB_URL!
 
     beforeAll(async function() {
-        mongodb_url = await readFile(resolve(__dirname, '.tmp/mongo-url'), 'utf-8')
         vi.spyOn(console, 'debug').mockImplementation(() => undefined)
         vi.spyOn(console, 'log').mockImplementation(() => undefined)
         vi.spyOn(console, 'info').mockImplementation(() => undefined)

@@ -5,7 +5,7 @@ export default defineConfig({
     ...rootConfig,
     test: {
         ...rootConfig.test,
-        globalSetup: './tests/global-setup.ts',
+        globalSetup: './tests/helpers/global-setup.ts',
         coverage: {
             ...rootConfig.test?.coverage,
             exclude: [

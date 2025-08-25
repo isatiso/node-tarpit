@@ -5,16 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at source root.
  */
+
 import 'reflect-metadata'
 import type { StartedTestContainer } from 'testcontainers'
 
 let rabbit_container: StartedTestContainer | undefined
-export let rabbitmq_url: string
 
 export async function setup(): Promise<void> {
     if (process.env.CI) {
-        rabbitmq_url = process.env.RABBITMQ_URL ?? 'amqp://admin:admin_password@localhost:5672'
-        process.env.RABBITMQ_URL = rabbitmq_url
+        process.env.RABBITMQ_URL = process.env.RABBITMQ_URL ?? 'amqp://admin:admin_password@localhost:5672'
         return
     }
 
@@ -32,9 +31,8 @@ export async function setup(): Promise<void> {
     rabbit_container = await container.start()
     const amqp_port = rabbit_container.getMappedPort(5672)
     const management_port = rabbit_container.getMappedPort(15672)
-    rabbitmq_url = `amqp://admin:admin_password@localhost:${amqp_port}`
-    process.env.RABBITMQ_URL = rabbitmq_url
-    console.log(`RabbitMQ container started. AMQP: ${rabbitmq_url}, Management UI: http://localhost:${management_port}`)
+    process.env.RABBITMQ_URL = `amqp://admin:admin_password@localhost:${amqp_port}`
+    console.log(`RabbitMQ container started. AMQP: ${process.env.RABBITMQ_URL}, Management UI: http://localhost:${management_port}`)
 }
 
 export async function teardown(): Promise<void> {
