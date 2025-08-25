@@ -6,11 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, expect, it } from 'vitest'
 import { HTTP_STATUS } from './http-status'
-
-chai.use(cap)
 
 describe('http-status.ts', function() {
 
@@ -18,21 +15,21 @@ describe('http-status.ts', function() {
 
         describe('#message_of()', function() {
             it('should return message of specified http status', function() {
-                expect(HTTP_STATUS.message_of(400)).to.equal('Bad Request')
+                expect(HTTP_STATUS.message_of(400)).toEqual('Bad Request')
             })
         })
 
         describe('#is_redirect()', function() {
             it('should tell given http status is redirect or not', function() {
-                expect(HTTP_STATUS.is_redirect(302)).to.be.true
-                expect(HTTP_STATUS.is_redirect(200)).to.be.false
+                expect(HTTP_STATUS.is_redirect(302)).toBe(true)
+                expect(HTTP_STATUS.is_redirect(200)).toBe(false)
             })
         })
 
         describe('#is_empty()', function() {
             it('should tell given http status is empty or not', function() {
-                expect(HTTP_STATUS.is_empty(200)).to.be.false
-                expect(HTTP_STATUS.is_empty(204)).to.be.true
+                expect(HTTP_STATUS.is_empty(200)).toBe(false)
+                expect(HTTP_STATUS.is_empty(204)).toBe(true)
             })
         })
     })

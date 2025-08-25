@@ -6,26 +6,23 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, expect, it } from 'vitest'
 import { NullInjector } from './null-injector'
 
-chai.use(cap)
-
-describe('null-injector.ts', function() {
-    describe('NullInjector', function() {
-        it('could create instance by new operator', function() {
-            expect(() => new NullInjector()).to.not.throw()
+describe('null-injector.ts', () => {
+    describe('NullInjector', () => {
+        it('could create instance by new operator', () => {
+            expect(() => new NullInjector()).not.toThrow()
         })
 
-        it('should always return false by "has" method', function() {
-            expect(new NullInjector().has('')).to.be.false
-            expect(new NullInjector().has(123)).to.be.false
+        it('should always return false by "has" method', () => {
+            expect(new NullInjector().has('')).toBe(false)
+            expect(new NullInjector().has(123)).toBe(false)
         })
 
-        it('should always return undefined by "get" method', function() {
-            expect(new NullInjector().get('')).to.be.undefined
-            expect(new NullInjector().get(123)).to.be.undefined
+        it('should always return undefined by "get" method', () => {
+            expect(new NullInjector().get('')).toBeUndefined()
+            expect(new NullInjector().get(123)).toBeUndefined()
         })
     })
 })

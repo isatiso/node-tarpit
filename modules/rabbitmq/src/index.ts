@@ -82,15 +82,16 @@ export {
     Ack,
     requeue_message,
     MessageRequeue,
-    MessageRequeueDesc,
     kill_message,
     MessageDead,
-    MessageDeadDesc,
 } from './errors'
+
+export type { MessageRequeueDesc, MessageDeadDesc } from './errors'
 
 export { ConfirmProducer } from './builtin/confirm-producer'
 export { RabbitMessage } from './builtin/rabbit-message'
 export { Producer } from './builtin/producer'
 export { RabbitRetryStrategy } from './services/rabbit-retry-strategy'
-export { RabbitDefine, ExchangeOptions, QueueOptions, DefaultRabbitmqExchange, RabbitDefineToken } from './services/rabbit-define'
+export { RabbitDefine, RabbitDefineToken } from './services/rabbit-define'
+export type { ExchangeOptions, QueueOptions, DefaultRabbitmqExchange, } from './services/rabbit-define'
 export { RabbitmqModule } from './rabbitmq-module'

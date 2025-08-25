@@ -6,12 +6,9 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, it, expect } from 'vitest'
 import { MIMEContent } from '../types'
 import { json_deserialize } from './json'
-
-chai.use(cap)
 
 describe('json.ts', function() {
 
@@ -58,27 +55,27 @@ describe('json.ts', function() {
 
         it('should decode utf8 urlencoded content into object', function() {
             const obj = json_deserialize(utf8_content)
-            expect(obj).to.eql({ a: '阿水淀粉', b: '起来，不愿做奴隶的人们' })
+            expect(obj).toEqual({ a: '阿水淀粉', b: '起来，不愿做奴隶的人们' })
         })
 
         it('should decode gbk urlencoded content into object', function() {
             const obj = json_deserialize(gbk_content)
-            expect(obj).to.eql({ a: '阿水淀粉', b: '起来，不愿做奴隶的人们' })
+            expect(obj).toEqual({ a: '阿水淀粉', b: '起来，不愿做奴隶的人们' })
         })
 
         it('should decode content default by utf8 into object', function() {
             const obj = json_deserialize(null_content)
-            expect(obj).to.eql({ a: '阿水淀粉', b: '起来，不愿做奴隶的人们' })
+            expect(obj).toEqual({ a: '阿水淀粉', b: '起来，不愿做奴隶的人们' })
         })
 
         it('should return undefined if given charset is unknown', function() {
             const obj = json_deserialize(non_exists_encoding_content)
-            expect(obj).to.be.undefined
+            expect(obj).toBeUndefined()
         })
 
         it('should return undefined if fail to parse json', function() {
             const obj = json_deserialize(broken_content)
-            expect(obj).to.be.undefined
+            expect(obj).toBeUndefined()
         })
     })
 })

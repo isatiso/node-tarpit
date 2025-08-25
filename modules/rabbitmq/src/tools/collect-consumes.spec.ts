@@ -7,7 +7,7 @@
  */
 
 import { Disabled, get_class_decorator, Optional } from '@tarpit/core'
-import { expect } from 'chai'
+import { describe, expect, it } from 'vitest'
 import { Consume, TpConsumer } from '../annotations'
 import { collect_consumes } from './collect-consumes'
 
@@ -32,7 +32,7 @@ describe('collect-consumes.ts', function() {
 
             const meta = get_class_decorator(TempConsumer).find(token => token instanceof TpConsumer)
             expect(meta).to.exist
-            const units = collect_consumes(meta)
+            const units = collect_consumes(meta!)
             expect(units).to.be.an('array').with.lengthOf(1)
         })
 
@@ -44,7 +44,7 @@ describe('collect-consumes.ts', function() {
 
             const meta = get_class_decorator(TempConsumer).find(token => token instanceof TpConsumer)
             expect(meta).to.exist
-            const units = collect_consumes(meta)
+            const units = collect_consumes(meta!)
             expect(units).to.be.an('array').with.lengthOf(0)
         })
 
@@ -59,7 +59,7 @@ describe('collect-consumes.ts', function() {
 
             const meta = get_class_decorator(TempConsumer).find(token => token instanceof TpConsumer)
             expect(meta).to.exist
-            const units = collect_consumes(meta)
+            const units = collect_consumes(meta!)
             expect(units).to.be.an('array').with.lengthOf(0)
         })
 
@@ -76,7 +76,7 @@ describe('collect-consumes.ts', function() {
 
             const meta = get_class_decorator(TempConsumer).find(token => token instanceof TpConsumer)
             expect(meta).to.exist
-            const units = collect_consumes(meta)
+            const units = collect_consumes(meta!)
             expect(units).to.be.an('array').with.lengthOf(1)
         })
     })

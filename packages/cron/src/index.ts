@@ -6,4 +6,5 @@
  * found in the LICENSE file at source root.
  */
 
-export { Cron, ParseCronOptions } from './cron'
+export { Cron } from './cron'
+export type { ParseCronOptions } from './cron'

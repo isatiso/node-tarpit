@@ -6,8 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, expect, it } from 'vitest'
 import {
     get_all_prop_decorator,
     get_class_decorator,
@@ -20,9 +19,7 @@ import {
     make_decorator
 } from './decorator'
 
-chai.use(cap)
-
-describe('decorator.ts', function() {
+describe('decorator.ts', () => {
 
     const GrandpaDecorator = make_abstract_decorator('GrandpaDecorator')
     const ParentDecorator = make_abstract_decorator('ParentDecorator', GrandpaDecorator)
@@ -42,9 +39,9 @@ describe('decorator.ts', function() {
         constructor(
             @TestDecorator('a', 123)
             @TestDecorator('a', 123)
-            a: number,
+                a: number,
             @TestDecorator('a', 123)
-            b: string,
+                b: string,
             _c: P) {
         }
 
@@ -54,140 +51,187 @@ describe('decorator.ts', function() {
             a: string,
             b: string,
             @TestDecorator('a', 123)
-            c: number,
+                c: number,
             @TestDecorator('a', 123)
             @TestDecorator('a', 123)
-            d: boolean,
+                d: boolean,
         ) {
 
         }
     }
 
-    describe('#make_decorator()', function() {
+    describe('#make_decorator()', () => {
 
-        it('should create decorator', function() {
+        it('should create decorator', () => {
             const D = make_decorator('D', (a: string, b: number) => ({ a, b }))
-            expect(() => new D('asd', 1)).not.to.throw()
+            expect(() => new D('asd', 1)).not.toThrow()
             const ins: InstanceType<typeof D> = new D('asd', 1)
-            expect(ins).to.be.instanceof(D)
+            expect(ins).toBeInstanceOf(D)
         })
 
-        it('should create decorator with name', function() {
+        it('should create decorator with name', () => {
             const D = make_decorator('D', (a: string, b: number) => ({ a, b }))
-            expect(D.name).to.equal('D')
+            expect(D.name).toEqual('D')
         })
 
-        it('should create inherited decorator', function() {
-            expect(new TestDecorator('asd', 1)).to.be.instanceof(ParentDecorator)
-        })
-    })
-
-    describe('#make_abstract_decorator()', function() {
-        it('should not be called', function() {
-            expect(() => (ParentDecorator as any)()).to.throw('Abstract decorator can\'t be called directly')
+        it('should create inherited decorator', () => {
+            expect(new TestDecorator('asd', 1)).toBeInstanceOf(ParentDecorator)
         })
     })
 
-    describe('#get_class_decorator()', function() {
-        it('should get decorators of class', function() {
+    describe('#make_abstract_decorator()', () => {
+        it('should not be called', () => {
+            expect(() => (ParentDecorator as any)()).toThrow('Abstract decorator can\'t be called directly')
+        })
+    })
+
+    describe('#get_class_decorator()', () => {
+        it('should get decorators of class', () => {
             const decorators = get_class_decorator(A)
-            expect(decorators).to.have.length(2)
-            expect(decorators[0]).to.be.instanceof(TestDecorator)
+            expect(decorators).toHaveLength(2)
+            expect(decorators[0]).toBeInstanceOf(TestDecorator)
         })
 
-        it('should return empty array if no decorator exist', function() {
+        it('should return empty array if no decorator exist', () => {
             const decorators = get_class_decorator(P)
-            expect(decorators).to.eql([])
+            expect(decorators).toEqual([])
         })
 
-        it('should throw errors if not given class', function() {
-            expect(() => get_class_decorator({})).to.throw('[object Object] is not constructor.')
+        it('should throw errors if not given class', () => {
+            expect(() => get_class_decorator({} as any)).toThrow('[object Object] is not constructor.')
         })
     })
 
-    describe('#get_class_parameter_decorator()', function() {
-        it('should get constructor parameter decorators of class', function() {
+    describe('#get_class_parameter_decorator()', () => {
+        it('should get constructor parameter decorators of class', () => {
             const decorators = get_class_parameter_decorator(A)
-            expect(decorators).to.have.length(2)
-            expect(decorators[0]).to.have.length(2)
-            expect(decorators[1]).to.have.length(1)
-            expect(decorators[0][0]).to.be.instanceof(TestDecorator)
+            expect(decorators).toHaveLength(2)
+            expect(decorators[0]).toHaveLength(2)
+            expect(decorators[1]).toHaveLength(1)
+            expect(decorators[0][0]).toBeInstanceOf(TestDecorator)
         })
 
-        it('should return empty array if no parameter decorator exist', function() {
+        it('should return empty array if no parameter decorator exist', () => {
             const decorators = get_class_parameter_decorator(P)
-            expect(decorators).to.eql([])
+            expect(decorators).toEqual([])
         })
 
-        it('should throw errors if not given class', function() {
-            expect(() => get_class_parameter_decorator({})).to.throw('[object Object] is not constructor.')
+        it('should throw errors if not given class', () => {
+            expect(() => get_class_parameter_decorator({} as any)).toThrow('[object Object] is not constructor.')
         })
     })
 
-    describe('#get_all_prop_decorator()', function() {
-        it('should get all decorators of class property', function() {
+    describe('#get_all_prop_decorator()', () => {
+        it('should get all decorators of class property', () => {
             const decorators = get_all_prop_decorator(A)
-            expect(decorators?.size).to.equal(2)
-            expect(decorators?.get('m')).to.have.length(2)
-            expect(decorators?.get('m')?.[0]).to.be.instanceof(TestDecorator)
+            expect(decorators?.size).toEqual(2)
+            expect(decorators?.get('m')).toHaveLength(2)
+            expect(decorators?.get('m')?.[0]).toBeInstanceOf(TestDecorator)
         })
 
-        it('should throw errors if not given class', function() {
-            expect(() => get_all_prop_decorator({})).to.throw('[object Object] is not constructor.')
+        it('should throw errors if not given class', () => {
+            expect(() => get_all_prop_decorator({} as any)).toThrow('[object Object] is not constructor.')
         })
     })
 
-    describe('#get_prop_decorator()', function() {
-        it('should get decorators of specified property', function() {
+    describe('#get_prop_decorator()', () => {
+        it('should get decorators of specified property', () => {
             const decorators = get_prop_decorator(A, 'm')
-            expect(decorators).to.have.length(2)
-            expect(decorators[0]).to.be.instanceof(TestDecorator)
+            expect(decorators).toHaveLength(2)
+            expect(decorators[0]).toBeInstanceOf(TestDecorator)
         })
 
-        it('should return empty array if no property decorator exist', function() {
+        it('should return empty array if no property decorator exist', () => {
             const decorators = get_prop_decorator(P, 'm')
-            expect(decorators).to.eql([])
+            expect(decorators).toEqual([])
         })
 
-        it('should throw errors if not given class', function() {
-            expect(() => get_prop_decorator({}, 'm')).to.throw('[object Object] is not constructor.')
+        it('should throw errors if not given class', () => {
+            expect(() => get_prop_decorator({} as any, 'm')).toThrow('[object Object] is not constructor.')
+        })
+
+        describe('edge cases', () => {
+            it('should return empty array if no Property_Decorator descriptor at all', () => {
+                class NoPropDeco {}
+                const decorators = get_prop_decorator(NoPropDeco, 'm')
+                expect(decorators).toEqual([])
+            })
+
+            it('should return empty array if Property_Decorator value is null', () => {
+                class NullPropDeco {}
+                Object.defineProperty(NullPropDeco, Symbol.for('œœ.decorator.property'), { value: null })
+                const decorators = get_prop_decorator(NullPropDeco, 'm')
+                expect(decorators).toEqual([])
+            })
+
+            it('should return empty array if map.get(prop) returns null', () => {
+                class NullMapValueDeco {}
+                const map = new Map()
+                map.set('m', null)
+                Object.defineProperty(NullMapValueDeco, Symbol.for('œœ.decorator.property'), { value: map })
+                const decorators = get_prop_decorator(NullMapValueDeco, 'm')
+                expect(decorators).toEqual([])
+            })
         })
     })
 
-    describe('#get_method_parameter_decorator()', function() {
-        it('should get parameters decorators of specified property', function() {
+    describe('#get_method_parameter_decorator()', () => {
+        it('should get parameters decorators of specified property', () => {
             const decorators = get_method_parameter_decorator(A, 'm')
-            expect(decorators).to.have.length(4)
-            expect(decorators[0]).to.be.null
-            expect(decorators[1]).to.be.null
-            expect(decorators[3]).to.have.length(2)
-            expect(decorators[3][0]).to.be.instanceof(TestDecorator)
+            expect(decorators).toHaveLength(4)
+            expect(decorators[0]).toBeNull()
+            expect(decorators[1]).toBeNull()
+            expect(decorators[3]).toHaveLength(2)
+            expect(decorators[3][0]).toBeInstanceOf(TestDecorator)
         })
 
-        it('should return empty array if no parameter decorator exist', function() {
+        it('should return empty array if no parameter decorator exist', () => {
             const decorators = get_method_parameter_decorator(P, 'm')
-            expect(decorators).to.eql([])
+            expect(decorators).toEqual([])
         })
 
-        it('should throw errors if not given class', function() {
-            expect(() => get_method_parameter_decorator({}, 'm')).to.throw('[object Object] is not constructor.')
+        it('should throw errors if not given class', () => {
+            expect(() => get_method_parameter_decorator({} as any, 'm')).toThrow('[object Object] is not constructor.')
+        })
+
+        describe('edge cases', () => {
+            it('should return empty array if no Method_Parameter_Decorator descriptor at all', () => {
+                class NoMethodParamDeco {}
+                const decorators = get_method_parameter_decorator(NoMethodParamDeco, 'm')
+                expect(decorators).toEqual([])
+            })
+
+            it('should return empty array if Method_Parameter_Decorator value is null', () => {
+                class NullMethodParamDeco {}
+                Object.defineProperty(NullMethodParamDeco, Symbol.for('œœ.decorator.method_parameter'), { value: null })
+                const decorators = get_method_parameter_decorator(NullMethodParamDeco, 'm')
+                expect(decorators).toEqual([])
+            })
+
+            it('should return empty array if value[prop] returns null', () => {
+                class NullPropValueDeco {}
+                const value: any = { m: null }
+                Object.defineProperty(NullPropValueDeco, Symbol.for('œœ.decorator.method_parameter'), { value })
+                const decorators = get_method_parameter_decorator(NullPropValueDeco, 'm')
+                expect(decorators).toEqual([])
+            })
         })
     })
 
-    describe('#get_param_types()', function() {
-        it('should get types of constructor parameters', function() {
-            expect(get_param_types(A)).to.eql([Number, String, P])
+    describe('#get_param_types()', () => {
+        it('should get types of constructor parameters', () => {
+            expect(get_param_types(A)).toEqual([Number, String, P])
         })
 
-        it('should get types of method parameters', function() {
-            expect(get_param_types(A, 'm')).to.eql([String, String, Number, Boolean])
+        it('should get types of method parameters', () => {
+            expect(get_param_types(A, 'm')).toEqual([String, String, Number, Boolean])
         })
     })
 
-    describe('#get_prop_types()', function() {
-        it('should get types of property', function() {
-            expect(get_prop_types(A, 'm')).to.equal(Function)
-            expect(get_prop_types(A, 'd')).to.eql(P)
+    describe('#get_prop_types()', () => {
+        it('should get types of property', () => {
+            expect(get_prop_types(A, 'm')).toEqual(Function)
+            expect(get_prop_types(A, 'd')).toEqual(P)
         })
     })
 })

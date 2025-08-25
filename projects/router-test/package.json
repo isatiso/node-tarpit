@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/router-test",
-    "version": "0.5.79",
+    "version": "0.5.80",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -32,15 +32,18 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
+        "build": "tsup src/index.ts --format cjs,esm --dts --out-dir lib",
         "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json"
     },
     "dependencies": {
-        "@tarpit/config": "^0.5.79",
-        "@tarpit/core": "^0.5.79",
-        "@tarpit/http": "^0.5.79",
-        "@tarpit/judge": "^0.5.79",
-        "@tarpit/mongodb": "^0.5.79",
-        "tslib": "^2.6.0"
+        "@tarpit/config": "workspace:*",
+        "@tarpit/core": "workspace:*",
+        "@tarpit/http": "workspace:*",
+        "@tarpit/judge": "workspace:*",
+        "@tarpit/mongodb": "workspace:*",
+        "tslib": "^2.8.1"
+    },
+    "devDependencies": {
+        "@tarpit/cli": "workspace:*"
     }
 }

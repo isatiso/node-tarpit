@@ -11,7 +11,7 @@ import { TpMongoClientConfig, TpMongoClientConfigMap, TpMongoClientName } from '
 export { GenericCollection } from './tools/generic-collection'
 export { MongodbModule } from './mongodb.module'
 export { TpMongo } from './annotations/tp-mongo'
-export { TpMongoClientConfigMap, TpMongoClientName, TpMongoClientConfig } from './types'
+export type { TpMongoClientConfigMap, TpMongoClientName, TpMongoClientConfig } from './types'
 
 type TpOtherClientConfigMap = Exclude<TpMongoClientName, 'mongodb'> extends never ? {} : {
     other_clients: Pick<TpMongoClientConfigMap, Exclude<TpMongoClientName, 'mongodb'>>

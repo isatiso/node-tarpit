@@ -6,31 +6,26 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
-import chai_spies from 'chai-spies'
+import { describe, expect, it, vi } from 'vitest'
 import { ServerResponse } from 'http'
 import { PassThrough, Readable } from 'stream'
 import { TpResponse } from '../builtin'
 import { flush_response } from './flush-response'
 
-chai.use(cap)
-chai.use(chai_spies)
-
 describe('flush-response.ts', function() {
 
     function mock_response(override: any) {
 
-        const res = { body: undefined } as any as ServerResponse
+        const res = { body: undefined, end: () => undefined, getHeaders: () => ({}) } as any as ServerResponse
         const request = {} as any
         const headers = {} as NodeJS.Dict<string | string[]>
-        const response = { res, headers, request, ...override, } as TpResponse
-        const spy_end = chai.spy.on(res, 'end', (chunk: any) => (res as any).body = chunk)
-        const spy_get_headers = chai.spy.on(res, 'getHeaders', () => Object.keys(headers))
-        const spy_has = chai.spy.on(response, 'has', (key: string) => headers[key.toLowerCase()] !== undefined)
-        const spy_get = chai.spy.on(response, 'get', (key: string) => headers[key.toLowerCase()])
-        const spy_set = chai.spy.on(response, 'set', (key: string, value) => headers[key.toLowerCase()] = value)
-        const spy_remove = chai.spy.on(response, 'remove', (key: string) => headers[key.toLowerCase()] !== undefined)
+        const response = { res, headers, request, has: (key: string) => false, get: (key: string) => '', set: (key: string, value: any) => {}, remove: (key: string) => {}, ...override, } as TpResponse
+        const spy_end = vi.spyOn(res, 'end' as any).mockImplementation((chunk: any) => (res as any).body = chunk)
+        const spy_get_headers = vi.spyOn(res, 'getHeaders' as any).mockImplementation(() => Object.keys(headers))
+        const spy_has = vi.spyOn(response, 'has' as any).mockImplementation((key: string) => headers[key.toLowerCase()] !== undefined)
+        const spy_get = vi.spyOn(response, 'get' as any).mockImplementation((key: string) => headers[key.toLowerCase()])
+        const spy_set = vi.spyOn(response, 'set' as any).mockImplementation((key: string, value) => headers[key.toLowerCase()] = value)
+        const spy_remove = vi.spyOn(response, 'remove' as any).mockImplementation((key: string) => delete headers[key.toLowerCase()])
         return { response, request, res, headers, spy_end, spy_has, spy_set, spy_remove, spy_get_headers }
     }
 
@@ -43,7 +38,7 @@ describe('flush-response.ts', function() {
         it('should end response with nothing if current status means empty', function() {
             const { response, spy_end } = mock_response({ writable: true, status: 204 })
             flush_response(response)
-            expect(spy_end).to.have.been.called.once
+            expect(spy_end).toHaveBeenCalledOnce()
         })
 
         it('should just end response if method is HEAD and Content-Length exists', function() {
@@ -51,7 +46,7 @@ describe('flush-response.ts', function() {
             request.method = 'HEAD'
             headers['content-length'] = '123'
             flush_response(response)
-            expect(spy_end).to.have.been.called.once
+            expect(spy_end).toHaveBeenCalledOnce()
         })
 
         it('should complete message if it is empty', function() {
@@ -60,43 +55,43 @@ describe('flush-response.ts', function() {
             response.status = (response as any)._status = 412
             response.message = ''
             flush_response(response)
-            expect(response.message).to.equal('Precondition Failed')
+            expect(response.message).toEqual('Precondition Failed')
             response.status = (response as any)._status = 865
             response.message = ''
             flush_response(response)
-            expect(response.message).to.equal('')
+            expect(response.message).toEqual('')
         })
 
         it('should remove Content-Type and Transfer-Encoding if exists when body is null', function() {
             const { response, spy_end, spy_remove } = mock_response({ writable: true, body: null })
             flush_response(response)
-            expect(spy_remove).to.have.been.first.called.with('Content-Type')
-            expect(spy_remove).to.have.been.second.called.with('Content-Length')
-            expect(spy_remove).to.have.been.third.called.with('Transfer-Encoding')
-            expect(spy_end).to.have.been.called.once
+            expect(spy_remove).toHaveBeenCalledWith('Content-Type')
+            expect(spy_remove).toHaveBeenCalledWith('Content-Length')
+            expect(spy_remove).toHaveBeenCalledWith('Transfer-Encoding')
+            expect(spy_end).toHaveBeenCalledOnce()
         })
 
         it('should just flush body when body is Buffer', function() {
             const body = Buffer.from('something')
             const { response, spy_end } = mock_response({ writable: true, body })
             flush_response(response)
-            expect(spy_end).to.have.been.called.with(body)
+            expect(spy_end).toHaveBeenCalledWith(body)
         })
 
         it('should just flush body when body is string', function() {
             const body = 'something'
             const { response, spy_end } = mock_response({ writable: true, body })
             flush_response(response)
-            expect(spy_end).to.have.been.called.with(body)
+            expect(spy_end).toHaveBeenCalledWith(body)
         })
 
         it('should pipe body to server response when body is stream', function() {
             const body = Readable.from(Buffer.from('something'))
             const res = new PassThrough()
             const { response } = mock_response({ writable: true, res, body })
-            const spy_pipe = chai.spy.on(body, 'pipe', (_value: any) => undefined)
+            const spy_pipe = vi.spyOn(body, 'pipe')
             flush_response(response)
-            expect(spy_pipe).to.have.been.called.with(res)
+            expect(spy_pipe).toHaveBeenCalledWith(res)
         })
 
         it('should not figure out content length when HEAD request and body is stream', function() {
@@ -105,7 +100,7 @@ describe('flush-response.ts', function() {
             const { request, response } = mock_response({ writable: true, res, body })
             request.method = 'HEAD'
             flush_response(response)
-            expect(response.has('Content-Length')).to.be.false
+            expect(response.has('Content-Length')).toBe(false)
         })
 
         it('should just flush body when body is string', function() {
@@ -113,8 +108,8 @@ describe('flush-response.ts', function() {
             const body_str = JSON.stringify(body)
             const { response, spy_end } = mock_response({ writable: true, body })
             flush_response(response)
-            expect(response.length).to.equal(Buffer.byteLength(body_str))
-            expect(spy_end).to.have.been.called.with(body_str)
+            expect(response.length).toEqual(Buffer.byteLength(body_str))
+            expect(spy_end).toHaveBeenCalledWith(body_str)
         })
 
         it('should convert DataView to Uint8Array for the response body', function() {
@@ -122,8 +117,8 @@ describe('flush-response.ts', function() {
             const uint8_body = new Uint8Array(body.buffer)
             const { response, spy_end } = mock_response({ writable: true, body, status: 200 })
             flush_response(response)
-            expect(response.body).to.eql(uint8_body)
-            expect(spy_end).to.have.been.called.with(uint8_body)
+            expect(response.body).toEqual(uint8_body)
+            expect(spy_end).toHaveBeenCalledWith(uint8_body)
         })
 
         it('should response HEAD request correctly when body is buffer', function() {
@@ -131,9 +126,9 @@ describe('flush-response.ts', function() {
             const { request, response, spy_end, res } = mock_response({ writable: true, body })
             request.method = 'HEAD'
             flush_response(response)
-            expect(response.get('Content-Length')).to.equal(9)
-            expect(spy_end).to.have.been.called.once
-            expect((res as any).body).to.be.undefined
+            expect(response.get('Content-Length')).toEqual(9)
+            expect(spy_end).toHaveBeenCalledOnce()
+            expect((res as any).body).toBeUndefined()
         })
 
         it('should response HEAD request correctly when body is string', function() {
@@ -141,9 +136,9 @@ describe('flush-response.ts', function() {
             const { request, response, spy_end, res } = mock_response({ writable: true, body })
             request.method = 'HEAD'
             flush_response(response)
-            expect(response.get('Content-Length')).to.equal(18)
-            expect(spy_end).to.have.been.called.once
-            expect((res as any).body).to.be.undefined
+            expect(response.get('Content-Length')).toEqual(18)
+            expect(spy_end).toHaveBeenCalledOnce()
+            expect((res as any).body).toBeUndefined()
         })
 
         it('should response HEAD request correctly when body is object', function() {
@@ -151,9 +146,9 @@ describe('flush-response.ts', function() {
             const { request, response, spy_end, res } = mock_response({ writable: true, body })
             request.method = 'HEAD'
             flush_response(response)
-            expect(response.get('Content-Length')).to.equal(28)
-            expect(spy_end).to.have.been.called.once
-            expect((res as any).body).to.be.undefined
+            expect(response.get('Content-Length')).toEqual(28)
+            expect(spy_end).toHaveBeenCalledOnce()
+            expect((res as any).body).toBeUndefined()
         })
 
         it('should response HEAD request correctly when body is Uint8Array', function() {
@@ -162,9 +157,9 @@ describe('flush-response.ts', function() {
             const { request, response, spy_end, res } = mock_response({ writable: true, body })
             request.method = 'HEAD'
             flush_response(response)
-            expect(response.get('Content-Length')).to.equal(20)
-            expect(spy_end).to.have.been.called.once
-            expect((res as any).body).to.be.undefined
+            expect(response.get('Content-Length')).toEqual(20)
+            expect(spy_end).toHaveBeenCalledOnce()
+            expect((res as any).body).toBeUndefined()
         })
 
         it('should response empty body if status represent empty', function() {
@@ -173,8 +168,8 @@ describe('flush-response.ts', function() {
             const { response, spy_end, res } = mock_response({ writable: true, body })
             response.status = (response as any)._status = 304
             flush_response(response)
-            expect(spy_end).to.have.been.called.once
-            expect((res as any).body).to.be.undefined
+            expect(spy_end).toHaveBeenCalledOnce()
+            expect((res as any).body).toBeUndefined()
         })
 
         it('should handle error event of stream which set to body', function() {
@@ -183,7 +178,7 @@ describe('flush-response.ts', function() {
             const { response } = mock_response({ writable: true, res, body })
             flush_response(response)
             body.emit('error')
-            expect(response.has('Content-Length')).to.be.false
+            expect(response.has('Content-Length')).toBe(false)
         })
     })
 })

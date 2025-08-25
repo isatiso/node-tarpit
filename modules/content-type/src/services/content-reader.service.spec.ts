@@ -8,12 +8,9 @@
 
 import { load_config } from '@tarpit/config'
 import { Platform } from '@tarpit/core'
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, it, expect } from 'vitest'
 import { ContentTypeModule } from '../content-type.module'
 import { ContentReaderService, get_default_charset } from './content-reader.service'
-
-chai.use(cap)
 
 describe('content-reader.service.ts', function() {
 
@@ -29,15 +26,15 @@ describe('content-reader.service.ts', function() {
             it('should read raw content', async function() {
                 const raw = Buffer.from('H4sIAAAAAAAAE6tWSlSyUvowv2e/wou9u5/Nn/J8VouSjlKSkpWRoXEtALBm6nUeAAAA', 'base64')
                 const result = await reader.read(raw, { content_encoding: 'gzip', content_type: 'application/json' })
-                expect(result.text).to.equal('{"a":"🌿 轻柔的","b":213}')
-                expect(result.data).to.eql({ a: '🌿 轻柔的', b: 213 })
+                expect(result.text).toEqual('{"a":"🌿 轻柔的","b":213}')
+                expect(result.data).toEqual({ a: '🌿 轻柔的', b: 213 })
             })
 
             it('should skip deserialize if specified', async function() {
                 const raw = Buffer.from('H4sIAAAAAAAAE6tWSlSyUvowv2e/wou9u5/Nn/J8VouSjlKSkpWRoXEtALBm6nUeAAAA', 'base64')
                 const result = await reader.read(raw, { content_encoding: 'gzip', content_type: 'application/json', skip_deserialize: true })
-                expect(result.text).to.be.undefined
-                expect(result.data).to.be.undefined
+                expect(result.text).toBeUndefined()
+                expect(result.data).toBeUndefined()
             })
 
             it('could deserialize directly', async function() {
@@ -49,15 +46,15 @@ describe('content-reader.service.ts', function() {
                 }
 
                 const result = await reader.deserialize(content)
-                expect(result.text).to.equal('{"a":"🌿 轻柔的","b":213}')
-                expect(result.data).to.eql({ a: '🌿 轻柔的', b: 213 })
+                expect(result.text).toEqual('{"a":"🌿 轻柔的","b":213}')
+                expect(result.data).toEqual({ a: '🌿 轻柔的', b: 213 })
             })
 
             it('should use given charset if specified', async function() {
                 const raw = Buffer.from('H4sIAAAAAAAAE6tWSlSyUvowv2e/wou9u5/Nn/J8VouSjlKSkpWRoXEtALBm6nUeAAAA', 'base64')
                 const result = await reader.read(raw, { content_encoding: 'gzip', content_type: 'application/json; charset=utf-8' })
-                expect(result.text).to.equal('{"a":"🌿 轻柔的","b":213}')
-                expect(result.data).to.eql({ a: '🌿 轻柔的', b: 213 })
+                expect(result.text).toEqual('{"a":"🌿 轻柔的","b":213}')
+                expect(result.data).toEqual({ a: '🌿 轻柔的', b: 213 })
             })
         })
     })
@@ -65,16 +62,16 @@ describe('content-reader.service.ts', function() {
     describe('#get_default_charset()', function() {
 
         it('could search default charset of specified MIME type', async function() {
-            expect(get_default_charset('application/json')).to.equal('utf-8')
+            expect(get_default_charset('application/json')).toEqual('utf-8')
         })
 
         it('should return undefined if given type is undefined', async function() {
-            expect(get_default_charset(undefined)).to.be.undefined
+            expect(get_default_charset(undefined)).toBeUndefined()
         })
 
         it('should return undefined if given type not found or no default charset', async function() {
-            expect(get_default_charset('undefined')).to.be.undefined
-            expect(get_default_charset('video/mp4')).to.be.undefined
+            expect(get_default_charset('undefined')).toBeUndefined()
+            expect(get_default_charset('video/mp4')).toBeUndefined()
         })
     })
 })

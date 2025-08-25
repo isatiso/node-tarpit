@@ -6,15 +6,10 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
-import chai_spies from 'chai-spies'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ResponseCache } from '../builtin'
 import { Finish } from '../errors'
 import { HttpCacheProxy } from '../services/http-cache-proxy'
-
-chai.use(cap)
-chai.use(chai_spies)
 
 describe('response-cache.ts', function() {
 
@@ -34,42 +29,40 @@ describe('response-cache.ts', function() {
         } as HttpCacheProxy
 
         function spy_cache_proxy() {
-            chai.spy.restore(temp_cache_proxy)
-            const clear_spy = chai.spy.on(temp_cache_proxy, 'clear')
-            const set_spy = chai.spy.on(temp_cache_proxy, 'set')
-            const get_spy = chai.spy.on(temp_cache_proxy, 'get')
+            const clear_spy = vi.spyOn(temp_cache_proxy, 'clear')
+            const set_spy = vi.spyOn(temp_cache_proxy, 'set')
+            const get_spy = vi.spyOn(temp_cache_proxy, 'get')
             return [clear_spy, set_spy, get_spy]
         }
 
-        // const platform = new Platform({ http: { port: 3000 } })
-        //     .import({ provide: TpCacheProxy, useValue: temp_cache_proxy })
-
-        // const inspector = platform.expose(TpInspector)!
+        afterEach(() => {
+            vi.restoreAllMocks()
+        })
 
         it('should new instance', function() {
             const res = new ResponseCache(temp_cache_proxy, 'under', 1200)
-            expect(res).to.be.instanceof(ResponseCache)
-            expect(res).to.have.property('scope').which.equals('under')
-            expect(res).to.have.property('expire_secs').which.equals(1200)
+            expect(res).toBeInstanceOf(ResponseCache)
+            expect(res.scope).toEqual('under')
+            expect(res.expire_secs).toEqual(1200)
         })
 
         describe('#create()', function() {
 
             it('should create ResponseCache with parameters', function() {
                 const res = ResponseCache.create(temp_cache_proxy, 'under', 1200)
-                expect(res).to.be.instanceof(ResponseCache)
-                expect(res).to.have.property('scope').which.equals('under')
-                expect(res).to.have.property('expire_secs').which.equals(1200)
+                expect(res).toBeInstanceOf(ResponseCache)
+                expect(res.scope).toEqual('under')
+                expect(res.expire_secs).toEqual(1200)
             })
 
             it('should create ResponseCache with default scope "@"', function() {
                 const res = ResponseCache.create(temp_cache_proxy)
-                expect(res).to.have.property('scope').which.equals('@')
+                expect(res.scope).toEqual('@')
             })
 
             it('should create ResponseCache with default expire_secs 3600', function() {
                 const res = ResponseCache.create(temp_cache_proxy)
-                expect(res).to.have.property('expire_secs').which.equals(3600)
+                expect(res.expire_secs).toEqual(3600)
             })
         })
 
@@ -79,10 +72,9 @@ describe('response-cache.ts', function() {
                 const [clear_spy, set_spy, get_spy] = spy_cache_proxy()
                 const res = ResponseCache.create(temp_cache_proxy)
                 await res.clear('some_key')
-                expect(set_spy).to.have.not.been.called()
-                expect(get_spy).to.have.not.been.called()
-                expect(clear_spy).to.have.been.first.called.with('@', 'some_key')
-                chai.spy.restore(temp_cache_proxy)
+                expect(set_spy).not.toHaveBeenCalled()
+                expect(get_spy).not.toHaveBeenCalled()
+                expect(clear_spy).toHaveBeenCalledWith('@', 'some_key')
             })
         })
 
@@ -92,48 +84,41 @@ describe('response-cache.ts', function() {
                 const [clear_spy, set_spy, get_spy] = spy_cache_proxy()
                 const res = ResponseCache.create(temp_cache_proxy)
                 await res.get('some_key')
-                expect(set_spy).to.have.not.been.called()
-                expect(clear_spy).to.have.not.been.called()
-                expect(get_spy).to.have.been.first.called.with('@', 'some_key')
+                expect(set_spy).not.toHaveBeenCalled()
+                expect(clear_spy).not.toHaveBeenCalled()
+                expect(get_spy).toHaveBeenCalledWith('@', 'some_key')
             })
 
             it('should return null if key is empty', async function() {
                 const res = ResponseCache.create(temp_cache_proxy)
-                expect(await res.get('')).to.be.null
-            })
-
-            it('should set cache_key by parameter of get', async function() {
-                const res = ResponseCache.create(temp_cache_proxy)
-                await res.get('abc')
-                expect(res).to.have.property('cache_key').which.equals('abc')
+                expect(await res.get('')).toBeNull()
             })
         })
 
         describe('.respond_if_cache()', function() {
 
-            it('should do nothing but set cache_key if cache not exists', async function() {
+            it('should set internal cache_key for later use if cache not exists', async function() {
                 const [clear_spy, set_spy, get_spy] = spy_cache_proxy()
                 const res = ResponseCache.create(temp_cache_proxy)
                 await res.respond_if_cache('non_exists_key')
-                expect(res).to.have.property('cache_key').which.equals('non_exists_key')
-                expect(set_spy).to.have.not.been.called()
-                expect(clear_spy).to.have.not.been.called()
-                expect(get_spy).to.have.been.first.called.with('@', 'non_exists_key')
+                expect(set_spy).not.toHaveBeenCalled()
+                expect(clear_spy).not.toHaveBeenCalled()
+                expect(get_spy).toHaveBeenCalledWith('@', 'non_exists_key')
+                try {
+                    await res.cache_and_respond('some value')
+                } catch (e) {
+                    expect(e).toBeInstanceOf(Finish)
+                }
+                expect(set_spy).toHaveBeenCalledWith('@', 'non_exists_key', 'some value', 3600)
             })
 
             it('should throw Finish if cache exists', async function() {
                 const [clear_spy, set_spy, get_spy] = spy_cache_proxy()
                 const res = ResponseCache.create(temp_cache_proxy)
-                let throwout: any
-                try {
-                    await res.respond_if_cache('exists_key')
-                } catch (e) {
-                    throwout = e
-                }
-                expect(throwout).to.be.instanceof(Finish)
-                expect(set_spy).to.have.not.been.called()
-                expect(clear_spy).to.have.not.been.called()
-                expect(get_spy).to.have.been.first.called.with('@', 'exists_key')
+                await expect(res.respond_if_cache('exists_key')).rejects.toThrow(Finish)
+                expect(set_spy).not.toHaveBeenCalled()
+                expect(clear_spy).not.toHaveBeenCalled()
+                expect(get_spy).toHaveBeenCalledWith('@', 'exists_key')
             })
         })
 
@@ -149,11 +134,11 @@ describe('response-cache.ts', function() {
                 } catch (e) {
                     throwout = e
                 }
-                expect(throwout).to.be.instanceof(Finish)
-                expect(throwout.response).to.equal('some value')
-                expect(clear_spy).to.have.not.been.called()
-                expect(set_spy).to.have.been.first.called.with('@', 'some_key', 'some value', 3600)
-                expect(get_spy).to.have.been.first.called.with('@', 'some_key')
+                expect(throwout).toBeInstanceOf(Finish)
+                expect(throwout.response).toEqual('some value')
+                expect(clear_spy).not.toHaveBeenCalled()
+                expect(set_spy).toHaveBeenCalledWith('@', 'some_key', 'some value', 3600)
+                expect(get_spy).toHaveBeenCalledWith('@', 'some_key')
             })
 
             it('should only throw Finish if no cache_key set', async function() {
@@ -165,11 +150,11 @@ describe('response-cache.ts', function() {
                 } catch (e) {
                     throwout = e
                 }
-                expect(throwout).to.be.instanceof(Finish)
-                expect(throwout.response).to.equal('some value')
-                expect(clear_spy).to.have.not.been.called()
-                expect(get_spy).to.have.not.been.called()
-                expect(set_spy).to.have.not.been.called()
+                expect(throwout).toBeInstanceOf(Finish)
+                expect(throwout.response).toEqual('some value')
+                expect(clear_spy).not.toHaveBeenCalled()
+                expect(get_spy).not.toHaveBeenCalled()
+                expect(set_spy).not.toHaveBeenCalled()
             })
         })
     })

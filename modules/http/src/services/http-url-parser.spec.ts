@@ -8,22 +8,19 @@
 
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema } from '@tarpit/core'
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, expect, it } from 'vitest'
 import { get_first, HttpUrlParser } from './http-url-parser'
-
-chai.use(cap)
 
 describe('http-url-parser.ts', function() {
 
     describe('#get_first()', function() {
 
         it('should extract first element of given value is an array', function() {
-            expect(get_first(['a', 'b'])).to.equal('a')
+            expect(get_first(['a', 'b'])).toEqual('a')
         })
 
         it('should return value self if it is not an array', function() {
-            expect(get_first('2')).to.equal('2')
+            expect(get_first('2')).toEqual('2')
         })
     })
 
@@ -42,7 +39,7 @@ describe('http-url-parser.ts', function() {
                     url: 'https://www.tarpit.cc:1239/test/path?a=1&b=a',
                     headers: {},
                 })
-                expect(url).to.include({
+                expect(url).include({
                     protocol: 'https:',
                     auth: null,
                     hash: null,
@@ -55,17 +52,17 @@ describe('http-url-parser.ts', function() {
                     search: '?a=1&b=a',
                     slashes: true,
                 })
-                expect(url?.query).to.eql({ a: '1', b: 'a' })
+                expect(url?.query).toEqual({ a: '1', b: 'a' })
             })
 
             it('should treat url as "/" if url is undefined', function() {
                 const url = proxy_parser.parse({ url: undefined, headers: { host: 'www.tarpit.cc' } })
-                expect(url).to.include({ protocol: 'http:', host: 'www.tarpit.cc', href: 'http://www.tarpit.cc/' })
+                expect(url).include({ protocol: 'http:', host: 'www.tarpit.cc', href: 'http://www.tarpit.cc/' })
             })
 
             it('should treat host as "localhost" if figure host failed', function() {
                 const url = proxy_parser.parse({ url: '/path', headers: {} })
-                expect(url).to.include({ protocol: 'http:', host: 'localhost', href: 'http://localhost/path' })
+                expect(url).include({ protocol: 'http:', host: 'localhost', href: 'http://localhost/path' })
             })
 
             it('should path auth fields of url', function() {
@@ -73,16 +70,16 @@ describe('http-url-parser.ts', function() {
                     url: 'https://user:password@www.tarpit.cc:1239/test/path?a=1&b=a',
                     headers: {},
                 })
-                expect(url).to.include({
+                expect(url).include({
                     auth: 'user:password',
                 })
             })
 
             it('should always return http if url does not contain proto and socket is not encrypted and proxy disabled', function() {
                 const url1 = no_proxy_parser.parse({ url: '/test/path?a=1&b=a', headers: { 'x-forwarded-proto': 'https', host: 'www.tarpit.cc' } })
-                expect(url1).to.include({ protocol: 'http:', host: 'www.tarpit.cc', href: 'http://www.tarpit.cc/test/path?a=1&b=a' })
+                expect(url1).include({ protocol: 'http:', host: 'www.tarpit.cc', href: 'http://www.tarpit.cc/test/path?a=1&b=a' })
                 const url2 = no_proxy_parser.parse({ url: '/test/path?a=1&b=a', headers: { 'x-forwarded-proto': 'http', host: 'www.tarpit.cc' } })
-                expect(url2).to.include({ protocol: 'http:', host: 'www.tarpit.cc', href: 'http://www.tarpit.cc/test/path?a=1&b=a' })
+                expect(url2).include({ protocol: 'http:', host: 'www.tarpit.cc', href: 'http://www.tarpit.cc/test/path?a=1&b=a' })
             })
 
             it('should use host from header "x-forwarded-host" if url does not contain host and proxy enabled', function() {
@@ -90,7 +87,7 @@ describe('http-url-parser.ts', function() {
                     url: '/test/path?a=1&b=a',
                     headers: { 'x-forwarded-host': 'forwarded.tarpit.cc', host: 'www.tarpit.cc' },
                 })
-                expect(url).to.include({ protocol: 'http:', host: 'forwarded.tarpit.cc', href: 'http://forwarded.tarpit.cc/test/path?a=1&b=a' })
+                expect(url).include({ protocol: 'http:', host: 'forwarded.tarpit.cc', href: 'http://forwarded.tarpit.cc/test/path?a=1&b=a' })
             })
 
             it('should return undefined if parse url failed', function() {
@@ -98,7 +95,7 @@ describe('http-url-parser.ts', function() {
                     url: 'https://asd%qwe:asd@www.tarpit.cc',
                     headers: { 'x-forwarded-host': 'forwarded.tarpit.cc', host: 'www.tarpit.cc' },
                 })
-                expect(url).to.be.undefined
+                expect(url).toBeUndefined()
             })
         })
     })

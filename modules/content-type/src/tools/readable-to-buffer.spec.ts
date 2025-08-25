@@ -6,12 +6,9 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, it, expect } from 'vitest'
 import { Readable } from 'stream'
 import { readable_to_buffer } from './readable-to-buffer'
-
-chai.use(cap)
 
 describe('readable-to-buffer.ts', function() {
 
@@ -23,21 +20,21 @@ describe('readable-to-buffer.ts', function() {
         it('should read readable to buffer', async function() {
             const stream = Readable.from(raw)
             const converted = await readable_to_buffer(stream)
-            expect(converted.toString('base64')).to.equal(raw_str)
+            expect(converted.toString('base64')).toEqual(raw_str)
         })
 
         it('should handle close event', async function() {
             const stream = Readable.from(raw)
             const promise = readable_to_buffer(stream)
             stream.emit('close')
-            expect(promise).to.be.rejectedWith('error')
+            await expect(promise).rejects.toThrow('Connection aborted')
         })
 
         it('should handle error event', async function() {
             const stream = Readable.from(raw)
             const promise = readable_to_buffer(stream)
             stream.emit('error', new Error('error'))
-            expect(promise).to.be.rejectedWith('error')
+            await expect(promise).rejects.toThrow('error')
         })
     })
 })

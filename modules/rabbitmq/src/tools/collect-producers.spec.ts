@@ -7,7 +7,7 @@
  */
 
 import { Disabled, get_class_decorator, Optional } from '@tarpit/core'
-import { expect } from 'chai'
+import { describe, expect, it } from 'vitest'
 import { Enqueue, Publish, TpProducer } from '../annotations'
 import { ConfirmProducer } from '../builtin/confirm-producer'
 import { Producer } from '../builtin/producer'
@@ -35,7 +35,7 @@ describe('collect-produces.ts', function() {
 
             const meta = get_class_decorator(TempProducer).find(token => token instanceof TpProducer)
             expect(meta).to.exist
-            const units = collect_produces(meta)
+            const units = collect_produces(meta!)
             expect(units).to.be.an('array').with.lengthOf(2)
         })
 
@@ -47,7 +47,7 @@ describe('collect-produces.ts', function() {
 
             const meta = get_class_decorator(TempProducer).find(token => token instanceof TpProducer)
             expect(meta).to.exist
-            const units = collect_produces(meta)
+            const units = collect_produces(meta!)
             expect(units).to.be.an('array').with.lengthOf(0)
         })
 
@@ -62,7 +62,7 @@ describe('collect-produces.ts', function() {
 
             const meta = get_class_decorator(TempProducer).find(token => token instanceof TpProducer)
             expect(meta).to.exist
-            const units = collect_produces(meta)
+            const units = collect_produces(meta!)
             expect(units).to.be.an('array').with.lengthOf(0)
         })
 
@@ -78,7 +78,7 @@ describe('collect-produces.ts', function() {
 
             const meta = get_class_decorator(TempProducer).find(token => token instanceof TpProducer)
             expect(meta).to.exist
-            const units = collect_produces(meta)
+            const units = collect_produces(meta!)
             expect(units).to.be.an('array').with.lengthOf(1)
         })
     })

@@ -1,17 +1,6 @@
-/**
- * @license
- * Copyright Cao Jiahang All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at source root.
- */
-
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, it, expect } from 'vitest'
 import fs from 'fs'
 import { load_config } from './config-tools'
-
-chai.use(cap)
 
 describe('config-tools.ts', function() {
 
@@ -24,13 +13,13 @@ describe('config-tools.ts', function() {
             }
             fs.writeFileSync('./tarpit.json', JSON.stringify(data))
             const config_data = load_config<typeof data>()
-            expect(config_data.get('a')).to.equal(123)
-            expect(config_data.get('b')).to.equal('string')
+            expect(config_data.get('a')).toEqual(123)
+            expect(config_data.get('b')).toEqual('string')
             fs.rmSync('./tarpit.json')
         })
 
         it('should throw error if nothing given and tarpit.json not exists.', function() {
-            expect(() => load_config()).to.throw()
+            expect(() => load_config()).toThrow()
         })
 
         it('should load file from given path.', function() {
@@ -40,19 +29,19 @@ describe('config-tools.ts', function() {
             }
             fs.writeFileSync('./tmp-tarpit.spec.json', JSON.stringify(data))
             const config_data = load_config<typeof data>('./tmp-tarpit.spec.json')
-            expect(config_data.get('a')).to.equal(123)
-            expect(config_data.get('b')).to.equal('string')
+            expect(config_data.get('a')).toEqual(123)
+            expect(config_data.get('b')).toEqual('string')
             fs.rmSync('./tmp-tarpit.spec.json')
         })
 
         it('should throw error if given path is empty.', function() {
             fs.writeFileSync('./empty.spec.json', 'null')
-            expect(() => load_config('./empty.spec.json')).to.throw()
+            expect(() => load_config('./empty.spec.json')).toThrow()
             fs.rmSync('./empty.spec.json')
         })
 
         it('should throw error if given file is empty.', function() {
-            expect(() => load_config('./non-exist.json')).to.throw()
+            expect(() => load_config('./non-exist.json')).toThrow()
         })
 
         it('should use data from given JSON.', function() {
@@ -61,8 +50,8 @@ describe('config-tools.ts', function() {
                 b: 'string'
             }
             const config_data = load_config(data)
-            expect(config_data.get('a')).to.equal(123)
-            expect(config_data.get('b')).to.equal('string')
+            expect(config_data.get('a')).toEqual(123)
+            expect(config_data.get('b')).toEqual('string')
         })
 
         it('should use return value if given data is function.', function() {
@@ -71,8 +60,8 @@ describe('config-tools.ts', function() {
                 b: 'string'
             }
             const config_data = load_config<typeof data>(() => data)
-            expect(config_data.get('a')).to.equal(123)
-            expect(config_data.get('b')).to.equal('string')
+            expect(config_data.get('a')).toEqual(123)
+            expect(config_data.get('b')).toEqual('string')
         })
     })
 })

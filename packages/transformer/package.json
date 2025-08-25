@@ -34,17 +34,18 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c"
+        "build": "tsup src/index.ts --format cjs,esm --dts --out-dir lib"
     },
     "dependencies": {
         "js-yaml": "^4.1.0",
         "micromatch": "^4.0.5",
-        "ts-node": "^10.9.1",
+        "ts-node": "^10.9.2",
         "ts-patch": "^3.0.1",
-        "typescript": "~5.1.6"
+        "typescript": "~5.7.3",
+        "tslib": "^2.8.1"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.79",
+        "@tarpit/cli": "workspace:*",
         "@types/js-yaml": "^4.0.5",
         "@types/micromatch": "^4.0.2",
         "@types/node": "^20.4.2"

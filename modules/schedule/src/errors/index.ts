@@ -8,6 +8,7 @@
 
 export { TaskCrash, throw_task_crash } from './task-crash'
 export { TaskDone, mission_completed } from './task-done'
-export { TaskError, TaskErrorDescription } from './task-error'
+export { TaskError } from './task-error'
+export type { TaskErrorDescription } from './task-error'
 export { TaskIgnore, throw_task_ignore } from './task-ignore'
 export { TaskRetry, throw_task_retry } from './task-retry'

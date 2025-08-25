@@ -7,11 +7,8 @@
  */
 
 import { Judgement } from '@tarpit/judge'
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, expect, it } from 'vitest'
 import { MimeBody } from './mime-body'
-
-chai.use(cap)
 
 describe('mime-body.ts', function() {
 
@@ -26,8 +23,8 @@ describe('mime-body.ts', function() {
                 text: '{"a":1,"b":"黑龙江"}',
                 data: '{"a":1,"b":"黑龙江"}',
             })
-            expect(instance.data).to.equal('{"a":1,"b":"黑龙江"}')
-            expect(instance.checker).to.be.undefined
+            expect(instance.data).toEqual('{"a":1,"b":"黑龙江"}')
+            expect(instance.checker).toBeUndefined()
         })
 
         it('should create checker if data is object', function() {
@@ -39,8 +36,8 @@ describe('mime-body.ts', function() {
                 text: '{"a":1,"b":"黑龙江"}',
                 data: { a: 1, b: '黑龙江' }
             })
-            expect(instance.data).to.eql({ a: 1, b: '黑龙江' })
-            expect(instance.checker).to.be.instanceof(Judgement)
+            expect(instance.data).toEqual({ a: 1, b: '黑龙江' })
+            expect(instance.checker).toBeInstanceOf(Judgement)
         })
     })
 })

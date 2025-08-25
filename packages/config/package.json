@@ -34,16 +34,16 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
+        "build": "tsup src/index.ts --format cjs,esm --dts --out-dir lib",
         "check-type": "tsc --noEmit",
         "docs": "tp docs",
-        "test": "tp cover --reporter=json --reporter=text --clean"
+        "test": "vitest run --coverage"
     },
     "dependencies": {
-        "@tarpit/judge": "^0.5.79"
+        "@tarpit/judge": "workspace:*"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.79",
-        "@tarpit/type-tools": "^0.5.79"
+        "@tarpit/cli": "workspace:*",
+        "@tarpit/type-tools": "workspace:*"
     }
 }

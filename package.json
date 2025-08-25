@@ -3,11 +3,12 @@
     "private": true,
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "scripts": {
-        "reset": "yarn clean && yarn && lerna run build",
-        "clean": "npm run clean-docs && npm run clean-dest && npm run clean-coverage && lerna clean -y && rm -rf node_modules",
+        "reset": "pnpm run clean && pnpm install && pnpm -r build",
+        "clean": "pnpm run clean-docs && pnpm run clean-dest && pnpm run clean-coverage && pnpm -r exec -- rm -rf node_modules && rm -rf node_modules",
         "clean-docs": "rm -rf ./docs/_site && rm -rf ./docs/apis/*/",
-        "clean-coverage": "lerna exec 'rm -rf ./coverage ./.cache ./.nyc_output'",
-        "clean-dest": "lerna exec 'rm -rf ./lib'"
+        "clean-coverage": "pnpm -r exec -- 'rm -rf ./coverage ./.cache ./.nyc_output'",
+        "clean-dest": "pnpm -r exec -- 'rm -rf ./lib'",
+        "publish:ci": "pnpm -r build && pnpm changeset publish"
     },
     "workspaces": [
         "actions/*",
@@ -17,14 +18,15 @@
         "supports/*"
     ],
     "devDependencies": {
+        "@changesets/cli": "^2.29.6",
         "@istanbuljs/nyc-config-typescript": "^1.0.2",
-        "@rollup/plugin-json": "^6.0.0",
-        "@rollup/plugin-typescript": "^11.1.2",
+        "@swc/core": "^1.13.3",
         "@types/chai": "^4.3.5",
         "@types/chai-as-promised": "^7.1.5",
         "@types/chai-spies": "^1.0.3",
         "@types/mocha": "^10.0.1",
         "@types/node": "^20.4.1",
+        "@vitest/coverage-v8": "^3.2.4",
         "axios": "1.8.4",
         "builtin-modules": "^3.3.0",
         "chai": "^4.3.7",
@@ -32,16 +34,18 @@
         "chai-spies": "^1.0.0",
         "fast-glob": "^3.3.0",
         "jsonwebtoken": "^9.0.1",
-        "lerna": "^7.1.1",
         "mocha": "^10.2.0",
         "normalize-package-data": "^5.0.0",
         "npm-check-updates": "^16.10.15",
         "nyc": "^15.1.0",
-        "rollup": "^3.26.2",
-        "rollup-plugin-dts": "^5.3.0",
-        "ts-node": "^10.9.1",
-        "typedoc": "^0.24.8",
-        "typedoc-theme-hierarchy": "^4.0.0",
-        "typescript": "~5.1.6"
+        "reflect-metadata": "^0.1.14",
+        "testcontainers": "^11.5.1",
+        "ts-node": "^10.9.2",
+        "tsup": "^8.5.0",
+        "typedoc": "^0.28.10",
+        "typedoc-theme-hierarchy": "^6.0.0",
+        "typescript": "~5.9.2",
+        "unplugin-swc": "^1.5.6",
+        "vitest": "^3.2.4"
     }
 }

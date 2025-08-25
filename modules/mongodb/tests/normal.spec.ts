@@ -7,82 +7,72 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpModule } from '@tarpit/core'
-import chai, { expect } from 'chai'
-import chai_spies from 'chai-spies'
+import { Platform } from '@tarpit/core'
+import { readFile } from 'fs/promises'
 import { ObjectId, WithId } from 'mongodb'
+import { resolve } from 'path'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { GenericCollection, MongodbModule, TpMongo } from '../src'
 
-chai.use(chai_spies)
-
-@TpMongo('test', 'user')
-class TestUserMongo extends GenericCollection<{ name: string, age: number, created_at: number, updated_at: number }>() {
+@TpMongo('test', 'normal')
+class TestMongo extends GenericCollection<{ name: string, age: number, created_at: number, updated_at: number }>() {
     get_by_name(name: string): Promise<WithId<{ name: string; age: number; created_at: number; updated_at: number }> | null> {
         return this.findOne({ name })
     }
 }
 
-@TpModule({
-    providers: [
-        TestUserMongo,
-        // TestInnerUserMongo,
-    ]
-})
-class TempModule {
-}
-
 describe('normal case', function() {
 
-    // this.slow(200)
-
-    const url = process.env.MONGODB_URL ?? ''
     let platform: Platform
-    let user_mongo: TestUserMongo
+    let mongodb_url: string
 
-    const sandbox = chai.spy.sandbox()
-
-    before(async function() {
-        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
-        platform = new Platform(load_config({ mongodb: { url } }))
+    beforeAll(async function() {
+        mongodb_url = await readFile(resolve(__dirname, '.tmp/mongo-url'), 'utf-8')
+        vi.spyOn(console, 'debug').mockImplementation(() => undefined)
+        vi.spyOn(console, 'log').mockImplementation(() => undefined)
+        vi.spyOn(console, 'info').mockImplementation(() => undefined)
+        vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+        vi.spyOn(console, 'error').mockImplementation(() => undefined)
+        platform = new Platform(load_config({ mongodb: { url: mongodb_url } }))
             .import(MongodbModule)
-            .import(TempModule)
-
-        user_mongo = platform.expose(TestUserMongo)!
+            .import(TestMongo)
         await platform.start()
-        await new Promise(resolve => setTimeout(resolve, 200))
-    })
+    }, 30000)
 
-    after(async function() {
-        await user_mongo.deleteMany({})
+    afterAll(async function() {
         await platform.terminate()
-        sandbox.restore()
+        vi.restoreAllMocks()
     })
 
     it('should add a doc to the collection', async function() {
         const now = Date.now()
+        const user_mongo = platform.expose(TestMongo)!
         const res = await user_mongo.insertOne({ name: 'Mike', age: 18, created_at: now, updated_at: now })
-        expect(res.insertedId).to.be.an.instanceof(ObjectId)
+        expect(res.insertedId).toBeInstanceOf(ObjectId)
     })
 
     it('should get the doc of the collection', async function() {
+        const user_mongo = platform.expose(TestMongo)!
         const res = await user_mongo.get_by_name('Mike')
         expect(res).is.not.null
-        expect(res?.name).to.equal('Mike')
-        expect(res?.age).to.equal(18)
+        expect(res?.name).toEqual('Mike')
+        expect(res?.age).toEqual(18)
     })
 
     it('should update the doc of the collection', async function() {
+        const user_mongo = platform.expose(TestMongo)!
         const res = await user_mongo.updateOne({ name: 'Mike' }, { $set: { age: 19 } })
-        expect(res?.matchedCount).to.equal(1)
-        expect(res?.modifiedCount).to.equal(1)
+        expect(res?.matchedCount).toEqual(1)
+        expect(res?.modifiedCount).toEqual(1)
         const doc = await user_mongo.get_by_name('Mike')
-        expect(doc?.age).to.equal(19)
+        expect(doc?.age).toEqual(19)
     })
 
     it('should delete the doc of the collection', async function() {
+        const user_mongo = platform.expose(TestMongo)!
         const res = await user_mongo.deleteOne({ name: 'Mike' })
-        expect(res?.deletedCount).to.equal(1)
+        expect(res?.deletedCount).toEqual(1)
         const doc = await user_mongo.get_by_name('Mike')
-        expect(doc).is.null
+        expect(doc).toBeNull()
     })
 })

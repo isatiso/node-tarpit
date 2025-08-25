@@ -6,16 +6,13 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { Optional, TpService } from '../annotations'
 import { ClassProvider } from './class-provider'
 import { FactoryProvider } from './factory-provider'
 import { Injector } from './injector'
 
-chai.use(cap)
-
-describe('factory-provider.ts', function() {
+describe('factory-provider.ts', () => {
 
     let injector: Injector
 
@@ -26,7 +23,7 @@ describe('factory-provider.ts', function() {
     @TpService()
     class A {
         constructor(
-            private _aa: AA,
+            public _aa: AA,
         ) {
         }
     }
@@ -39,34 +36,34 @@ describe('factory-provider.ts', function() {
     class C {
     }
 
-    before(function() {
+    beforeAll(() => {
         injector = Injector.create()
     })
 
-    describe('FactoryProvider', function() {
+    describe('FactoryProvider', () => {
         let ins_a: A
         const ins_b = new B()
 
-        it('could create instance by static method "create"', function() {
-            expect(() => ClassProvider.create(injector, { provide: AA, useClass: AA })).to.not.throw()
-            expect(() => FactoryProvider.create(injector, { provide: A, useFactory: (aa: AA) => ins_a ? ins_a : ins_a = new A(aa), deps: [AA] })).to.not.throw()
+        it('could create instance by static method "create"', () => {
+            expect(() => ClassProvider.create(injector, { provide: AA, useClass: AA })).not.toThrow()
+            expect(() => FactoryProvider.create(injector, { provide: A, useFactory: (aa: AA) => ins_a ? ins_a : ins_a = new A(aa), deps: [AA] })).not.toThrow()
         })
 
-        it('should set provider to injector on init', function() {
+        it('should set provider to injector on init', () => {
             const provider = FactoryProvider.create(injector, { provide: B, useFactory: () => ins_b, root: true }).set_used()
-            expect(injector.get(B)).to.equal(provider)
-            expect(injector.get(B)?.create()).to.be.instanceof(B)
+            expect(injector.get(B)).toEqual(provider)
+            expect(injector.get(B)?.create()).toBeInstanceOf(B)
         })
 
-        it('should search deep dependencies on init', function() {
+        it('should search deep dependencies on init', () => {
             const provider_factory = FactoryProvider.create(injector, { provide: 'CLS', useFactory: (a: A, b: B, c: C) => [a, b, c], deps: [A, B, [new Optional(), C]] })
             const cls = provider_factory.create()
-            expect(cls).to.eql([ins_a, ins_b, undefined])
+            expect(cls).toEqual([ins_a, ins_b, undefined])
         })
 
-        it('should use parsed providers', function() {
+        it('should use parsed providers', () => {
             const provider = injector.get('CLS')
-            expect(provider?.create()).to.eql([ins_a, ins_b, undefined])
+            expect(provider?.create()).toEqual([ins_a, ins_b, undefined])
         })
     })
 })

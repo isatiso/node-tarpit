@@ -6,16 +6,13 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, it, beforeEach, expect } from 'vitest'
 import { TpModule, TpRoot, TpService } from '../annotations'
 import { print_provider_tree } from './provider-tree-printer'
 import { Injector, ClassProvider, ValueProvider } from '../di'
 import { TpConfigData } from '../builtin/tp-config-data'
 import { TpLoader } from '../builtin/tp-loader'
 import { get_class_decorator, make_decorator } from './decorator'
-
-chai.use(cap)
 
 // Mock classes for testing - Three-tier structure
 @TpService()
@@ -118,7 +115,7 @@ describe('provider-tree-printer.ts', function() {
     describe('#print_provider_tree()', function() {
         it('should print empty root injector', function() {
             const result = print_provider_tree(root_injector)
-            expect(result).to.equal([
+            expect(result).toEqual([
                 'Injector',
                 '└── (no providers)'
             ].join('\n'))
@@ -130,10 +127,10 @@ describe('provider-tree-printer.ts', function() {
             ValueProvider.create(root_injector, { provide: Platform, useValue: new Platform() })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('TpConfigData [Built-in]')
-            expect(result).to.contain('TpLoader [Built-in]')
-            expect(result).to.contain('Platform [Built-in]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('TpConfigData [Built-in]')
+            expect(result).toContain('TpLoader [Built-in]')
+            expect(result).toContain('Platform [Built-in]')
         })
 
         it('should print root injector with decorated services', function() {
@@ -142,10 +139,10 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(root_injector, { provide: Level1Root, useClass: Level1Root })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('Level1Service [TpWorker → @TpService]')
-            expect(result).to.contain('Level1Module [TpAssembly → @TpModule]')
-            expect(result).to.contain('Level1Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('Level1Service [TpWorker → @TpService]')
+            expect(result).toContain('Level1Module [TpAssembly → @TpModule]')
+            expect(result).toContain('Level1Root [TpEntry → @TpRoot]')
         })
 
         it('should print single level child injector', function() {
@@ -159,12 +156,12 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child, { provide: Level1Root, useClass: Level1Root })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('├── ○ TpConfigData [Built-in]')
-            expect(result).to.contain('├── ○ Platform [Built-in]')
-            expect(result).to.contain('└── Injector (Level1Root)')
-            expect(result).to.contain('    ├── ○ Level1Service [TpWorker → @TpService]')
-            expect(result).to.contain('    └── ○ Level1Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('├── ○ TpConfigData [Built-in]')
+            expect(result).toContain('├── ○ Platform [Built-in]')
+            expect(result).toContain('└── Injector (Level1Root)')
+            expect(result).toContain('    ├── ○ Level1Service [TpWorker → @TpService]')
+            expect(result).toContain('    └── ○ Level1Root [TpEntry → @TpRoot]')
         })
 
         it('should print multi-level nested injectors', function() {
@@ -182,14 +179,14 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child2, { provide: Level1Root, useClass: Level1Root })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('├── ○ TpConfigData [Built-in]')
-            expect(result).to.contain('└── Injector (Level2Root)')
-            expect(result).to.contain('    ├── ○ Level1Module [TpAssembly → @TpModule]')
-            expect(result).to.contain('    ├── ○ Level2Root [TpEntry → @TpRoot]')
-            expect(result).to.contain('    └── Injector (Level1Root)')
-            expect(result).to.contain('        ├── ○ Level2Service [TpWorker → @TpService]')
-            expect(result).to.contain('        └── ○ Level1Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('├── ○ TpConfigData [Built-in]')
+            expect(result).toContain('└── Injector (Level2Root)')
+            expect(result).toContain('    ├── ○ Level1Module [TpAssembly → @TpModule]')
+            expect(result).toContain('    ├── ○ Level2Root [TpEntry → @TpRoot]')
+            expect(result).toContain('    └── Injector (Level1Root)')
+            expect(result).toContain('        ├── ○ Level2Service [TpWorker → @TpService]')
+            expect(result).toContain('        └── ○ Level1Root [TpEntry → @TpRoot]')
         })
 
         it('should print multiple child injectors at same level', function() {
@@ -206,13 +203,13 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child2, { provide: Level2Root, useClass: Level2Root })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('├── ○ TpConfigData [Built-in]')
-            expect(result).to.contain('├── Injector (Level1Root)')
-            expect(result).to.contain('│   ├── ○ Level1Service [TpWorker → @TpService]')
-            expect(result).to.contain('│   └── ○ Level1Root [TpEntry → @TpRoot]')
-            expect(result).to.contain('└── Injector (Level2Root)')
-            expect(result).to.contain('    └── ○ Level2Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('├── ○ TpConfigData [Built-in]')
+            expect(result).toContain('├── Injector (Level1Root)')
+            expect(result).toContain('│   ├── ○ Level1Service [TpWorker → @TpService]')
+            expect(result).toContain('│   └── ○ Level1Root [TpEntry → @TpRoot]')
+            expect(result).toContain('└── Injector (Level2Root)')
+            expect(result).toContain('    └── ○ Level2Root [TpEntry → @TpRoot]')
         })
 
         it('should handle injector without TpRoot', function() {
@@ -221,9 +218,9 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child, { provide: Level1Service, useClass: Level1Service })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('└── Injector')
-            expect(result).not.to.contain('Injector (')
-            expect(result).to.contain('    └── ○ Level1Service [TpWorker → @TpService]')
+            expect(result).toContain('└── Injector')
+            expect(result).not.toContain('Injector (')
+            expect(result).toContain('    └── ○ Level1Service [TpWorker → @TpService]')
         })
 
         it('should handle child injector with no providers', function() {
@@ -233,10 +230,10 @@ describe('provider-tree-printer.ts', function() {
             Injector.create(root_injector)
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('├── ○ TpConfigData [Built-in]')
-            expect(result).to.contain('└── Injector')
-            expect(result).to.contain('    └── (no providers)')
+            expect(result).toContain('Injector')
+            expect(result).toContain('├── ○ TpConfigData [Built-in]')
+            expect(result).toContain('└── Injector')
+            expect(result).toContain('    └── (no providers)')
         })
 
         it('should handle string and symbol tokens', function() {
@@ -247,8 +244,8 @@ describe('provider-tree-printer.ts', function() {
             ValueProvider.create(root_injector, { provide: symbol_token, useValue: 'symbol' })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('"STRING_TOKEN"')
-            expect(result).to.contain('Symbol(SYMBOL_TOKEN)')
+            expect(result).toContain('"STRING_TOKEN"')
+            expect(result).toContain('Symbol(SYMBOL_TOKEN)')
         })
 
         it('should handle providers without decorators', function() {
@@ -261,10 +258,10 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(root_injector, { provide: PlainClass, useClass: PlainClass })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('PlainClass')
-            expect(result).not.to.contain('[TpWorker')
-            expect(result).not.to.contain('[TpAssembly')
-            expect(result).not.to.contain('[TpEntry')
+            expect(result).toContain('PlainClass')
+            expect(result).not.toContain('[TpWorker')
+            expect(result).not.toContain('[TpAssembly')
+            expect(result).not.toContain('[TpEntry')
         })
 
         it('should filter out Injector tokens', function() {
@@ -273,8 +270,8 @@ describe('provider-tree-printer.ts', function() {
             // This test verifies that the function filters it out
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Level1Service [TpWorker → @TpService]')
-            expect(result).not.to.contain('Injector [')
+            expect(result).toContain('Level1Service [TpWorker → @TpService]')
+            expect(result).not.toContain('Injector [')
         })
 
         it('should handle complex nested structure with all features', function() {
@@ -294,14 +291,14 @@ describe('provider-tree-printer.ts', function() {
             const result = print_provider_tree(root_injector)
 
             const lines = result.split('\n')
-            expect(lines[0]).to.equal('Injector')
+            expect(lines[0]).toEqual('Injector')
             // Don't check exact order of built-in services, just check they exist
-            expect(result).to.contain('○ TpLoader [Built-in]')
-            expect(result).to.contain('○ TpConfigData [Built-in]')
-            expect(result).to.contain('○ Platform [Built-in]')
-            expect(result).to.contain('└── Injector (Level2Root)')
-            expect(result).to.contain('    └── Injector (Level1Root)')
-            expect(result).to.contain('        └── ○ Level1Root [TpEntry → @TpRoot]')
+            expect(result).toContain('○ TpLoader [Built-in]')
+            expect(result).toContain('○ TpConfigData [Built-in]')
+            expect(result).toContain('○ Platform [Built-in]')
+            expect(result).toContain('└── Injector (Level2Root)')
+            expect(result).toContain('    └── Injector (Level1Root)')
+            expect(result).toContain('        └── ○ Level1Root [TpEntry → @TpRoot]')
         })
 
         it('should handle anonymous function names', function() {
@@ -343,8 +340,8 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child2, { provide: EmptyNameRoot, useClass: EmptyNameRoot })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector (Unknown)')
-            expect(result).to.contain('Anonymous')
+            expect(result).toContain('Injector (Unknown)')
+            expect(result).toContain('Anonymous')
         })
 
         it('should handle edge case scenarios for 100% coverage', function() {
@@ -368,8 +365,8 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child, { provide: NoNameProvider, useClass: NoNameProvider })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector (Unknown)')
-            expect(result).to.contain('Anonymous')
+            expect(result).toContain('Injector (Unknown)')
+            expect(result).toContain('Anonymous')
         })
 
         it('should handle falsy token names for complete coverage', function() {
@@ -412,8 +409,8 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child2, { provide: ZeroNameProvider, useClass: ZeroNameProvider })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector (Unknown)')
-            expect(result).to.contain('Anonymous')
+            expect(result).toContain('Injector (Unknown)')
+            expect(result).toContain('Anonymous')
         })
 
         it('should handle providers with def forms', function() {
@@ -423,10 +420,10 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child, { provide: Level1Root, useClass: Level1Root })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('Injector (Level1Root)')
-            expect(result).to.contain('Level1Module [TpAssembly → @TpModule]')
-            expect(result).to.contain('Level1Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('Injector (Level1Root)')
+            expect(result).toContain('Level1Module [TpAssembly → @TpModule]')
+            expect(result).toContain('Level1Root [TpEntry → @TpRoot]')
         })
 
         it('should handle non-function/non-string/non-symbol tokens for 100% coverage', function() {
@@ -443,10 +440,10 @@ describe('provider-tree-printer.ts', function() {
             ValueProvider.create(root_injector, { provide: booleanToken, useValue: 'boolean-value' })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('123')
-            expect(result).to.contain('[object Object]')
-            expect(result).to.contain('true')
+            expect(result).toContain('Injector')
+            expect(result).toContain('123')
+            expect(result).toContain('[object Object]')
+            expect(result).toContain('true')
         })
 
         it('should handle three-tier root structure with def providers and imports', function() {
@@ -471,22 +468,22 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
             // Verify root structure
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('TpConfigData [Built-in]')
-            expect(result).to.contain('Platform [Built-in]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('TpConfigData [Built-in]')
+            expect(result).toContain('Platform [Built-in]')
 
             // Verify three-tier structure
-            expect(result).to.contain('Injector (Level3Root)')
-            expect(result).to.contain('Level3Module [TpAssembly → @TpModule]')
-            expect(result).to.contain('Level3Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector (Level3Root)')
+            expect(result).toContain('Level3Module [TpAssembly → @TpModule]')
+            expect(result).toContain('Level3Root [TpEntry → @TpRoot]')
 
-            expect(result).to.contain('Injector (Level2Root)')
-            expect(result).to.contain('Level2Module [TpAssembly → @TpModule]')
-            expect(result).to.contain('Level2Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector (Level2Root)')
+            expect(result).toContain('Level2Module [TpAssembly → @TpModule]')
+            expect(result).toContain('Level2Root [TpEntry → @TpRoot]')
 
-            expect(result).to.contain('Injector (Level1Root)')
-            expect(result).to.contain('Level1Module [TpAssembly → @TpModule]')
-            expect(result).to.contain('Level1Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector (Level1Root)')
+            expect(result).toContain('Level1Module [TpAssembly → @TpModule]')
+            expect(result).toContain('Level1Root [TpEntry → @TpRoot]')
         })
 
         it('should handle def providers with various token types', function() {
@@ -496,10 +493,10 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child, { provide: Level3Root, useClass: Level3Root })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('Injector (Level3Root)')
-            expect(result).to.contain('Level3Module [TpAssembly → @TpModule]')
-            expect(result).to.contain('Level3Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('Injector (Level3Root)')
+            expect(result).toContain('Level3Module [TpAssembly → @TpModule]')
+            expect(result).toContain('Level3Root [TpEntry → @TpRoot]')
         })
 
         it('should handle classes with completely missing names for 100% coverage', function() {
@@ -519,8 +516,8 @@ describe('provider-tree-printer.ts', function() {
             ClassProvider.create(child, { provide: ReallyAnonymousProvider, useClass: ReallyAnonymousProvider })
 
             const result = print_provider_tree(root_injector)
-            expect(result).to.contain('Injector (Unknown)')
-            expect(result).to.contain('Anonymous')
+            expect(result).toContain('Injector (Unknown)')
+            expect(result).toContain('Anonymous')
         })
 
         it('should handle calling print_provider_tree with child injector as starting point', function() {
@@ -549,26 +546,26 @@ describe('provider-tree-printer.ts', function() {
             const result = print_provider_tree(level1_child)
 
             // When starting from level1_child, it should be treated as "Injector"
-            expect(result).to.contain('Injector')
+            expect(result).toContain('Injector')
 
             // Should show level1_child's own providers
-            expect(result).to.contain('Level1Service [TpWorker → @TpService]')
-            expect(result).to.contain('Level1Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Level1Service [TpWorker → @TpService]')
+            expect(result).toContain('Level1Root [TpEntry → @TpRoot]')
 
             // Should show level2_child as a child injector of level1_child
-            expect(result).to.contain('Injector (Level2Root)')
-            expect(result).to.contain('Level2Service [TpWorker → @TpService]')
-            expect(result).to.contain('Level2Root [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector (Level2Root)')
+            expect(result).toContain('Level2Service [TpWorker → @TpService]')
+            expect(result).toContain('Level2Root [TpEntry → @TpRoot]')
 
             // Should show level3_child as nested under level2_child
             // Since level3_child has no TpRoot, it should just show "Injector" without parentheses
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('Level3Service [TpWorker → @TpService]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('Level3Service [TpWorker → @TpService]')
 
             // Should NOT contain the original root injector's providers (TpConfigData, Platform)
             // since we're starting from level1_child, not root_injector
-            expect(result).not.to.contain('TpConfigData [Built-in]')
-            expect(result).not.to.contain('Platform [Built-in]')
+            expect(result).not.toContain('TpConfigData [Built-in]')
+            expect(result).not.toContain('Platform [Built-in]')
         })
 
         it('should handle class token without decorators to cover missing branch', function() {
@@ -585,11 +582,11 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
 
-            expect(result).to.contain('Injector')
+            expect(result).toContain('Injector')
             // Should show the class name without any decorator type info
-            expect(result).to.contain('PlainClassToken')
+            expect(result).toContain('PlainClassToken')
             // Should NOT have any [TpWorker], [TpAssembly], [TpEntry], or [Built-in] annotations
-            expect(result).not.to.contain('PlainClassToken [')
+            expect(result).not.toContain('PlainClassToken [')
         })
 
         it('should cover missing branches in find_tp_root_for_injector and get_provider_type', function() {
@@ -606,11 +603,11 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
 
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('Level1Root [TpEntry → @TpRoot]')
-            expect(result).to.contain('"string-token"')
-            expect(result).to.contain('Symbol(symbol-token)')
-            expect(result).to.contain('999')
+            expect(result).toContain('Injector')
+            expect(result).toContain('Level1Root [TpEntry → @TpRoot]')
+            expect(result).toContain('"string-token"')
+            expect(result).toContain('Symbol(symbol-token)')
+            expect(result).toContain('999')
         })
 
         it('should handle injector with only non-function tokens', function() {
@@ -627,12 +624,12 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
 
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('"only-string"')
-            expect(result).to.contain('Symbol(only-symbol)')
-            expect(result).to.contain('[object Object]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('"only-string"')
+            expect(result).toContain('Symbol(only-symbol)')
+            expect(result).toContain('[object Object]')
             // Since no TpRoot provider exists, child should be just "Injector" without parentheses
-            expect(result).to.contain('└── Injector')
+            expect(result).toContain('└── Injector')
         })
 
         it('should cover line 77 - function with no decorators in child injector', function() {
@@ -649,11 +646,11 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
 
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('NoDecoratorClass')
+            expect(result).toContain('Injector')
+            expect(result).toContain('NoDecoratorClass')
             // Child injector should not have name in parentheses since no TpRoot found
-            expect(result).to.contain('└── Injector')
-            expect(result).not.to.contain('Injector (')
+            expect(result).toContain('└── Injector')
+            expect(result).not.toContain('Injector (')
         })
 
         it('should cover line 121 - TpRoot as first decorator in get_provider_type', function() {
@@ -671,8 +668,8 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
 
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('OnlyTpRootClass [TpEntry → @TpRoot]')
+            expect(result).toContain('Injector')
+            expect(result).toContain('OnlyTpRootClass [TpEntry → @TpRoot]')
         })
 
         it('should ensure line 121 coverage with isolated TpRoot test', function() {
@@ -689,7 +686,7 @@ describe('provider-tree-printer.ts', function() {
 
             const result = print_provider_tree(root_injector)
 
-            expect(result).to.contain('SimpleTpRoot [TpEntry → @TpRoot]')
+            expect(result).toContain('SimpleTpRoot [TpEntry → @TpRoot]')
         })
 
         it('should definitely hit line 121 - isolated TpRoot without other decorators', function() {
@@ -703,15 +700,15 @@ describe('provider-tree-printer.ts', function() {
 
             // Verify the decorator setup
             const decorators = get_class_decorator(TestTpRoot)
-            expect(decorators.length).to.equal(1)
-            expect(decorators[0]).to.be.instanceOf(TpRoot)
+            expect(decorators.length).toEqual(1)
+            expect(decorators[0]).toBeInstanceOf(TpRoot)
 
             // Add to injector and test
             ClassProvider.create(fresh_injector, { provide: TestTpRoot, useClass: TestTpRoot })
 
             const result = print_provider_tree(fresh_injector)
 
-            expect(result).to.contain('TestTpRoot [TpEntry → @TpRoot]')
+            expect(result).toContain('TestTpRoot [TpEntry → @TpRoot]')
         })
 
         it('should cover line 121 - decorator that is not TpService, TpModule, or TpRoot', function() {
@@ -728,10 +725,10 @@ describe('provider-tree-printer.ts', function() {
 
             // Verify the decorator setup - should have 1 decorator but not be any of the known types
             const decorators = get_class_decorator(ClassWithCustomDecorator)
-            expect(decorators.length).to.equal(1)
-            expect(decorators[0]).to.not.be.instanceOf(TpService)
-            expect(decorators[0]).to.not.be.instanceOf(TpModule)
-            expect(decorators[0]).to.not.be.instanceOf(TpRoot)
+            expect(decorators.length).toEqual(1)
+            expect(decorators[0]).not.toBeInstanceOf(TpService)
+            expect(decorators[0]).not.toBeInstanceOf(TpModule)
+            expect(decorators[0]).not.toBeInstanceOf(TpRoot)
 
             // Add to injector - this should trigger the case where none of the if-else conditions match
             ClassProvider.create(root_injector, { provide: ClassWithCustomDecorator, useClass: ClassWithCustomDecorator })
@@ -739,8 +736,8 @@ describe('provider-tree-printer.ts', function() {
             const result = print_provider_tree(root_injector)
 
             // Should show the class name without any type annotation since it doesn't match known decorators
-            expect(result).to.contain('ClassWithCustomDecorator')
-            expect(result).not.to.contain('ClassWithCustomDecorator [')
+            expect(result).toContain('ClassWithCustomDecorator')
+            expect(result).not.toContain('ClassWithCustomDecorator [')
         })
     })
 })

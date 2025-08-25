@@ -7,7 +7,7 @@
  */
 
 import { Dora } from '@tarpit/dora'
-import { expect } from 'chai'
+import { describe, it, expect } from 'vitest'
 import { TaskUnit } from '../tools/collect-tasks'
 import { Bullet } from './bullet'
 import { TaskContext } from './task-context'
@@ -20,7 +20,7 @@ describe('task-context.ts', function() {
 
             it('should create instance of TaskContext', function() {
                 const res = TaskContext.from({ id: 'bullet-1', unit: {} as TaskUnit, execution: Dora.from([2022, 6, 1, 13, 24, 56], { timezone: 'Asia/Shanghai' }) } as Bullet)
-                expect(res).to.be.instanceof(TaskContext)
+                expect(res).toBeInstanceOf(TaskContext)
             })
         })
 
@@ -28,7 +28,7 @@ describe('task-context.ts', function() {
 
             it('should return count of context', function() {
                 const res = TaskContext.from({ id: 'bullet-1', unit: {} as TaskUnit, execution: Dora.from([2022, 6, 1, 13, 24, 56], { timezone: 'Asia/Shanghai' }) } as Bullet)
-                expect(res.count).to.equal(0)
+                expect(res.count).toEqual(0)
             })
         })
 
@@ -36,11 +36,11 @@ describe('task-context.ts', function() {
 
             it('should increase count of context and return it', function() {
                 const res = TaskContext.from({ id: 'bullet-1', unit: {} as TaskUnit, execution: Dora.from([2022, 6, 1, 13, 24, 56], { timezone: 'Asia/Shanghai' }) } as Bullet)
-                expect(res.count).to.equal(0)
-                expect(res.incr()).to.equal(1)
-                expect(res.count).to.equal(1)
-                expect(res.incr()).to.equal(2)
-                expect(res.count).to.equal(2)
+                expect(res.count).toEqual(0)
+                expect(res.incr()).toEqual(1)
+                expect(res.count).toEqual(1)
+                expect(res.incr()).toEqual(2)
+                expect(res.count).toEqual(2)
             })
         })
 
@@ -48,7 +48,7 @@ describe('task-context.ts', function() {
 
             it('should return retry_limit of context', function() {
                 const res = TaskContext.from({ id: 'bullet-1', unit: {} as TaskUnit, execution: Dora.from([2022, 6, 1, 13, 24, 56], { timezone: 'Asia/Shanghai' }) } as Bullet)
-                expect(res.retry_limit).to.equal(0)
+                expect(res.retry_limit).toEqual(0)
             })
         })
 
@@ -56,13 +56,13 @@ describe('task-context.ts', function() {
 
             it('should set retry limit only once', function() {
                 const res = TaskContext.from({ id: 'bullet-1', unit: {} as TaskUnit, execution: Dora.from([2022, 6, 1, 13, 24, 56], { timezone: 'Asia/Shanghai' }) } as Bullet)
-                expect(res.retry_limit).to.equal(0)
+                expect(res.retry_limit).toEqual(0)
                 res.set_retry_limit(3)
-                expect(res.retry_limit).to.equal(3)
+                expect(res.retry_limit).toEqual(3)
                 res.set_retry_limit(8)
-                expect(res.retry_limit).to.equal(3)
+                expect(res.retry_limit).toEqual(3)
                 res.set_retry_limit(2)
-                expect(res.retry_limit).to.equal(3)
+                expect(res.retry_limit).toEqual(3)
             })
         })
 
@@ -74,7 +74,7 @@ describe('task-context.ts', function() {
                         crontab_str: '15 6 * * *'
                     } as TaskUnit, execution: Dora.from([2022, 6, 1, 13, 24, 56], { timezone: 'Asia/Shanghai' })
                 } as Bullet)
-                expect(res.crontab).to.equal('15 6 * * *')
+                expect(res.crontab).toEqual('15 6 * * *')
             })
         })
 
@@ -83,7 +83,7 @@ describe('task-context.ts', function() {
             it('should set value to context', function() {
                 const res = TaskContext.from<{ k: string }>({ id: 'bullet-1', unit: {} as TaskUnit, execution: Dora.from([2022, 6, 1, 13, 24, 56], { timezone: 'Asia/Shanghai' }) } as Bullet)
                 res.set('k', '123')
-                expect(res.get('k')).to.equal('123')
+                expect(res.get('k')).toEqual('123')
             })
         })
     })

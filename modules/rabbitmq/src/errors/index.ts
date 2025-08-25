@@ -7,6 +7,9 @@
  */
 
 export { Ack, ack_message } from './ack'
-export { MessageDead, MessageDeadDesc, kill_message } from './message-dead'
-export { MessageError, MessageErrorDesc } from './message-error'
-export { MessageRequeue, MessageRequeueDesc, requeue_message } from './message-requeue'
+export { MessageDead, kill_message } from './message-dead'
+export type { MessageDeadDesc } from './message-dead'
+export { MessageError } from './message-error'
+export type { MessageErrorDesc } from './message-error'
+export { MessageRequeue, requeue_message } from './message-requeue'
+export type { MessageRequeueDesc } from './message-requeue'

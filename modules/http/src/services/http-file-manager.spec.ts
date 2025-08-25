@@ -7,18 +7,13 @@
  */
 
 import { TpConfigData } from '@tarpit/core'
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
-import chai_spies from 'chai-spies'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import net from 'node:net'
 import path from 'node:path'
 import stream from 'node:stream'
 import { HttpFileManager } from './http-file-manager'
-
-chai.use(cap)
-chai.use(chai_spies)
 
 describe('http-file-manager.ts', function() {
 
@@ -64,7 +59,7 @@ describe('http-file-manager.ts', function() {
     describe('.zip()', function() {
         it('should create a zip archive of a directory', async function() {
             const stream_result = await file_manager.zip('')
-            expect(stream_result).to.be.instanceof(stream.Transform)
+            expect(stream_result).toBeInstanceOf(stream.Transform)
             stream_result.destroy()
         })
 
@@ -83,7 +78,7 @@ describe('http-file-manager.ts', function() {
             } as TpConfigData
 
             const small_limit_manager = new HttpFileManager(small_limit_config)
-            await expect(small_limit_manager.zip('')).to.be.rejectedWith('Archive size exceeds limit')
+            await expect(small_limit_manager.zip('')).rejects.toThrow('Archive size exceeds limit')
         })
 
         it('should not throw error if size limit is 0 (unlimited)', async function() {
@@ -102,7 +97,7 @@ describe('http-file-manager.ts', function() {
 
             const unlimited_manager = new HttpFileManager(unlimited_config)
             const stream_result = await unlimited_manager.zip('')
-            expect(stream_result).to.be.instanceof(stream.Transform)
+            expect(stream_result).toBeInstanceOf(stream.Transform)
         })
 
         it('should use default path when data_path is empty', async function() {
@@ -116,64 +111,64 @@ describe('http-file-manager.ts', function() {
                 }
             } as TpConfigData
 
-            const spy = chai.spy.on(path, 'resolve', () => test_dir)
+            const spy = vi.spyOn(path, 'resolve').mockImplementation(() => test_dir)
             const empty_path_manager = new HttpFileManager(empty_path_config)
-            expect(spy).to.have.been.called.with('./data')
+            expect(spy).toHaveBeenCalledWith('./data')
 
             const stream_result = await empty_path_manager.zip('')
-            expect(stream_result).to.be.instanceof(stream.Transform)
-            chai.spy.restore(path, 'resolve')
+            expect(stream_result).toBeInstanceOf(stream.Transform)
+            spy.mockRestore()
         })
     })
 
     describe('.stat()', function() {
         it('should return stats for a file', async function() {
             const stats = await file_manager.stat(test_file)
-            expect(stats).to.be.an('object')
-            expect(stats.isFile()).to.be.true
+            expect(stats).toBeInstanceOf(fs.Stats)
+            expect(stats.isFile()).toBe(true)
         })
 
         it('should return stats for a directory', async function() {
             // Create a subdirectory
             await fsp.mkdir(path.join(test_dir, 'subdir'), { recursive: true })
             const stats = await file_manager.stat('subdir')
-            expect(stats).to.be.an('object')
-            expect(stats.isDirectory()).to.be.true
+            expect(stats).toBeInstanceOf(fs.Stats)
+            expect(stats.isDirectory()).toBe(true)
         })
 
         it('should reject if target does not exist', async function() {
-            await expect(file_manager.stat('nonexistent')).to.be.rejected
+            await expect(file_manager.stat('nonexistent')).rejects.toThrow()
         })
     })
 
     describe('.lstat()', function() {
         it('should return stats for a file without following symlinks', async function() {
             const stats = await file_manager.lstat('link_to_test_file.txt')
-            expect(stats).to.be.an('object')
-            expect(stats.isSymbolicLink()).to.be.true
+            expect(stats).toBeInstanceOf(fs.Stats)
+            expect(stats.isSymbolicLink()).toBe(true)
         })
 
         it('should return different results than stat() for symlinks', async function() {
             const lstat_result = await file_manager.lstat('link_to_test_file.txt')
             const stat_result = await file_manager.stat('link_to_test_file.txt')
 
-            expect(lstat_result.isSymbolicLink()).to.be.true
-            expect(stat_result.isFile()).to.be.true
+            expect(lstat_result.isSymbolicLink()).toBe(true)
+            expect(stat_result.isFile()).toBe(true)
         })
 
         it('should reject if target does not exist', async function() {
-            await expect(file_manager.lstat('nonexistent')).to.be.rejected
+            await expect(file_manager.lstat('nonexistent')).rejects.toThrow()
         })
     })
 
     describe('.read()', function() {
         it('should read file content', async function() {
             const content = await file_manager.read(test_file)
-            expect(content.toString()).to.equal(test_content)
+            expect(content.toString()).toEqual(test_content)
         })
 
         it('should reject if file does not exist', async function() {
-            await expect(file_manager.read('nonexistent.txt')).to.be.rejected
+            await expect(file_manager.read('nonexistent.txt')).rejects.toThrow()
         })
     })
 
@@ -184,14 +179,14 @@ describe('http-file-manager.ts', function() {
             await file_manager.write(new_file, Buffer.from(new_content))
 
             const file_content = await fsp.readFile(path.join(test_dir, new_file), 'utf8')
-            expect(file_content).to.equal(new_content)
+            expect(file_content).toEqual(new_content)
         })
     })
 
     describe('.read_stream()', function() {
         it('should create a readable stream for a file', async function() {
             const readable_stream = await file_manager.read_stream(test_file)
-            expect(readable_stream).to.be.instanceof(stream.Readable)
+            expect(readable_stream).toBeInstanceOf(stream.Readable)
 
             let content = ''
             readable_stream.on('data', (chunk) => {
@@ -200,7 +195,7 @@ describe('http-file-manager.ts', function() {
 
             await new Promise<void>((resolve, reject) => {
                 readable_stream.on('end', () => {
-                    expect(content).to.equal(test_content)
+                    expect(content).toEqual(test_content)
                     resolve()
                 })
                 readable_stream.on('error', reject)
@@ -212,7 +207,7 @@ describe('http-file-manager.ts', function() {
 
             await new Promise<void>((resolve, reject) => {
                 readable_stream.on('error', (error) => {
-                    expect(error.message).to.include('ENOENT')
+                    expect(error.message).include('ENOENT')
                     resolve()
                 })
                 readable_stream.on('end', () => {
@@ -222,7 +217,7 @@ describe('http-file-manager.ts', function() {
         })
 
         it('should reject paths outside of datapath in .read_stream()', async function() {
-            await expect(file_manager.read_stream('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.read_stream('../outside.txt')).rejects.toThrow('Access outside the data path is not allowed')
         })
 
         it('should maintain file lock during stream reading', async function() {
@@ -253,7 +248,7 @@ describe('http-file-manager.ts', function() {
 
                     readable_stream.on('end', () => {
                         events.push('read_finished')
-                        expect(received_content).to.equal(large_content)
+                        expect(received_content).toEqual(large_content)
                         resolve()
                     })
 
@@ -275,11 +270,11 @@ describe('http-file-manager.ts', function() {
             await Promise.all([read_promise, write_promise])
 
             // Verify the order of events - read should complete before write starts
-            expect(events).to.deep.equal(['read_started', 'read_finished', 'write_started', 'write_finished'])
+            expect(events).toEqual(['read_started', 'read_finished', 'write_started', 'write_finished'])
 
             // Verify the file was eventually modified by the write operation
             const final_content = await fsp.readFile(path.join(test_dir, large_file), 'utf8')
-            expect(final_content).to.equal('modified content')
+            expect(final_content).toEqual('modified content')
         })
     })
 
@@ -299,7 +294,7 @@ describe('http-file-manager.ts', function() {
             await file_manager.write_stream(new_file, readable_stream)
 
             const file_content = await fsp.readFile(path.join(test_dir, new_file), 'utf8')
-            expect(file_content).to.equal(new_content)
+            expect(file_content).toEqual(new_content)
         })
 
         it('should handle empty streams', async function() {
@@ -315,7 +310,7 @@ describe('http-file-manager.ts', function() {
             await file_manager.write_stream(new_file, empty_stream)
 
             const file_content = await fsp.readFile(path.join(test_dir, new_file), 'utf8')
-            expect(file_content).to.equal('')
+            expect(file_content).toEqual('')
         })
 
         it('should handle large streams', async function() {
@@ -340,7 +335,7 @@ describe('http-file-manager.ts', function() {
             await file_manager.write_stream(new_file, large_stream)
 
             const stats = await fsp.stat(path.join(test_dir, new_file))
-            expect(stats.size).to.equal(expected_size)
+            expect(stats.size).toEqual(expected_size)
         })
 
         it('should reject paths outside of datapath in .write_stream()', async function() {
@@ -351,7 +346,7 @@ describe('http-file-manager.ts', function() {
                 }
             })
 
-            await expect(file_manager.write_stream('../outside.txt', readable_stream)).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.write_stream('../outside.txt', readable_stream)).rejects.toThrow('Access outside the data path is not allowed')
         })
 
         it('should handle stream errors gracefully', async function() {
@@ -368,7 +363,7 @@ describe('http-file-manager.ts', function() {
                 }
             })
 
-            await expect(file_manager.write_stream(new_file, error_stream)).to.be.rejected
+            await expect(file_manager.write_stream(new_file, error_stream)).rejects.toThrow()
         })
 
         it('should maintain file lock during stream writing', async function() {
@@ -417,11 +412,11 @@ describe('http-file-manager.ts', function() {
             await Promise.all([write_promise, read_promise])
 
             // Verify the order of events - write should complete before read starts
-            expect(events).to.deep.equal(['write_started', 'write_finished', 'read_started', 'read_finished'])
+            expect(events).toEqual(['write_started', 'write_finished', 'read_started', 'read_finished'])
 
             // Verify the file was written correctly
             const final_content = await file_manager.read(test_file_name)
-            expect(final_content.toString()).to.equal(large_content)
+            expect(final_content.toString()).toEqual(large_content)
         })
     })
 
@@ -433,20 +428,20 @@ describe('http-file-manager.ts', function() {
             const exists_old = await fsp.stat(path.join(test_dir, test_file)).catch(() => false)
             const exists_new = await fsp.stat(path.join(test_dir, new_name)).catch(() => false)
 
-            expect(exists_old).to.equal(false)
-            expect(exists_new).to.not.equal(false)
+            expect(exists_old).toBe(false)
+            expect(exists_new).not.toBe(false)
         })
     })
 
     describe('.exists()', function() {
         it('should return true if file exists', async function() {
             const exists = await file_manager.exists(test_file)
-            expect(exists).to.be.true
+            expect(exists).toBe(true)
         })
 
         it('should return false if file does not exist', async function() {
             const exists = await file_manager.exists('nonexistent.txt')
-            expect(exists).to.be.false
+            expect(exists).toBe(false)
         })
     })
 
@@ -457,16 +452,16 @@ describe('http-file-manager.ts', function() {
             await fsp.mkdir(path.join(test_dir, 'subdir'), { recursive: true })
 
             const files = await file_manager.ls('')
-            expect(files).to.be.an('array')
-            expect(files.length).to.equal(4)
+            expect(files).toBeInstanceOf(Array)
+            expect(files.length).toEqual(4)
 
             const file_entry = files.find(f => f.name === test_file)
             const dir_entry = files.find(f => f.name === 'subdir')
 
-            expect(file_entry).to.exist
-            expect(file_entry?.type).to.equal('file')
-            expect(dir_entry).to.exist
-            expect(dir_entry?.type).to.equal('directory')
+            expect(file_entry).toBeDefined()
+            expect(file_entry?.type).toEqual('file')
+            expect(dir_entry).toBeDefined()
+            expect(dir_entry?.type).toEqual('directory')
 
         })
 
@@ -477,9 +472,9 @@ describe('http-file-manager.ts', function() {
             const files = await file_manager.ls('')
             const link_entry = files.find(f => f.name === broken_link)
 
-            expect(link_entry).to.exist
-            expect(link_entry?.type).to.equal('link')
-            expect(link_entry?.link).to.equal('./nonexistent.txt')
+            expect(link_entry).toBeDefined()
+            expect(link_entry?.type).toEqual('link')
+            expect(link_entry?.link).toEqual('./nonexistent.txt')
         })
     })
 
@@ -487,7 +482,7 @@ describe('http-file-manager.ts', function() {
         it('should remove a file', async function() {
             await file_manager.rm(test_file)
             const exists = await fsp.stat(path.join(test_dir, test_file)).catch(() => false)
-            expect(exists).to.equal(false)
+            expect(exists).toBe(false)
         })
 
         it('should remove a directory recursively', async function() {
@@ -498,7 +493,7 @@ describe('http-file-manager.ts', function() {
 
             await file_manager.rm(subdir)
             const exists = await fsp.stat(path.join(test_dir, subdir)).catch(() => false)
-            expect(exists).to.equal(false)
+            expect(exists).toBe(false)
         })
     })
 
@@ -508,7 +503,7 @@ describe('http-file-manager.ts', function() {
             await file_manager.mkdir(new_dir)
 
             const stats = await fsp.stat(path.join(test_dir, new_dir))
-            expect(stats.isDirectory()).to.be.true
+            expect(stats.isDirectory()).toBe(true)
         })
 
         it('should create nested directories recursively', async function() {
@@ -516,7 +511,7 @@ describe('http-file-manager.ts', function() {
             await file_manager.mkdir(nested_dir)
 
             const stats = await fsp.stat(path.join(test_dir, nested_dir))
-            expect(stats.isDirectory()).to.be.true
+            expect(stats.isDirectory()).toBe(true)
         })
     })
 
@@ -527,15 +522,15 @@ describe('http-file-manager.ts', function() {
 
             // Check regular file
             const file_entry = entries.find(e => e.name === test_file)
-            expect(file_entry).to.exist
-            expect(file_entry?.type).to.equal('file')
+            expect(file_entry).toBeDefined()
+            expect(file_entry?.type).toEqual('file')
 
             // Create test directory
             await file_manager.mkdir('types_test_dir')
             const dir_entries = await file_manager.ls('')
             const dir_entry = dir_entries.find(e => e.name === 'types_test_dir')
-            expect(dir_entry).to.exist
-            expect(dir_entry?.type).to.equal('directory')
+            expect(dir_entry).toBeDefined()
+            expect(dir_entry?.type).toEqual('directory')
         })
 
         it('should handle special file types gracefully', function() {
@@ -554,13 +549,13 @@ describe('http-file-manager.ts', function() {
             }
 
             // @ts-ignore Accessing private method for testing
-            expect(file_manager.extract_type(mockDirent('block'))).to.equal('block')
+            expect(file_manager.extract_type(mockDirent('block'))).toEqual('block')
             // @ts-ignore Accessing private method for testing
-            expect(file_manager.extract_type(mockDirent('character'))).to.equal('character')
+            expect(file_manager.extract_type(mockDirent('character'))).toEqual('character')
             // @ts-ignore Accessing private method for testing
-            expect(file_manager.extract_type(mockDirent('fifo'))).to.equal('fifo')
+            expect(file_manager.extract_type(mockDirent('fifo'))).toEqual('fifo')
             // @ts-ignore Accessing private method for testing
-            expect(file_manager.extract_type(mockDirent('socket'))).to.equal('socket')
+            expect(file_manager.extract_type(mockDirent('socket'))).toEqual('socket')
 
             // Test unknown type
             // Test unknown type
@@ -576,51 +571,51 @@ describe('http-file-manager.ts', function() {
             } as fs.Dirent
 
             // @ts-ignore Accessing private method for testing
-            expect(file_manager.extract_type(unknownDirent)).to.equal('unknown')
+            expect(file_manager.extract_type(unknownDirent)).toEqual('unknown')
         })
     })
 
     describe('path boundary checks', function() {
 
         it('should reject paths outside of datapath in .stat()', async function() {
-            await expect(file_manager.stat('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.stat('../outside.txt')).rejects.toThrow('Access outside the data path is not allowed')
         })
 
         it('should reject paths outside of datapath in .lstat()', async function() {
-            await expect(file_manager.lstat('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.lstat('../outside.txt')).rejects.toThrow('Access outside the data path is not allowed')
         })
 
         it('should reject paths outside of datapath in .read()', async function() {
-            await expect(file_manager.read('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.read('../outside.txt')).rejects.toThrow('Access outside the data path is not allowed')
         })
 
         it('should reject paths outside of datapath in .write()', async function() {
-            await expect(file_manager.write('../outside.txt', Buffer.from(''))).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.write('../outside.txt', Buffer.from(''))).rejects.toThrow('Access outside the data path is not allowed')
         })
 
         it('should reject paths outside of datapath in .rename()', async function() {
-            await expect(file_manager.rename(test_file, '../outside.txt')).to.be.rejectedWith('Rename operation is not allowed outside the data path')
+            await expect(file_manager.rename(test_file, '../outside.txt')).rejects.toThrow('Rename operation is not allowed outside the data path')
         })
 
         it('should return false for paths outside of datapath in .exists()', async function() {
             const result = await file_manager.exists('../outside.txt')
-            expect(result).to.be.false
+            expect(result).toBe(false)
         })
 
         it('should reject paths outside of datapath in .ls()', async function() {
-            await expect(file_manager.ls('../')).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.ls('../')).rejects.toThrow('Access outside the data path is not allowed')
         })
 
         it('should reject paths outside of datapath in .rm()', async function() {
-            await expect(file_manager.rm('../outside.txt')).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.rm('../outside.txt')).rejects.toThrow('Access outside the data path is not allowed')
         })
 
         it('should reject paths outside of datapath in .mkdir()', async function() {
-            await expect(file_manager.mkdir('../outside_dir')).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.mkdir('../outside_dir')).rejects.toThrow('Access outside the data path is not allowed')
         })
 
         it('should reject paths outside of datapath in .zip()', async function() {
-            await expect(file_manager.zip('../')).to.be.rejectedWith('Access outside the data path is not allowed')
+            await expect(file_manager.zip('../')).rejects.toThrow('Access outside the data path is not allowed')
         })
     })
 
@@ -632,7 +627,7 @@ describe('http-file-manager.ts', function() {
             // Check if the file was copied correctly
             const source_content = await fsp.readFile(path.join(test_dir, test_file), 'utf8')
             const target_content = await fsp.readFile(path.join(test_dir, target_file), 'utf8')
-            expect(target_content).to.equal(source_content)
+            expect(target_content).toEqual(source_content)
         })
 
         it('should copy a directory recursively', async function() {
@@ -648,10 +643,10 @@ describe('http-file-manager.ts', function() {
 
             // Check if directory and its contents were copied correctly
             const exists = await fsp.stat(path.join(test_dir, target_dir)).catch(() => false)
-            expect(exists).to.not.equal(false)
+            expect(exists).not.toBe(false)
 
             const subfile_content = await fsp.readFile(path.join(test_dir, target_dir, subfile), 'utf8')
-            expect(subfile_content).to.equal('test content')
+            expect(subfile_content).toEqual('test content')
         })
 
         it('should copy symbolic links correctly', async function() {
@@ -660,15 +655,15 @@ describe('http-file-manager.ts', function() {
 
             // Check if the link was copied correctly (the link itself, not the target)
             const link_target = await fsp.readlink(path.join(test_dir, target_link))
-            expect(link_target).to.equal('./test_file.txt')
+            expect(link_target).toEqual('./test_file.txt')
         })
 
         it('should reject paths outside of datapath in .cp()', async function() {
-            await expect(file_manager.cp(test_file, '../outside.txt')).to.be.rejectedWith('Copy operation is not allowed outside the data path')
+            await expect(file_manager.cp(test_file, '../outside.txt')).rejects.toThrow('Copy operation is not allowed outside the data path')
         })
 
         it('should reject if source path is outside of datapath in .cp()', async function() {
-            await expect(file_manager.cp('../outside.txt', 'inside.txt')).to.be.rejectedWith('Copy operation is not allowed outside the data path')
+            await expect(file_manager.cp('../outside.txt', 'inside.txt')).rejects.toThrow('Copy operation is not allowed outside the data path')
         })
     })
 })

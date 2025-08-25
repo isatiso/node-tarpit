@@ -74,12 +74,10 @@ export class HttpRouters {
 
     public readonly upgrade_listener = async (req: IncomingMessage, socket: Duplex, head: Buffer): Promise<SocketHandler | undefined> => {
         const parsed_url = this.url_parser.parse({ url: req.url, headers: req.headers })
-        // istanbul ignore if
         if (!parsed_url || !req.method) {
             return
         }
-        // istanbul ignore next
-        parsed_url.pathname = parsed_url.pathname?.trim().replace(/\/+$/, '') || '/'
+        parsed_url.pathname = parsed_url.pathname!.trim().replace(/\/+$/, '') || '/'
         const handler = this.handler_book.find('SOCKET', parsed_url.pathname)
         if (!handler) {
             socket.destroy()
@@ -90,14 +88,15 @@ export class HttpRouters {
 
     public readonly request_listener = async (req: IncomingMessage, res: ServerResponse) => {
         const parsed_url = this.url_parser.parse({ url: req.url, headers: req.headers })
-        // istanbul ignore if
         if (!parsed_url || !req.method) {
             return reply(res, 400)
         }
-        // istanbul ignore next
-        parsed_url.pathname = parsed_url.pathname || '/'
-        const pathname = parsed_url.pathname.replace(/\/\s*$/, '')
+        const pathname = parsed_url.pathname!.replace(/\/\s*$/, '') || '/'
         const allow = this.handler_book.get_allow(pathname)
+        if (req.method === 'OPTIONS' && req.url === '*') {
+            res.setHeader('Allow', 'OPTIONS,HEAD,GET,POST,PUT,DELETE')
+            return reply(res, 204)
+        }
         if (!allow) {
             return reply(res, 404)
         }
@@ -106,15 +105,10 @@ export class HttpRouters {
         }
         this.c_allow_origin && res.setHeader('Access-Control-Allow-Origin', this.c_allow_origin)
         if (req.method === 'OPTIONS') {
-            // istanbul ignore if
-            if (req.url === '*') {
-                res.setHeader('Allow', 'OPTIONS,HEAD,GET,POST,PUT,DELETE')
-            } else {
-                res.setHeader('Allow', allow.join(','))
-                this.c_allow_methods && res.setHeader('Access-Control-Allow-Methods', this.c_allow_methods)
-                this.c_allow_headers && res.setHeader('Access-Control-Allow-Headers', this.c_allow_headers)
-                this.c_cors_max_age && res.setHeader('Access-Control-Max-Age', this.c_cors_max_age)
-            }
+            res.setHeader('Allow', allow.join(','))
+            this.c_allow_methods && res.setHeader('Access-Control-Allow-Methods', this.c_allow_methods)
+            this.c_allow_headers && res.setHeader('Access-Control-Allow-Headers', this.c_allow_headers)
+            this.c_cors_max_age && res.setHeader('Access-Control-Max-Age', this.c_cors_max_age)
             return reply(res, 204)
         } else {
             res.statusCode = 400

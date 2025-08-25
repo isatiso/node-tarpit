@@ -39,13 +39,13 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c"
+        "build": "tsup src/index.ts --format cjs,esm --dts --out-dir lib"
     },
     "dependencies": {
-        "commander": "^11.0.0"
+        "commander": "^11.0.0",
+        "ts-node": "^10.9.2"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.79",
-        "@tarpit/type-tools": "^0.5.79"
+        "@tarpit/type-tools": "workspace:*"
     }
 }

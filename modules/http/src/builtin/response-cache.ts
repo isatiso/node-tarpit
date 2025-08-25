@@ -15,8 +15,8 @@ export class ResponseCache {
 
     constructor(
         private cache_proxy: HttpCacheProxy,
-        private scope: string,
-        private expire_secs: number,
+        public readonly scope: string,
+        public readonly expire_secs: number,
     ) {
     }
 

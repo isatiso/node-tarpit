@@ -7,17 +7,14 @@
  */
 
 import { load_config } from '@tarpit/config'
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { Disabled, OnTerminate, OnStart, Optional, TpService } from '../annotations'
 import { TpLoader } from '../builtin/tp-loader'
 import { Platform } from '../platform'
 import { ClassProvider } from './class-provider'
 import { Injector } from './injector'
 
-chai.use(cap)
-
-describe('class-provider.ts', function() {
+describe('class-provider.ts', () => {
 
     let injector: Injector
 
@@ -76,33 +73,35 @@ describe('class-provider.ts', function() {
         }
     }
 
-    before(function() {
+    beforeAll(() => {
         injector = Injector.create()
         ClassProvider.create(injector, { provide: TpLoader, useClass: TpLoader })
     })
 
-    describe('ClassProvider', function() {
+    describe('ClassProvider', () => {
 
-        it('could create instance by static method "create"', function() {
-            expect(() => ClassProvider.create(injector, { provide: AA, useClass: AA, root: true })).to.not.throw()
-            expect(() => ClassProvider.create(injector, { provide: A, useClass: A })).to.not.throw()
+        it('could create instance by static method "create"', () => {
+            expect(() => ClassProvider.create(injector, { provide: AA, useClass: AA, root: true })).not.toThrow()
+            expect(() => ClassProvider.create(injector, { provide: A, useClass: A })).not.toThrow()
         })
 
-        it('should set provider to injector on init', function() {
+        it('should set provider to injector on init', () => {
             const provider = ClassProvider.create(injector, { provide: B, useClass: B }).set_used()
-            expect(injector.get(B)).to.equal(provider)
-            expect(injector.get(B)?.create()).to.be.instanceof(B)
+            expect(injector.get(B)).toEqual(provider)
+            expect(injector.get(B)?.create()).toBeInstanceOf(B)
         })
 
-        it('should search deep dependencies on init', function() {
+        it('should search deep dependencies on init', () => {
+            ClassProvider.create(injector, { provide: A, useClass: A })
+            ClassProvider.create(injector, { provide: B, useClass: B })
             const provider_cls = ClassProvider.create(injector, { provide: CLS, useClass: CLS })
             const cls = provider_cls.create()
-            expect(cls).to.be.instanceof(CLS)
-            expect(cls.a).to.be.instanceof(A)
-            expect(cls.b).to.be.instanceof(B)
+            expect(cls).toBeInstanceOf(CLS)
+            expect(cls.a).toBeInstanceOf(A)
+            expect(cls.b).toBeInstanceOf(B)
         })
 
-        it('should set start and terminate listener if exists', async function() {
+        it('should set start and terminate listener if exists', async () => {
             const platform = new Platform(load_config({}))
                 .import(A)
                 .import(B)
@@ -111,9 +110,9 @@ describe('class-provider.ts', function() {
 
             const cls = platform.expose(CLS)
             await platform.start()
-            expect(cls?.started).to.be.true
+            expect(cls?.started).toBe(true)
             await platform.terminate()
-            expect(cls?.terminated).to.be.true
+            expect(cls?.terminated).toBe(true)
         })
     })
 })

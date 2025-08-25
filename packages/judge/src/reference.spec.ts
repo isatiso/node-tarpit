@@ -1,16 +1,5 @@
-/**
- * @license
- * Copyright Cao Jiahang All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at source root.
- */
-
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, it, expect } from 'vitest'
 import { Reference } from './reference'
-
-chai.use(cap)
 
 type ExType = {
     a: string
@@ -32,12 +21,6 @@ describe('reference.ts', function() {
 
     let ref: Reference<ExType>
 
-    before(function() {
-    })
-
-    after(async function() {
-    })
-
     describe('Reference', function() {
         it('could new instance', function() {
             ref = new Reference<ExType>({
@@ -49,25 +32,25 @@ describe('reference.ts', function() {
                     c3: false,
                 }
             })
-            expect(ref).to.be.instanceof(Reference)
+            expect(ref).toBeInstanceOf(Reference)
             const ref_m = new Reference(undefined)
-            expect(ref_m).to.be.instanceof(Reference)
+            expect(ref_m).toBeInstanceOf(Reference)
         })
 
         describe('.get', function() {
             it('should get value of specified path', function() {
-                expect(ref.get('a')).to.equal('some string')
-                expect(ref.get('b')).to.equal(123)
-                expect(ref.get('bi')).to.be.undefined
-                expect(ref.get('c.c1')).to.equal('another string')
-                expect(ref.get('c.c2')).to.equal(9)
-                expect(ref.get('c.c3')).to.equal(false)
-                expect(ref.get('ci.c3')).to.equal(undefined)
+                expect(ref.get('a')).toEqual('some string')
+                expect(ref.get('b')).toEqual(123)
+                expect(ref.get('bi')).toBeUndefined()
+                expect(ref.get('c.c1')).toEqual('another string')
+                expect(ref.get('c.c2')).toEqual(9)
+                expect(ref.get('c.c3')).toEqual(false)
+                expect(ref.get('ci.c3')).toEqual(undefined)
             })
 
             it('should return whole object of data', function() {
-                expect(ref.get()).to.have.property('a', 'some string')
-                expect(ref.get()).to.have.property('b', 123)
+                expect(ref.get()).toHaveProperty('a', 'some string')
+                expect(ref.get()).toHaveProperty('b', 123)
             })
         })
     })

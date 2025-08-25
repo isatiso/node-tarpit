@@ -2,15 +2,7 @@
     "extends": "../../common-tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./",
-        "outDir": "./lib",
-        "paths": {
-            "@tarpit/type-tools": [
-                "../type-tools/src"
-            ],
-            "@tarpit/judge": [
-                "../judge/src"
-            ]
-        }
+        "outDir": "./lib"
     },
     "include": [
         "src/**/*.ts",

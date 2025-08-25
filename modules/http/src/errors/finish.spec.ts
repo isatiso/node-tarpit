@@ -6,18 +6,15 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, expect, it } from 'vitest'
 import { Finish, finish } from './finish'
-
-chai.use(cap)
 
 describe('finish.ts', function() {
 
     describe('#finish()', function() {
 
         it('should throw Finish', function() {
-            expect(() => finish('')).to.throw().which.is.instanceof(Finish)
+            expect(() => finish('')).toThrow(Finish)
         })
     })
 
@@ -25,7 +22,7 @@ describe('finish.ts', function() {
 
         it('should new instance', function() {
             const instance = new Finish('response string')
-            expect(instance).to.have.property('response').which.equal('response string')
+            expect(instance.response).toEqual('response string')
         })
     })
 })
