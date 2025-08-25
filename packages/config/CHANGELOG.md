@@ -1,4 +1,4 @@
-# @tarpit/router-test
+# @tarpit/config
 
 ## 0.6.0
 
@@ -13,17 +13,4 @@
 ### Patch Changes
 
 - Updated dependencies [ff6afdd]
-  - @tarpit/mongodb@1.0.0
-  - @tarpit/config@0.6.0
   - @tarpit/judge@0.6.0
-  - @tarpit/core@1.0.0
-  - @tarpit/http@1.0.0
-
-## 0.5.80
-
-### Patch Changes
-
-- Updated dependencies [bb0d75f]
-  - @tarpit/core@0.5.80
-  - @tarpit/http@0.5.80
-  - @tarpit/mongodb@0.5.80
