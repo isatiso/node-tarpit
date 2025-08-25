@@ -108,7 +108,6 @@ describe('consume case', () => {
             .import(RabbitmqModule)
             .import(TempConsumer)
         await platform.start()
-        await timers.setTimeout(500)
     })
 
     afterAll(async () => {

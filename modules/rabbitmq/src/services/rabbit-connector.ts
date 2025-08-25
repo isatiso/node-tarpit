@@ -106,14 +106,8 @@ export class RabbitConnector {
         await is_reachable(this.url, this.timeout)
         const connection = await connect_rabbitmq(this.url, this.socket_options)
         return connection
-            .on('close', () => {
-                console.log('rabbitmq connection closed', this._closed)
-                if (!this._closed) {
-                    this.connect()
-                }
-            })
+            .on('close', () => this._closed || this.connect())
             .on('error', (err: any) => {
-                console.log('rabbitmq connection error', err)
                 const code = err && err.code
                 if (code !== 200 && code !== 320) {
                     this._connection = undefined

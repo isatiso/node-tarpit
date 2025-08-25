@@ -5,7 +5,6 @@ export default defineConfig({
     ...rootConfig,
     test: {
         ...rootConfig.test,
-        setupFiles: ['./tests/helpers/setup-file.ts'],
         coverage: {
             ...rootConfig.test?.coverage,
             exclude: [
