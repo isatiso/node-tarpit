@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/type-tools",
-    "version": "0.5.79",
+    "version": "0.6.0",
     "description": "Some types that helped.",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -36,6 +36,5 @@
     "scripts": {
         "build": "tsup src/index.ts --format cjs,esm --dts --out-dir lib"
     },
-    "devDependencies": {
-    }
+    "devDependencies": {}
 }
