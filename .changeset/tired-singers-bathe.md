@@ -18,4 +18,9 @@
 "@tarpit/cli": minor
 ---
 
-feat: migrate testing framework to vitest and improve ci stability
+feat: modernize project toolchain and testing
+
+- Migrated the entire project's testing framework to Vitest for a unified and modern developer experience.
+- Upgraded the minimum Node.js requirement to v18 and the TypeScript build target to ES2022.
+- Refactored test container setup for `rabbitmq` and `mongodb` to improve stability and fix CI-specific errors.
+
