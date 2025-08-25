@@ -7,20 +7,20 @@
       <sourceFolder url="file://$MODULE_DIR$/modules/common/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/content-type/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/core/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/modules/worker-threads/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/http/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/modules/http/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/http/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/modules/mongodb/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/modules/mongodb/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/rabbitmq/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/modules/schedule/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/modules/schedule/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/modules/tora/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/modules/schedule/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/packages/barbeque/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/config/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/cron/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/cron/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/cron/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/packages/dora/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/error/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/judge/src" isTestSource="false" />
@@ -34,68 +34,36 @@
       <sourceFolder url="file://$MODULE_DIR$/supports/rollup/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/actions/upload-codecov/lib" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/content-type/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/content-type/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/modules/content-type/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/content-type/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/core/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/core/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/modules/core/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/core/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/http/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/http/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/modules/http/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/http/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/worker-threads/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/worker-threads/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/modules/worker-threads/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/worker-threads/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/mongodb/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/mongodb/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/modules/mongodb/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/mongodb/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/rabbitmq/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/rabbitmq/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/modules/rabbitmq/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/rabbitmq/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/schedule/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/modules/schedule/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/modules/schedule/lib" />
       <excludeFolder url="file://$MODULE_DIR$/modules/schedule/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/barbeque/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/barbeque/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/packages/barbeque/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/barbeque/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/config/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/config/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/packages/config/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/config/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/cron/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/cron/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/packages/cron/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/cron/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/dora/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/dora/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/packages/dora/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/dora/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/error/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/error/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/packages/error/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/error/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/judge/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/judge/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/packages/judge/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/judge/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/negotiator/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/negotiator/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/packages/negotiator/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/negotiator/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/transformer/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/transformer/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/packages/transformer/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/transformer/coverage" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/type-tools/.cache" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/type-tools/.nyc_output" />
       <excludeFolder url="file://$MODULE_DIR$/packages/type-tools/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/type-tools/coverage" />
       <excludeFolder url="file://$MODULE_DIR$/projects/router-test/lib" />

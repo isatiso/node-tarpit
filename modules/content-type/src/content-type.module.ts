@@ -19,6 +19,7 @@ import { decompressor_token, deserializer_token } from './tokens'
 import { MIMEContent } from './types'
 
 @TpModule({
+    inject_root: true,
     providers: [
         ContentDecompressorService,
         ContentDeserializerService,

@@ -7,7 +7,7 @@
  */
 
 import { load_config } from '@tarpit/config'
-import { Platform, TpConfigSchema, TpInspector, TpRoot } from '@tarpit/core'
+import { Platform, TpConfigSchema, TpRoot } from '@tarpit/core'
 import { Get, HttpInspector, HttpServerModule, HttpStatic, PathArgs, Post, RawBody, TpRequest, TpResponse, TpRouter } from '@tarpit/http'
 import { Jtl } from '@tarpit/judge'
 // import { GenericCollection, MongodbModule, TpMongo } from '@tarpit/mongodb'
@@ -84,8 +84,7 @@ export class TestRoot {
     })).import(HttpServerModule)
     // .import(MongodbModule)
 
-    platform.import(TestRoot).start()
-    await platform.expose(TpInspector)?.wait_start()
+    await platform.import(TestRoot).start()
 })()
 
 

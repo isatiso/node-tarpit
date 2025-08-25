@@ -7,7 +7,7 @@
  */
 
 import { ContentTypeModule } from '@tarpit/content-type'
-import { TpLoader, TpModule } from '@tarpit/core'
+import { Injector, TpLoader, TpModule } from '@tarpit/core'
 import { TpConsumer, TpProducer, TpRabbitmqToken } from './annotations'
 import { RabbitClient } from './services/rabbit-client'
 import { RabbitConnector } from './services/rabbit-connector'
@@ -24,7 +24,7 @@ import { collect_produces } from './tools/collect-produces'
 @TpModule({
     inject_root: true,
     imports: [
-        ContentTypeModule,
+        ContentTypeModule
     ],
     providers: [
         RabbitNotifier,
@@ -42,7 +42,6 @@ export class RabbitmqModule {
 
     constructor(
         private client: RabbitClient,
-        private _notifier: RabbitNotifier,
         private loader: TpLoader,
         private consumers: RabbitConsumer,
         private producers: RabbitProducer,

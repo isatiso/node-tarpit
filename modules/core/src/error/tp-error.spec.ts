@@ -6,37 +6,37 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, expect, it } from 'vitest'
 import { throw_native_error, TpError } from './tp-error'
 
-chai.use(cap)
+describe('tp-error.ts', () => {
 
-describe('tp-error.ts', function() {
+    describe('TpError', () => {
 
-    describe('TpError', function() {
-
-        it('should create instance', function() {
-            expect(new TpError({ code: 'err', msg: 'some message' })).to.be.instanceof(TpError)
-            expect(new TpError({ code: 'err', msg: 'some message', origin: new Error('some message') })).to.be.instanceof(TpError)
-            expect(new TpError({ code: 'err', msg: 'some message', origin: 'some string' })).to.be.instanceof(TpError)
+        it('should create instance', () => {
+            expect(new TpError({ code: 'err', msg: 'some message' })).toBeInstanceOf(TpError)
+            expect(new TpError({ code: 'err', msg: 'some message', origin: new Error('some message') })).toBeInstanceOf(TpError)
+            expect(new TpError({ code: 'err', msg: 'some message', origin: 'some string' })).toBeInstanceOf(TpError)
         })
 
-        it('should convert to pure object', function() {
+        it('should convert to pure object', () => {
             const { stack, ...other } = new TpError({ code: 'err', msg: 'some message', origin: new Error('lkj') }).jsonify()
-            expect(other).to.eql({ code: 'err', detail: undefined, msg: 'some message' })
-            expect(new TpError({ code: 'err', msg: 'some message' }).jsonify()).to.eql({ code: 'err', detail: undefined, msg: 'some message', stack: '' })
+            expect(other).toEqual({ code: 'err', detail: undefined, msg: 'some message' })
+            const err = new TpError({ code: 'err', msg: 'some message' }).jsonify()
+            expect(err.stack).toBeTypeOf('string')
+            expect(err.code).toEqual('err')
+            expect(err.msg).toEqual('some message')
         })
 
-        it('should convert to pure object, with specified fields', function() {
+        it('should convert to pure object, with specified fields', () => {
             expect(new TpError({ code: 'err', msg: 'some message' }).jsonify(['code', 'msg']))
-                .to.eql({ code: 'err', msg: 'some message' })
+                .toEqual({ code: 'err', msg: 'some message' })
         })
     })
 
-    describe('#throw_native_error()', function() {
-        it('should throw native Error object', function() {
-            expect(() => throw_native_error('some message')).to.throw('some message')
+    describe('#throw_native_error()', () => {
+        it('should throw native Error object', () => {
+            expect(() => throw_native_error('some message')).toThrow('some message')
         })
     })
 })

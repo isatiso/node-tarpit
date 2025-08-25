@@ -7,7 +7,7 @@
  */
 
 import { Disabled, get_class_decorator, Optional } from '@tarpit/core'
-import { expect } from 'chai'
+import { describe, it, expect } from 'vitest'
 import { Task, TpSchedule } from '../annotations'
 import { collect_tasks } from './collect-tasks'
 
@@ -38,9 +38,9 @@ describe('collect-tasks.ts', function() {
             }
 
             const meta = get_class_decorator(TempSchedule).find(token => token instanceof TpSchedule)
-            expect(meta).to.exist
-            const units = collect_tasks(meta)
-            expect(units).to.be.an('array').with.lengthOf(2)
+            expect(meta).toBeDefined()
+            const units = collect_tasks(meta!)
+            expect(units).toBeInstanceOf(Array).toHaveLength(2)
         })
 
         it('should return empty array if given schedule meta has no unit', function() {
@@ -50,9 +50,9 @@ describe('collect-tasks.ts', function() {
             }
 
             const meta = get_class_decorator(TestSchedule).find(token => token instanceof TpSchedule)
-            expect(meta).to.exist
-            const units = collect_tasks(meta)
-            expect(units).to.be.an('array').with.lengthOf(0)
+            expect(meta).toBeDefined()
+            const units = collect_tasks(meta!)
+            expect(units).toBeInstanceOf(Array).toHaveLength(0)
         })
 
         it('should discard unit if its value is not function', function() {
@@ -65,9 +65,9 @@ describe('collect-tasks.ts', function() {
             }
 
             const meta = get_class_decorator(TestSchedule).find(token => token instanceof TpSchedule)
-            expect(meta).to.exist
-            const units = collect_tasks(meta)
-            expect(units).to.be.an('array').with.lengthOf(0)
+            expect(meta).toBeDefined()
+            const units = collect_tasks(meta!)
+            expect(units).toBeInstanceOf(Array).toHaveLength(0)
         })
 
         it('should ignore unknown decorator', function() {
@@ -82,10 +82,12 @@ describe('collect-tasks.ts', function() {
                 }
             }
 
+
+
             const meta = get_class_decorator(TestSchedule).find(token => token instanceof TpSchedule)
-            expect(meta).to.exist
-            const units = collect_tasks(meta)
-            expect(units).to.be.an('array').with.lengthOf(1)
+            expect(meta).toBeDefined()
+            const units = collect_tasks(meta!)
+            expect(units).toBeInstanceOf(Array).toHaveLength(1)
         })
     })
 })

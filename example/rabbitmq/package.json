@@ -10,9 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@tarpit/config": "^0.5.78",
-    "@tarpit/http": "^0.5.78",
-    "@tarpit/judge": "^0.5.78",
+    "@tarpit/config": "workspace:*",
+    "@tarpit/http": "workspace:*",
+    "@tarpit/judge": "workspace:*",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

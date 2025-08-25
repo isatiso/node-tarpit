@@ -12,7 +12,7 @@
         "lib"
     ],
     "engines": {
-        "node": ">=14.0.0"
+        "node": ">=18"
     },
     "exports": {
         ".": {
@@ -34,9 +34,8 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rm -rf lib && rollup -c"
+        "build": "tsup src/index.ts --format cjs,esm --dts --out-dir lib"
     },
     "devDependencies": {
-        "@tarpit/rollup": "^0.5.79"
     }
 }

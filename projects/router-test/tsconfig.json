@@ -2,27 +2,7 @@
     "extends": "../../common-tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./",
-        "outDir": "./lib",
-        "paths": {
-            "@tarpit/judge": [
-                "../../packages/judge/src"
-            ],
-            "@tarpit/rabbitmq": [
-                "../../modules/rabbitmq/src"
-            ],
-            "@tarpit/core": [
-                "../../modules/core/src"
-            ],
-            "@tarpit/mongodb": [
-                "../../modules/mongodb/src"
-            ],
-            "@tarpit/schedule": [
-                "../../modules/schedule/src"
-            ],
-            "@tarpit/http": [
-                "../../modules/http/src"
-            ]
-        }
+        "outDir": "./lib"
     },
     "include": [
         "src/**/*.ts",

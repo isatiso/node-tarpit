@@ -1,16 +1,5 @@
-/**
- * @license
- * Copyright Cao Jiahang All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at source root.
- */
-
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, it, expect } from 'vitest'
 import { ConfigData, TpConfigSchema } from './config-data'
-
-chai.use(cap)
 
 declare module './config-data' {
     export interface TpConfigSchema {
@@ -33,32 +22,25 @@ describe('config-data.ts', function() {
             c2: 578,
         }
     }
-    let config_data = new ConfigData(data)
-
-    before(function() {
-    })
-
-    after(async function() {
-    })
+    const config_data = new ConfigData(data)
 
     describe('ConfigData', function() {
 
         it('should create ConfigData from object.', async function() {
-
-            expect(config_data).to.be.instanceof(ConfigData)
+            expect(config_data).toBeInstanceOf(ConfigData)
         })
 
         it('should get whole config data if no field specified.', async function() {
             const res = config_data.get()
-            expect(res).to.have.property('a', 123)
-            expect(res).to.have.property('b', 'alibaba')
+            expect(res).toHaveProperty('a', 123)
+            expect(res).toHaveProperty('b', 'alibaba')
         })
 
         it('should get sub field of config data.', async function() {
-            expect(config_data.get('a')).to.be.equal(123)
-            expect(config_data.get('b')).to.be.equal('alibaba')
-            expect(config_data.get('c.c1')).to.be.equal('bilibili')
-            expect(config_data.get('c.c2')).to.be.equal(578)
+            expect(config_data.get('a')).toEqual(123)
+            expect(config_data.get('b')).toEqual('alibaba')
+            expect(config_data.get('c.c1')).toEqual('bilibili')
+            expect(config_data.get('c.c2')).toEqual(578)
         })
     })
 })

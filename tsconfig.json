@@ -3,8 +3,5 @@
     "compilerOptions": {
         "baseUrl": "./",
         "outDir": "./out"
-    },
-    "include": [
-        "supports/rollup/src/rollup/**/*.ts"
-    ]
+    }
 }

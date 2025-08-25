@@ -6,13 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
-import chai_spies from 'chai-spies'
+import { describe, expect, it } from 'vitest'
 import { HttpCacheProxy } from './http-cache-proxy'
-
-chai.use(cap)
-chai.use(chai_spies)
 
 describe('http-cache-proxy.ts', function() {
 
@@ -23,22 +18,22 @@ describe('http-cache-proxy.ts', function() {
         describe('.set()', function() {
 
             it('should set cache', async function() {
-                expect(cp.set('s', 'a', '1', 1200)).to.eventually.be.undefined
+                await expect(cp.set('s', 'a', '1', 1200)).resolves.toBeUndefined()
             })
         })
 
         describe('.get()', function() {
 
             it('should get cache', async function() {
-                expect(cp.get('s', 'a')).to.eventually.equal('1')
-                expect(cp.get('s', 'b')).to.eventually.be.null
+                await expect(cp.get('s', 'a')).resolves.toEqual('1')
+                await expect(cp.get('s', 'b')).resolves.toBeNull()
             })
         })
 
         describe('.clear()', function() {
 
             it('should clear cache', async function() {
-                expect(cp.clear('s', 'a')).to.eventually.be.undefined
+                await expect(cp.clear('s', 'a')).resolves.toBeUndefined()
             })
         })
     })

@@ -6,22 +6,17 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
-import spies from 'chai-spies'
+import { describe, expect, it } from 'vitest'
 import { Debug } from './debug'
-
-chai.use(cap)
-chai.use(spies)
 
 class Dep {
 }
 
-describe('debug.ts', function() {
+describe('debug.ts', () => {
 
-    describe('@Debug', function() {
+    describe('@Debug', () => {
 
-        it('should echo whole param types if put on the head of class', async function() {
+        it('should echo whole param types if put on the head of class', async () => {
 
             const log_history: any[][] = []
             Debug.log = (...args: any[]) => {
@@ -34,11 +29,11 @@ describe('debug.ts', function() {
                 }
             }
 
-            expect(log_history[0]).to.eql([`${Test.name} dependencies`, [Number, String, Dep]])
-            expect(log_history[1]).to.be.undefined
+            expect(log_history[0]).toEqual([`${Test.name} dependencies`, [Number, String, Dep]])
+            expect(log_history[1]).toBeUndefined()
         })
 
-        it('should echo type of specified parameter if put on the head of constructor parameter', async function() {
+        it('should echo type of specified parameter if put on the head of constructor parameter', async () => {
 
             const log_history: any[][] = []
             Debug.log = (...args: any[]) => {
@@ -50,11 +45,11 @@ describe('debug.ts', function() {
                 }
             }
 
-            expect(log_history[0]).to.eql([`${Test.name}.args[2] type`, Dep])
-            expect(log_history[1]).to.be.undefined
+            expect(log_history[0]).toEqual([`${Test.name}.args[2] type`, Dep])
+            expect(log_history[1]).toBeUndefined()
         })
 
-        it('should echo whole param types of method if put on the head of class method', async function() {
+        it('should echo whole param types of method if put on the head of class method', async () => {
 
             const log_history: any[][] = []
             Debug.log = (...args: any[]) => {
@@ -67,11 +62,11 @@ describe('debug.ts', function() {
                 }
             }
 
-            expect(log_history[0]).to.eql([`${Test.name}.method dependencies`, [Number, String, Dep]])
-            expect(log_history[1]).to.be.undefined
+            expect(log_history[0]).toEqual([`${Test.name}.method dependencies`, [Number, String, Dep]])
+            expect(log_history[1]).toBeUndefined()
         })
 
-        it('should echo type of specified parameter of method if put on the head of method parameter', async function() {
+        it('should echo type of specified parameter of method if put on the head of method parameter', async () => {
 
             const log_history: any[][] = []
             Debug.log = (...args: any[]) => {
@@ -83,11 +78,11 @@ describe('debug.ts', function() {
                 }
             }
 
-            expect(log_history[0]).to.eql([`${Test.name}.method.args[1] type`, Dep])
-            expect(log_history[1]).to.be.undefined
+            expect(log_history[0]).toEqual([`${Test.name}.method.args[1] type`, Dep])
+            expect(log_history[1]).toBeUndefined()
         })
 
-        it('should echo type of specified property if put on the head of property', async function() {
+        it('should echo type of specified property if put on the head of property', async () => {
 
             const log_history: any[][] = []
             Debug.log = (...args: any[]) => {
@@ -98,8 +93,8 @@ describe('debug.ts', function() {
                 @Debug() prop?: Dep
             }
 
-            expect(log_history[0]).to.eql([`${Test.name}.prop type`, Dep])
-            expect(log_history[1]).to.be.undefined
+            expect(log_history[0]).toEqual([`${Test.name}.prop type`, Dep])
+            expect(log_history[1]).toBeUndefined()
         })
     })
 })

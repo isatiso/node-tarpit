@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/schedule",
-    "version": "0.5.79",
+    "version": "0.5.80",
     "description": "> TODO: description",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -12,7 +12,7 @@
         "lib"
     ],
     "engines": {
-        "node": ">=14.0.0"
+        "node": ">=18"
     },
     "exports": {
         ".": {
@@ -34,21 +34,21 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "rollup -c",
+        "build": "tsup src/index.ts --format cjs,esm --dts --out-dir lib",
         "check-type": "tsc --noEmit",
         "docs": "tp docs",
-        "test": "tp cover --reporter=json --reporter=text"
+        "test": "vitest run --coverage"
     },
     "dependencies": {
-        "@tarpit/cron": "^0.5.79",
-        "@tarpit/dora": "^0.5.79",
-        "tslib": "^2.6.0"
+        "tslib": "^2.8.1"
     },
     "devDependencies": {
-        "@tarpit/core": "^0.5.79",
-        "@tarpit/rollup": "^0.5.79"
+        "@tarpit/cli": "workspace:*"
     },
     "peerDependencies": {
-        "@tarpit/core": "0.x"
+        "@tarpit/config": "workspace:*",
+        "@tarpit/core": "workspace:*",
+        "@tarpit/cron": "workspace:*",
+        "@tarpit/dora": "workspace:*"
     }
 }

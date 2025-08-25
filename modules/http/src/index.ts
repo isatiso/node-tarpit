@@ -65,6 +65,8 @@ export {
     Route,
     WS,
     ContentType,
+} from './annotations'
+export type {
     RouteProps,
 } from './annotations'
 

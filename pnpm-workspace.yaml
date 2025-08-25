@@ -1,0 +1,8 @@
+packages:
+  - docs
+  - modules/*
+  - packages/*
+  - projects/*
+  - supports/*
+
+dangerouslyAllowAllBuilds: true

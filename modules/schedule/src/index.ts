@@ -16,12 +16,12 @@ export {
     TaskError,
     TaskIgnore,
     TaskRetry,
-    TaskErrorDescription,
     mission_completed,
     throw_task_crash,
     throw_task_ignore,
     throw_task_retry,
 } from './errors'
+export type { TaskErrorDescription } from './errors'
 
 export { ScheduleHooks } from './services/schedule-hooks'
 export { ScheduleInspector } from './services/schedule-inspector'

@@ -6,55 +6,52 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { TpLoader } from './tp-loader'
 
-chai.use(cap)
-
-describe('tp-loader.ts', function() {
+describe('tp-loader.ts', () => {
 
     class Noop {
     }
 
-    describe('TpLoader', function() {
+    describe('TpLoader', () => {
         let loader: TpLoader
 
         beforeEach(() => {
             loader = new TpLoader()
-            chai.spy.on(console, 'log', () => void 0)
+            vi.spyOn(console, 'log').mockImplementation(() => undefined)
         })
 
         afterEach(() => {
-            chai.spy.restore(console, 'log')
+            vi.restoreAllMocks()
         })
 
-        it('should register loader', async function() {
-            const on_start = chai.spy()
-            const on_terminate = chai.spy()
-            const on_load = chai.spy()
+        it('should register loader', async () => {
+            const on_start = vi.fn()
+            const on_terminate = vi.fn()
+            const on_load = vi.fn()
             loader.register(Symbol.for('test'), {
                 on_start: async () => on_start(),
                 on_terminate: async () => on_terminate(),
                 on_load: () => on_load(),
             })
             loader.load({ token: Symbol.for('test') })
-            expect(on_load).to.have.been.called.once
+            expect(on_load).toHaveBeenCalledTimes(1)
             await loader.start()
-            expect(on_start).to.have.been.called.once
+            expect(on_start).toHaveBeenCalledTimes(1)
             await loader.terminate()
-            expect(on_terminate).to.have.been.called.once
+            expect(on_terminate).toHaveBeenCalledTimes(1)
         })
 
         it('should ignore operation if given token exists', () => {
-            expect((loader as any)._loaders.size).to.equal(0)
+            expect((loader as any)._loaders.size).toEqual(0)
             loader.register(Symbol.for('test'), {} as any)
-            expect((loader as any)._loaders.size).to.equal(1)
+            expect((loader as any)._loaders.size).toEqual(1)
             loader.register(Symbol.for('test'), {} as any)
-            expect((loader as any)._loaders.size).to.equal(1)
+            expect((loader as any)._loaders.size).toEqual(1)
         })
 
-        it('should ignore errors thrown by hooks', async function() {
+        it('should ignore errors thrown by hooks', async () => {
             loader.register(Symbol.for('test'), {
                 on_start: async () => {
                     throw new Error()
@@ -64,15 +61,15 @@ describe('tp-loader.ts', function() {
                 },
                 on_load: async () => undefined,
             })
-            await expect(loader.start()).not.to.be.rejected
-            expect(console.log).to.have.been.called.once
-            await expect(loader.terminate()).not.to.be.rejected
-            expect(console.log).to.have.been.called.twice
+            await expect(loader.start()).resolves.toBeUndefined()
+            expect(console.log).toHaveBeenCalledTimes(1)
+            await expect(loader.terminate()).resolves.toBeUndefined()
+            expect(console.log).toHaveBeenCalledTimes(2)
         })
 
-        it('should throw error if loader not exists', function() {
-            expect(() => loader.load({ token: Symbol.for('non-exists') })).to.throw('Can\'t find loader for component "undefined"')
-            expect(() => loader.load({ token: Symbol.for('non-exists'), cls: Noop })).to.throw('Can\'t find loader for component "Noop"')
+        it('should throw error if loader not exists', () => {
+            expect(() => loader.load({ token: Symbol.for('non-exists') })).toThrow('Can\'t find loader for component \"undefined\"')
+            expect(() => loader.load({ token: Symbol.for('non-exists'), cls: Noop })).toThrow('Can\'t find loader for component \"Noop\"')
         })
     })
 })

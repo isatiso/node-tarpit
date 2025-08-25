@@ -46,12 +46,20 @@ export function is_reachable(url: string | Options.Connect, timeout_ms: number) 
 
 @TpService({ inject_root: true })
 export class RabbitConnector {
-
     private readonly url = this.config.get('rabbitmq.url')
     private readonly timeout = this.config.get('rabbitmq.timeout') ?? 1000
     private readonly socket_options = this.config.get('rabbitmq.socket_options')
 
-    private closed = false
+    private _closed = false
+    get closed(): boolean {
+        return this._closed
+    }
+
+    private _connection?: Connection
+
+    get connection() {
+        return this._connection
+    }
 
     constructor(
         private config: TpConfigData,
@@ -61,23 +69,19 @@ export class RabbitConnector {
     ) {
     }
 
-    private _connection?: Connection
-    get connection() {
-        return this._connection
-    }
-
     async close(): Promise<void> {
-        if (!this.closed) {
-            this.closed = true
+        if (!this._closed) {
+            this._closed = true
             await Promise.all(
                 Array.from(this.sessions).map(ch => ch.channel?.waitForConfirms())
             )
+            this.connection?.removeAllListeners()
             await this.connection?.close()
         }
     }
 
     async connect(): Promise<Connection> {
-        if (this.closed) {
+        if (this._closed) {
             throw new Error('connector is closed')
         }
         this._connection = undefined
@@ -89,7 +93,7 @@ export class RabbitConnector {
                 return this._connection
             } catch (err) {
                 await this.retry_strategy.on_failed(err).catch(err => {
-                    this.closed = true
+                    this._closed = true
                     throw err
                 })
                 count++
@@ -102,12 +106,12 @@ export class RabbitConnector {
         await is_reachable(this.url, this.timeout)
         const connection = await connect_rabbitmq(this.url, this.socket_options)
         return connection
-            .on('close', () => this.connect())
+            .on('close', () => this._closed || this.connect())
             .on('error', (err: any) => {
                 const code = err && err.code
                 if (code !== 200 && code !== 320) {
                     this._connection = undefined
-                    this.closed = true
+                    this._closed = true
                 }
                 this.notifier.emit('error', { type: 'rabbitmq.connection.error', error: err })
             })

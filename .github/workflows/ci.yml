@@ -10,12 +10,15 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
     strategy:
       matrix:
         node-version:
-          - 18.x
-          - 20.x
-          - 22.x
+          - 18
+          - 20
+          - 22
         rabbitmq-version:
           - '3.9'
           - '3.11'
@@ -41,28 +44,34 @@ jobs:
           - 27017/tcp
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: 'pnpm'
 
       - name: Install
-        run: yarn --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: lerna run build
+        run: pnpm -r --filter=!./docs build
 
       - name: Test
         env:
           RABBITMQ_URL: amqp://admin:admin_password@localhost:${{ job.services.rabbitmq.ports[5672] }}
           MONGODB_URL: mongodb://admin:admin_password@localhost:${{ job.services.mongodb.ports[27017] }}/admin
-        run: lerna run test --verbose
+        run: pnpm -r --filter=!./docs test
 
-      - name: Upload coverage files
+      - name: Upload coverage to Codecov
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: ./actions/upload-codecov
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ github.repository }}

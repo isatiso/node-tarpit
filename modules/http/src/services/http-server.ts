@@ -55,6 +55,7 @@ export class HttpServer {
                 // istanbul ignore if
                 if (this.terminating) {
                     res.setHeader('Connection', 'close')
+                    return void res.end()
                 }
                 request_listener(req, res).then()
             })
@@ -86,19 +87,25 @@ export class HttpServer {
         if (!this.starting) {
             return Promise.resolve()
         }
-        return this.terminating = this.terminating ?? new Promise(resolve => {
-            this._server!.on('close', resolve)
-            this._server!.close()
-            let start = Date.now()
-            const interval = setInterval(() => {
-                if (this.sockets.size === 0 || Date.now() - start > this.terminate_timeout) {
-                    clearInterval(interval)
-                    for (const socket of this.sockets) {
-                        this.destroy_socket(socket)
-                    }
-                }
-            }, 20)
-        })
+        if (this.terminating) {
+            return this.terminating
+        } else {
+            return this.terminating = new Promise(resolve => {
+                setTimeout(() => {
+                    this._server!.on('close', resolve)
+                    this._server!.close()
+                    let start = Date.now()
+                    const interval = setInterval(() => {
+                        if (this.sockets.size === 0 || Date.now() - start > this.terminate_timeout) {
+                            clearInterval(interval)
+                            for (const socket of this.sockets) {
+                                this.destroy_socket(socket)
+                            }
+                        }
+                    }, 20)
+                }, 100)
+            })
+        }
     }
 
     private destroy_socket(socket: Socket | TLSSocket) {

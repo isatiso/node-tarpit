@@ -7,29 +7,26 @@
  */
 
 import { load_config } from '@tarpit/config'
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
-import spies from 'chai-spies'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { Debug, TpEntry, TpModule, TpRoot, TpService, TpUnit } from './annotations'
 import { TpLoader } from './builtin/tp-loader'
 import { Injector } from './di'
 import { Platform } from './platform'
 import { get_class_decorator, make_decorator } from './tools/decorator'
 
-chai.use(cap)
-chai.use(spies)
-
 Debug.log = (..._args: any[]) => undefined
-describe('platform.ts', function() {
+describe('platform.ts', () => {
 
-    const sandbox = chai.spy.sandbox()
-
-    before(function() {
-        sandbox.on(console, ['debug', 'log', 'info', 'warn', 'error'], () => undefined)
+    beforeAll(() => {
+        vi.spyOn(console, 'debug').mockImplementation(() => undefined)
+        vi.spyOn(console, 'log').mockImplementation(() => undefined)
+        vi.spyOn(console, 'info').mockImplementation(() => undefined)
+        vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+        vi.spyOn(console, 'error').mockImplementation(() => undefined)
     })
 
-    after(function() {
-        sandbox.restore()
+    afterAll(() => {
+        vi.restoreAllMocks()
     })
 
     @Debug()
@@ -51,87 +48,87 @@ describe('platform.ts', function() {
     class Root1 {
     }
 
-    describe('Platform', function() {
-        it('could create instance by new operator', function() {
-            expect(() => new Platform(load_config({}))).to.not.throw()
+    describe('Platform', () => {
+        it('could create instance by new operator', () => {
+            expect(() => new Platform(load_config({}))).not.toThrow()
         })
     })
 
-    describe('.import()', function() {
-        it('should import ClassProviderDef to Platform', function() {
+    describe('.import()', () => {
+        it('should import ClassProviderDef to Platform', () => {
             const platform = new Platform(load_config({}))
             platform.import({ provide: Service1, useClass: Service1 })
-            expect((platform as any).root_injector.get(Service1)?.create()).to.be.instanceof(Service1)
+            expect((platform as any).root_injector.get(Service1)?.create()).toBeInstanceOf(Service1)
         })
 
-        it('should import FactoryProviderDef to Platform', function() {
+        it('should import FactoryProviderDef to Platform', () => {
             const platform = new Platform(load_config({}))
             platform.import({ provide: Service1, useFactory: () => new Service1() })
-            expect((platform as any).root_injector.get(Service1)?.create()).to.be.instanceof(Service1)
+            expect((platform as any).root_injector.get(Service1)?.create()).toBeInstanceOf(Service1)
         })
 
-        it('should import ValueProviderDef to Platform', function() {
+        it('should import ValueProviderDef to Platform', () => {
             const platform = new Platform(load_config({}))
             platform.import({ provide: Service1, useValue: Service1 })
-            expect((platform as any).root_injector.get(Service1)?.create()).to.equal(Service1)
+            expect((platform as any).root_injector.get(Service1)?.create()).toEqual(Service1)
         })
 
-        it('should import TpService to Platform', function() {
+        it('should import TpService to Platform', () => {
             const platform = new Platform(load_config({}))
             platform.import(Service1)
-            expect((platform as any).root_injector.get(Service1)?.create()).to.be.instanceof(Service1)
+            expect((platform as any).root_injector.get(Service1)?.create()).toBeInstanceOf(Service1)
         })
 
-        it('should import TpModule to Platform', function() {
+        it('should import TpModule to Platform', () => {
             const platform = new Platform(load_config({}))
             platform.import(Module1)
-            expect((platform as any).root_injector.get(Module1)?.create()).to.be.instanceof(Module1)
+            expect((platform as any).root_injector.get(Module1)?.create()).toBeInstanceOf(Module1)
         })
 
-        it('should import TpRoot to Platform', function() {
+        it('should import TpRoot to Platform', () => {
             const platform = new Platform(load_config({}))
             platform.import(Root1)
             const meta = get_class_decorator(Root1)?.find(d => d instanceof TpEntry)
 
-            expect(meta.injector!.get(Root1)?.create()).to.be.instanceof(Root1)
-            expect(meta.injector!.get(Module1)?.create()).to.be.instanceof(Module1)
-            expect(meta.injector!.get(Service1)?.create()).to.be.instanceof(Service1)
+            expect(meta!.injector!.get(Root1)?.create()).toBeInstanceOf(Root1)
+            expect(meta!.injector!.get(Module1)?.create()).toBeInstanceOf(Module1)
+            expect(meta!.injector!.get(Service1)?.create()).toBeInstanceOf(Service1)
         })
 
-        it('should throw error if provided is not "TpComponent"', function() {
+        it('should throw error if provided is not "TpComponent"', () => {
             const platform = new Platform(load_config({}))
-            expect(() => platform.import(Noop)).to.throw('Noop is not a "TpComponent"')
+            expect(() => platform.import(Noop)).toThrow('Noop is not a "TpComponent"')
         })
     })
 
-    describe('.expose()', function() {
-        it('should expose things from root injector', function() {
+    describe('.expose()', () => {
+        it('should expose things from root injector', () => {
             const platform = new Platform(load_config({}))
                 .import({ provide: Service1, useClass: Service1 })
             const inspector = platform.expose(Service1)
-            expect(inspector).to.be.instanceof(Service1)
+            expect(inspector).toBeInstanceOf(Service1)
         })
 
-        it('should expose undefined from provided not exists', function() {
+        it('should expose undefined from provided not exists', () => {
             const platform = new Platform(load_config({}))
             const inspector = platform.expose(Noop)
-            expect(inspector).to.be.undefined
+            expect(inspector).toBeUndefined()
         })
     })
 
-    describe('.inspect_injector()', function() {
-        it('should return provider tree', function() {
+    describe('.inspect_injector()', () => {
+        it('should return provider tree', () => {
             const platform = new Platform(load_config({}))
             platform.import(Service1)
             const result = platform.inspect_injector()
-            
-            expect(result).to.be.a('string')
-            expect(result).to.contain('Injector')
-            expect(result).to.contain('Service1 [TpWorker → @TpService]')
+
+            expect(result).toBeTypeOf('string')
+            expect(result).toContain('Injector')
+            expect(result).toContain('Service1 [TpWorker → @TpService]')
         })
     })
 
-    describe('.start() && .terminate()', function() {
+    describe('.start() && .terminate()', () => {
 
         const some_module_token = Symbol.for('œœ.token.SomeModule')
 
@@ -192,12 +189,12 @@ describe('platform.ts', function() {
         })
         class SomeRoot {
             constructor(
-                private s: SomeService,
+                public s: SomeService,
             ) {
             }
         }
 
-        it('should call all hooks', async function() {
+        it('should call all hooks', async () => {
             const platform = new Platform(load_config({}))
             platform.import(SomeModule)
             platform.import(SomeRoot)
@@ -206,32 +203,32 @@ describe('platform.ts', function() {
             void platform.terminate()
             await platform.terminate()
             const instance = platform.expose(SomeModule)
-            expect(instance?.start_called).to.be.true
-            expect(instance?.terminate_called).to.be.true
-            expect(instance?.load_called).to.be.true
+            expect(instance?.start_called).toBe(true)
+            expect(instance?.terminate_called).toBe(true)
+            expect(instance?.load_called).toBe(true)
         })
 
-        it('should record time after started and terminated', async function() {
+        it('should record time after started and terminated', async () => {
             const platform = new Platform(load_config({}))
             platform.import(SomeModule)
             platform.import(SomeRoot)
-            expect(platform.started_at).to.equal(-1)
+            expect(platform.started_at).toEqual(-1)
             void platform.start(() => console.debug('started'))
-            expect(platform.started_at).to.closeTo(Date.now(), 10)
+            expect(platform.started_at).toBeCloseTo(Date.now(), -2)
             await platform.start()
-            expect(platform.start_time).to.closeTo(Date.now() - platform.started_at, 50)
-            expect(platform.terminated_at).to.equal(-1)
+            expect(platform.start_time).toBeCloseTo(Date.now() - platform.started_at, -2)
+            expect(platform.terminated_at).toEqual(-1)
             void platform.terminate(() => console.debug('terminate'))
-            expect(platform.terminated_at).to.closeTo(Date.now(), 10)
+            expect(platform.terminated_at).toBeCloseTo(Date.now(), -2)
             await platform.terminate()
-            expect(platform.terminate_time).to.closeTo(Date.now() - platform.terminated_at, 50)
+            expect(platform.terminate_time).toBeCloseTo(Date.now() - platform.terminated_at, -2)
             const instance = platform.expose(SomeModule)
-            expect(instance?.start_called).to.be.true
-            expect(instance?.terminate_called).to.be.true
-            expect(instance?.load_called).to.be.true
+            expect(instance?.start_called).toBe(true)
+            expect(instance?.terminate_called).toBe(true)
+            expect(instance?.load_called).toBe(true)
         })
 
-        it('should catch and ignore error in hooks', function() {
+        it('should catch and ignore error in hooks', () => {
             const platform = new Platform(load_config({}))
             platform.import(SomeModule)
         })

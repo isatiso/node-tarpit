@@ -1,35 +1,35 @@
-name: publish
+name: Publish
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, 'chore(release): version packages')"
+    defaults:
+      run:
+        working-directory: ./
     steps:
-
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js 22.x
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
         with:
           node-version: 22.x
-          cache: 'yarn'
+          cache: 'pnpm'
 
-      - name: Install
-        run: yarn --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Configure CI Git User
-        run: |
-          git config --global user.name "Plank Cao"
-          git config --global user.email sieglive@gmail.com
-          git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/isatiso/node-tarpit.git
-
-      - name: Publish package
-        run: |
-          npm set registry=https://registry.npmjs.org
-          npm set "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}"
-          lerna run build
-          lerna publish patch --no-verify-access --registry https://registry.npmjs.org -y
+      - name: Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: pnpm run publish:ci
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

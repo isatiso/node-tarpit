@@ -43,6 +43,7 @@ export function load_provider_def_or_component(def: (ProviderDef<any> | Construc
     }
 
     const meta = get_class_decorator(def).find(d => d instanceof TpComponent)
+
     if (!meta) {
         throw new Error(`${stringify(def)} is not a "TpComponent".`)
     }
@@ -54,9 +55,9 @@ export function load_provider_def_or_component(def: (ProviderDef<any> | Construc
 function collect_children(meta: TpAssembly, injector: Injector): ProviderTreeNode {
     return {
         self: meta.cls,
-        providers: meta.providers?.map(def => load_provider_def_or_component(def, injector)),
         children: meta.imports?.map(cls => load_component(get_class_decorator(cls).find(d => d instanceof TpAssembly), injector))
-            .filter(data => data !== undefined)
+            .filter(data => data !== undefined),
+        providers: meta.providers?.map(def => load_provider_def_or_component(def, injector)),
     }
 }
 

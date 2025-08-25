@@ -6,11 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { FileLocker } from './file-locker'
-
-chai.use(cap)
 
 describe('file-locker.ts', function() {
 
@@ -27,8 +24,8 @@ describe('file-locker.ts', function() {
             it('should allow multiple read locks simultaneously', async function() {
                 const lock1 = file_locker.with_read_lock(['dir/file1'], async () => 'read1')
                 const lock2 = file_locker.with_read_lock(['dir/file1'], async () => 'read2')
-                await expect(lock1).to.eventually.equal('read1')
-                await expect(lock2).to.eventually.equal('read2')
+                await expect(lock1).resolves.toEqual('read1')
+                await expect(lock2).resolves.toEqual('read2')
             })
 
             it('should block write locks while read locks are active', async function() {
@@ -42,7 +39,7 @@ describe('file-locker.ts', function() {
                 })
                 await read_lock
                 await write_lock
-                expect(write_completed).to.be.true
+                expect(write_completed).toBe(true)
             })
         })
 
@@ -56,8 +53,8 @@ describe('file-locker.ts', function() {
                 })
                 const write_lock2 = file_locker.with_write_lock(['file1'], async () => 'write2')
                 await write_lock1
-                await expect(write_lock2).to.eventually.equal('write2')
-                expect(write_completed).to.be.true
+                await expect(write_lock2).resolves.toEqual('write2')
+                expect(write_completed).toBe(true)
             })
 
             it('should block read locks while a write lock is active', async function() {
@@ -71,7 +68,7 @@ describe('file-locker.ts', function() {
                 })
                 await write_lock
                 await read_lock
-                expect(read_completed).to.be.true
+                expect(read_completed).toBe(true)
             })
         })
 
@@ -80,8 +77,8 @@ describe('file-locker.ts', function() {
             it('should handle multiple locks on different files independently', async function() {
                 const lock1 = file_locker.with_read_lock(['file1'], async () => 'read1')
                 const lock2 = file_locker.with_write_lock(['file2'], async () => 'write2')
-                await expect(lock1).to.eventually.equal('read1')
-                await expect(lock2).to.eventually.equal('write2')
+                await expect(lock1).resolves.toEqual('read1')
+                await expect(lock2).resolves.toEqual('write2')
             })
         })
     })

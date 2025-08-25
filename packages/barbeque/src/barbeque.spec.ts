@@ -1,23 +1,12 @@
-/**
- * @license
- * Copyright Cao Jiahang All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at source root.
- */
-
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
+import { describe, it, expect, beforeAll } from 'vitest'
 import { Barbeque } from './barbeque'
-
-chai.use(cap)
 
 describe('barbeque.ts', function() {
 
     describe('Barbeque', function() {
 
         it('could new instance', function() {
-            expect(new Barbeque()).to.be.instanceof(Barbeque)
+            expect(new Barbeque()).toBeInstanceOf(Barbeque)
         })
 
         it('should limit capacity of queue if provided', function() {
@@ -27,9 +16,9 @@ describe('barbeque.ts', function() {
                 _temp_arr.push(i)
                 q.push(i)
             }
-            expect(q.length).to.equal(300)
+            expect(q.length).toEqual(300)
             for (let i = 0; i < 300; i++) {
-                expect(q.get(i)).to.equal(_temp_arr[200 + i])
+                expect(q.get(i)).toEqual(_temp_arr[200 + i])
             }
             const _shift_arr = []
             for (let i = 0; i < 50; i++) {
@@ -37,10 +26,10 @@ describe('barbeque.ts', function() {
                 q.unshift(i)
             }
             for (let i = 0; i < 50; i++) {
-                expect(q.get(i)).to.equal(_shift_arr[49 - i])
+                expect(q.get(i)).toEqual(_shift_arr[49 - i])
             }
             for (let i = 0; i < 150; i++) {
-                expect(q.get(i + 50)).to.equal(_temp_arr[200 + i])
+                expect(q.get(i + 50)).toEqual(_temp_arr[200 + i])
             }
         })
     })
@@ -50,17 +39,17 @@ describe('barbeque.ts', function() {
             const q = new Barbeque()
             const _temp_arr = []
 
-            expect(q.pop()).to.be.undefined
+            expect(q.pop()).toBeUndefined()
             for (let i = 0; i < 50000; i++) {
-                expect(q.push(i)).to.equal(i + 1)
+                expect(q.push(i)).toEqual(i + 1)
                 _temp_arr.push(i)
             }
-            expect(q.length).to.equal(50000)
+            expect(q.length).toEqual(50000)
             for (let i = 0; i < 50000; i++) {
-                expect(q.pop()).to.equal(_temp_arr.pop())
-                expect(q.length).to.equal(50000 - i - 1)
+                expect(q.pop()).toEqual(_temp_arr.pop())
+                expect(q.length).toEqual(50000 - i - 1)
             }
-            expect(q.length).to.equal(0)
+            expect(q.length).toEqual(0)
         })
     })
 
@@ -69,17 +58,17 @@ describe('barbeque.ts', function() {
             const q = new Barbeque()
             const _temp_arr = []
 
-            expect(q.shift()).to.be.undefined
+            expect(q.shift()).toBeUndefined()
             for (let i = 0; i < 50000; i++) {
-                expect(q.unshift(i)).to.equal(i + 1)
+                expect(q.unshift(i)).toEqual(i + 1)
                 _temp_arr.push(i)
             }
-            expect(q.length).to.equal(50000)
+            expect(q.length).toEqual(50000)
             for (let i = 0; i < 50000; i++) {
-                expect(q.shift()).to.equal(_temp_arr.pop())
-                expect(q.length).to.equal(50000 - i - 1)
+                expect(q.shift()).toEqual(_temp_arr.pop())
+                expect(q.length).toEqual(50000 - i - 1)
             }
-            expect(q.length).to.equal(0)
+            expect(q.length).toEqual(0)
         })
     })
 
@@ -87,7 +76,7 @@ describe('barbeque.ts', function() {
         const q = new Barbeque()
         const _temp_arr: any[] = []
 
-        before(function() {
+        beforeAll(function() {
             for (let i = 0; i < 50000; i++) {
                 const n = Math.random()
                 _temp_arr.push(n)
@@ -101,23 +90,23 @@ describe('barbeque.ts', function() {
         })
 
         it('should get value of specified index', function() {
-            expect(q.length).to.equal(50000)
+            expect(q.length).toEqual(50000)
             for (let i = 0; i < 50000; i++) {
-                expect(q.get(i)).to.equal(_temp_arr[i])
+                expect(q.get(i)).toEqual(_temp_arr[i])
             }
         })
 
         it('should return undefined if specified index out of bounds', function() {
-            expect(q.get(-60000)).to.be.undefined
-            expect(q.get(78963)).to.be.undefined
+            expect(q.get(-60000)).toBeUndefined()
+            expect(q.get(78963)).toBeUndefined()
         })
 
         it('should return first value by alias first()', function() {
-            expect(q.first()).to.equal(_temp_arr[0])
+            expect(q.first()).toEqual(_temp_arr[0])
         })
 
         it('should return last value by alias last()', function() {
-            expect(q.last()).to.equal(_temp_arr[49999])
+            expect(q.last()).toEqual(_temp_arr[49999])
         })
     })
 
@@ -130,25 +119,25 @@ describe('barbeque.ts', function() {
                 if (n < 0.25) {
                     q.push(i)
                     c++
-                    expect(q.length).to.equal(c)
+                    expect(q.length).toEqual(c)
                 } else if (0.25 <= n && n < 0.5) {
                     q.unshift(i)
                     c++
-                    expect(q.size).to.equal(c)
+                    expect(q.size).toEqual(c)
                 } else if (0.5 <= n && n < 0.75) {
                     if (!q.size) {
                         continue
                     }
                     q.shift()
                     c--
-                    expect(q.length).to.equal(c)
+                    expect(q.length).toEqual(c)
                 } else {
                     if (!q.size) {
                         continue
                     }
                     q.pop()
                     c--
-                    expect(q.size).to.equal(c)
+                    expect(q.size).toEqual(c)
                 }
             }
         })
@@ -180,7 +169,7 @@ describe('barbeque.ts', function() {
                     arr.pop()
                 }
             }
-            expect(q.to_array()).to.eql(arr)
+            expect(q.to_array()).toEqual(arr)
         })
     })
 
@@ -192,10 +181,10 @@ describe('barbeque.ts', function() {
             q.push(3)
             q.push(4)
             q.push(5)
-            expect(q.length).to.equal(5)
+            expect(q.length).toEqual(5)
             q.clear()
-            expect(q.length).to.equal(0)
-            expect(q.is_empty()).to.be.true
+            expect(q.length).toEqual(0)
+            expect(q.is_empty()).toBe(true)
         })
     })
 })

@@ -6,13 +6,8 @@
  * found in the LICENSE file at source root.
  */
 
-import chai, { expect } from 'chai'
-import cap from 'chai-as-promised'
-import chai_spies from 'chai-spies'
+import { describe, expect, it, vi } from 'vitest'
 import { HttpInspector } from './http-inspector'
-
-chai.use(cap)
-chai.use(chai_spies)
 
 describe('http-inspector.ts', function() {
 
@@ -21,23 +16,23 @@ describe('http-inspector.ts', function() {
         describe('.list()', function() {
 
             it('should deliver call to HttpHandlerBook', function() {
-                const mock_book = {}
-                const spy_list = chai.spy.on(mock_book, 'list', () => undefined)
+                const mock_book = { list: () => undefined } as any
+                const spy_list = vi.spyOn(mock_book, 'list')
                 const inspector = new HttpInspector({ handler_book: mock_book } as any)
                 inspector.list_router()
-                expect(spy_list).to.have.been.called.once
+                expect(spy_list).toHaveBeenCalledOnce()
             })
         })
 
         describe('.bind()', function() {
 
             it('should deliver call to HttpHandlerBook', function() {
-                const mock_book = {}
-                const spy_record = chai.spy.on(mock_book, 'record', () => undefined)
+                const mock_book = { record: () => undefined } as any
+                const spy_record = vi.spyOn(mock_book, 'record')
                 const inspector = new HttpInspector({ handler_book: mock_book } as any)
                 const some_handler = async () => undefined
                 inspector.bind('GET', '/some/path', some_handler)
-                expect(spy_record).to.have.been.called.with('/some/path', { type: 'GET', handler: some_handler })
+                expect(spy_record).toHaveBeenCalledWith('/some/path', { type: 'GET', handler: some_handler })
             })
         })
     })

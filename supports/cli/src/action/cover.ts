@@ -19,7 +19,7 @@ export const action_cover = make_action('cover', async (cli_options: CliOptions[
         ` -n 'src/**/*.ts'` +
         ` -x 'src/**/*.spec.ts'` +
         ` -i source-map-support/register` +
-        ` -i @tarpit/cli/script/register` +
+        ` -i ts-node/register` +
         ` ${get_reporter(config)}` +
         ` mocha './**/*.spec.ts'`
     )

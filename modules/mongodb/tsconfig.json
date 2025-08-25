@@ -2,15 +2,7 @@
     "extends": "../../common-tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./",
-        "outDir": "./lib",
-        "paths": {
-            "@tarpit/core": [
-                "../core/src"
-            ],
-            "@tarpit/config": [
-                "../../packages/config/src"
-            ],
-        }
+        "outDir": "./lib"
     },
     "include": [
         "src/**/*.ts",
