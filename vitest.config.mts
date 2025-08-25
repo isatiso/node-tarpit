@@ -8,14 +8,13 @@ export default defineConfig({
                 parser: { syntax: 'typescript', decorators: true },
                 transform: {
                     legacyDecorator: true,
-                    decoratorMetadata: true, // 这行会生成 design:type / design:paramtypes
+                    decoratorMetadata: true,
                 },
             },
         }),
     ],
     test: {
         environment: 'node',
-        // Use 'v8' as the coverage provider
         coverage: {
             provider: 'v8',
             reporter: ['text', 'json', 'html'],

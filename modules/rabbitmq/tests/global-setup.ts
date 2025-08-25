@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 import 'reflect-metadata'
-import { GenericContainer, StartedTestContainer } from 'testcontainers'
+import type { StartedTestContainer } from 'testcontainers'
 
 let rabbit_container: StartedTestContainer | undefined
 export let rabbitmq_url: string
@@ -17,6 +17,8 @@ export async function setup(): Promise<void> {
         process.env.RABBITMQ_URL = rabbitmq_url
         return
     }
+
+    const { GenericContainer } = await import('testcontainers')
 
     console.log('Starting RabbitMQ container...')
     const container = new GenericContainer('rabbitmq:3.11-management')
