@@ -16,14 +16,15 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 18
           - 20
           - 22
+          - 24
         rabbitmq-version:
-          - '3.9'
           - '3.11'
+          - '3.13'
         mongodb-version:
-          - '5'
+          - '7'
+          - '8'
     services:
       rabbitmq:
         image: rabbitmq:${{ matrix.rabbitmq-version }}

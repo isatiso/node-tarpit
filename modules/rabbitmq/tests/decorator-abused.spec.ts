@@ -8,7 +8,7 @@
 
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema } from '@tarpit/core'
-import amqplib, { Connection, GetMessage } from 'amqplib'
+import amqplib, { ChannelModel, GetMessage } from 'amqplib'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { ConfirmProducer, Enqueue, Publish, RabbitDefine, RabbitDefineToken, RabbitmqModule, TpProducer } from '../src'
 
@@ -35,7 +35,7 @@ describe('decorator abused case', () => {
         seized_enqueue!: ConfirmProducer<string>
     }
 
-    let connection: Connection
+    let connection: ChannelModel
     let platform: Platform
     let producer: TempProducer
 

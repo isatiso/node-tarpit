@@ -8,11 +8,12 @@
 
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema } from '@tarpit/core'
-import amqplib, { Connection } from 'amqplib'
+import amqplib, { ChannelModel } from 'amqplib'
 import { takeUntil } from 'rxjs'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { ConfirmProducer, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitmqModule, TpProducer } from '../src'
 import { RabbitNotifier } from '../src/services/rabbit-notifier'
+import { wait_for } from './helpers/wait-for'
 
 const D = new RabbitDefine()
     .define_exchange('tarpit.exchange.bench.confirm', 'topic')
@@ -46,7 +47,7 @@ describe('produce drain case', () => {
 
     const rabbitmq_url = process.env.RABBITMQ_URL!
     const buf = Buffer.from(`Stops the server from accepting new connections and keeps existing connections. This function is asynchronous, the server is finally closed when all connections are ended and the server emits a 'close' event. The optional callback will be called once the 'close' event occurs. Unlike that event, it will be called with an Error as its only argument if the server was not open when it was closed.`)
-    let connection: Connection
+    let connection: ChannelModel
     let platform: Platform
     let producer: TempProducer
 
@@ -66,11 +67,10 @@ describe('produce drain case', () => {
         notifier.on('error', err => console.error('error', err))
         await platform.start()
         producer = platform.expose(TempProducer)!
-        await new Promise(resolve => setTimeout(resolve, 200))
+        await wait_for(() => !!(producer as any).publish_normal?.channel)
     })
 
     afterAll(async () => {
-        await new Promise(resolve => setTimeout(resolve, 2000))
         await platform.terminate()
         const channel = await connection.createChannel()
         await channel.deleteExchange(D.X['tarpit.exchange.bench.confirm'], { ifUnused: false })
@@ -86,8 +86,8 @@ describe('produce drain case', () => {
         for (let i = 0; i < 5000; i++) {
             producer.publish_normal.send(buf)
         }
-        await new Promise(resolve => setTimeout(resolve, 1000))
         const channel = await connection.createChannel()
+        await wait_for(async () => (await channel.checkQueue(D.Q['tarpit.queue.bench.normal'])).messageCount >= 5000, 10000)
         const res = await channel.checkQueue(D.Q['tarpit.queue.bench.normal'])
         expect(res.messageCount).equal(5000)
         await channel.close()
@@ -109,8 +109,8 @@ describe('produce drain case', () => {
         for (let i = 0; i < 5000; i++) {
             producer.enqueue_normal.send(buf)
         }
-        await new Promise(resolve => setTimeout(resolve, 1000))
         const channel = await connection.createChannel()
+        await wait_for(async () => (await channel.checkQueue(D.Q['tarpit.queue.bench.normal'])).messageCount >= 10000, 10000)
         const res = await channel.checkQueue(D.Q['tarpit.queue.bench.normal'])
         expect(res.messageCount).equal(10000)
         await channel.close()
