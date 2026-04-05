@@ -40,7 +40,11 @@ jobs:
           MONGO_INITDB_ROOT_USERNAME: admin
           MONGO_INITDB_ROOT_PASSWORD: admin_password
           MONGO_INITDB_DATABASE: test
-        options: --health-cmd mongo --health-interval 10s --health-timeout 5s --health-retries 5
+        options: >-
+          --health-cmd "mongosh --quiet -u admin -p admin_password --authenticationDatabase admin --eval 'db.runCommand({ ping: 1 }).ok' | grep 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
         ports:
           - 27017/tcp
     steps:
