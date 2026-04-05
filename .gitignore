@@ -7,6 +7,7 @@
 
 .nyc_output/
 .cache/
+.factory/
 
 supports/rollup/src/test.*
 
@@ -16,3 +17,15 @@ supports/rollup/src/test.*
 package-lock.json
 
 final_review_gate.py
+
+AGENTS.md
+GEMINI.md
+CLAUDE.md
+CODEX.md
+
+.cursor/
+.windsurf/
+.copilot/
+.aider/
+.aider.tags.cache.v3/
+.continue/

@@ -2,7 +2,24 @@
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": true,
-  "fixed": [],
+  "fixed": [
+    [
+      "@tarpit/barbeque",
+      "@tarpit/config",
+      "@tarpit/content-type",
+      "@tarpit/core",
+      "@tarpit/cron",
+      "@tarpit/dora",
+      "@tarpit/http",
+      "@tarpit/judge",
+      "@tarpit/mongodb",
+      "@tarpit/negotiator",
+      "@tarpit/rabbitmq",
+      "@tarpit/schedule",
+      "@tarpit/transformer",
+      "@tarpit/type-tools"
+    ]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
