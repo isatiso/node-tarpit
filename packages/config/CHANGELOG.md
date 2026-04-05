@@ -1,5 +1,16 @@
 # @tarpit/config
 
+## 2.0.0
+
+### Major Changes
+
+- 1481d12: up
+
+### Patch Changes
+
+- Updated dependencies [1481d12]
+  - @tarpit/judge@2.0.0
+
 ## 0.6.0
 
 ### Minor Changes

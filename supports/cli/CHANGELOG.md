@@ -1,5 +1,11 @@
 # @tarpit/cli
 
+## 1.0.0
+
+### Major Changes
+
+- 1481d12: up
+
 ## 0.6.0
 
 ### Minor Changes
