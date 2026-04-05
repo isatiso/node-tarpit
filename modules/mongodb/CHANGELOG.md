@@ -1,5 +1,17 @@
 # @tarpit/mongodb
 
+## 2.0.0
+
+### Major Changes
+
+- 1481d12: up
+
+### Patch Changes
+
+- Updated dependencies [1481d12]
+  - @tarpit/config@2.0.0
+  - @tarpit/core@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes
