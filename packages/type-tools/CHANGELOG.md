@@ -1,5 +1,11 @@
 # @tarpit/type-tools
 
+## 1.1.0
+
+### Minor Changes
+
+- ba007a9: fix version
+
 ## 0.6.0
 
 ### Minor Changes

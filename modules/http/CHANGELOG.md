@@ -1,5 +1,21 @@
 # @tarpit/http
 
+## 2.0.0
+
+### Minor Changes
+
+- ba007a9: fix version
+
+### Patch Changes
+
+- Updated dependencies [ba007a9]
+  - @tarpit/content-type@2.0.0
+  - @tarpit/negotiator@1.1.0
+  - @tarpit/config@1.1.0
+  - @tarpit/judge@1.1.0
+  - @tarpit/dora@1.1.0
+  - @tarpit/core@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes

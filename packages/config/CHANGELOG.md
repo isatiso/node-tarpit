@@ -1,5 +1,16 @@
 # @tarpit/config
 
+## 1.1.0
+
+### Minor Changes
+
+- ba007a9: fix version
+
+### Patch Changes
+
+- Updated dependencies [ba007a9]
+  - @tarpit/judge@1.1.0
+
 ## 0.6.0
 
 ### Minor Changes
