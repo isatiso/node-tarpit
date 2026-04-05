@@ -7,7 +7,7 @@
  */
 
 import { ClassProvider, Injector, ValueProvider } from '@tarpit/core'
-import { Channel, ConfirmChannel, Connection } from 'amqplib'
+import { Channel, ChannelModel, ConfirmChannel } from 'amqplib'
 import { EventEmitter } from 'events'
 import { describe, expect, it, vi } from 'vitest'
 import { RabbitConnector } from '../services/rabbit-connector.ts'
@@ -51,7 +51,7 @@ describe('rabbit-session.ts', function() {
                 const mock_connection = {
                     createChannel: () => undefined as any,
                     createConfirmChannel: () => undefined as any,
-                } as Connection
+                } as ChannelModel
                 const spy_create_channel = vi.spyOn(mock_connection, 'createChannel').mockResolvedValue(mock_channel)
                 const spy_create_confirm_channel = vi.spyOn(mock_connection, 'createConfirmChannel').mockResolvedValue(mock_confirm_channel)
                 return {
