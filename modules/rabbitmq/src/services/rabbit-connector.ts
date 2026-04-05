@@ -7,7 +7,7 @@
  */
 
 import { TpConfigData, TpService } from '@tarpit/core'
-import { connect as connect_rabbitmq, Connection, Options } from 'amqplib'
+import { ChannelModel, connect as connect_rabbitmq, Options } from 'amqplib'
 import net from 'net'
 import url from 'url'
 import { RabbitNotifier } from './rabbit-notifier'
@@ -55,7 +55,7 @@ export class RabbitConnector {
         return this._closed
     }
 
-    private _connection?: Connection
+    private _connection?: ChannelModel
 
     get connection() {
         return this._connection
@@ -80,7 +80,7 @@ export class RabbitConnector {
         }
     }
 
-    async connect(): Promise<Connection> {
+    async connect(): Promise<ChannelModel> {
         if (this._closed) {
             throw new Error('connector is closed')
         }
@@ -102,7 +102,7 @@ export class RabbitConnector {
         throw new Error('The number of retries exceeded the limit')
     }
 
-    private async _try_connect_server(): Promise<Connection> {
+    private async _try_connect_server(): Promise<ChannelModel> {
         await is_reachable(this.url, this.timeout)
         const connection = await connect_rabbitmq(this.url, this.socket_options)
         return connection

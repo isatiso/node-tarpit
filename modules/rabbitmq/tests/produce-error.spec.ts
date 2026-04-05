@@ -8,7 +8,7 @@
 
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema, TpModule } from '@tarpit/core'
-import amqplib, { Connection } from 'amqplib'
+import amqplib, { ChannelModel } from 'amqplib'
 import timers from 'node:timers/promises'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { ConfirmProducer, Publish, RabbitmqModule, TpProducer } from '../src'
@@ -36,7 +36,7 @@ describe('produce error case', () => {
         }
     }
 
-    let connection: Connection
+    let connection: ChannelModel
     let platform: Platform
     let producer: TempProducer
 
