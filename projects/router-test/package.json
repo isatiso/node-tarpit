@@ -5,17 +5,17 @@
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
-    "module": "lib/index.mjs",
     "private": true,
+    "main": "lib/index.mjs",
+    "types": "lib/index.d.mts",
     "files": [
         "lib"
     ],
     "exports": {
         ".": {
-            "require": "./lib/index.js",
-            "import": "./lib/index.mjs"
+            "types": "./lib/index.d.mts",
+            "import": "./lib/index.mjs",
+            "default": "./lib/index.mjs"
         },
         "./package": "./package.json",
         "./package.json": "./package.json"
@@ -32,7 +32,7 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "tsup src/index.ts --format cjs,esm --dts --out-dir lib",
+        "build": "tsup src/index.ts --format esm --dts --out-dir lib",
         "schema": "npx typescript-json-schema src/index.ts TpConfigSchema --ignoreErrors > ./tp-config-schema.json"
     },
     "dependencies": {
