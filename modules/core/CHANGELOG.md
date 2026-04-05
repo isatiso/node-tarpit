@@ -1,5 +1,17 @@
 # @tarpit/core
 
+## 2.0.0
+
+### Minor Changes
+
+- e683f15: fix version
+
+### Patch Changes
+
+- Updated dependencies [e683f15]
+  - @tarpit/type-tools@2.0.0
+  - @tarpit/config@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes

@@ -1,5 +1,21 @@
 # @tarpit/http
 
+## 2.0.0
+
+### Minor Changes
+
+- e683f15: fix version
+
+### Patch Changes
+
+- Updated dependencies [e683f15]
+  - @tarpit/content-type@2.0.0
+  - @tarpit/negotiator@2.0.0
+  - @tarpit/config@2.0.0
+  - @tarpit/judge@2.0.0
+  - @tarpit/dora@2.0.0
+  - @tarpit/core@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes
