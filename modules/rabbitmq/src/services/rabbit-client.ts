@@ -7,7 +7,7 @@
  */
 
 import { Injector, TpService } from '@tarpit/core'
-import { Connection } from 'amqplib'
+import { ChannelModel } from 'amqplib'
 import { takeUntil, tap } from 'rxjs'
 import { RabbitConnector } from './rabbit-connector'
 import { RabbitDefine, RabbitDefineToken } from './rabbit-define'
@@ -31,7 +31,7 @@ export class RabbitClient {
     }
 
     async start() {
-        let connection: Connection
+        let connection: ChannelModel
         let error: any = undefined
         connection = await this.connector.connect().catch(err => {
             return error = err as any
@@ -60,7 +60,7 @@ export class RabbitClient {
         this.definition = definitions.reduce((origin, next) => origin.merge(next), this.definition)
     }
 
-    private async assert_definition(connection: Connection) {
+    private async assert_definition(connection: ChannelModel) {
         const channel = await connection.createChannel()
         for (const assertion of this.definition.exchange_defines) {
             await channel.assertExchange(...assertion)

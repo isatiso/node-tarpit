@@ -8,11 +8,11 @@
 
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema, TpService } from '@tarpit/core'
-import amqplib, { Connection } from 'amqplib'
+import amqplib, { ChannelModel } from 'amqplib'
 import crypto from 'crypto'
-import * as timers from 'node:timers/promises'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { Ack, ack_message, Consume, kill_message, MessageDead, MessageRequeue, RabbitDefine, RabbitDefineToken, RabbitMessage, RabbitmqModule, requeue_message, TpConsumer } from '../src'
+import { wait_for } from './helpers/wait-for'
 
 const predefined_message: string[] = []
 for (let i = 0; i < 50; i++) {
@@ -94,7 +94,7 @@ describe('consume case', () => {
         }
     }
 
-    let connection: Connection
+    let connection: ChannelModel
     let platform: Platform
 
     beforeAll(async () => {
@@ -126,60 +126,67 @@ describe('consume case', () => {
     })
 
     it('should ack message call ack_message', async () => {
+        const before = spy_ack.mock.calls.length
         const channel = await connection.createChannel()
         channel.sendToQueue(D.Q['tarpit.queue.consume.ack'], Buffer.from(JSON.stringify({ a: 1, b: 'c' })))
-        await timers.setTimeout(100)
+        await wait_for(() => spy_ack.mock.calls.length === before + 1)
         await channel.close()
-        expect(spy_ack).toHaveBeenNthCalledWith(1, 'normal')
+        expect(spy_ack).toHaveBeenLastCalledWith('normal')
     })
 
     it('should ack message by throw directly', async () => {
+        const before = spy_ack.mock.calls.length
         const channel = await connection.createChannel()
         channel.sendToQueue(D.Q['tarpit.queue.consume.ack.native'], Buffer.from(JSON.stringify({ a: 1, b: 'c' })))
-        await timers.setTimeout(100)
+        await wait_for(() => spy_ack.mock.calls.length === before + 1)
         await channel.close()
-        expect(spy_ack).toHaveBeenNthCalledWith(2, 'native')
+        expect(spy_ack).toHaveBeenLastCalledWith('native')
     })
 
     it('should kill message', async () => {
+        const before = spy_kill.mock.calls.length
         const channel = await connection.createChannel()
         channel.sendToQueue(D.Q['tarpit.queue.consume.kill'], Buffer.from(JSON.stringify({ a: 1, b: 'c' })))
-        await timers.setTimeout(50)
+        await wait_for(() => spy_kill.mock.calls.length === before + 1)
         await channel.close()
-        expect(spy_kill).toHaveBeenNthCalledWith(1, 'normal')
+        expect(spy_kill).toHaveBeenLastCalledWith('normal')
     })
 
-    it('should kill message', async () => {
+    it('should kill message by throw directly', async () => {
+        const before = spy_kill.mock.calls.length
         const channel = await connection.createChannel()
         channel.sendToQueue(D.Q['tarpit.queue.consume.kill.native'], Buffer.from(JSON.stringify({ a: 1, b: 'c' })))
-        await timers.setTimeout(50)
+        await wait_for(() => spy_kill.mock.calls.length === before + 1)
         await channel.close()
-        expect(spy_kill).toHaveBeenNthCalledWith(2, 'native')
+        expect(spy_kill).toHaveBeenLastCalledWith('native')
     })
 
     it('should requeue message', async () => {
+        const before = spy_requeue.mock.calls.length
         const channel = await connection.createChannel()
         channel.sendToQueue(D.Q['tarpit.queue.consume.requeue'], Buffer.from(JSON.stringify({ a: 1, b: 'c' })))
-        await timers.setTimeout(50)
+        await wait_for(() => spy_requeue.mock.calls.length === before + 2)
         await channel.close()
-        expect(spy_requeue).toHaveBeenNthCalledWith(1, 'normal')
-        expect(spy_requeue).toHaveBeenNthCalledWith(2, 'normal')
+        expect(spy_requeue.mock.calls[before][0]).toBe('normal')
+        expect(spy_requeue.mock.calls[before + 1][0]).toBe('normal')
     })
 
-    it('should requeue message', async () => {
+    it('should requeue message by throw directly', async () => {
+        const before = spy_requeue.mock.calls.length
         const channel = await connection.createChannel()
         channel.sendToQueue(D.Q['tarpit.queue.consume.requeue.native'], Buffer.from(JSON.stringify({ a: 1, b: 'c' })))
-        await timers.setTimeout(50)
+        await wait_for(() => spy_requeue.mock.calls.length === before + 2)
         await channel.close()
-        expect(spy_requeue).toHaveBeenNthCalledWith(3, 'native')
-        expect(spy_requeue).toHaveBeenNthCalledWith(4, 'native')
+        expect(spy_requeue.mock.calls[before][0]).toBe('native')
+        expect(spy_requeue.mock.calls[before + 1][0]).toBe('native')
     })
 
     it('should kill message if unknown error thrown by consumer', async () => {
+        const before = spy_normal.mock.calls.length
         const channel = await connection.createChannel()
         channel.sendToQueue(D.Q['tarpit.queue.consume.normal'], Buffer.from(JSON.stringify({ a: 1, b: 'c' })))
-        await timers.setTimeout(50)
+        await wait_for(() => spy_normal.mock.calls.length === before + 1)
         await channel.close()
-        expect(spy_normal).toHaveBeenCalledTimes(1)
+        expect(spy_normal.mock.calls.length).toBe(before + 1)
     })
 })
