@@ -1,5 +1,14 @@
 # @tarpit/core
 
+## 2.0.0
+
+### Patch Changes
+
+- 2007bfe: version alignment
+- Updated dependencies [2007bfe]
+  - @tarpit/type-tools@1.0.0
+  - @tarpit/config@1.0.0
+
 ## 1.0.0
 
 ### Minor Changes

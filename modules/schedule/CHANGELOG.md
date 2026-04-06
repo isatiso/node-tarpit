@@ -1,5 +1,16 @@
 # @tarpit/schedule
 
+## 2.0.0
+
+### Patch Changes
+
+- 2007bfe: version alignment
+- Updated dependencies [2007bfe]
+  - @tarpit/config@1.0.0
+  - @tarpit/cron@1.0.0
+  - @tarpit/dora@1.0.0
+  - @tarpit/core@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes

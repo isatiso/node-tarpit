@@ -1,5 +1,17 @@
 # @tarpit/rabbitmq
 
+## 2.0.0
+
+### Patch Changes
+
+- 2007bfe: version alignment
+- Updated dependencies [2007bfe]
+  - @tarpit/barbeque@1.0.0
+  - @tarpit/config@1.0.0
+  - @tarpit/judge@1.0.0
+  - @tarpit/content-type@2.0.0
+  - @tarpit/core@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes

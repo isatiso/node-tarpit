@@ -1,5 +1,16 @@
 # @tarpit/cron
 
+## 1.0.0
+
+### Major Changes
+
+- 2007bfe: version alignment
+
+### Patch Changes
+
+- Updated dependencies [2007bfe]
+  - @tarpit/dora@1.0.0
+
 ## 0.6.0
 
 ### Minor Changes

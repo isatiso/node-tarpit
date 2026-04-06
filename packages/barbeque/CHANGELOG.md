@@ -1,5 +1,11 @@
 # @tarpit/barbeque
 
+## 1.0.0
+
+### Major Changes
+
+- 2007bfe: version alignment
+
 ## 0.6.0
 
 ### Minor Changes
