@@ -1,5 +1,17 @@
 # @tarpit/rabbitmq
 
+## 2.0.0
+
+### Patch Changes
+
+- 9bf475b: version alignment
+- Updated dependencies [9bf475b]
+  - @tarpit/barbeque@2.0.0
+  - @tarpit/config@2.0.0
+  - @tarpit/judge@2.0.0
+  - @tarpit/content-type@2.0.0
+  - @tarpit/core@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes

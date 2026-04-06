@@ -1,5 +1,16 @@
 # @tarpit/cron
 
+## 2.0.0
+
+### Major Changes
+
+- 9bf475b: version alignment
+
+### Patch Changes
+
+- Updated dependencies [9bf475b]
+  - @tarpit/dora@2.0.0
+
 ## 0.6.0
 
 ### Minor Changes

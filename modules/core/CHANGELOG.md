@@ -1,5 +1,14 @@
 # @tarpit/core
 
+## 2.0.0
+
+### Patch Changes
+
+- 9bf475b: version alignment
+- Updated dependencies [9bf475b]
+  - @tarpit/type-tools@2.0.0
+  - @tarpit/config@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes
