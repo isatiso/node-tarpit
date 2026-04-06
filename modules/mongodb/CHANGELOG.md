@@ -1,5 +1,15 @@
 # @tarpit/mongodb
 
+## 2.0.1
+
+### Patch Changes
+
+- Simplify test setup by removing testcontainers dependency.
+
+  - Remove testcontainers-based container management in test helpers
+  - Use environment variables directly for service connection URLs
+  - Update RabbitMQ connection test to detect localhost by URL instead of CI flag
+
 ## 2.0.0
 
 ### Patch Changes
