@@ -43,12 +43,12 @@ describe('connection case', () => {
             await expect(is_reachable(rabbitmq_url, 200)).resolves.not.toThrow()
 
             // 4. Test the default address ({}) and adapt the expectation based on the environment.
-            if (process.env.CI) {
-                // In CI, localhost is the runner, not the service container. So it should be rejected.
-                await expect(is_reachable({}, 200)).rejects.toThrow()
-            } else {
-                // Locally, the container is on localhost, so it should be fulfilled.
+            // If RABBITMQ_URL points to localhost, the default connection should succeed; otherwise it should fail.
+            const rabbitmq_on_localhost = (process.env.RABBITMQ_URL ?? '').includes('localhost')
+            if (rabbitmq_on_localhost) {
                 await expect(is_reachable({}, 200)).resolves.not.toThrow()
+            } else {
+                await expect(is_reachable({}, 200)).rejects.toThrow()
             }
         })
     })
