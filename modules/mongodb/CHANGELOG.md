@@ -1,5 +1,14 @@
 # @tarpit/mongodb
 
+## 1.0.1
+
+### Patch Changes
+
+- 604df6d: fix version alignment
+- Updated dependencies [604df6d]
+  - @tarpit/config@1.0.1
+  - @tarpit/core@1.0.1
+
 ## 1.0.0
 
 ### Minor Changes

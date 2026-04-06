@@ -1,5 +1,13 @@
 # @tarpit/config
 
+## 1.0.1
+
+### Patch Changes
+
+- 604df6d: fix version alignment
+- Updated dependencies [604df6d]
+  - @tarpit/judge@1.0.1
+
 ## 0.6.0
 
 ### Minor Changes

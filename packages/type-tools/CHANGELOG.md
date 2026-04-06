@@ -1,5 +1,11 @@
 # @tarpit/type-tools
 
+## 1.0.1
+
+### Patch Changes
+
+- 604df6d: fix version alignment
+
 ## 0.6.0
 
 ### Minor Changes

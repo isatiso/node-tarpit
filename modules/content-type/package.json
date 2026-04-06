@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/content-type",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Content-type negotiation and body deserialization module for Tarpit",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",

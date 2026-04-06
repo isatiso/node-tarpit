@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/judge",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Runtime type validation and assertion utilities",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
