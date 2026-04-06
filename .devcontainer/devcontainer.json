@@ -1,0 +1,32 @@
+{
+    "name": "node-tarpit",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspace/node-tarpit",
+    "initializeCommand": ".devcontainer/host/init.sh",
+    "postCreateCommand": ".devcontainer/container/init.sh",
+    "remoteUser": "root",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "editor.formatOnSave": true,
+                "shellformat.path": "/usr/local/bin/shfmt",
+                "terminal.integrated.defaultProfile.linux": "zsh"
+            },
+            "extensions": [
+                "anthropic.claude-code",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "eamodio.gitlens",
+                "mhutchie.git-graph",
+                "foxundermoon.shell-format",
+                "humao.rest-client",
+                "usernamehw.errorlens",
+                "nicolo-ribaudo.publisher-vscode-factory",
+                "ms-azuretools.vscode-docker",
+                "redhat.vscode-yaml",
+                "tamasfe.even-better-toml"
+            ]
+        }
+    }
+}
