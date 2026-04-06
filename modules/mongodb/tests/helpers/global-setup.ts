@@ -20,7 +20,7 @@ export async function setup(): Promise<void> {
     const { GenericContainer } = await import('testcontainers')
 
     console.log('Starting MongoDB container...')
-    const container = new GenericContainer('mongo:5')
+    const container = new GenericContainer('mongo:8')
         .withExposedPorts(27017)
         .withEnvironment({
             MONGO_INITDB_ROOT_USERNAME: 'admin',
