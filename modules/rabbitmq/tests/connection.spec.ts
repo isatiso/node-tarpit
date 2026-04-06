@@ -42,14 +42,8 @@ describe('connection case', () => {
             // 3. Test the valid, dynamically provided URL. This should always be fulfilled.
             await expect(is_reachable(rabbitmq_url, 200)).resolves.not.toThrow()
 
-            // 4. Test the default address ({}) and adapt the expectation based on the environment.
-            // If RABBITMQ_URL points to localhost, the default connection should succeed; otherwise it should fail.
-            const rabbitmq_on_localhost = (process.env.RABBITMQ_URL ?? '').includes('localhost')
-            if (rabbitmq_on_localhost) {
-                await expect(is_reachable({}, 200)).resolves.not.toThrow()
-            } else {
-                await expect(is_reachable({}, 200)).rejects.toThrow()
-            }
+            // 4. Test the default address ({}) which points to localhost:5672 — should always fail in CI and devcontainer.
+            await expect(is_reachable({}, 200)).rejects.toThrow()
         })
     })
 
