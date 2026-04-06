@@ -35,9 +35,16 @@ RUN mkdir -p /run/sshd \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
 
-# [5] AI CLI tools
+# [5] GitHub CLI
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list \
+    && apt-get update && apt-get install -y gh \
+    && rm -rf /var/lib/apt/lists/*
+
+# [6] AI CLI tools
 RUN pnpm add -g @openai/codex
-RUN curl -fsSL https://app.factory.ai/cli | zsh
-RUN curl -fsSL https://claude.ai/install.sh | zsh
+RUN npm install -g @anthropic-ai/claude-code
+RUN npm install -g droid
 
 WORKDIR /workspace/node-tarpit

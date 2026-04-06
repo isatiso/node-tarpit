@@ -15,12 +15,10 @@ services:
     ports:
       - "7022:22"
     environment:
-      # CI: "true"
       MONGODB_URL: mongodb://admin:admin_password@mongo:27017/test?authSource=admin
       RABBITMQ_URL: amqp://admin:admin_password@rabbitmq:5672
       TPKIT_STORE_URL:
       COLORTERM: truecolor
-      FORCE_COLOR: "1"
       SSH_AUTH_SOCK: /tmp/ssh-agent.sock
       HTTPS_PROXY: http://host.docker.internal:6152
       HTTP_PROXY: http://host.docker.internal:6152

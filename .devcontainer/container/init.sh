@@ -17,7 +17,9 @@ mkdir -p /run/sshd
 /usr/sbin/sshd
 
 # [3] Sync AI agent config and .env
-tpkit init 
+mkdir -p /root/.ssh
+ssh-keyscan github.com >> /root/.ssh/known_hosts 2>/dev/null
+tpkit init
 tpkit agent sync --gitignore
 
 # [4] Install dependencies and build
