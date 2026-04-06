@@ -7,7 +7,7 @@
  */
 
 import { Injector } from '@tarpit/core'
-import { Channel, ConfirmChannel, Connection } from 'amqplib'
+import { Channel, ChannelModel, ConfirmChannel } from 'amqplib'
 import { switchMap, takeUntil } from 'rxjs'
 import { RabbitConnector } from '../services/rabbit-connector.ts'
 import { RabbitNotifier } from '../services/rabbit-notifier'
@@ -31,7 +31,7 @@ export class RabbitSession<CH extends Channel | ConfirmChannel> {
         ).subscribe()
     }
 
-    async init(connection: Connection): Promise<CH | undefined> {
+    async init(connection: ChannelModel): Promise<CH | undefined> {
         this.channel = undefined
         try {
             this.channel = this.confirm

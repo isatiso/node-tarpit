@@ -6,7 +6,6 @@
  * found in the LICENSE file at source root.
  */
 
-require('ts-node').register({
-    compiler: 'ts-patch/compiler',
-    files: true,
-})
+import { register } from 'module'
+
+register('ts-node/esm', import.meta.url)
