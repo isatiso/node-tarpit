@@ -42,14 +42,8 @@ describe('connection case', () => {
             // 3. Test the valid, dynamically provided URL. This should always be fulfilled.
             await expect(is_reachable(rabbitmq_url, 200)).resolves.not.toThrow()
 
-            // 4. Test the default address ({}) and adapt the expectation based on the environment.
-            if (process.env.CI) {
-                // In CI, localhost is the runner, not the service container. So it should be rejected.
-                await expect(is_reachable({}, 200)).rejects.toThrow()
-            } else {
-                // Locally, the container is on localhost, so it should be fulfilled.
-                await expect(is_reachable({}, 200)).resolves.not.toThrow()
-            }
+            // 4. Test the default address ({}) which points to localhost:5672 — should always fail in CI and devcontainer.
+            await expect(is_reachable({}, 200)).rejects.toThrow()
         })
     })
 
