@@ -20,7 +20,7 @@ export async function setup(): Promise<void> {
     const { GenericContainer } = await import('testcontainers')
 
     console.log('Starting RabbitMQ container...')
-    const container = new GenericContainer('rabbitmq:3.11-management')
+    const container = new GenericContainer('rabbitmq:3.13-management')
         .withExposedPorts(5672, 15672)
         .withEnvironment({
             RABBITMQ_DEFAULT_USER: 'admin',

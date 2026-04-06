@@ -8,11 +8,11 @@
 
 import { load_config } from '@tarpit/config'
 import { Platform, TpConfigSchema, TpModule } from '@tarpit/core'
-import amqplib, { Connection, GetMessage } from 'amqplib'
+import amqplib, { ChannelModel, GetMessage } from 'amqplib'
 import crypto from 'node:crypto'
-import timers from 'node:timers/promises'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfirmProducer, Consume, Enqueue, Producer, Publish, RabbitDefine, RabbitDefineToken, RabbitMessage, RabbitmqModule, TpConsumer, TpProducer } from '../src'
+import { wait_for } from './helpers/wait-for'
 
 const consume_result: string[] = []
 const predefined_message: string[] = []
@@ -82,7 +82,7 @@ class TempModule {
 describe('normal case', () => {
 
     const rabbitmq_url = process.env.RABBITMQ_URL!
-    let connection: Connection
+    let connection: ChannelModel
     let platform: Platform
     let producer: TempProducer
 
@@ -99,7 +99,8 @@ describe('normal case', () => {
 
         await platform.start()
         producer = platform.expose(TempProducer)!
-        await timers.setTimeout(200)
+        consume_result.length = 0
+        await wait_for(() => consume_result.length === predefined_message.length)
     })
 
     afterEach(async () => {
@@ -118,17 +119,18 @@ describe('normal case', () => {
     })
 
     it('should consume predefine message', async () => {
-        await timers.setTimeout(200)
         expect(consume_result.length).equal(predefined_message.length)
         expect(consume_result).toEqual(predefined_message)
     })
 
     it('should publish message to exchange', async () => {
         producer.publish_normal.send('publish_normal')
-        // await timers.setTimeout(100)
         const channel = await connection.createChannel()
-        const msg = await channel.get(D.Q['tarpit.queue.normal.normal'], { noAck: true })
-        expect(msg).not.equal(false)
+        let msg: GetMessage | false = false
+        await wait_for(async () => {
+            msg = await channel.get(D.Q['tarpit.queue.normal.normal'], { noAck: true }) as GetMessage | false
+            return msg !== false
+        })
         expect((msg as GetMessage).content.toString()).equal('publish_normal')
         await channel.close()
     })
@@ -136,18 +138,23 @@ describe('normal case', () => {
     it('should publish message to exchange with confirm', async () => {
         await producer.publish_confirm.send('publish_confirm')
         const channel = await connection.createChannel()
-        const msg = await channel.get(D.Q['tarpit.queue.normal.confirm'], { noAck: true })
-        expect(msg).not.equal(false)
+        let msg: GetMessage | false = false
+        await wait_for(async () => {
+            msg = await channel.get(D.Q['tarpit.queue.normal.confirm'], { noAck: true }) as GetMessage | false
+            return msg !== false
+        })
         expect((msg as GetMessage).content.toString()).equal('publish_confirm')
         await channel.close()
     })
 
     it('should send message to queue', async () => {
         producer.enqueue_normal.send('enqueue_normal')
-        // await timers.setTimeout(50)
         const channel = await connection.createChannel()
-        const msg = await channel.get(D.Q['tarpit.queue.normal.normal'], { noAck: true })
-        expect(msg).not.equal(false)
+        let msg: GetMessage | false = false
+        await wait_for(async () => {
+            msg = await channel.get(D.Q['tarpit.queue.normal.normal'], { noAck: true }) as GetMessage | false
+            return msg !== false
+        })
         expect((msg as GetMessage).content.toString()).equal('enqueue_normal')
         await channel.close()
     })
@@ -155,8 +162,11 @@ describe('normal case', () => {
     it('should send message to queue with confirm', async () => {
         await producer.enqueue_confirm.send('enqueue_confirm')
         const channel = await connection.createChannel()
-        const msg = await channel.get(D.Q['tarpit.queue.normal.confirm'], { noAck: true })
-        expect(msg).not.equal(false)
+        let msg: GetMessage | false = false
+        await wait_for(async () => {
+            msg = await channel.get(D.Q['tarpit.queue.normal.confirm'], { noAck: true }) as GetMessage | false
+            return msg !== false
+        })
         expect((msg as GetMessage).content.toString()).equal('enqueue_confirm')
         await channel.close()
     })
