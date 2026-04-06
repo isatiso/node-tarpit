@@ -1,23 +1,23 @@
 {
     "name": "@tarpit/transformer",
-    "version": "0.6.0",
-    "description": "> TODO: description",
+    "version": "1.0.0",
+    "description": "TypeScript AST transformer plugins for Tarpit",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
     "license": "MIT",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
-    "module": "lib/index.mjs",
+    "main": "lib/index.mjs",
+    "types": "lib/index.d.mts",
     "files": [
         "lib"
     ],
     "engines": {
-        "node": ">=18"
+        "node": ">=20"
     },
     "exports": {
         ".": {
-            "require": "./lib/index.js",
-            "import": "./lib/index.mjs"
+            "types": "./lib/index.d.mts",
+            "import": "./lib/index.mjs",
+            "default": "./lib/index.mjs"
         },
         "./package": "./package.json",
         "./package.json": "./package.json"
@@ -34,7 +34,7 @@
         "url": "https://github.com/isatiso/node-tarpit/issues"
     },
     "scripts": {
-        "build": "tsup src/index.ts --format cjs,esm --dts --out-dir lib"
+        "build": "tsup src/index.ts --format esm --dts --out-dir lib"
     },
     "dependencies": {
         "js-yaml": "^4.1.0",
@@ -49,5 +49,6 @@
         "@types/js-yaml": "^4.0.5",
         "@types/micromatch": "^4.0.2",
         "@types/node": "^20.4.2"
-    }
+    },
+    "sideEffects": false
 }
