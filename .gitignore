@@ -1,6 +1,5 @@
 **/node_modules/
 **/out
-**/build
 **/dist
 **/lib
 **/coverage
@@ -9,6 +8,9 @@
 .cache/
 .factory/
 
+.pnpm-store/
+
+docs/**/build
 supports/rollup/src/test.*
 
 **/test.*
@@ -29,3 +31,12 @@ CODEX.md
 .aider/
 .aider.tags.cache.v3/
 .continue/
+
+.devcontainer/.env
+
+# AI agent configs (managed by tpkit)
+.claude/
+.codex/
+
+# AI agent configs (managed by tpkit)
+.env
