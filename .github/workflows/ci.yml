@@ -19,7 +19,7 @@ jobs:
         run: |
           HAS_CHANGELOG=$(git diff ${{ github.event.pull_request.base.sha }} --name-only | grep -c "CHANGELOG.md" || true)
           if [ "$HAS_CHANGELOG" -gt "0" ]; then
-            if ls .changeset/*.md 1>/dev/null 2>&1; then
+            if ls .changeset/*.md 2>/dev/null | grep -qv "README.md"; then
               echo "Uncommitted changeset files found. Run 'pnpm changeset version' first."
               exit 1
             fi
