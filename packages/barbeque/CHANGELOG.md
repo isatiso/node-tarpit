@@ -1,5 +1,11 @@
 # @tarpit/barbeque
 
+## 2.0.0
+
+### Major Changes
+
+- 9bf475b: version alignment
+
 ## 0.6.0
 
 ### Minor Changes

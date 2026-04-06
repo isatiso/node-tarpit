@@ -1,5 +1,16 @@
 # @tarpit/schedule
 
+## 2.0.0
+
+### Patch Changes
+
+- 9bf475b: version alignment
+- Updated dependencies [9bf475b]
+  - @tarpit/config@2.0.0
+  - @tarpit/cron@2.0.0
+  - @tarpit/dora@2.0.0
+  - @tarpit/core@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes
