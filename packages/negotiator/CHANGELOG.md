@@ -1,5 +1,11 @@
 # @tarpit/negotiator
 
+## 1.0.1
+
+### Patch Changes
+
+- 7732ed2: fix version alignment
+
 ## 0.6.0
 
 ### Minor Changes

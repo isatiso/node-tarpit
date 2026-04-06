@@ -1,5 +1,13 @@
 # @tarpit/cron
 
+## 1.0.1
+
+### Patch Changes
+
+- 7732ed2: fix version alignment
+- Updated dependencies [7732ed2]
+  - @tarpit/dora@1.0.1
+
 ## 0.6.0
 
 ### Minor Changes

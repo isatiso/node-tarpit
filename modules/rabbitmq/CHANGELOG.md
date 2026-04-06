@@ -1,5 +1,17 @@
 # @tarpit/rabbitmq
 
+## 1.0.1
+
+### Patch Changes
+
+- 7732ed2: fix version alignment
+- Updated dependencies [7732ed2]
+  - @tarpit/content-type@1.0.1
+  - @tarpit/barbeque@1.0.1
+  - @tarpit/config@1.0.1
+  - @tarpit/judge@1.0.1
+  - @tarpit/core@1.0.1
+
 ## 1.0.0
 
 ### Minor Changes
