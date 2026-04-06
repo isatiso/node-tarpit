@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/schedule",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Cron-based task scheduling module for Tarpit",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",

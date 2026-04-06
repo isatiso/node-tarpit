@@ -1,5 +1,11 @@
 # @tarpit/cli
 
+## 1.0.1
+
+### Patch Changes
+
+- 3811800: fix version alignment
+
 ## 0.6.0
 
 ### Minor Changes

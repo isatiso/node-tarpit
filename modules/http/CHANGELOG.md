@@ -1,5 +1,18 @@
 # @tarpit/http
 
+## 1.0.1
+
+### Patch Changes
+
+- 3811800: fix version alignment
+- Updated dependencies [3811800]
+  - @tarpit/content-type@1.0.1
+  - @tarpit/negotiator@1.0.1
+  - @tarpit/config@1.0.1
+  - @tarpit/judge@1.0.1
+  - @tarpit/dora@1.0.1
+  - @tarpit/core@1.0.1
+
 ## 1.0.0
 
 ### Minor Changes
