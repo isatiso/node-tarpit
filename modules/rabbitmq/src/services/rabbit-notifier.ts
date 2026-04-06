@@ -7,7 +7,7 @@
  */
 
 import { Injector, TpService } from '@tarpit/core'
-import { Connection } from 'amqplib'
+import { ChannelModel } from 'amqplib'
 import { EventEmitter } from 'events'
 import { Subject } from 'rxjs'
 
@@ -15,8 +15,8 @@ import { Subject } from 'rxjs'
 export class RabbitNotifier {
 
     readonly off$ = this.injector.off$.pipe()
-    readonly checkout$ = new Subject<Connection>()
-    readonly connected$ = new Subject<Connection>()
+    readonly checkout$ = new Subject<ChannelModel>()
+    readonly connected$ = new Subject<ChannelModel>()
     readonly channel_error$ = new Subject<any>()
 
     private _emitter = new EventEmitter()
