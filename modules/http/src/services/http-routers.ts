@@ -63,6 +63,8 @@ export class HttpRouters {
     private readonly c_allow_origin = this.config_data.get('http.cors.allow_origin') ?? ''
     private readonly c_body_max_length = this.config_data.get('http.body.max_length') ?? 0
     private readonly c_cors_max_age = this.config_data.get('http.cors.max_age') ?? 0
+    private readonly c_credentials = this.config_data.get('http.cors.credentials') ?? false
+    private readonly c_expose_headers = this.config_data.get('http.cors.expose_headers') ?? ''
     private readonly c_proxy = this.config_data.get('http.proxy')
 
     constructor(
@@ -70,6 +72,24 @@ export class HttpRouters {
         private url_parser: HttpUrlParser,
         private reader: ContentReaderService,
     ) {
+    }
+
+    private set_cors_headers(res: ServerResponse, req: IncomingMessage, is_preflight: boolean): void {
+        const request_origin = req.headers['origin']
+        const origin = this.c_allow_origin === '*' ? '*' : this.c_allow_origin === request_origin ? request_origin : ''
+        if (this.c_allow_origin && origin) {
+            res.setHeader('Access-Control-Allow-Origin', origin)
+        }
+        if (this.c_credentials) {
+            res.setHeader('Access-Control-Allow-Credentials', 'true')
+        }
+        if (is_preflight) {
+            this.c_allow_methods && res.setHeader('Access-Control-Allow-Methods', this.c_allow_methods)
+            this.c_allow_headers && res.setHeader('Access-Control-Allow-Headers', this.c_allow_headers)
+            this.c_cors_max_age && res.setHeader('Access-Control-Max-Age', this.c_cors_max_age)
+        } else {
+            this.c_expose_headers && res.setHeader('Access-Control-Expose-Headers', this.c_expose_headers)
+        }
     }
 
     public readonly upgrade_listener = async (req: IncomingMessage, socket: Duplex, head: Buffer): Promise<SocketHandler | undefined> => {
@@ -103,14 +123,12 @@ export class HttpRouters {
         if (!allow.includes(req.method)) {
             return reply(res, 405)
         }
-        this.c_allow_origin && res.setHeader('Access-Control-Allow-Origin', this.c_allow_origin)
         if (req.method === 'OPTIONS') {
+            this.set_cors_headers(res, req, true)
             res.setHeader('Allow', allow.join(','))
-            this.c_allow_methods && res.setHeader('Access-Control-Allow-Methods', this.c_allow_methods)
-            this.c_allow_headers && res.setHeader('Access-Control-Allow-Headers', this.c_allow_headers)
-            this.c_cors_max_age && res.setHeader('Access-Control-Max-Age', this.c_cors_max_age)
             return reply(res, 204)
         } else {
+            this.set_cors_headers(res, req, false)
             res.statusCode = 400
             res.statusMessage = HTTP_STATUS.message_of(400)
             const handler = this.handler_book.find(req.method as ApiMethod, pathname)!
