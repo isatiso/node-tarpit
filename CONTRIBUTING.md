@@ -18,10 +18,13 @@ CI will verify that `changeset version` was run by checking for CHANGELOG update
 
 For changes that only touch CI, tooling, or other non-package files, add the `skip-changeset` label to the PR to explicitly bypass the changeset check.
 
-Create the label once in the repository if it doesn't exist:
+For changes that don't require running tests at all (e.g. devcontainer, docs), also add the `skip-ci` label to skip the CI job entirely.
+
+Create the labels once in the repository if they don't exist:
 
 ```sh
 gh label create skip-changeset --color "#e4e669"
+gh label create skip-ci --color "#e4e669"
 ```
 
 ## Release
