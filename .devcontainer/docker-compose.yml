@@ -8,7 +8,6 @@ services:
       - node-tarpit-pnpm-store:/root/.local/share/pnpm/store
       - ${HOME}/.config/gh:/root/.config/gh:ro
       - ${HOME}/.node-tarpit/zsh_history:/root/.zsh_history_persist
-      - ${SSH_AUTH_SOCK}:/tmp/ssh-agent.sock
       - ${HOME}/.ssh/authorized_keys:/root/.ssh/authorized_keys:ro
       - /var/run/docker.sock:/var/run/docker.sock
     tty: true
@@ -19,7 +18,6 @@ services:
       RABBITMQ_URL: amqp://admin:admin_password@rabbitmq:5672
       TPKIT_STORE_URL:
       COLORTERM: truecolor
-      SSH_AUTH_SOCK: /tmp/ssh-agent.sock
       HTTPS_PROXY: http://host.docker.internal:6152
       HTTP_PROXY: http://host.docker.internal:6152
       NO_PROXY: localhost,127.0.0.1,mongo,rabbitmq
