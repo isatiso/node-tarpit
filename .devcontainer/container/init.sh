@@ -18,7 +18,13 @@ mkdir -p /run/sshd
 
 # [3] Sync AI agent config and .env
 mkdir -p /root/.ssh
-ssh-keyscan github.com >> /root/.ssh/known_hosts 2>/dev/null
+cat >> /root/.ssh/config <<EOF
+Host github.com
+    Hostname ssh.github.com
+    Port 443
+EOF
+chmod 600 /root/.ssh/config
+ssh-keyscan -p 443 ssh.github.com >> /root/.ssh/known_hosts 2>/dev/null
 tpkit init
 tpkit agent sync --gitignore
 
