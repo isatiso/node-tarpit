@@ -40,6 +40,9 @@ export const Put = make_decorator('Put', (path_tail?: string): RouteProps => ({ 
 export type Delete = InstanceType<typeof Delete>
 export const Delete = make_decorator('Delete', (path_tail?: string): RouteProps => ({ path_tail, methods: ['DELETE'] }), Route)
 
+export type Patch = InstanceType<typeof Patch>
+export const Patch = make_decorator('Patch', (path_tail?: string): RouteProps => ({ path_tail, methods: ['PATCH'] }), Route)
+
 export type WS = InstanceType<typeof WS>
 export const WS = make_decorator('WS', (path_tail?: string) => ({ path_tail }), TpHttp)
 

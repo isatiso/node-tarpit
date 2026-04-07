@@ -61,6 +61,7 @@ export {
     Delete,
     Put,
     Post,
+    Patch,
     Auth,
     Route,
     WS,

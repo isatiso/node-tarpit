@@ -94,7 +94,7 @@ export class HttpRouters {
         const pathname = parsed_url.pathname!.replace(/\/\s*$/, '') || '/'
         const allow = this.handler_book.get_allow(pathname)
         if (req.method === 'OPTIONS' && req.url === '*') {
-            res.setHeader('Allow', 'OPTIONS,HEAD,GET,POST,PUT,DELETE')
+            res.setHeader('Allow', 'OPTIONS,HEAD,GET,POST,PUT,DELETE,PATCH')
             return reply(res, 204)
         }
         if (!allow) {

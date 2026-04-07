@@ -99,7 +99,7 @@ describe('edge cases', () => {
             })
 
             expect(response).toContain('HTTP/1.1 204 No Content')
-            expect(response).toContain('Allow: OPTIONS,HEAD,GET,POST,PUT,DELETE')
+            expect(response).toContain('Allow: OPTIONS,HEAD,GET,POST,PUT,DELETE,PATCH')
         })
     })
 

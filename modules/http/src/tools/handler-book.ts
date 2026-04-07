@@ -15,6 +15,7 @@ export interface HttpHandlerMap {
     POST?: RequestHandlerWithPathArgs
     PUT?: RequestHandlerWithPathArgs
     DELETE?: RequestHandlerWithPathArgs
+    PATCH?: RequestHandlerWithPathArgs
     SOCKET?: UpgradeHandlerWithPathArgs
     _allows: (ApiMethod | 'HEAD' | 'OPTIONS')[]
 }
