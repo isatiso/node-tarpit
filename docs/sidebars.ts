@@ -64,6 +64,13 @@ const sidebars: SidebarsConfig = {
         'content-type/advanced-features'
       ],
     },
+    {
+      type: 'category',
+      label: 'Design Decisions',
+      items: [
+        'decisions/di-gap-analysis',
+      ],
+    },
   ],
 
   // But you can create a sidebar manually
