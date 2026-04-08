@@ -16,7 +16,7 @@ import { TpRouter } from '../annotations'
 import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse, TpWebSocket } from '../builtin'
 import { Finish, TpHttpFinish } from '../errors'
 import { RequestUnit, RouteUnit, SocketUnit } from '../tools/collect-routes'
-import { flush_response } from '../tools/flush-response'
+import { CompressionOptions, flush_response } from '../tools/flush-response'
 import { HandlerBook } from '../tools/handler-book'
 import { CODES_KEY, HTTP_STATUS } from '../tools/http-status'
 import { HttpAuthenticator } from './http-authenticator'
@@ -66,6 +66,10 @@ export class HttpRouters {
     private readonly c_credentials = this.config_data.get('http.cors.credentials') ?? false
     private readonly c_expose_headers = this.config_data.get('http.cors.expose_headers') ?? ''
     private readonly c_proxy = this.config_data.get('http.proxy')
+    private readonly c_compression: CompressionOptions = {
+        enable: this.config_data.get('http.compression.enable') ?? false,
+        threshold: this.config_data.get('http.compression.threshold') ?? 1024,
+    }
 
     constructor(
         private config_data: TpConfigData,
@@ -226,6 +230,7 @@ export class HttpRouters {
         const body_max_length = this.c_body_max_length
         const proxy_config = this.c_proxy
         const reader = this.reader
+        const compression = this.c_compression
         const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
 
         const pv_authenticator = injector.get(HttpAuthenticator)!
@@ -362,7 +367,7 @@ export class HttpRouters {
                 http_hooks.on_error(context).catch(() => undefined)
             }
 
-            flush_response(response)
+            flush_response(response, compression)
         }
     }
 }

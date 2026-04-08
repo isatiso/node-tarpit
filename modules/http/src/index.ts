@@ -49,6 +49,10 @@ declare module '@tarpit/core' {
             body?: {
                 max_length?: number
             }
+            compression?: {
+                enable?: boolean
+                threshold?: number
+            }
         }
     }
 }
