@@ -33,18 +33,19 @@ title: HTTP Gap Analysis
 - `HttpInspector` 提供路由列表和编程式路由绑定
 - `HttpBodyFormatter` 支持错误响应的内容协商（JSON vs text）
 - `Finish` / `TpHttpFinish` 错误模型，提供类型化 throw 辅助函数（`throw_bad_request`、`throw_not_found` 等）
+- PATCH HTTP 方法（`@Patch` 装饰器）
+- 响应压缩（gzip/br，基于 zlib 流式实现，可配置 threshold/encodings）
+- CORS 增强：credentials、expose_headers、精确多 origin 匹配
 
 ## 与主流框架的差距评估
 
 ### 1. 缺少 PATCH HTTP 方法
 
-**状态**：缺失
+**状态**：已完成
 
-当前 `ApiMethod` 类型只定义了 `'GET' | 'POST' | 'PUT' | 'DELETE'`。PATCH 是部分更新资源的标准 HTTP 方法（RFC 5789），所有主流框架都支持。
+在 `ApiMethod` 中添加了 `'PATCH'`，创建了 `@Patch` 装饰器，更新了 OPTIONS/Allow 头的生成逻辑。
 
-**工作量**：极小——在 `ApiMethod` 中添加 `'PATCH'`，创建 `@Patch` 装饰器，更新 OPTIONS/Allow 头的生成逻辑。
-
-**决定**：TODO
+**决定**：已实现
 
 ---
 
@@ -69,20 +70,11 @@ title: HTTP Gap Analysis
 
 ### 3. 响应压缩（gzip/brotli）
 
-**状态**：缺失
+**状态**：已完成
 
-没有响应压缩支持。`@tarpit/content-type` 的 `ContentDecompressorService` 只处理请求解压缩（读取方向），响应写出方向没有压缩逻辑。
+在 `flush_response.ts` 中基于 Node.js 内置 `zlib` 实现，根据 `Accept-Encoding` 头选择编码（优先 br，fallback gzip）。所有 body 类型统一走 Stream 分支，压缩后移除 `Content-Length`。跳过条件：已设置 `Content-Encoding`、`204`/`304` 空响应、body 低于 threshold。配置项：`http.compression`（enable、threshold、encodings）。
 
-**决定**：实现。在 `@tarpit/http` 的 `flush_response.ts` 中独立实现，不经过 `@tarpit/content-type`。
-
-**实现方案**：
-- 在 `flush_response` 中，根据请求的 `Accept-Encoding` 头选择压缩编码（优先 br，fallback gzip，都不支持则不压缩）
-- 只支持 gzip 和 br 两种编码，使用 Node.js 内置 `zlib` 模块，无需额外依赖
-- 所有 body 类型（string、Buffer、object、Stream）统一处理：在 body 和 `res` 之间插入 zlib Transform stream，实现流式压缩
-- 静态文件（`HttpStatic` 返回的 ReadStream）同样走 Stream 分支，自动压缩，对调用方无感
-- 压缩后移除 `Content-Length` 头（压缩后长度不可预知），Node.js 默认使用 chunked transfer encoding
-- 跳过条件：已设置 `Content-Encoding`、`204`/`304` 空响应、body 过小（低于 threshold）
-- 配置项：`http.compression`（enable、threshold、encodings）
+**决定**：已实现
 
 ---
 
@@ -103,12 +95,7 @@ title: HTTP Gap Analysis
 - `exposedHeaders` 指定客户端可读取的自定义响应头
 - 按路由覆盖 CORS 配置
 
-**决定**：实现。改动集中在 `http-routers.ts` 的 CORS 处理部分和 `index.ts` 的配置类型定义。
-
-**实现方案**：
-- `credentials`：配置中加布尔值，OPTIONS 和正常响应时设置 `Access-Control-Allow-Credentials: true`
-- `expose_headers`：配置中加字符串，响应时设置 `Access-Control-Expose-Headers`
-- 动态 origin：`allow_origin` 从纯字符串扩展为支持字符串数组或函数，根据请求的 `Origin` 头匹配后回写
+**决定**：已实现。`credentials`、`expose_headers`、精确多 origin 匹配均已支持。`allow_origin` 扩展为字符串数组，根据请求 `Origin` 头精确匹配后回写。
 
 ---
 
@@ -259,13 +246,18 @@ title: HTTP Gap Analysis
 
 ## 优先级总结
 
-### 决定实现
+### 已完成
+
+| 功能 | 说明 |
+|------|------|
+| PATCH 方法 | `@Patch` 装饰器，OPTIONS/Allow 头更新 |
+| 响应压缩（gzip/br） | `flush_response.ts` 流式压缩，可配置 |
+| CORS 增强 | credentials、expose_headers、多 origin 精确匹配 |
+
+### 待实现
 
 | 优先级 | 功能 | 工作量 | 影响 |
 |--------|------|--------|------|
-| P0 | PATCH 方法 | 极小 | RESTful API 完整性 |
-| P1 | 响应压缩（gzip/br） | 中 | 生产就绪 |
-| P1 | CORS 增强 | 小 | 生产就绪 |
 | P1 | Multipart 文件上传 | 大 | 文件上传基本能力 |
 
 ### 决定待定
@@ -289,4 +281,4 @@ title: HTTP Gap Analysis
 
 ## 结论
 
-HTTP 模块已有坚实的基础，覆盖了路由、请求体解析、WebSocket、认证、静态文件和缓存。经过逐项评估，确定实现 4 项功能：（1）PATCH 方法——极小改动实现 RESTful 完整性；（2）响应压缩——在 `flush_response` 中基于 zlib 实现 gzip/br 流式压缩；（3）CORS 增强——补充 credentials、expose_headers、动态 origin 支持；（4）Multipart 文件上传——需整体设计流式解析方案。路由级 middleware 待定观察。其余 8 项不做，要么应由基础设施层处理（限流、HTTPS），要么用户可自行简单实现（Cookie、Request ID），要么投入产出比不合理（OpenAPI、声明式验证）。
+HTTP 模块已有坚实的基础，覆盖了路由、请求体解析、WebSocket、认证、静态文件和缓存。经过逐项评估，确定实现 4 项功能：（1）PATCH 方法——已完成；（2）响应压缩——已完成，`flush_response` 中基于 zlib 流式压缩；（3）CORS 增强——已完成，补充 credentials、expose_headers、多 origin 精确匹配；（4）Multipart 文件上传——待实现，需整体设计流式解析方案。路由级 middleware 待定观察。其余 8 项不做，要么应由基础设施层处理（限流、HTTPS），要么用户可自行简单实现（Cookie、Request ID），要么投入产出比不合理（OpenAPI、声明式验证）。

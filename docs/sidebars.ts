@@ -69,6 +69,7 @@ const sidebars: SidebarsConfig = {
       label: 'Design Decisions',
       items: [
         'decisions/di-gap-analysis',
+        'decisions/http-gap-analysis',
       ],
     },
   ],
