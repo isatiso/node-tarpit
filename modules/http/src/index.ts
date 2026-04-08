@@ -39,13 +39,19 @@ declare module '@tarpit/core' {
                 terminate_timeout?: number
             }
             cors?: {
-                allow_origin: string
-                allow_headers: string
-                allow_methods: string
-                max_age: number
+                allow_origin?: string
+                allow_headers?: string
+                allow_methods?: string
+                max_age?: number
+                credentials?: boolean
+                expose_headers?: string
             }
             body?: {
                 max_length?: number
+            }
+            compression?: {
+                enable?: boolean
+                threshold?: number
             }
         }
     }
@@ -61,6 +67,7 @@ export {
     Delete,
     Put,
     Post,
+    Patch,
     Auth,
     Route,
     WS,

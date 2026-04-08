@@ -16,7 +16,7 @@ import { TpRouter } from '../annotations'
 import { FormBody, Guard, HttpContext, JsonBody, MimeBody, Params, PathArgs, RawBody, RequestHeaders, ResponseCache, TextBody, TpRequest, TpResponse, TpWebSocket } from '../builtin'
 import { Finish, TpHttpFinish } from '../errors'
 import { RequestUnit, RouteUnit, SocketUnit } from '../tools/collect-routes'
-import { flush_response } from '../tools/flush-response'
+import { CompressionOptions, flush_response } from '../tools/flush-response'
 import { HandlerBook } from '../tools/handler-book'
 import { CODES_KEY, HTTP_STATUS } from '../tools/http-status'
 import { HttpAuthenticator } from './http-authenticator'
@@ -63,13 +63,37 @@ export class HttpRouters {
     private readonly c_allow_origin = this.config_data.get('http.cors.allow_origin') ?? ''
     private readonly c_body_max_length = this.config_data.get('http.body.max_length') ?? 0
     private readonly c_cors_max_age = this.config_data.get('http.cors.max_age') ?? 0
+    private readonly c_credentials = this.config_data.get('http.cors.credentials') ?? false
+    private readonly c_expose_headers = this.config_data.get('http.cors.expose_headers') ?? ''
     private readonly c_proxy = this.config_data.get('http.proxy')
+    private readonly c_compression: CompressionOptions = {
+        enable: this.config_data.get('http.compression.enable') ?? false,
+        threshold: this.config_data.get('http.compression.threshold') ?? 1024,
+    }
 
     constructor(
         private config_data: TpConfigData,
         private url_parser: HttpUrlParser,
         private reader: ContentReaderService,
     ) {
+    }
+
+    private set_cors_headers(res: ServerResponse, req: IncomingMessage, is_preflight: boolean): void {
+        const request_origin = req.headers['origin']
+        const origin = this.c_allow_origin === '*' ? '*' : this.c_allow_origin === request_origin ? request_origin : ''
+        if (this.c_allow_origin && origin) {
+            res.setHeader('Access-Control-Allow-Origin', origin)
+        }
+        if (this.c_credentials) {
+            res.setHeader('Access-Control-Allow-Credentials', 'true')
+        }
+        if (is_preflight) {
+            this.c_allow_methods && res.setHeader('Access-Control-Allow-Methods', this.c_allow_methods)
+            this.c_allow_headers && res.setHeader('Access-Control-Allow-Headers', this.c_allow_headers)
+            this.c_cors_max_age && res.setHeader('Access-Control-Max-Age', this.c_cors_max_age)
+        } else {
+            this.c_expose_headers && res.setHeader('Access-Control-Expose-Headers', this.c_expose_headers)
+        }
     }
 
     public readonly upgrade_listener = async (req: IncomingMessage, socket: Duplex, head: Buffer): Promise<SocketHandler | undefined> => {
@@ -94,7 +118,7 @@ export class HttpRouters {
         const pathname = parsed_url.pathname!.replace(/\/\s*$/, '') || '/'
         const allow = this.handler_book.get_allow(pathname)
         if (req.method === 'OPTIONS' && req.url === '*') {
-            res.setHeader('Allow', 'OPTIONS,HEAD,GET,POST,PUT,DELETE')
+            res.setHeader('Allow', 'OPTIONS,HEAD,GET,POST,PUT,DELETE,PATCH')
             return reply(res, 204)
         }
         if (!allow) {
@@ -103,14 +127,12 @@ export class HttpRouters {
         if (!allow.includes(req.method)) {
             return reply(res, 405)
         }
-        this.c_allow_origin && res.setHeader('Access-Control-Allow-Origin', this.c_allow_origin)
         if (req.method === 'OPTIONS') {
+            this.set_cors_headers(res, req, true)
             res.setHeader('Allow', allow.join(','))
-            this.c_allow_methods && res.setHeader('Access-Control-Allow-Methods', this.c_allow_methods)
-            this.c_allow_headers && res.setHeader('Access-Control-Allow-Headers', this.c_allow_headers)
-            this.c_cors_max_age && res.setHeader('Access-Control-Max-Age', this.c_cors_max_age)
             return reply(res, 204)
         } else {
+            this.set_cors_headers(res, req, false)
             res.statusCode = 400
             res.statusMessage = HTTP_STATUS.message_of(400)
             const handler = this.handler_book.find(req.method as ApiMethod, pathname)!
@@ -208,6 +230,7 @@ export class HttpRouters {
         const body_max_length = this.c_body_max_length
         const proxy_config = this.c_proxy
         const reader = this.reader
+        const compression = this.c_compression
         const need_guard = unit.auth || param_deps.find(d => d.token === Guard)
 
         const pv_authenticator = injector.get(HttpAuthenticator)!
@@ -344,7 +367,7 @@ export class HttpRouters {
                 http_hooks.on_error(context).catch(() => undefined)
             }
 
-            flush_response(response)
+            flush_response(response, compression)
         }
     }
 }

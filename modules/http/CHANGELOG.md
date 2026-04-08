@@ -1,5 +1,15 @@
 # @tarpit/http
 
+## 2.1.0
+
+### Minor Changes
+
+- Add PATCH method, response compression, and CORS enhancements.
+
+  - Add `@Patch` decorator and `'PATCH'` to `ApiMethod`, update OPTIONS/Allow header generation
+  - Add response compression (gzip/br) in `flush_response` via Node.js built-in `zlib`, configurable via `http.compression`
+  - Add CORS `credentials`, `expose_headers`, and exact multi-origin matching support; extend `allow_origin` to accept string arrays
+
 ## 2.0.0
 
 ### Patch Changes

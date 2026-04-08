@@ -26,7 +26,7 @@ export interface HttpHandlerDescriptor {
     path: string
 }
 
-export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 
 export type ProxyConfig = {
     enable: boolean

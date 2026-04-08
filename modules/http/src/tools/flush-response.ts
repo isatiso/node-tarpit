@@ -6,18 +6,62 @@
  * found in the LICENSE file at source root.
  */
 
-import { Stream } from 'stream'
+import { Readable, Stream } from 'stream'
+import { ServerResponse } from 'http'
+import { createBrotliCompress, createGzip } from 'zlib'
 import { TpResponse } from '../builtin'
 import { HTTP_STATUS } from './http-status'
 import { on_error } from './on-error'
 
-export function flush_response(response: TpResponse) {
+export interface CompressionOptions {
+    enable?: boolean
+    threshold?: number
+}
+
+function select_encoding(accept_encoding: string | string[] | undefined): 'br' | 'gzip' | null {
+    if (!accept_encoding) {
+        return null
+    }
+    const value = Array.isArray(accept_encoding) ? accept_encoding.join(',') : accept_encoding
+    if (value.includes('br')) {
+        return 'br'
+    }
+    if (value.includes('gzip')) {
+        return 'gzip'
+    }
+    return null
+}
+
+function pipe_compressed(res: ServerResponse, encoding: 'br' | 'gzip', readable: Readable, on_err: (err: any) => void) {
+    const compressor = encoding === 'br' ? createBrotliCompress() : createGzip()
+    compressor.once('error', on_err)
+    return readable.pipe(compressor).pipe(res)
+}
+
+function write_stream(response: TpResponse, encoding: 'br' | 'gzip' | null, stream: Readable, on_err: (err: any) => void) {
+    if (encoding) {
+        response.set('Content-Encoding', encoding)
+        response.remove('Content-Length')
+        return pipe_compressed(response.res, encoding, stream, on_err)
+    }
+    return stream.pipe(response.res)
+}
+
+function write_body(response: TpResponse, encoding: 'br' | 'gzip' | null, buf: Buffer, threshold: number, on_err: (err: any) => void, raw?: any) {
+    if (encoding && buf.length >= threshold) {
+        response.set('Content-Encoding', encoding)
+        response.remove('Content-Length')
+        return pipe_compressed(response.res, encoding, Readable.from(buf), on_err)
+    }
+    return response.res.end(raw ?? buf)
+}
+
+export function flush_response(response: TpResponse, compression?: CompressionOptions) {
 
     if (!response.writable) {
         return
     }
 
-    // set response status as 200 if not set
     if ((response as any)._status === undefined) {
         response.status = 200
     }
@@ -30,7 +74,6 @@ export function flush_response(response: TpResponse) {
         response.body.once('error', err => on_error(err, response.res))
     }
 
-    // Compatible with the case where the body is ArrayBufferView
     if (!(response.body instanceof Uint8Array) && ArrayBuffer.isView(response.body)) {
         response.body = new Uint8Array(response.body.buffer) as any
     }
@@ -45,21 +88,17 @@ export function flush_response(response: TpResponse) {
         return response.res.end()
     }
 
-    // set implicit content type
     if (!response.has('Content-Type')) {
         const body = response.body
         if (typeof body === 'string') {
             response.content_type = 'text/plain; charset=utf-8'
-        } else if (Buffer.isBuffer(response.body)) {
-            response.content_type = 'application/octet-stream'
-        } else if (response.body instanceof Stream) {
+        } else if (Buffer.isBuffer(body) || body instanceof Stream) {
             response.content_type = 'application/octet-stream'
         } else {
             response.content_type = 'application/json; charset=utf-8'
         }
     }
 
-    // figure out content-length before write
     if (response.request.method === 'HEAD') {
         if (!response.has('Content-Length')) {
             if (response.body instanceof Stream) {
@@ -79,23 +118,33 @@ export function flush_response(response: TpResponse) {
         return response.res.end()
     }
 
+    const encoding = compression?.enable && !response.has('Content-Encoding')
+        ? select_encoding(response.request.get('Accept-Encoding'))
+        : null
+
+    const threshold = compression?.threshold ?? 1024
+
+    const on_err = (err: any) => on_error(err, response.res)
+
+    if (response.body instanceof Stream) {
+        return write_stream(response, encoding, response.body as Readable, on_err)
+    }
+
     if (Buffer.isBuffer(response.body)) {
-        return response.res.end(response.body)
+        return write_body(response, encoding, response.body, threshold, on_err)
     }
 
     if (response.body instanceof Uint8Array) {
-        return response.res.end(response.body)
+        const buf = Buffer.from(response.body.buffer, response.body.byteOffset, response.body.byteLength)
+        return write_body(response, encoding, buf, threshold, on_err, response.body)
     }
 
-    if ('string' === typeof response.body) {
-        return response.res.end(response.body)
-    }
-
-    if (response.body instanceof Stream) {
-        return response.body.pipe(response.res)
+    if (typeof response.body === 'string') {
+        return write_body(response, encoding, Buffer.from(response.body), threshold, on_err, response.body)
     }
 
     const json_body = JSON.stringify(response.body)
-    response.length = Buffer.byteLength(json_body)
-    return response.res.end(json_body)
+    const buf = Buffer.from(json_body)
+    response.length = buf.length
+    return write_body(response, encoding, buf, threshold, on_err, json_body)
 }
