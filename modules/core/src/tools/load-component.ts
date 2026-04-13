@@ -10,7 +10,7 @@ import { OnStart, OnTerminate, TpAssembly, TpComponent, TpEntry, TpRoot, TpWorke
 import { TpLoader } from '../builtin/tp-loader'
 import { ClassProvider, FactoryProvider, Injector, ValueProvider } from '../di'
 import { ClassProviderDef, Constructor, FactoryProviderDef, Provider, ProviderDef, ProviderTreeNode, ValueProviderDef } from '../types'
-import { get_all_prop_decorator, get_class_decorator } from './decorator'
+import { get_all_prop_decorator, get_class_decorator, get_param_types } from './decorator'
 import { stringify } from './stringify'
 
 function isClassProviderDef<T extends object>(def: ProviderDef<T> | Constructor<any>): def is ClassProviderDef<T> {
@@ -88,14 +88,18 @@ export function load_component(meta: any, injector: Injector, auto_create?: bool
 
         const provider = meta.provider = ClassProvider.create(injector, { provide: meta.cls, useClass: meta.cls })
 
+        const constructor_deps = get_param_types(meta.cls)?.filter((t: any) => t != null) ?? []
+        const tp_loader = injector.get(TpLoader)?.create()
+        tp_loader?.record(meta.cls, constructor_deps)
+
         for (const [prop, decorators] of get_all_prop_decorator(meta.cls) ?? []) {
             if (decorators.find(d => d instanceof OnStart) && typeof Reflect.get(meta.cls.prototype, prop) === 'function') {
-                injector.get(TpLoader)!.create().on_start(async () => {
+                tp_loader?.on_start(meta.cls, async () => {
                     return provider.create()[prop]()
                 })
             }
             if (decorators.find(d => d instanceof OnTerminate) && typeof Reflect.get(meta.cls.prototype, prop) === 'function') {
-                injector.get(TpLoader)!.create().on_terminate(async () => {
+                tp_loader?.on_terminate(meta.cls, async () => {
                     return provider.create()[prop]()
                 })
             }
