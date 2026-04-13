@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/rabbitmq",
-    "version": "2.0.2",
+    "version": "2.1.1",
     "description": "RabbitMQ integration module for Tarpit",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -49,11 +49,11 @@
         "@tarpit/cli": "workspace:*"
     },
     "peerDependencies": {
-        "@tarpit/barbeque": "workspace:*",
-        "@tarpit/config": "workspace:*",
-        "@tarpit/content-type": "workspace:*",
-        "@tarpit/core": "workspace:*",
-        "@tarpit/judge": "workspace:*"
+        "@tarpit/barbeque": "workspace:^",
+        "@tarpit/config": "workspace:^",
+        "@tarpit/content-type": "workspace:^",
+        "@tarpit/core": "workspace:^",
+        "@tarpit/judge": "workspace:^"
     },
     "sideEffects": true
 }

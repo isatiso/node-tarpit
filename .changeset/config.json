@@ -3,9 +3,29 @@
   "changelog": "@changesets/cli/changelog",
   "commit": true,
   "fixed": [],
-  "linked": [],
+  "linked": [
+    [
+      "@tarpit/core",
+      "@tarpit/config",
+      "@tarpit/content-type",
+      "@tarpit/http",
+      "@tarpit/mongodb",
+      "@tarpit/rabbitmq",
+      "@tarpit/schedule",
+      "@tarpit/barbeque",
+      "@tarpit/cron",
+      "@tarpit/dora",
+      "@tarpit/judge",
+      "@tarpit/negotiator",
+      "@tarpit/transformer",
+      "@tarpit/type-tools"
+    ]
+  ],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [],
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "onlyUpdatePeerDependentsWhenOutOfRange": true
+  }
 }

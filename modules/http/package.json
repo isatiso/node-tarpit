@@ -61,12 +61,12 @@
         "iconv-lite": "^0.6.3"
     },
     "peerDependencies": {
-        "@tarpit/config": "workspace:*",
-        "@tarpit/content-type": "workspace:*",
-        "@tarpit/core": "workspace:*",
-        "@tarpit/dora": "workspace:*",
-        "@tarpit/judge": "workspace:*",
-        "@tarpit/negotiator": "workspace:*"
+        "@tarpit/config": "workspace:^",
+        "@tarpit/content-type": "workspace:^",
+        "@tarpit/core": "workspace:^",
+        "@tarpit/dora": "workspace:^",
+        "@tarpit/judge": "workspace:^",
+        "@tarpit/negotiator": "workspace:^"
     },
     "sideEffects": true
 }
