@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/core",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Dependency injection framework and platform runtime for Tarpit",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",

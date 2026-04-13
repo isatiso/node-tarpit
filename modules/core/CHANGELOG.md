@@ -1,5 +1,17 @@
 # @tarpit/core
 
+## 2.0.1
+
+### Patch Changes
+
+- Fix class field initialization order in build output.
+
+  - Fix tsup swc plugin not respecting `useDefineForClassFields: false`, which caused native class fields to be preserved in ESM output and field initializers to run before constructor parameter assignments
+
+- Updated dependencies
+  - @tarpit/config@2.0.1
+  - @tarpit/type-tools@2.0.1
+
 ## 2.0.0
 
 ### Patch Changes
