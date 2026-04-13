@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/http",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "HTTP server module for Tarpit with routing, WebSocket, and middleware support",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",

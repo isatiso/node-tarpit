@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/config",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Type-safe configuration loader for Tarpit",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
