@@ -1,6 +1,6 @@
 {
     "name": "@tarpit/schedule",
-    "version": "2.0.1",
+    "version": "2.1.1",
     "description": "Cron-based task scheduling module for Tarpit",
     "author": "Cao Jiahang <sieglive@gmail.com>",
     "homepage": "https://github.com/isatiso/node-tarpit#readme",
@@ -46,10 +46,10 @@
         "@tarpit/cli": "workspace:*"
     },
     "peerDependencies": {
-        "@tarpit/config": "workspace:*",
-        "@tarpit/core": "workspace:*",
-        "@tarpit/cron": "workspace:*",
-        "@tarpit/dora": "workspace:*"
+        "@tarpit/config": "workspace:^",
+        "@tarpit/core": "workspace:^",
+        "@tarpit/cron": "workspace:^",
+        "@tarpit/dora": "workspace:^"
     },
     "sideEffects": true
 }

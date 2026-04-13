@@ -1,5 +1,17 @@
 # @tarpit/core
 
+## 2.2.0
+
+### Minor Changes
+
+- DAG-based lifecycle ordering for `@OnStart` and `@OnTerminate` hooks.
+
+  - Add dependency-aware scheduling based on constructor injection graph
+  - Add `TpLoader.record()` to register component dependency relationships
+  - Add `TpLoader.register()` optional `deps` parameter for module-level dependencies
+  - Replace flat `Promise.allSettled` with eager per-node execution respecting DAG order
+  - Execute `@OnTerminate` hooks in reverse dependency order
+
 ## 2.0.1
 
 ### Patch Changes
