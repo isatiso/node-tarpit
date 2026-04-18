@@ -55,14 +55,14 @@ export class Dora {
     }
 
     public readonly $d: Date
-    public $y: number
-    public $M: number
-    public $D: number
-    public $W: number
-    public $H: number
-    public $m: number
-    public $s: number
-    public $ms: number
+    public readonly $y: number
+    public readonly $M: number
+    public readonly $D: number
+    public readonly $W: number
+    public readonly $H: number
+    public readonly $m: number
+    public readonly $s: number
+    public readonly $ms: number
     public readonly $utcOffset: number
     private readonly $z: string
 
@@ -78,9 +78,9 @@ export class Dora {
         this.$m = fields.minute
         this.$s = fields.second
         this.$ms = fields.millisecond
-        this.$utcOffset = (this.$d.getUTCFullYear() - this.$y || this.$d.getUTCMonth() - this.$M || this.$d.getUTCDate() - this.$D) * 24 * 60
-            + (this.$d.getUTCHours() - this.$H) * 60
-            + this.$d.getUTCMinutes() - this.$m
+        const day_diff = (Date.UTC(this.$d.getUTCFullYear(), this.$d.getUTCMonth(), this.$d.getUTCDate())
+            - Date.UTC(this.$y, this.$M, this.$D)) / (60 * 1000)
+        this.$utcOffset = day_diff + (this.$d.getUTCHours() - this.$H) * 60 + this.$d.getUTCMinutes() - this.$m
     }
 
     static guess_timezone() {
@@ -117,12 +117,37 @@ export class Dora {
         }
     }
 
-    static parse(date_str: string) {
+    /**
+     * Parse a date string into a Dora instance.
+     *
+     * @param timezone - Optional timezone for the result.
+     *   - If the string **contains** timezone info (e.g. `+08:00`, `Z`), the string's
+     *     timezone determines the UTC moment; `timezone` only changes the display view.
+     *   - If the string **has no** timezone info, the wall-clock time is interpreted as
+     *     being in `timezone`, making it both the source and the display timezone.
+     */
+    static parse(date_str: string, timezone?: string) {
         const ts = Date.parse(date_str)
         if (isNaN(ts)) {
             throw new Error()
         }
-        return new Dora(ts)
+        if (timezone === undefined) {
+            return new Dora(ts)
+        }
+        const has_tz = /[Zz]$|[+-]\d{2}:?\d{2}$/.test(date_str.trim())
+        if (has_tz) {
+            return new Dora(ts, timezone)
+        }
+        // No TZ in string: interpret the wall-clock time in the given timezone.
+        // Append 'Z' to force UTC interpretation and extract components reliably.
+        const d = new Date(date_str.trim().replace(' ', 'T') + 'Z')
+        if (isNaN(d.getTime())) {
+            return new Dora(ts, timezone)
+        }
+        return Dora.from([
+            d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
+            d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(), d.getUTCMilliseconds(),
+        ], { timezone })
     }
 
     format(format: string = DEFAULT_FORMAT) {
@@ -175,11 +200,15 @@ export class Dora {
         switch (unit) {
             case 'year': {
                 const date = this.date()
+                // Pin to 5th to prevent month-end overflow (e.g. Jan 31 + 1 month → Feb 31),
+                // then restore the original date after adjusting the year.
                 const nd = new Date(this.date(5).valueOf())
                 return new Dora(nd.setUTCFullYear(nd.getUTCFullYear() + int), this.$z).date(date)
             }
             case 'month': {
                 const date = this.date()
+                // Pin to 5th to prevent month-end overflow (e.g. Jan 31 + 1 month → Feb 31),
+                // then restore the original date after adjusting the month.
                 const nd = new Date(this.date(5).valueOf())
                 return new Dora(nd.setUTCMonth(nd.getUTCMonth() + int), this.$z).date(date)
             }

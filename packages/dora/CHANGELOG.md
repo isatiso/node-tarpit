@@ -1,5 +1,16 @@
 # @tarpit/dora
 
+## 2.3.0
+
+### Minor Changes
+
+- Add timezone support to `Dora.parse()` and fix date calculation issues.
+
+  - Add `timezone` parameter to `Dora.parse()` for parsing date strings in a specific timezone
+  - Fix `$utcOffset` calculation to correctly reflect the parsed timezone offset
+  - Add readonly fields to improve immutability guarantees
+  - Clarify `add()` method overflow prevention behavior
+
 ## 2.0.1
 
 ### Patch Changes

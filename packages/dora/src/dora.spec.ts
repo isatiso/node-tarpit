@@ -122,6 +122,41 @@ describe('dora.ts', function() {
             it('should throw error if can\'t parse time string', function() {
                 expect(() => Dora.parse('20220102123212')).toThrow()
             })
+
+            it('should interpret timezone-less string as wall-clock time in given timezone', function() {
+                const m = Dora.parse('2020-10-08 15:32:01.158', 'Asia/Shanghai')
+                expect(m.timezone()).toEqual('Asia/Shanghai')
+                expect(m.year()).toEqual(2020)
+                expect(m.month()).toEqual(9)
+                expect(m.date()).toEqual(8)
+                expect(m.hour()).toEqual(15)
+                expect(m.minute()).toEqual(32)
+                expect(m.second()).toEqual(1)
+                expect(m.millisecond()).toEqual(158)
+                expect(m.format('Z')).toEqual('+08:00')
+            })
+
+            it('should use string timezone as the UTC moment, display in given timezone', function() {
+                const m = Dora.parse('2020-10-08 11:03:16.158+08:00', 'Asia/Yangon')
+                expect(m.timezone()).toEqual('Asia/Yangon')
+                expect(m.hour()).toEqual(9)
+                expect(m.minute()).toEqual(33)
+                expect(m.format('Z')).toEqual('+06:30')
+            })
+
+            it('should correctly handle timezone-less ISO string with given timezone', function() {
+                const shanghai = Dora.parse('2022-05-16T15:38:28.000', 'Asia/Shanghai')
+                expect(shanghai.format()).toEqual('2022-05-16T15:38:28.000+08:00')
+                const utc = Dora.parse('2022-05-16T15:38:28.000', 'UTC')
+                expect(utc.format()).toEqual('2022-05-16T15:38:28.000+00:00')
+            })
+
+            it('should fall back gracefully for non-ISO timezone-less string with given timezone', function() {
+                // 'Mon May 16 2022 15:38:28' → first-space-to-T → 'Mon May 16T2022 15:38:28Z' which is invalid ISO
+                const m = Dora.parse('Mon May 16 2022 15:38:28', 'Asia/Shanghai')
+                expect(m).toBeInstanceOf(Dora)
+                expect(m.timezone()).toEqual('Asia/Shanghai')
+            })
         })
 
         describe('.format()', function() {
@@ -435,6 +470,57 @@ describe('dora.ts', function() {
 
             it('should get end of isoWeek of given Dora', function() {
                 expect(m.end_of('isoWeek').format()).toEqual('2022-05-22T23:59:59.999+08:00')
+            })
+        })
+
+        describe('.utc_offset()', function() {
+
+            it('should return negative value for UTC+ timezone', function() {
+                // UTC+8: internal offset = UTC fields - local fields = -480
+                const m = new Dora(1652686708000, 'Asia/Shanghai')
+                expect(m.utc_offset()).toEqual(-480)
+            })
+
+            it('should return positive value for UTC- timezone', function() {
+                // UTC-6: internal offset = UTC fields - local fields = +360
+                const m = new Dora(1652686708000, 'America/Inuvik')
+                expect(m.utc_offset()).toEqual(360)
+            })
+
+            it('should return zero for UTC timezone', function() {
+                const m = new Dora(1652686708000, 'UTC')
+                expect(m.utc_offset()).toEqual(0)
+            })
+
+            it('should correctly compute offset for UTC+14 crossing year boundary', function() {
+                // Pacific/Kiritimati is UTC+14
+                // 2022-12-31T22:00:00Z = 2023-01-01T12:00:00+14:00 (year boundary crossed)
+                const ts = new Date('2022-12-31T22:00:00Z').getTime()
+                const m = new Dora(ts, 'Pacific/Kiritimati')
+                expect(m.year()).toEqual(2023)
+                expect(m.month()).toEqual(0)
+                expect(m.date()).toEqual(1)
+                expect(m.utc_offset()).toEqual(-840)
+                expect(m.format('Z')).toEqual('+14:00')
+            })
+
+            it('should correctly compute offset for UTC-11 crossing year boundary', function() {
+                // Pacific/Pago_Pago is UTC-11
+                // 2023-01-01T10:00:00Z = 2022-12-31T23:00:00-11:00 (year boundary crossed)
+                const ts = new Date('2023-01-01T10:00:00Z').getTime()
+                const m = new Dora(ts, 'Pacific/Pago_Pago')
+                expect(m.year()).toEqual(2022)
+                expect(m.month()).toEqual(11)
+                expect(m.date()).toEqual(31)
+                expect(m.utc_offset()).toEqual(660)
+                expect(m.format('Z')).toEqual('-11:00')
+            })
+
+            it('should correctly compute offset for UTC+5:30 (non-whole-hour offset)', function() {
+                // Asia/Kolkata is UTC+5:30
+                const m = new Dora(1652686708000, 'Asia/Kolkata')
+                expect(m.utc_offset()).toEqual(-330)
+                expect(m.format('Z')).toEqual('+05:30')
             })
         })
     })
