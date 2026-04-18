@@ -122,6 +122,41 @@ describe('dora.ts', function() {
             it('should throw error if can\'t parse time string', function() {
                 expect(() => Dora.parse('20220102123212')).toThrow()
             })
+
+            it('should interpret timezone-less string as wall-clock time in given timezone', function() {
+                const m = Dora.parse('2020-10-08 15:32:01.158', 'Asia/Shanghai')
+                expect(m.timezone()).toEqual('Asia/Shanghai')
+                expect(m.year()).toEqual(2020)
+                expect(m.month()).toEqual(9)
+                expect(m.date()).toEqual(8)
+                expect(m.hour()).toEqual(15)
+                expect(m.minute()).toEqual(32)
+                expect(m.second()).toEqual(1)
+                expect(m.millisecond()).toEqual(158)
+                expect(m.format('Z')).toEqual('+08:00')
+            })
+
+            it('should use string timezone as the UTC moment, display in given timezone', function() {
+                const m = Dora.parse('2020-10-08 11:03:16.158+08:00', 'Asia/Yangon')
+                expect(m.timezone()).toEqual('Asia/Yangon')
+                expect(m.hour()).toEqual(9)
+                expect(m.minute()).toEqual(33)
+                expect(m.format('Z')).toEqual('+06:30')
+            })
+
+            it('should correctly handle timezone-less ISO string with given timezone', function() {
+                const shanghai = Dora.parse('2022-05-16T15:38:28.000', 'Asia/Shanghai')
+                expect(shanghai.format()).toEqual('2022-05-16T15:38:28.000+08:00')
+                const utc = Dora.parse('2022-05-16T15:38:28.000', 'UTC')
+                expect(utc.format()).toEqual('2022-05-16T15:38:28.000+00:00')
+            })
+
+            it('should fall back gracefully for non-ISO timezone-less string with given timezone', function() {
+                // 'Mon May 16 2022 15:38:28' → first-space-to-T → 'Mon May 16T2022 15:38:28Z' which is invalid ISO
+                const m = Dora.parse('Mon May 16 2022 15:38:28', 'Asia/Shanghai')
+                expect(m).toBeInstanceOf(Dora)
+                expect(m.timezone()).toEqual('Asia/Shanghai')
+            })
         })
 
         describe('.format()', function() {

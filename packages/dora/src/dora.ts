@@ -117,12 +117,37 @@ export class Dora {
         }
     }
 
-    static parse(date_str: string) {
+    /**
+     * Parse a date string into a Dora instance.
+     *
+     * @param timezone - Optional timezone for the result.
+     *   - If the string **contains** timezone info (e.g. `+08:00`, `Z`), the string's
+     *     timezone determines the UTC moment; `timezone` only changes the display view.
+     *   - If the string **has no** timezone info, the wall-clock time is interpreted as
+     *     being in `timezone`, making it both the source and the display timezone.
+     */
+    static parse(date_str: string, timezone?: string) {
         const ts = Date.parse(date_str)
         if (isNaN(ts)) {
             throw new Error()
         }
-        return new Dora(ts)
+        if (timezone === undefined) {
+            return new Dora(ts)
+        }
+        const has_tz = /[Zz]$|[+-]\d{2}:?\d{2}$/.test(date_str.trim())
+        if (has_tz) {
+            return new Dora(ts, timezone)
+        }
+        // No TZ in string: interpret the wall-clock time in the given timezone.
+        // Append 'Z' to force UTC interpretation and extract components reliably.
+        const d = new Date(date_str.trim().replace(' ', 'T') + 'Z')
+        if (isNaN(d.getTime())) {
+            return new Dora(ts, timezone)
+        }
+        return Dora.from([
+            d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
+            d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(), d.getUTCMilliseconds(),
+        ], { timezone })
     }
 
     format(format: string = DEFAULT_FORMAT) {
