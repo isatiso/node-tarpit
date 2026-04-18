@@ -6,7 +6,7 @@
  * found in the LICENSE file at source root.
  */
 
-export const WEEKDAY_NAME = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_')
+const WEEKDAY_ABBR = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_')
 
 export interface DateFields {
     year: number
@@ -48,7 +48,7 @@ export function parse_date_field(date: Date, timezone: string): DateFields {
                     res.date = +item.value
                     break
                 case 'weekday':
-                    res.weekday = Math.floor(WEEKDAY_NAME.indexOf(item.value))
+                    res.weekday = Math.floor(WEEKDAY_ABBR.indexOf(item.value))
                     break
                 case 'hour':
                     res.hour = +item.value

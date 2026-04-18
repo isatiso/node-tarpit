@@ -437,5 +437,56 @@ describe('dora.ts', function() {
                 expect(m.end_of('isoWeek').format()).toEqual('2022-05-22T23:59:59.999+08:00')
             })
         })
+
+        describe('.utc_offset()', function() {
+
+            it('should return negative value for UTC+ timezone', function() {
+                // UTC+8: internal offset = UTC fields - local fields = -480
+                const m = new Dora(1652686708000, 'Asia/Shanghai')
+                expect(m.utc_offset()).toEqual(-480)
+            })
+
+            it('should return positive value for UTC- timezone', function() {
+                // UTC-6: internal offset = UTC fields - local fields = +360
+                const m = new Dora(1652686708000, 'America/Inuvik')
+                expect(m.utc_offset()).toEqual(360)
+            })
+
+            it('should return zero for UTC timezone', function() {
+                const m = new Dora(1652686708000, 'UTC')
+                expect(m.utc_offset()).toEqual(0)
+            })
+
+            it('should correctly compute offset for UTC+14 crossing year boundary', function() {
+                // Pacific/Kiritimati is UTC+14
+                // 2022-12-31T22:00:00Z = 2023-01-01T12:00:00+14:00 (year boundary crossed)
+                const ts = new Date('2022-12-31T22:00:00Z').getTime()
+                const m = new Dora(ts, 'Pacific/Kiritimati')
+                expect(m.year()).toEqual(2023)
+                expect(m.month()).toEqual(0)
+                expect(m.date()).toEqual(1)
+                expect(m.utc_offset()).toEqual(-840)
+                expect(m.format('Z')).toEqual('+14:00')
+            })
+
+            it('should correctly compute offset for UTC-11 crossing year boundary', function() {
+                // Pacific/Pago_Pago is UTC-11
+                // 2023-01-01T10:00:00Z = 2022-12-31T23:00:00-11:00 (year boundary crossed)
+                const ts = new Date('2023-01-01T10:00:00Z').getTime()
+                const m = new Dora(ts, 'Pacific/Pago_Pago')
+                expect(m.year()).toEqual(2022)
+                expect(m.month()).toEqual(11)
+                expect(m.date()).toEqual(31)
+                expect(m.utc_offset()).toEqual(660)
+                expect(m.format('Z')).toEqual('-11:00')
+            })
+
+            it('should correctly compute offset for UTC+5:30 (non-whole-hour offset)', function() {
+                // Asia/Kolkata is UTC+5:30
+                const m = new Dora(1652686708000, 'Asia/Kolkata')
+                expect(m.utc_offset()).toEqual(-330)
+                expect(m.format('Z')).toEqual('+05:30')
+            })
+        })
     })
 })
